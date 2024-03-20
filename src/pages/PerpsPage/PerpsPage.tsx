@@ -1,12 +1,11 @@
 import React from 'react';
 import { useAccount, useChains } from '@orderly.network/hooks';
-import { Theme, Button, Container, Flex, Switch, Tabs } from '@radix-ui/themes';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import './index.css';
-import '@radix-ui/themes/styles.css';
 import { useActiveWeb3React } from 'hooks';
 import { Layout } from './Layout';
+import { Tab, Tabs } from '@material-ui/core';
 
 export const PerpsPage = () => {
   const { chainId, account, provider } = useActiveWeb3React();
@@ -21,16 +20,16 @@ export const PerpsPage = () => {
     allow_symbol_change: false,
   };
   return (
-    <Theme style={{ color: 'white', alignSelf: 'center' }}>
-      <Tabs.Root
+    <div style={{ color: 'white', alignSelf: 'center' }}>
+      <Tabs
         defaultValue='layout'
         style={{ marginTop: '1rem', color: 'white', alignSelf: 'center' }}
       >
-        <Tabs.Content value='layout' style={{ color: 'white' }}>
+        <Tab value='layout' style={{ color: 'white' }}>
           <Layout />
-        </Tabs.Content>
-      </Tabs.Root>
-    </Theme>
+        </Tab>
+      </Tabs>
+    </div>
   );
 };
 

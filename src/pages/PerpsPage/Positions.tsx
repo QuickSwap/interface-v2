@@ -1,36 +1,37 @@
 import React from 'react';
 import { usePositionStream } from '@orderly.network/hooks';
-import { Flex, Heading, Table } from '@radix-ui/themes';
 import { FC } from 'react';
 
 import { PositionExt, PositionExtFixed } from './PositionExt';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
 
 export const Positions: FC = () => {
   const [positions, _, { refresh }] = usePositionStream('PERP_ETH_USDC');
 
   return (
-    <Flex
-      style={{ margin: '1.5rem' }}
-      gap='3'
-      align='center'
-      justify='center'
-      direction='column'
-    >
-      <Heading>Positions</Heading>
+    <Box style={{ margin: '1.5rem' }}>
+      <h2>Positions</h2>
 
-      <Table.Root>
-        <Table.Header>
-          <Table.Row style={{ color: 'white' }}>
-            <Table.ColumnHeaderCell>Created</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Avg. Price (USDC)</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Quantity (ETH)</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Notional (USDC)</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Unrealized PnL</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Actions</Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
+      <Table>
+        <TableHead>
+          <TableRow style={{ color: 'white' }}>
+            <TableCell>Created</TableCell>
+            <TableCell>Avg. Price (USDC)</TableCell>
+            <TableCell>Quantity (ETH)</TableCell>
+            <TableCell>Notional (USDC)</TableCell>
+            <TableCell>Unrealized PnL</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
 
-        <Table.Body style={{ color: 'white' }}>
+        <TableBody style={{ color: 'white' }}>
           {positions.rows &&
             positions.rows.map((position) => (
               <PositionExt
@@ -39,8 +40,8 @@ export const Positions: FC = () => {
                 key={position.symbol}
               />
             ))}
-        </Table.Body>
-      </Table.Root>
-    </Flex>
+        </TableBody>
+      </Table>
+    </Box>
   );
 };

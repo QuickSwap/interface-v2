@@ -1,10 +1,10 @@
 import React from 'react';
 import { useMarketTradeStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
-import { Box, Flex, Grid, Heading } from '@radix-ui/themes';
 import { FC } from 'react';
 import { API } from '@orderly.network/types';
 import './Orderbook.css';
+import { Box, Grid } from '@material-ui/core';
 
 type MarketOrder = {
   price: number;
@@ -18,18 +18,9 @@ export const Market: FC<{ token: string }> = ({ token }) => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <Flex
-      style={{ backgroundColor: '#12131a' }}
-      gap='2'
-      align='center'
-      justify='center'
-      direction='column'
-    >
+    <Box style={{ backgroundColor: '#12131a' }}>
       {!isLoading && (
-        <Grid
-          style={{ gridTemplateColumns: '5rem 5rem 5rem' }}
-          className='table'
-        >
+        <Grid className='table'>
           <Box
             style={{
               fontSize: '11px',
@@ -107,6 +98,6 @@ export const Market: FC<{ token: string }> = ({ token }) => {
           })}
         </Grid>
       )}
-    </Flex>
+    </Box>
   );
 };

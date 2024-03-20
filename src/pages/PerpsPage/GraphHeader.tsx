@@ -44,7 +44,6 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
       {' '}
       {/* Added wrapper for scrolling */}
       <Box
-        
         style={{
           paddingRight: '15px',
           backgroundColor: '#12131a',
@@ -178,7 +177,7 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
         </DropdownMenu.Root> */}
 
         {/* Render Token Info */}
-        <Text
+        <p
           style={{
             fontFamily: 'Inter',
             fontSize: 16,
@@ -187,10 +186,10 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
           }}
         >
           {token?.mark_price}
-        </Text>
+        </p>
         {/* Additional Flex Columns */}
-        <Flex direction='column' justify='center' align={'center'}>
-          <Text
+        <Box>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 11,
@@ -199,8 +198,8 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             24h Change
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 12,
@@ -209,10 +208,10 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             {token?.change}
-          </Text>
-        </Flex>
-        <Flex direction='column' justify='center' align={'center'}>
-          <Text
+          </p>
+        </Box>
+        <Box>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 11,
@@ -221,8 +220,8 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             Mark
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 12,
@@ -231,10 +230,10 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             {token?.mark_price}
-          </Text>
-        </Flex>
-        <Flex direction='column' justify='center' align={'center'}>
-          <Text
+          </p>
+        </Box>
+        <Box>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 11,
@@ -243,8 +242,8 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             Index
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 12,
@@ -253,10 +252,10 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             {token?.index_price}
-          </Text>
-        </Flex>
-        <Flex direction='column' justify='center' align={'center'}>
-          <Text
+          </p>
+        </Box>
+        <Box>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 11,
@@ -265,8 +264,8 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             24h Volume
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 12,
@@ -275,10 +274,10 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             {token?.['24h_volume']}
-          </Text>
-        </Flex>
-        <Flex direction='column' justify='center' align={'center'}>
-          <Text
+          </p>
+        </Box>
+        <Box>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 11,
@@ -287,8 +286,8 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             Funding Rate
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 12,
@@ -297,10 +296,10 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             {token?.est_funding_rate}
-          </Text>
-        </Flex>
-        <Flex direction='column' justify='center' align={'center'}>
-          <Text
+          </p>
+        </Box>
+        <Box>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 11,
@@ -309,8 +308,8 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             Open Interest
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontFamily: 'Inter',
               fontSize: 12,
@@ -319,9 +318,9 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
             }}
           >
             {token?.open_interest}
-          </Text>
-        </Flex>
-      </Flex>
+          </p>
+        </Box>
+      </Box>
     </div>
   );
 };

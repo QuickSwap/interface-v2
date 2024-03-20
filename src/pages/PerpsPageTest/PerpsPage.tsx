@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAccount, useQuery } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
-import { Button, Card, Container, Flex, Heading, Text } from '@radix-ui/themes';
 import { useActiveWeb3React, useGetSigner } from 'hooks';
 import { useEffect } from 'react';
+import { Box, Button } from '@material-ui/core';
 
 export const PerpsPage = () => {
   const { account, state } = useAccount();
@@ -22,51 +22,37 @@ export const PerpsPage = () => {
     });
   }, [library, account]);
   return (
-    <Flex
+    <Box
       style={{ margin: '1.5rem' }}
       gap='3'
       align='center'
       justify='center'
       direction='column'
     >
-      <Heading>Account</Heading>
+      <h2>Account</h2>
 
-      <Card style={{ maxWidth: 240 }}>
+      <Box style={{ maxWidth: 240 }}>
         {state.accountId ? (
           <>
-            <Flex gap='2' direction='column'>
-              <Container>
-                <Text as='div' size='2' weight='bold'>
-                  Orderly Account ID:
-                </Text>
-                <Text as='div' size='2'>
-                  {state.accountId}
-                </Text>
-              </Container>
-              <Container>
-                <Text as='div' size='2' weight='bold'>
-                  Address:
-                </Text>
-                <Text as='div' size='2'>
-                  {state.address}
-                </Text>
-              </Container>
-              <Container>
-                <Text as='div' size='2' weight='bold'>
-                  User ID:
-                </Text>
-                <Text as='div' size='2'>
-                  {state.userId}
-                </Text>
-              </Container>
-            </Flex>
+            <Box>
+              <Box>
+                <h6>Orderly Account ID:</h6>
+                <p>{state.accountId}</p>
+              </Box>
+              <Box>
+                <p>Address:</p>
+                <p>{state.address}</p>
+              </Box>
+              <Box>
+                <p>User ID:</p>
+                <p>{state.userId}</p>
+              </Box>
+            </Box>
           </>
         ) : (
-          <Text as='div' size='3' weight='bold' color='red'>
-            Not connected!
-          </Text>
+          <p>Not connected!</p>
         )}
-      </Card>
+      </Box>
 
       <Button
         disabled={state.status !== AccountStatusEnum.NotSignedIn}
@@ -90,7 +76,7 @@ export const PerpsPage = () => {
       >
         Create Orderly Key
       </Button>
-    </Flex>
+    </Box>
   );
 };
 

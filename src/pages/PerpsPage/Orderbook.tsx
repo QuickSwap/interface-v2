@@ -1,9 +1,9 @@
 import React from 'react';
 import { useOrderbookStream } from '@orderly.network/hooks';
-import { Box, Flex, Grid, Heading } from '@radix-ui/themes';
 import { FC } from 'react';
 
 import './Orderbook.css';
+import { Box, Grid } from '@material-ui/core';
 
 export const Orderbook: FC<{ token?: string }> = ({ token }) => {
   const [
@@ -13,13 +13,7 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
     level: 10,
   });
   return (
-    <Flex
-      style={{ backgroundColor: '#12131a' }}
-      gap='2'
-      align='center'
-      justify='center'
-      direction='column'
-    >
+    <Box style={{ backgroundColor: '#12131a' }}>
       {/*<Heading>Orderbook</Heading>*/}
 
       {!isLoading && (
@@ -141,6 +135,6 @@ export const Orderbook: FC<{ token?: string }> = ({ token }) => {
           })}
         </Grid>
       )}
-    </Flex>
+    </Box>
   );
 };

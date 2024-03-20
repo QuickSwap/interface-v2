@@ -176,7 +176,7 @@ export const useIsProMode = () => {
   const isProMode = Boolean(
     parsedQs.isProMode && parsedQs.isProMode === 'true',
   );
-  return true;
+  return proModeEnabled && isProMode;
 };
 
 export const useAnalyticsVersion = () => {

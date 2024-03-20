@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Container, Flex, Switch, Text } from '@radix-ui/themes';
 import Arrow from '../../assets/images/downward.svg';
 import { CropSquareOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from '../../hooks';
@@ -20,6 +19,7 @@ import {
 import AccountModal from '../../components/AccountModal';
 import { Simulate } from 'react-dom/test-utils';
 import submit = Simulate.submit;
+import { Box, Button, Switch } from '@material-ui/core';
 
 export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   perpToken,
@@ -76,7 +76,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     }
   }, [state.status]);
   return (
-    <Flex direction='column' align='center' justify='center'>
+    <Box>
       <Box
         style={{
           width: 'fit-content',
@@ -86,14 +86,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         }}
       >
         {windowWidth > 768 && (
-          <Flex direction='row' justify='between'>
-            <Flex
-              direction={'column'}
-              align={'start'}
-              gap='3'
-              style={{ margin: '10px 15px' }}
-            >
-              <Text
+          <Box>
+            <Box style={{ margin: '10px 15px' }}>
+              <p
                 style={{
                   fontSize: '12px',
                   fontFamily: 'Inter',
@@ -102,8 +97,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 }}
               >
                 Balance
-              </Text>
-              <Text
+              </p>
+              <p
                 style={{
                   fontSize: '12px',
                   fontFamily: 'Inter',
@@ -112,15 +107,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 }}
               >
                 {deposit?.balance} {token?.symbol}
-              </Text>
-            </Flex>
-            <Flex
-              direction='row'
-              align='center'
-              style={{ marginRight: '15px' }}
-            >
+              </p>
+            </Box>
+            <Box style={{ marginRight: '15px' }}>
               <Button
-                variant='outline'
                 style={{
                   color: '#448aff',
                   borderColor: '#448aff',
@@ -139,12 +129,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 height='16'
                 style={{ margin: '5px 0 5px 16px' }}
               />
-            </Flex>
-          </Flex>
+            </Box>
+          </Box>
         )}
         {windowWidth > 768 && (
           <div>
-            <Container
+            <Box
               style={{
                 width: 220,
                 height: 0.5,
@@ -153,7 +143,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               }}
             />
 
-            <Container
+            <Box
               style={{
                 width: 220,
                 height: 8,
@@ -163,14 +153,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 margin: '0px 15px',
               }}
             />
-            <Flex direction='row' justify='between'>
-              <Flex
-                direction={'column'}
-                align={'start'}
-                gap='3'
-                style={{ margin: '10px 15px' }}
-              >
-                <Text
+            <Box>
+              <Box style={{ margin: '10px 15px' }}>
+                <p
                   style={{
                     fontSize: '12px',
                     fontFamily: 'Inter',
@@ -179,8 +164,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   }}
                 >
                   Account Leverage
-                </Text>
-                <Text
+                </p>
+                <p
                   style={{
                     fontSize: '12px',
                     fontFamily: 'Inter',
@@ -189,15 +174,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   }}
                 >
                   0.00x/-x
-                </Text>
-              </Flex>
-              <Flex
-                direction={'column'}
-                align={'end'}
-                gap='3'
-                style={{ margin: '10px 15px' }}
-              >
-                <Text
+                </p>
+              </Box>
+              <Box style={{ margin: '10px 15px' }}>
+                <p
                   style={{
                     fontSize: '12px',
                     fontFamily: 'Inter',
@@ -206,8 +186,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   }}
                 >
                   Margin Ratio
-                </Text>
-                <Text
+                </p>
+                <p
                   style={{
                     fontSize: '12px',
                     fontFamily: 'Inter',
@@ -216,10 +196,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   }}
                 >
                   100%
-                </Text>
-              </Flex>
-            </Flex>
-            <Container
+                </p>
+              </Box>
+            </Box>
+            <Box
               style={{
                 width: 220,
                 height: 0.5,
@@ -229,13 +209,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             />
           </div>
         )}
-        <Flex
-          direction='row'
-          justify='center'
-          gap='1'
-          align='center'
-          style={{ cursor: 'pointer' }}
-        >
+        <Box style={{ cursor: 'pointer' }}>
           <Box
             style={{
               width: 100,
@@ -277,11 +251,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           >
             Sell/Short
           </Box>
-        </Flex>
-        <Flex
-          direction='row'
-          justify='between'
-          align='center'
+        </Box>
+        <Box
           style={{
             margin: '16px 15px',
             fontWeight: 500,
@@ -289,21 +260,17 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize: '12px',
           }}
         >
-          <Text style={{ color: ' #61657a' }}>
+          <p style={{ color: ' #61657a' }}>
             Available {collateral.availableBalance} USDC
-          </Text>
-          <Text
+          </p>
+          <p
             style={{ color: '#448aff', cursor: 'pointer' }}
             onClick={() => quickSwapAccount && setModalOpen(true)}
           >
             Deposit
-          </Text>
-        </Flex>
-        <Flex
-          direction='row'
-          align='start'
-          justify='start'
-          gap='3'
+          </p>
+        </Box>
+        <Box
           style={{
             margin: '16px 15px',
             fontWeight: 500,
@@ -311,7 +278,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize: '12px',
           }}
         >
-          <Text
+          <p
             onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
             style={{
               cursor: 'pointer',
@@ -319,8 +286,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             }}
           >
             Limit
-          </Text>
-          <Text
+          </p>
+          <p
             onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
             style={{
               color: order.order_type === 'MARKET' ? '#fff' : '#61657a',
@@ -328,12 +295,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             }}
           >
             Market
-          </Text>
-        </Flex>
-        <Flex
-          direction='row'
-          justify='between'
-          align='center'
+          </p>
+        </Box>
+        <Box
           style={{
             width: 220,
             height: 36,
@@ -348,7 +312,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             padding: '10px 12px 11px',
           }}
         >
-          <Text>Price</Text>
+          <p>Price</p>
           <div>
             {order.order_type === 'LIMIT' ? (
               <input
@@ -369,15 +333,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 }}
               />
             ) : (
-              <Text>Market</Text>
+              <p>Market</p>
             )}
-            <Text> USDC</Text>
+            <p> USDC</p>
           </div>
-        </Flex>
-        <Flex
-          direction='row'
-          justify='between'
-          align='center'
+        </Box>
+        <Box
           style={{
             width: 220,
             height: 36,
@@ -392,7 +353,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             padding: '10px 12px 11px',
           }}
         >
-          <Text>Quantity</Text>
+          <p>Quantity</p>
           <div>
             <input
               min={0}
@@ -411,17 +372,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 backgroundColor: 'transparent',
               }}
             />
-            <Text>{perpToken.split('_')[1] || 'ETH'}</Text>
+            <p>{perpToken.split('_')[1] || 'ETH'}</p>
           </div>
-        </Flex>
-        <Flex
-          direction={'row'}
-          align={'center'}
-          justify={'between'}
-          gap='3'
-          style={{ margin: '10px 15px' }}
-        >
-          <Text
+        </Box>
+        <Box style={{ margin: '10px 15px' }}>
+          <p
             style={{
               fontSize: '12px',
               fontFamily: 'Inter',
@@ -430,8 +385,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             }}
           >
             0%
-          </Text>
-          <Text
+          </p>
+          <p
             style={{
               fontSize: '12px',
               fontFamily: 'Inter',
@@ -440,12 +395,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             }}
           >
             Max buy 0.000
-          </Text>
-        </Flex>
-        <Flex
-          direction={'row'}
-          align={'center'}
-          justify={'between'}
+          </p>
+        </Box>
+        <Box
           style={{
             margin: '15px 15px',
             cursor: 'pointer',
@@ -455,7 +407,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
           />
-          <Container
+          <Box
             style={{
               width: 30,
               height: 0.5,
@@ -466,7 +418,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
           />
-          <Container
+          <Box
             style={{
               width: 30,
               height: 0.5,
@@ -477,7 +429,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
           />
-          <Container
+          <Box
             style={{
               width: 30,
               height: 0.5,
@@ -488,7 +440,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
           />
-          <Container
+          <Box
             style={{
               width: 30,
               height: 0.5,
@@ -499,11 +451,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
           />
-        </Flex>
-        <Flex
-          direction='row'
-          justify='between'
-          align='center'
+        </Box>
+        <Box
           style={{
             width: 220,
             height: 36,
@@ -518,10 +467,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             color: '#61657a',
           }}
         >
-          <Text>Total</Text>
-          <Text>USDC</Text>
-        </Flex>
-        <Container
+          <p>Total</p>
+          <p>USDC</p>
+        </Box>
+        <Box
           style={{
             width: 220,
             height: 0.5,
@@ -529,10 +478,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             margin: '10px 15px',
           }}
         />
-        <Flex
-          direction='row'
-          justify='between'
-          align='center'
+        <Box
           style={{
             margin: '10px 15px',
             fontWeight: 500,
@@ -542,13 +488,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             color: '#61657a',
           }}
         >
-          <Text as='label'>
-            <Flex gap='2'>
-              <Switch defaultChecked size='1' color='gray' /> Reduce Only
-            </Flex>
-          </Text>
+          <p>
+            <Box>
+              <Switch defaultChecked /> Reduce Only
+            </Box>
+          </p>
           <img src={Arrow} width='16' height='16' />
-        </Flex>
+        </Box>
         {state.status !== AccountStatusEnum.EnableTrading ? (
           <Button
             style={{
@@ -595,6 +541,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         open={accountModalOpen}
         onClose={() => setModalOpen(false)}
       />
-    </Flex>
+    </Box>
   );
 };

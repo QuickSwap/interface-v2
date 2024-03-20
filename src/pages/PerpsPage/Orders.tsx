@@ -1,7 +1,15 @@
 import React from 'react';
 import { useOrderStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
-import { Button, Flex, Heading, Table } from '@radix-ui/themes';
+import {
+  Box,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
 import { FC } from 'react';
 
 type Order = {
@@ -20,29 +28,23 @@ export const Orders: FC = () => {
   const orders = o as Order[] | null;
 
   return (
-    <Flex
-      style={{ margin: '1.5rem' }}
-      gap='3'
-      align='center'
-      justify='center'
-      direction='column'
-    >
-      <Heading>Orders</Heading>
+    <Box style={{ margin: '1.5rem' }}>
+      <h2>Orders</h2>
 
-      <Table.Root>
-        <Table.Header>
-          <Table.Row style={{ color: 'white' }}>
-            <Table.ColumnHeaderCell>Created</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Price (USDC)</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Quantity (ETH)</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Type</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Side</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Actions</Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
+      <Table>
+        <TableHead>
+          <TableRow style={{ color: 'white' }}>
+            <TableCell>Created</TableCell>
+            <TableCell>Price (USDC)</TableCell>
+            <TableCell>Quantity (ETH)</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Side</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
 
-        <Table.Body style={{ color: 'white' }}>
+        <TableBody style={{ color: 'white' }}>
           {orders &&
             orders.map(
               ({
@@ -54,19 +56,19 @@ export const Orders: FC = () => {
                 status,
                 order_id,
               }) => (
-                <Table.Row
+                <TableRow
                   key={order_id}
                   style={{ verticalAlign: 'middle', color: 'white' }}
                 >
-                  <Table.Cell>
+                  <TableCell>
                     {new Date(created_time).toLocaleString()}
-                  </Table.Cell>
-                  <Table.Cell>{price}</Table.Cell>
-                  <Table.Cell>{quantity}</Table.Cell>
-                  <Table.Cell>{type}</Table.Cell>
-                  <Table.Cell>{side}</Table.Cell>
-                  <Table.Cell>{status}</Table.Cell>
-                  <Table.Cell>
+                  </TableCell>
+                  <TableCell>{price}</TableCell>
+                  <TableCell>{quantity}</TableCell>
+                  <TableCell>{type}</TableCell>
+                  <TableCell>{side}</TableCell>
+                  <TableCell>{status}</TableCell>
+                  <TableCell>
                     {[
                       OrderStatus.OPEN,
                       OrderStatus.NEW,
@@ -80,12 +82,12 @@ export const Orders: FC = () => {
                         Cancel
                       </Button>
                     )}
-                  </Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                </TableRow>
               ),
             )}
-        </Table.Body>
-      </Table.Root>
-    </Flex>
+        </TableBody>
+      </Table>
+    </Box>
   );
 };

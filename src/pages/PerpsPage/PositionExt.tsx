@@ -1,8 +1,8 @@
 import React from 'react';
 import { useOrderEntry } from '@orderly.network/hooks';
 import { API, OrderSide, OrderType } from '@orderly.network/types';
-import { Button, Table } from '@radix-ui/themes';
 import { FC } from 'react';
+import { Button, TableCell, TableRow } from '@material-ui/core';
 
 export type PositionExtFixed = API.PositionExt & { unrealized_pnl: number };
 
@@ -25,13 +25,13 @@ export const PositionExt: FC<{
   });
 
   return (
-    <Table.Row style={{ verticalAlign: 'middle' }}>
-      <Table.Cell>{new Date(timestamp).toLocaleString()}</Table.Cell>
-      <Table.Cell>{formatter.format(average_open_price)}</Table.Cell>
-      <Table.Cell>{formatter.format(position_qty)}</Table.Cell>
-      <Table.Cell>{formatter.format(notional)}</Table.Cell>
-      <Table.Cell>{formatter.format(unrealized_pnl)}</Table.Cell>
-      <Table.Cell>
+    <TableRow style={{ verticalAlign: 'middle' }}>
+      <TableCell>{new Date(timestamp).toLocaleString()}</TableCell>
+      <TableCell>{formatter.format(average_open_price)}</TableCell>
+      <TableCell>{formatter.format(position_qty)}</TableCell>
+      <TableCell>{formatter.format(notional)}</TableCell>
+      <TableCell>{formatter.format(unrealized_pnl)}</TableCell>
+      <TableCell>
         <Button
           onClick={async () => {
             await onSubmit({
@@ -46,7 +46,7 @@ export const PositionExt: FC<{
         >
           Cancel
         </Button>
-      </Table.Cell>
-    </Table.Row>
+      </TableCell>
+    </TableRow>
   );
 };
