@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
-import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
+import abi from '@uniswap/liquidity-staker/build/StakingRewards.json';
 import { ChainId, WETH } from '@uniswap/sdk';
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
+import iUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
@@ -24,8 +24,8 @@ import {
 } from 'constants/v1';
 import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { abi as LairABI } from 'abis/DragonLair.json';
-import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
+import dragonsLair from 'abis/DragonLair.json';
+import router02 from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import {
   GAMMA_MASTERCHEF_ADDRESSES,
@@ -74,6 +74,11 @@ import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
 import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
 
+const LairABI = dragonsLair.abi;
+const IUniswapV2Router02ABI = router02.abi;
+const IUniswapV2PairABI = iUniswapV2Pair.abi;
+
+const STAKING_REWARDS_ABI = abi.abi;
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
   ABI: any,

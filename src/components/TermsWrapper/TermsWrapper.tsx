@@ -41,7 +41,7 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
                   alink: (
                     <a
                       className='text-primary'
-                      href='https://docs.google.com/document/d/1Gglh43oxUZHdgrS2L9lZfsI4f6HYNF6MbBDsDPJVFkM/edit'
+                      href='https://quickswap.exchange/#/tos'
                       rel='noreferrer'
                       target='_blank'
                     />

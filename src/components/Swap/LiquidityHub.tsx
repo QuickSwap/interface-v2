@@ -37,12 +37,18 @@ import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { parseUnits } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
-const ANALYTICS_VERSION = 0.2;
-const API_ENDPOINT = 'https://hub.orbs.network';
+const ANALYTICS_VERSION = 0.3;
 const WEBSITE = 'https://www.orbs.com';
 const BI_ENDPOINT = `https://bi.orbs.network/putes/liquidity-hub-ui-${ANALYTICS_VERSION}`;
 const DEX_PRICE_BETTER_ERROR = 'Dex trade is better than Clob trade';
 const PARTNER = 'QuickSwap';
+
+const getApiEndpoint = (chainId: number) => {
+  if (chainId === ChainId.ZKEVM) {
+    return 'https://zkevm.hub.orbs.network';
+  }
+  return 'https://polygon.hub.orbs.network';
+};
 
 export const useLiquidityHubCallback = (
   inTokenAddress?: string,
@@ -79,7 +85,11 @@ export const useLiquidityHubCallback = (
   const [expertMode] = useExpertModeManager();
   const [userSlippageTolerance] = useUserSlippageTolerance();
 
-  return async (srcAmount?: string, minDestAmount?: string) => {
+  return async (
+    srcAmount?: string,
+    minDestAmount?: string,
+    dexOutAmountWS?: string,
+  ) => {
     liquidityHubAnalytics.clearState();
     const dstTokenUsdValue = new BN(minDestAmount || '0')
       .multipliedBy(outTokenUSD || 0)
@@ -97,6 +107,8 @@ export const useLiquidityHubCallback = (
       srcAmount,
       slippage: userSlippageTolerance / 100,
       walletAddress: account,
+      chainId: chainIdToUse,
+      dexOutAmountWS,
     });
 
     if (isProMode) {
@@ -325,7 +337,7 @@ const useSign = () => {
 };
 
 const useSwap = () => {
-  const { library, account } = useActiveWeb3React();
+  const { library, account, chainId } = useActiveWeb3React();
   return async (args: {
     srcToken: string;
     destToken: string;
@@ -337,17 +349,20 @@ const useSwap = () => {
     const count = counter();
     try {
       liquidityHubAnalytics.onSwapRequest();
-      const txHashResponse = await fetch(`${API_ENDPOINT}/swapx?chainId=137`, {
-        method: 'POST',
-        body: JSON.stringify({
-          inToken: args.srcToken,
-          outToken: args.destToken,
-          inAmount: args.srcAmount,
-          user: account,
-          signature: args.signature,
-          ...args.quoteResult,
-        }),
-      });
+      const txHashResponse = await fetch(
+        `${getApiEndpoint(chainId)}/swapx?chainId=${chainId}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            inToken: args.srcToken,
+            outToken: args.destToken,
+            inAmount: args.srcAmount,
+            user: account,
+            signature: args.signature,
+            ...args.quoteResult,
+          }),
+        },
+      );
       const swap = await txHashResponse.json();
       if (!swap) {
         throw new Error('Missing swap response');
@@ -372,7 +387,7 @@ const useSwap = () => {
 };
 
 const useQuote = () => {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [userSlippageTolerance] = useUserSlippageTolerance();
   const { lhControl } = useQueryParam();
 
@@ -381,26 +396,35 @@ const useQuote = () => {
     const count = counter();
     liquidityHubAnalytics.incrementQuoteIndex();
     liquidityHubAnalytics.onQuoteRequest();
-    try {
-      const response = await fetch(`${API_ENDPOINT}/quote?chainId=137`, {
-        method: 'POST',
-        body: JSON.stringify({
-          inToken: args.inToken,
-          outToken: args.outToken,
-          inAmount: args.inAmount,
-          outAmount: args.minDestAmount,
-          user: account,
-          slippage: userSlippageTolerance / 100,
-          qs: encodeURIComponent(window.location.hash),
-          sessionId: liquidityHubAnalytics.data.sessionId,
-        }),
-      });
-      quoteResponse = await response.json();
+    const abortController = new AbortController();
 
+    try {
+      const timeout = setTimeout(() => {
+        abortController.abort();
+      }, 8_000);
+
+      const response = await fetch(
+        `${getApiEndpoint(chainId)}/quote?chainId=${chainId}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            inToken: args.inToken,
+            outToken: args.outToken,
+            inAmount: args.inAmount,
+            outAmount: args.minDestAmount,
+            user: account,
+            slippage: userSlippageTolerance / 100,
+            qs: encodeURIComponent(window.location.hash),
+            sessionId: liquidityHubAnalytics.data.sessionId,
+          }),
+          signal: abortController.signal,
+        },
+      );
+      quoteResponse = await response.json();
+      clearTimeout(timeout);
       if (!quoteResponse) {
         throw new Error('Missing result from quote');
       }
-      liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
       if (quoteResponse.error) {
         throw new Error(quoteResponse.error);
       }
@@ -427,6 +451,10 @@ const useQuote = () => {
       );
 
       throw new Error(error.message);
+    } finally {
+      if (quoteResponse.sessionId) {
+        liquidityHubAnalytics.setSessionId(quoteResponse.sessionId);
+      }
     }
   };
 };
@@ -450,7 +478,7 @@ async function waitForTx(txHash: string, library: any) {
   for (let i = 0; i < 30; ++i) {
     // due to swap being fetch and not web3
 
-    await delay(3_000); // to avoid potential rate limiting from public rpc
+    await delay(2_000); // to avoid potential rate limiting from public rpc
     try {
       const tx = await library.getTransaction(txHash);
       if (tx && tx instanceof Object && tx.blockNumber) {
@@ -494,12 +522,21 @@ type InitTradeArgs = {
   srcAmount?: string;
   dexAmountOut?: string;
   dstTokenUsdValue?: number;
+  chainId: number;
+  dexOutAmountWS?: string;
+};
+const sendBI = async (data: Partial<LiquidityHubAnalyticsData>) => {
+  try {
+    fetch(BI_ENDPOINT, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  } catch (error) {}
 };
 
 const initialData: Partial<LiquidityHubAnalyticsData> = {
   _id: crypto.randomUUID(),
   partner: PARTNER,
-  chainId: 137,
   isClobTrade: false,
   isNotClobTradeReason: 'null',
   firstFailureSessionId: 'null',
@@ -534,23 +571,19 @@ class LiquidityHubAnalytics {
   initialTimestamp = Date.now();
   data = initialData;
   firstFailureSessionId = '';
-  abortController = new AbortController();
+  timeout: any = undefined;
+
+  updateChainId(chainId: number) {
+    this.data.chainId = chainId;
+  }
 
   private updateAndSend(values = {} as Partial<LiquidityHubAnalyticsData>) {
-    try {
-      this.abortController.abort();
-      this.abortController = new AbortController();
-      this.data = { ...this.data, ...values };
-      fetch(BI_ENDPOINT, {
-        method: 'POST',
-        signal: this.abortController.signal,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.data),
-      });
-    } catch (error) {}
+    this.data = { ...this.data, ...values };
+
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      sendBI(this.data);
+    }, 1_000);
   }
 
   incrementQuoteIndex() {
@@ -1042,6 +1075,7 @@ interface LiquidityHubAnalyticsData {
   version: number;
   isDexTrade: boolean;
   onChainDexSwapState: actionState;
+  dexOutAmountWS?: string;
 }
 
 interface QuoteResponse {
@@ -1091,7 +1125,7 @@ export const useV3TradeTypeAnalyticsCallback = (
   },
   allowedSlippage: Percent,
 ) => {
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const outTokenUSD = useUSDCPriceFromAddress(
     currencies[Field.OUTPUT]?.wrapped.address || '',
   ).price;
@@ -1122,10 +1156,18 @@ export const useV3TradeTypeAnalyticsCallback = (
             outTokenUSD * Number(formattedAmounts[Field.OUTPUT]),
           walletAddress: account || '',
           slippage: Number(allowedSlippage.toFixed()),
+          chainId,
         });
       } catch (error) {}
     },
-    [srcTokenCurrency, dstTokenCurrency, outTokenUSD, account, allowedSlippage],
+    [
+      srcTokenCurrency,
+      dstTokenCurrency,
+      outTokenUSD,
+      account,
+      allowedSlippage,
+      chainId,
+    ],
   );
 };
 
@@ -1157,9 +1199,10 @@ export const useV2TradeTypeAnalyticsCallback = (
           dstTokenUsdValue: outTokenUSD * Number(trade?.outputAmount.toExact()),
           walletAddress: account || '',
           slippage: allowedSlippage / 100,
+          chainId,
         });
       } catch (error) {}
     },
-    [account, inToken, outToken, outTokenUSD, allowedSlippage],
+    [account, inToken, outToken, outTokenUSD, allowedSlippage, chainId],
   );
 };
