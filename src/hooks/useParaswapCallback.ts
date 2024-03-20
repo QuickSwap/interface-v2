@@ -149,6 +149,7 @@ export function useParaswapCallback(
         const liquidityHubResult = await liquidutyHubCallback(
           maxSrcAmount,
           minDestAmount,
+          priceRoute.destAmount,
         );
 
         if (liquidityHubResult) {

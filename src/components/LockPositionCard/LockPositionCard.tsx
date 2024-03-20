@@ -10,8 +10,8 @@ import { LockInterface } from 'state/data/liquidityLocker';
 
 const LockPositionCard: React.FC<{ lock: LockInterface }> = ({ lock }) => {
   const { t } = useTranslation();
-  const currency0 = lock.pair
-  const currency1 = lock.token
+  const currency0 = lock.pair;
+  const currency1 = lock.token;
   const [showMore, setShowMore] = useState(false);
 
   return (

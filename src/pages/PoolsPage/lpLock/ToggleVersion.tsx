@@ -7,11 +7,9 @@ interface ToggleVersionProps {
   checkValue: boolean;
 }
 
-const ToggleVersion = ({
-  method, checkValue
-}: ToggleVersionProps) => {
+const ToggleVersion = ({ method, checkValue }: ToggleVersionProps) => {
   const { t } = useTranslation();
-  
+
   return (
     <div>
       <div className={'mb-05 mxs_ta-c'}>{t('poolType')}</div>

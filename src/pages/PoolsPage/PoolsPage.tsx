@@ -71,7 +71,8 @@ const PoolsPage: React.FC = () => {
           <Box className='wrapper'>
             {version === 'singleToken' ? (
               <SingleTokenSupplyLiquidity />
-            ) : isLpLock ? <LockLiquidity /> 
+            ) : isLpLock ? (
+              <LockLiquidity />
             ) : !isV2 ? (
               <SupplyLiquidityV3 />
             ) : (
@@ -81,7 +82,13 @@ const PoolsPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
-            {isLpLock ? <MyLiquidityLocks /> : !isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
+            {isLpLock ? (
+              <MyLiquidityLocks />
+            ) : !isV2 ? (
+              <MyLiquidityPoolsV3 />
+            ) : (
+              <YourLiquidityPools />
+            )}
           </Box>
         </Grid>
       </Grid>

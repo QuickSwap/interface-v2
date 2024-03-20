@@ -147,8 +147,15 @@ export function useContracts<T extends Contract = Contract>(
   ]) as (T | null)[];
 }
 
-export function useTokenLockerContract(chainId: ChainId, lockContractAddress?: string): Contract | null {
-  return useContract(lockContractAddress ?? V2_FACTORY_ADDRESSES[chainId], TokenLockerABI, true);
+export function useTokenLockerContract(
+  chainId: ChainId,
+  lockContractAddress?: string,
+): Contract | null {
+  return useContract(
+    lockContractAddress ?? V2_FACTORY_ADDRESSES[chainId],
+    TokenLockerABI,
+    true,
+  );
 }
 
 export function useLairContract(chainId?: ChainId): Contract | null {

@@ -14,7 +14,11 @@ import {
   Currency,
 } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
-import { useTokenAllowance, useTokenAllowanceV3, useNftPosManTokenIdApprovedAddress } from 'data/Allowances';
+import {
+  useTokenAllowance,
+  useTokenAllowanceV3,
+  useNftPosManTokenIdApprovedAddress,
+} from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
   useTransactionAdder,
@@ -23,7 +27,10 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useTokenContract, useV3NFTPositionManagerContract } from './useContract';
+import {
+  useTokenContract,
+  useV3NFTPositionManagerContract,
+} from './useContract';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   PARASWAP_PROXY_ROUTER_ADDRESS,
@@ -173,7 +180,7 @@ export function useApproveCallbackTokenId(
   const nativeCurrency = ETHER[chainIdToUse];
   const nftPosManAddress = NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainIdToUse];
   const currentApprovedAddress = useNftPosManTokenIdApprovedAddress(
-    tokenId ?? undefined
+    tokenId ?? undefined,
   );
   const pendingApproval = useHasPendingApproval(nftPosManAddress, spender);
 
@@ -188,19 +195,13 @@ export function useApproveCallbackTokenId(
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [
-    tokenId,
-    currentApprovedAddress,
-    nativeCurrency,
-    pendingApproval,
-    spender,
-  ]);
+  }, [tokenId, currentApprovedAddress, pendingApproval, spender]);
 
   const nftPosManContract = useV3NFTPositionManagerContract();
   const addTransaction = useTransactionAdder();
 
   const approve = useCallback(async (): Promise<void> => {
-    console.log(approvalState)
+    console.log(approvalState);
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily');
       return;
@@ -221,26 +222,24 @@ export function useApproveCallbackTokenId(
       return;
     }
 
-    let useExact = false;
-    const estimatedGas = await nftPosManContract.estimateGas
-      .approve(spender, tokenId)
-      // .catch(() => {
-      //   // general fallback for tokens who restrict approval amounts
-      //   useExact = true;
-      //   return tokenContract.estimateGas.approve(
-      //     spender,
-      //     amountToApprove.raw.toString(),
-      //   );
-      // });
+    // let useExact = false;
+    const estimatedGas = await nftPosManContract.estimateGas.approve(
+      spender,
+      tokenId,
+    );
+    // .catch(() => {
+    //   // general fallback for tokens who restrict approval amounts
+    //   useExact = true;
+    //   return tokenContract.estimateGas.approve(
+    //     spender,
+    //     amountToApprove.raw.toString(),
+    //   );
+    // });
 
     return nftPosManContract
-      .approve(
-        spender,
-        tokenId,
-        {
-          gasLimit: calculateGasMargin(estimatedGas),
-        },
-      )
+      .approve(spender, tokenId, {
+        gasLimit: calculateGasMargin(estimatedGas),
+      })
       .then(async (response: TransactionResponse) => {
         addTransaction(response, {
           summary: 'Approve ALGB-POS-' + tokenId,
@@ -259,10 +258,11 @@ export function useApproveCallbackTokenId(
       });
   }, [
     approvalState,
-    tokenId,
     nftPosManContract,
+    tokenId,
     spender,
     addTransaction,
+    nftPosManAddress,
   ]);
 
   return [approvalState, approve];
