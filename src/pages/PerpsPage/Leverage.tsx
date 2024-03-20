@@ -60,7 +60,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     side: 'BUY',
     order_symbol: perpToken,
   });
-  console.log(state.status);
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
@@ -123,10 +122,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               <Button
                 variant='outline'
                 style={{
-                  color: '#B64FFF',
-                  borderColor: '#B64FFF',
+                  color: '#448aff',
+                  borderColor: '#448aff',
                   cursor: 'pointer',
                 }}
+                disabled={!quickSwapAccount}
                 onClick={() => {
                   setModalOpen(true);
                 }}
@@ -243,9 +243,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               padding: '0 43px',
               borderRadius: '8px',
               fontSize: '12px',
-              color: '#61657a',
+              color: '#fff',
               fontFamily: 'Inter',
-              backgroundColor: order.side === 'BUY' ? '#B64FFF' : '#1b1e29',
+              backgroundColor:
+                order.side === 'BUY' ? 'rgb(4, 109, 4)' : '#1b1e29',
               fontWeight: 500,
               textAlign: 'center',
               display: 'flex',
@@ -262,10 +263,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               height: 36,
               padding: '0 43px',
               borderRadius: '8px',
-              backgroundColor: order.side === 'SELL' ? '#B64FFF' : '#1b1e29',
+              backgroundColor: order.side === 'SELL' ? 'red' : '#1b1e29',
               fontSize: '12px',
               fontWeight: 500,
-              color: '#61657a',
+              color: '#fff',
               fontFamily: 'Inter',
               textAlign: 'center',
               display: 'flex',
@@ -292,8 +293,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             Available {collateral.availableBalance} USDC
           </Text>
           <Text
-            style={{ color: '#B64FFF', cursor: 'pointer' }}
-            onClick={() => setModalOpen(true)}
+            style={{ color: '#448aff', cursor: 'pointer' }}
+            onClick={() => quickSwapAccount && setModalOpen(true)}
           >
             Deposit
           </Text>
@@ -556,7 +557,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               margin: '16px 15px',
               padding: '11px 50px 12px',
               borderRadius: '8px',
-              backgroundColor: '#B64FFF',
+              backgroundColor: 'rgb(4, 109, 4)',
               cursor: 'pointer',
             }}
             onClick={() => {
@@ -573,7 +574,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               margin: '16px 15px',
               padding: '11px 50px 12px',
               borderRadius: '8px',
-              backgroundColor: '#B64FFF',
+              backgroundColor: order.side === 'SELL' ? 'red' : 'rgb(4, 109, 4)',
               cursor: 'pointer',
             }}
             onClick={async () => {
