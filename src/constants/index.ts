@@ -64,12 +64,14 @@ export const merklAMMs: { [chainId in ChainId]?: string[] } = {
   [ChainId.ZKEVM]: ['quickswapalgebra', 'quickswapuni'],
 };
 
-export const blackListMerklFarms = [
-  '0x392DfB56cA9aA807571eC2a666c3bbf87c7FE63E',
-  '0xAb86C5DD50F4e0B54ECb07c4fB07219c60150eBF',
-  '0x19E4c89e983f5827e353ca0e8a0D6D26E703a8dF',
-  '0x0Df98245e23e776Fe059F5793d03AC4221A0ef50',
-];
+export const blackListMerklFarms: { [chainId in ChainId]?: string[] } = {
+  [ChainId.MATIC]: [
+    '0x392DfB56cA9aA807571eC2a666c3bbf87c7FE63E',
+    '0xAb86C5DD50F4e0B54ECb07c4fB07219c60150eBF',
+    '0x19E4c89e983f5827e353ca0e8a0D6D26E703a8dF',
+    '0x0Df98245e23e776Fe059F5793d03AC4221A0ef50',
+  ],
+};
 
 export const subgraphNotReadyChains = [
   ChainId.ZKATANA,
