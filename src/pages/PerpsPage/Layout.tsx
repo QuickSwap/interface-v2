@@ -103,7 +103,7 @@ export const Layout = () => {
             {selectedTab === 'Orderbook' && (
               <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
             )}
-            {selectedTab === 'Market' && <Market />}
+            {selectedTab === 'Market' && <Market token={token} />}
           </div>
         </div>
         <div className='kingFooter'>
