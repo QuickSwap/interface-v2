@@ -197,25 +197,25 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
                   </Text>
                   <input
-                    type='number'
+                    type='text'
                     value={
                       selectedTab === 'deposit' ? depositAmount : withdrawAmount
                     }
-                    step='0.01'
                     min='0'
                     onChange={(event) => {
+                      const value = event.target.value.replace(/\D/, '');
                       selectedTab === 'deposit'
-                        ? setDepositAmount(event.target.value)
-                        : setWithdrawAmount(event.target.value);
+                        ? setDepositAmount(value)
+                        : setWithdrawAmount(value);
                     }}
                     style={{
-                      width: '60px',
+                      width: 69,
                       height: '17px',
                       margin: '8px 200px 2px 0',
                       fontFamily: 'Inter',
                       fontSize: '14px',
                       fontWeight: 500,
-                      color: '#696c80',
+                      color: '#fff',
                       border: 'none',
                       outline: 'none',
                       appearance: 'none',
@@ -331,25 +331,23 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     {selectedTab === 'deposit' ? 'Receive' : 'Quantity'}
                   </Text>
                   <input
-                    type='number'
+                    type='text'
                     value={
                       selectedTab === 'deposit' ? depositAmount : withdrawAmount
                     }
-                    step='0.01'
-                    min='0'
                     onChange={(event) => {
                       selectedTab === 'deposit'
                         ? setDepositAmount(event.target.value)
                         : setWithdrawAmount(event.target.value);
                     }}
                     style={{
-                      width: '60px',
+                      width: '69px',
                       height: '17px',
                       margin: '8px 200px 2px 0',
                       fontFamily: 'Inter',
                       fontSize: '14px',
                       fontWeight: 500,
-                      color: '#696c80',
+                      color: '#fff',
                       border: 'none',
                       outline: 'none',
                       appearance: 'none',
