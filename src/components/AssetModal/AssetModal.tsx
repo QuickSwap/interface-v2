@@ -37,9 +37,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const [selectedTab, setSelectedTab] = useState(modalType);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
+  // const getConnection = useGetConnection();
   const [chains, { findByChainId }] = useChains('mainnet');
-  const connections = getConnection(selectedWallet);
+  // const connections = getConnection(selectedWallet);
   const { account, state } = useAccount();
   const collateral = useCollateral();
   const token = useMemo(() => {
@@ -131,9 +131,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                 >
                   Your web3 wallet
                 </Text>
-                {connections && (
-                  <img src={connections.iconName} width='16' height='16' />
-                )}
+                {/*{connections && (*/}
+                {/*  <img src={connections.iconName} width='16' height='16' />*/}
+                {/*)}*/}
               </Flex>
               <Flex
                 align={'center'}
