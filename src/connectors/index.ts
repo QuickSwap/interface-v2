@@ -39,6 +39,7 @@ import { UAuthConnector } from '@uauth/web3-react';
 import { getWeb3Connector } from '@binance/w3w-web3-connector';
 import { isInBinance } from '@binance/w3w-utils';
 import { BinanceWeb3Connector } from './BinanceWeb3Wallet';
+import { PassportWallet } from './PassportWallet';
 
 const POLLING_INTERVAL = 12000;
 
@@ -63,6 +64,7 @@ export enum ConnectionType {
   CRYPTOCOM = 'CRYPTO_COM',
   UNSTOPPABLEDOMAINS = 'UNSTOPPABLE_DOMAINS',
   BINANCEWALLET = 'BINANCE_WEB3_WALLET',
+  PASSPORTWALLET = 'PASSPORT_WALLET',
 }
 
 export interface Connection {
@@ -492,6 +494,27 @@ const [binanceWeb3Wallet, binanceWeb3WalletHooks] = initializeConnector<
     }),
 );
 
+const [passportWallet, passportWalletHooks] = initializeConnector<
+  PassportWallet
+>(
+  (actions) =>
+    new PassportWallet({
+      actions,
+      onError,
+    }),
+);
+
+export const passportWalletConnection: Connection = {
+  key: 'PASSPORT_WALLET',
+  name: GlobalConst.walletName.PASSPORTWALLET,
+  connector: passportWallet,
+  hooks: passportWalletHooks,
+  type: ConnectionType.PASSPORTWALLET,
+  iconName: CoinbaseWalletIcon,
+  color: '#315CF5',
+  description: 'Use Passport Wallet',
+};
+
 export const binanceWalletConnection: Connection = {
   key: 'BinanceWeb3Wallet',
   name: GlobalConst.walletName.BINANCEWALLET,
@@ -504,42 +527,46 @@ export const binanceWalletConnection: Connection = {
   mobile: true,
 };
 
-export function getConnections() {
-  return isMobile
-    ? [
-        walletConnectConnection,
-        cypherDConnection,
-        metamaskConnection,
-        trustWalletConnection,
-        binanceWalletConnection,
-        // okxWalletConnection,
-        // phantomConnection,
-        // braveWalletConnection,
-        blockWalletConnection,
-        gnosisSafeConnection,
-        coinbaseWalletConnection,
-        zengoConnectConnection,
-        arkaneConnection,
-        bitgetConnection,
-        cryptoComConnection,
-        unstoppableDomainsConnection,
-      ]
-    : [
-        cypherDConnection,
-        metamaskConnection,
-        trustWalletConnection,
-        binanceWalletConnection,
-        // okxWalletConnection,
-        // phantomConnection,
-        // braveWalletConnection,
-        blockWalletConnection,
-        gnosisSafeConnection,
-        coinbaseWalletConnection,
-        walletConnectConnection,
-        zengoConnectConnection,
-        arkaneConnection,
-        bitgetConnection,
-        cryptoComConnection,
-        unstoppableDomainsConnection,
-      ];
+export function getConnections(chainId?: ChainId) {
+  const mobileConnections = [
+    walletConnectConnection,
+    cypherDConnection,
+    metamaskConnection,
+    trustWalletConnection,
+    binanceWalletConnection,
+    // okxWalletConnection,
+    // phantomConnection,
+    // braveWalletConnection,
+    blockWalletConnection,
+    gnosisSafeConnection,
+    coinbaseWalletConnection,
+    zengoConnectConnection,
+    arkaneConnection,
+    bitgetConnection,
+    cryptoComConnection,
+    unstoppableDomainsConnection,
+  ];
+  const desktopConnections = [
+    cypherDConnection,
+    metamaskConnection,
+    trustWalletConnection,
+    binanceWalletConnection,
+    // okxWalletConnection,
+    // phantomConnection,
+    // braveWalletConnection,
+    blockWalletConnection,
+    gnosisSafeConnection,
+    coinbaseWalletConnection,
+    walletConnectConnection,
+    zengoConnectConnection,
+    arkaneConnection,
+    bitgetConnection,
+    cryptoComConnection,
+    unstoppableDomainsConnection,
+  ];
+  if (chainId === ChainId.IMX) {
+    mobileConnections.push(passportWalletConnection);
+    desktopConnections.push(passportWalletConnection);
+  }
+  return isMobile ? mobileConnections : desktopConnections;
 }

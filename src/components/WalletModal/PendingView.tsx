@@ -3,6 +3,7 @@ import { Box, CircularProgress } from '@material-ui/core';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
 import { Connection, getConnections } from 'connectors';
+import { useActiveWeb3React } from 'hooks';
 
 interface PendingViewProps {
   connection?: Connection;
@@ -18,7 +19,8 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const connections = getConnections();
+  const { chainId } = useActiveWeb3React();
+  const connections = getConnections(chainId);
 
   return (
     <Box className='pendingSection'>

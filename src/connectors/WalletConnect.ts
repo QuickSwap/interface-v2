@@ -69,7 +69,7 @@ export class WalletConnect extends Connector {
     const { rpcMap, chains, ...rest } = options;
 
     this.options = rest;
-    this.chains = chains;
+    this.chains = chains ?? [];
     this.defaultChainId = defaultChainId;
     this.rpcMap = rpcMap;
     this.timeout = timeout;
@@ -113,7 +113,7 @@ export class WalletConnect extends Connector {
     ).then(async (ethProviderModule) => {
       const provider = (this.provider = await ethProviderModule.default.init({
         ...this.options,
-        chains,
+        chains: chains as any,
         rpcMap: await rpcMap,
       }));
 

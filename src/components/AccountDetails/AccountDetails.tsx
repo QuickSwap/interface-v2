@@ -50,7 +50,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const arcxSdk = useArcxAnalytics();
 
   function formatConnectorName() {
-    const name = getWalletKeys(connector).map(
+    const name = getWalletKeys(connector, chainId).map(
       (connection) => connection.name,
     )[0];
     return (

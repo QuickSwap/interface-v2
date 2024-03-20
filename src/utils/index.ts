@@ -694,9 +694,12 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function getWalletKeys(connector: Connector): Connection[] {
+export function getWalletKeys(
+  connector: Connector,
+  chainId?: ChainId,
+): Connection[] {
   const { ethereum } = window as any;
-  const connections = getConnections();
+  const connections = getConnections(chainId);
 
   return connections.filter((option) => option.connector === connector);
 }
