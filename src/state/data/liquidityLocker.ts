@@ -128,7 +128,7 @@ export const useUserV2LiquidityLocks = (liquidityTokenList: UniswapSdkPair[], ac
     if (!account || !liquidityTokenList || liquidityTokenList.length === 0) return
 
     fetchData();
-  }, [account, liquidityTokenList]);
+  }, [account]);
 
   return {data, loading, error}
 }
