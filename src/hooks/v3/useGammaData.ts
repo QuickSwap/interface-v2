@@ -27,7 +27,16 @@ const getGammaData = async (chainId?: ChainId) => {
         chainId,
       )}/hypervisors/allData`,
     );
-    const gammaData = await data.json();
+    let gammaData = await data.json();
+    if (chainId === ChainId.ZKEVM) {
+      const uniswapData = await fetch(
+        `${
+          process.env.REACT_APP_GAMMA_API_ENDPOINT
+        }/quickswap-uniswap/${gammaChainName(chainId)}/hypervisors/allData`,
+      );
+      const gammaUniData = await uniswapData.json();
+      gammaData = { ...gammaData, ...gammaUniData };
+    }
     return gammaData;
   } catch {
     try {
@@ -36,7 +45,16 @@ const getGammaData = async (chainId?: ChainId) => {
           process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
         }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
       );
-      const gammaData = await data.json();
+      let gammaData = await data.json();
+      if (chainId === ChainId.ZKEVM) {
+        const uniswapData = await fetch(
+          `${
+            process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
+          }/quickswap-uniswap/${gammaChainName(chainId)}/hypervisors/allData`,
+        );
+        const gammaUniData = await uniswapData.json();
+        gammaData = { ...gammaData, ...gammaUniData };
+      }
       return gammaData;
     } catch (e) {
       console.log(e);
