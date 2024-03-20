@@ -142,7 +142,6 @@
     "@orderly.network/react": "^0.2.5-rc.0",
     "@orderly.network/types": "^0.2.5-rc.0",
     "@paraswap/sdk": "^5.6.0-alpha.6",
-    "@radix-ui/themes": "^2.0.3",
     "@soulsolidity/soulzap-v1": "0.1.0",
     "@tanstack/react-query": "^4.32.0",
     "@uauth/web3-react": "^2.8.1",

@@ -1,16 +1,5 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import {
-  Button,
-  Flex,
-  Grid,
-  Heading,
-  Table,
-  TextField,
-  Container,
-  Box,
-  Text,
-} from '@radix-ui/themes';
 import { FC, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import '../styles/AccountModal.scss';
@@ -19,6 +8,7 @@ import num2 from '../../assets/images/num2.svg';
 import success from '../../assets/images/success.svg';
 import { useAccount } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
+import { Box, Button } from '@material-ui/core';
 
 interface AccountModalProps {
   open: boolean;
@@ -60,12 +50,10 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
       onClose={onClose}
       modalWrapper='modalWrapperV3 assetModalWrapper'
     >
-      <Flex
+      <Box
         style={{ margin: '1.5rem' }}
-        gap='3'
-        align='center'
-        justify='center'
-        direction='column'
+        gridGap='3'
+        className='items-center justify-center flex flex-col'
       >
         <Box
           style={{
@@ -76,15 +64,12 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
             backgroundColor: '#1b1e29',
           }}
         >
-          <Flex direction='column'>
-            <Flex
-              align='start'
-              justify='between'
-              direction='row'
+          <Box className='flex flex-col'>
+            <Box
+              className='flex items-start justify-between'
               style={{ marginTop: '20px' }}
             >
-              <Text
-                size='2'
+              <p
                 style={{
                   color: '#ebecef',
                   fontFamily: 'Inter',
@@ -93,19 +78,10 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
               >
                 Sign two request to verify ownership of your wallet and enable
                 trading. Signing is free.
-              </Text>
-              <Text
-                size='2'
-                style={{
-                  color: '#ebecef',
-                  fontFamily: 'Inter',
-                  fontWeight: '500',
-                }}
-              ></Text>
-            </Flex>
-            <Flex
-              justify={'between'}
-              direction={'column'}
+              </p>
+            </Box>
+            <Box
+              className='flex justify-between flex-col'
               style={{
                 width: '400px',
                 borderRadius: '8px',
@@ -115,7 +91,7 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
                 opacity: '0.6',
               }}
             >
-              <Flex
+              <Box
                 style={{
                   flexDirection: 'row',
                   padding: '10px 15px',
@@ -129,21 +105,17 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
                   <img src={success} width={32} height={32} />
                 )}
                 {/* Text Container */}
-                <Flex
+                <Box
                   style={{ flexDirection: 'column', alignItems: 'flex-start' }}
                 >
                   {/* Heading */}
-                  <Text size='3' style={{ color: 'white' }}>
-                    Sign in
-                  </Text>
+                  <p style={{ color: 'white' }}>Sign in</p>
                   {/* Text */}
-                  <Text size='1' style={{ color: 'grey' }}>
-                    Confirm you own this wallet
-                  </Text>
-                </Flex>
-              </Flex>
+                  <p style={{ color: 'grey' }}>Confirm you own this wallet</p>
+                </Box>
+              </Box>
 
-              <Flex
+              <Box
                 style={{
                   flexDirection: 'row',
                   padding: '10px 15px',
@@ -158,22 +130,20 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
                   <img src={num2} width={32} height={32} />
                 )}
                 {/* Text Container */}
-                <Flex
+                <Box
                   style={{ flexDirection: 'column', alignItems: 'flex-start' }}
                 >
                   {/* Heading */}
-                  <Text size='3' style={{ color: 'white' }}>
-                    Enable Trading
-                  </Text>
+                  <h4 style={{ color: 'white' }}>Enable Trading</h4>
                   {/* Text */}
-                  <Text size='1' style={{ color: 'grey' }}>
+                  <p style={{ color: 'grey' }}>
                     Enable ensures access to our API for lightning-fast trading.
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
-          </Flex>
-          <Container style={{ marginTop: '20px' }}>
+                  </p>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+          <Box style={{ marginTop: '20px' }}>
             {state.status === AccountStatusEnum.NotSignedIn ? (
               <Button
                 onClick={() => {
@@ -210,9 +180,9 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
                 Enable Trading
               </Button>
             )}
-          </Container>
+          </Box>
         </Box>
-      </Flex>
+      </Box>
     </CustomModal>
   );
 };

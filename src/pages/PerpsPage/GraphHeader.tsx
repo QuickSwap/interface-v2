@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Text, DropdownMenu, Button } from '@radix-ui/themes';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { SearchOutlined } from '@material-ui/icons';
+import { Box } from '@material-ui/core';
 interface MarketData {
   symbol: string;
   index_price: number;
@@ -43,25 +43,20 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
     <div style={{ overflowX: 'auto' }}>
       {' '}
       {/* Added wrapper for scrolling */}
-      <Flex
-        direction='row'
-        justify='between'
-        align='center'
+      <Box
+        
         style={{
           paddingRight: '15px',
           backgroundColor: '#12131a',
           border: '1px solid #1b1e29',
         }}
       >
-        {/* Dropdown Menu Content */}
-        <DropdownMenu.Root>
-          {/* Dropdown Menu Trigger */}
+        {/* <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             <Button style={{ backgroundColor: 'transparent' }}>
               {token ? token.symbol : 'Tokens'}
             </Button>
           </DropdownMenu.Trigger>
-          {/* Dropdown Menu Content */}
           <DropdownMenu.Content
             style={{
               position: 'absolute',
@@ -78,7 +73,6 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
               WebkitBackdropFilter: 'blur(30px)', // Add vendor prefix for WebKit browsers
             }}
           >
-            {/* Search Input */}
             <div style={{ position: 'relative' }}>
               <input
                 type='text'
@@ -106,9 +100,7 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
                 }}
               />
             </div>
-            {/* Token Table */}
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              {/* Table Header */}
               <thead>
                 <tr
                   style={{
@@ -124,7 +116,6 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
                   <th style={{ textAlign: 'end' }}>Volume</th>
                 </tr>
               </thead>
-              {/* Table Body */}
               <tbody
                 style={{
                   fontFamily: 'Inter',
@@ -133,7 +124,6 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
                   color: '#c7cad9',
                 }}
               >
-                {/* Render Data Rows */}
                 {data ? (
                   data.map((item, index) => (
                     <tr
@@ -185,7 +175,7 @@ export const GraphHeader: React.FC = ({ setTokenName }) => {
               </tbody>
             </table>
           </DropdownMenu.Content>
-        </DropdownMenu.Root>
+        </DropdownMenu.Root> */}
 
         {/* Render Token Info */}
         <Text

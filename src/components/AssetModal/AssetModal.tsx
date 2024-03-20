@@ -1,16 +1,5 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import {
-  Button,
-  Flex,
-  Grid,
-  Heading,
-  Table,
-  TextField,
-  Container,
-  Box,
-  Text,
-} from '@radix-ui/themes';
 import { FC, useMemo, useState } from 'react';
 import { useActiveWeb3React, useGetConnection } from 'hooks';
 import 'components/styles/AssetModal.scss';
@@ -24,6 +13,7 @@ import {
   useDeposit,
   useWithdraw,
 } from '@orderly.network/hooks';
+import { Box, Button } from '@material-ui/core';
 interface AssetModalProps {
   open: boolean;
   onClose: () => void;
@@ -60,12 +50,10 @@ const AssetModal: React.FC<AssetModalProps> = ({
       onClose={onClose}
       modalWrapper='modalWrapperV3 assetModalWrapper'
     >
-      <Flex
+      <Box
+        className='flex items-center justify-center flex-col'
         style={{ margin: '1.5rem' }}
-        gap='3'
-        align='center'
-        justify='center'
-        direction='column'
+        gridGap='3'
       >
         <Box
           style={{
@@ -77,11 +65,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
             backgroundColor: '#1b1e29',
           }}
         >
-          <Flex align='start' justify='between' direction='row' gap='2'>
-            <Container style={{ cursor: 'pointer' }}>
-              <Text
-                size='5'
-                weight='medium'
+          <Box className='flex items-start justify-between' gridGap='2'>
+            <Box style={{ cursor: 'pointer' }}>
+              <h2
                 style={{
                   color: selectedTab === 'deposit' ? '#ebecf2' : '#61657a',
                   fontFamily: 'Inter',
@@ -93,10 +79,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
                 onClick={() => setSelectedTab('deposit')}
               >
                 Deposit
-              </Text>
-              <Text
-                size='5'
-                weight='medium'
+              </h2>
+              <h5
                 style={{
                   color: selectedTab === 'withdraw' ? '#ebecf2' : '#61657a',
                   fontFamily: 'Inter',
@@ -108,21 +92,20 @@ const AssetModal: React.FC<AssetModalProps> = ({
                 onClick={() => setSelectedTab('withdraw')}
               >
                 Withdraw
-              </Text>
-            </Container>
-          </Flex>
-          <Flex
-            direction={selectedTab === 'deposit' ? 'column' : 'column-reverse'}
+              </h5>
+            </Box>
+          </Box>
+          <Box
+            className={`flex ${
+              selectedTab === 'deposit' ? 'flex-col' : 'flex-col-reverse'
+            }`}
           >
-            <Flex direction='column'>
-              <Flex
-                align='start'
-                justify='between'
-                direction='row'
+            <Box className='flex flex-col'>
+              <Box
+                className='flex justify-between items-start'
                 style={{ marginTop: '20px' }}
               >
-                <Text
-                  size='2'
+                <h2
                   style={{
                     color: '#ebecef',
                     fontFamily: 'Inter',
@@ -130,13 +113,13 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   }}
                 >
                   Your web3 wallet
-                </Text>
+                </h2>
                 {connections && (
                   <img src={connections.iconName} width='16' height='16' />
                 )}
-              </Flex>
-              <Flex
-                align={'center'}
+              </Box>
+              <Box
+                className='flex items-center'
                 style={{ width: 'full', margin: '10px 0 16px 0' }}
               >
                 <Box
@@ -173,10 +156,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                 >
                   {chains[0].network_infos.name}
                 </Box>
-              </Flex>
-              <Flex
-                justify={'between'}
-                direction={'row'}
+              </Box>
+              <Box
+                className='flex justify-between'
                 style={{
                   width: '400px',
                   height: '70px',
@@ -187,15 +169,15 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   opacity: '0.6',
                 }}
               >
-                <Flex justify={'start'} direction={'column'}>
-                  <Text
+                <Box className='flex flex-col justify-start'>
+                  <small
                     style={{
                       fontSize: '14px',
                       fontFamily: 'Inter',
                     }}
                   >
                     {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
-                  </Text>
+                  </small>
                   <input
                     type='number'
                     value={
@@ -223,19 +205,12 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     }}
                     placeholder='$0.00'
                   />
-                </Flex>
-                <Flex
-                  align={'end'}
-                  direction={'column'}
-                  style={{ marginLeft: '20px' }}
-                >
-                  <Text
-                    size={'2'}
-                    style={{ marginBottom: '10px', fontSize: '12px' }}
-                  >
+                </Box>
+                <Box style={{ marginLeft: '20px' }}>
+                  <h2 style={{ marginBottom: '10px', fontSize: '12px' }}>
                     {token?.symbol}
-                  </Text>
-                  <Text
+                  </h2>
+                  <p
                     style={{
                       color: '#ccced9',
                       fontSize: '12px',
@@ -247,14 +222,11 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     <span style={{ fontSize: '14px', marginLeft: '4px' }}>
                       {deposit.balance}
                     </span>
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
-            <Flex
-              direction={'row'}
-              align={'center'}
-              justify={'center'}
+                  </p>
+                </Box>
+              </Box>
+            </Box>
+            <Box
               style={{
                 height: '32px',
                 width: '400px',
@@ -281,16 +253,10 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   opacity: '0.12',
                 }}
               />
-            </Flex>
-            <Flex direction='column'>
-              <Flex
-                align='start'
-                justify='between'
-                direction='row'
-                style={{ marginTop: '20px' }}
-              >
-                <Text
-                  size='2'
+            </Box>
+            <Box>
+              <Box style={{ marginTop: '20px' }}>
+                <p
                   style={{
                     color: '#ebecef',
                     fontFamily: 'Inter',
@@ -298,19 +264,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   }}
                 >
                   Your QuickPerps account
-                </Text>
-                <Text
-                  size='2'
-                  style={{
-                    color: '#ebecef',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                  }}
-                ></Text>
-              </Flex>
-              <Flex
-                justify={'between'}
-                direction={'row'}
+                </p>
+              </Box>
+              <Box
                 style={{
                   width: '400px',
                   height: '70px',
@@ -321,15 +277,10 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   opacity: '0.6',
                 }}
               >
-                <Flex justify={'start'} direction={'column'}>
-                  <Text
-                    style={{
-                      fontSize: '14px',
-                      fontFamily: 'Inter',
-                    }}
-                  >
+                <Box>
+                  <small>
                     {selectedTab === 'deposit' ? 'Receive' : 'Quantity'}
-                  </Text>
+                  </small>
                   <input
                     type='number'
                     value={
@@ -357,19 +308,12 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     }}
                     placeholder='$0.00'
                   />
-                </Flex>
-                <Flex
-                  align={'end'}
-                  direction={'column'}
-                  style={{ marginLeft: '20px' }}
-                >
-                  <Text
-                    size={'2'}
-                    style={{ marginBottom: '10px', fontSize: '12px' }}
-                  >
+                </Box>
+                <Box style={{ marginLeft: '20px' }}>
+                  <h1 style={{ marginBottom: '10px', fontSize: '12px' }}>
                     USDC
-                  </Text>
-                  <Text
+                  </h1>
+                  <span
                     style={{
                       color: '#ccced9',
                       fontSize: '12px',
@@ -381,15 +325,13 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     <span style={{ fontSize: '14px', marginLeft: '4px' }}>
                       {collateral.availableBalance}
                     </span>
-                  </Text>
-                </Flex>
-              </Flex>
-            </Flex>
-          </Flex>
+                  </span>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
 
-          <Flex
-            justify={'between'}
-            direction={'row'}
+          <Box
             style={{
               width: '400px',
               height: '55px',
@@ -401,16 +343,12 @@ const AssetModal: React.FC<AssetModalProps> = ({
               fontWeight: 500,
             }}
           >
-            <Flex justify={'start'} direction={'column'} gap={'1'}>
-              {selectedTab !== 'withdraw' && <Text>1 USDC = 1 USD</Text>}
-              <Text>Fee = $0</Text>
-            </Flex>
-            <Flex align={'end'} direction={'column'}>
-              {selectedTab !== 'withdraw' && (
-                <Text size={'2'}>Slippage: 1%</Text>
-              )}
-            </Flex>
-          </Flex>
+            <Box gridGap={'1'}>
+              {selectedTab !== 'withdraw' && <p>1 USDC = 1 USD</p>}
+              <p>Fee = $0</p>
+            </Box>
+            <Box>{selectedTab !== 'withdraw' && <h5>Slippage: 1%</h5>}</Box>
+          </Box>
 
           <Box
             style={{
@@ -425,7 +363,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
             Cross-chain transaction fees will be charged. To avoid fees, use our
             supported Bridgeless networks.
           </Box>
-          <Container style={{ marginTop: '20px' }}>
+          <Box style={{ marginTop: '20px' }}>
             {selectedTab === 'deposit' ? (
               <Button
                 style={{
@@ -481,9 +419,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                 Withdraw
               </Button>
             )}
-          </Container>
+          </Box>
         </Box>
-      </Flex>
+      </Box>
     </CustomModal>
   );
 };
