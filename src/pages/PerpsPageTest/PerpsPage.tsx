@@ -22,13 +22,7 @@ export const PerpsPage = () => {
     });
   }, [library, account]);
   return (
-    <Box
-      style={{ margin: '1.5rem' }}
-      gap='3'
-      align='center'
-      justify='center'
-      direction='column'
-    >
+    <Box style={{ margin: '1.5rem' }}>
       <h2>Account</h2>
 
       <Box style={{ maxWidth: 240 }}>

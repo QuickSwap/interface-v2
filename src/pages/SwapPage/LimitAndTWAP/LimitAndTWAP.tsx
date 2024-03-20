@@ -33,7 +33,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
   const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
   const onCurrencySelection = useSwapActionHandlers().onCurrencySelection;
-  const { isProMode } = useIsProMode();
+  const isProMode = useIsProMode();
   const { redirectWithCurrency } = useSwapRedirects();
 
   const onSrcSelect = useCallback(

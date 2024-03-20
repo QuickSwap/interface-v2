@@ -22,7 +22,7 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
       setOrderStatus(selectedTab.toUpperCase());
     }
   }, []);
-  const [o] = useOrderStream({ symbol: token, status: orderStatus });
+  const [o] = useOrderStream({ symbol: token, status: orderStatus as any });
   const orders = o as Order[] | null;
   return (
     <div className='orders'>

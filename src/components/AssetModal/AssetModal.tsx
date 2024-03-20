@@ -27,9 +27,11 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const [selectedTab, setSelectedTab] = useState(modalType);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const { selectedWallet } = useSelectedWallet();
-  // const getConnection = useGetConnection();
+  const getConnection = useGetConnection();
   const [chains, { findByChainId }] = useChains('mainnet');
-  // const connections = getConnection(selectedWallet);
+  const connections = selectedWallet
+    ? getConnection(selectedWallet)
+    : undefined;
   const { account, state } = useAccount();
   const collateral = useCollateral();
   const token = useMemo(() => {
