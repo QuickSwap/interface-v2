@@ -581,6 +581,8 @@ export function useV3DerivedMintInfo(
       )
     : undefined;
 
+  console.log('aaa', presetRange?.address);
+
   const gammaUNIPROXYContract = useGammaUNIProxyContract(presetRange?.address);
   const depositAmountsData = useSingleCallResult(
     presetRange && presetRange.address && !gammaPair?.withdrawOnly
