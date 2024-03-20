@@ -138,7 +138,7 @@ export const useUserV2LiquidityLocks = (
       return;
 
     fetchData();
-  }, [account, liquidityTokenList]);
+  }, [account]);
 
   return { data, loading, error };
 };
