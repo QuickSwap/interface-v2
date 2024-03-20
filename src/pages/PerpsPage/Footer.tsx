@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useOrderStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.css';
@@ -12,9 +12,17 @@ type Order = {
   status: OrderStatus;
   executed: number;
 };
-export const Footer: React.FC = ({ token }) => {
-  console.log(token);
-  const [o] = useOrderStream({ symbol: token });
+export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
+  token,
+  selectedTab,
+}) => {
+  const [orderStatus, setOrderStatus] = React.useState('OPEN');
+  useEffect(() => {
+    if (selectedTab !== 'Portfolio') {
+      setOrderStatus(selectedTab.toUpperCase());
+    }
+  }, []);
+  const [o] = useOrderStream({ symbol: token, status: orderStatus });
   const orders = o as Order[] | null;
   return (
     <div className='orders'>
