@@ -1,7 +1,11 @@
 import { Interface } from '@ethersproject/abi';
-import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
-import { abi as STAKING_REWARDS_FACTORY_ABI } from '@uniswap/liquidity-staker/build/StakingRewardsFactory.json';
-import { abi as STAKING_DUAL_REWARDS_ABI } from './dual-rewards.-staking.json';
+import stakingRewards from '@uniswap/liquidity-staker/build/StakingRewards.json';
+import stakingRewardsFactory from '@uniswap/liquidity-staker/build/StakingRewardsFactory.json';
+import stakingDualRewards from './dual-rewards.-staking.json';
+
+const STAKING_REWARDS_ABI = stakingRewards.abi;
+const STAKING_REWARDS_FACTORY_ABI = stakingRewardsFactory.abi;
+const STAKING_DUAL_REWARDS_ABI = stakingDualRewards.abi;
 
 const STAKING_REWARDS_INTERFACE = new Interface(STAKING_REWARDS_ABI);
 
