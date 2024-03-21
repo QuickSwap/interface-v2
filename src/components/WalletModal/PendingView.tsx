@@ -3,7 +3,8 @@ import { Box, CircularProgress } from '@material-ui/core';
 import Option from './Option';
 import { useTranslation } from 'react-i18next';
 import { Connection, getConnections } from 'connectors';
-import { useActiveWeb3React } from 'hooks';
+import { useWeb3React } from '@web3-react/core';
+import { ChainId } from '@uniswap/sdk';
 
 interface PendingViewProps {
   connection?: Connection;
@@ -19,8 +20,10 @@ const PendingView: React.FC<PendingViewProps> = ({
   tryActivation,
 }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
-  const connections = getConnections(chainId);
+  const { chainId } = useWeb3React();
+  const localChainId = localStorage.getItem('localChainId');
+  const chainIdToUse = chainId ?? Number(localChainId ?? ChainId.MATIC);
+  const connections = getConnections(chainIdToUse);
 
   return (
     <Box className='pendingSection'>

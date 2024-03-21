@@ -23,6 +23,7 @@ import GnosisIcon from 'assets/images/gnosis_safe.png';
 import TrustIcon from 'assets/images/trust.png';
 import ZengoIcon from 'assets/images/zengo.png';
 import BinanceIcon from 'assets/images/binance-wallet.webp';
+import PassportWalletIcon from 'assets/images/passportWallet.jpg';
 import { GlobalConst } from 'constants/index';
 import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { SecretType } from '@venly/web3-provider';
@@ -510,7 +511,7 @@ export const passportWalletConnection: Connection = {
   connector: passportWallet,
   hooks: passportWalletHooks,
   type: ConnectionType.PASSPORTWALLET,
-  iconName: CoinbaseWalletIcon,
+  iconName: PassportWalletIcon,
   color: '#315CF5',
   description: 'Use Passport Wallet',
 };
