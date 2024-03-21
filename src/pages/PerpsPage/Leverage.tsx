@@ -49,17 +49,27 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  const { onSubmit } = useOrderEntry(perpToken, OrderSide.BUY, false);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
   const [order, setOrder] = useState<any>({
-    order_price: '',
-    order_quantity: '',
+    order_price: 0,
+    order_quantity: 0,
     order_type: 'LIMIT',
     side: 'BUY',
     order_symbol: perpToken,
   });
+  const { submit,onSubmit } = useOrderEntry(
+    {
+      symbol: perpToken,
+      side: order.side,
+      order_type: order.order_type,
+      order_price: order.order_price,
+      order_quantity: order.order_quantity,
+    },
+    { watchOrderbook: true },
+  );
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
@@ -353,6 +363,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             {order.order_type === 'LIMIT' ? (
               <input
                 min={0}
+                type={"number"}
                 disabled={state.status !== AccountStatusEnum.EnableTrading}
                 value={order.order_price}
                 onChange={(e) =>
@@ -396,6 +407,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <div>
             <input
               min={0}
+              type={"number"}
               value={order.order_quantity}
               onChange={(e) =>
                 setOrder({ ...order, order_quantity: e.target.value })
@@ -578,8 +590,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               cursor: 'pointer',
             }}
             onClick={async () => {
-              console.log(order);
-              await submit(order);
+             const order=  await submit();
+             await onSubmit(order);
             }}
           >
             Create Order
