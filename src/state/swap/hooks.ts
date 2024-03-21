@@ -185,7 +185,10 @@ export function useDerivedSwapInfo(): {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedQuery = useParsedQueryString();
-  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
+  const swapType = parsedQuery?.swapIndex;
+  const swapSlippage = parsedQuery?.slippage
+    ? (parsedQuery?.slippage as string)
+    : undefined;
 
   const {
     independentField,
@@ -282,7 +285,7 @@ export function useDerivedSwapInfo(): {
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
         : [];
-    if (!slippageManuallySet) {
+    if (!swapSlippage && !slippageManuallySet) {
       if (
         inputCurrencyId &&
         outputCurrencyId &&
@@ -300,6 +303,7 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
     chainIdToUse,
     slippageManuallySet,
+    swapSlippage,
   ]);
 
   return {
