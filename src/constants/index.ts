@@ -51,6 +51,7 @@ import {
   NFTE,
   CRS,
   EURO3,
+  DAIE,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -2354,6 +2355,9 @@ export const GlobalData = {
       DAI[ChainId.ZKEVM],
       USDT[ChainId.ZKEVM],
       FRAX[ChainId.ZKEVM],
+      USDCE[ChainId.ZKEVM],
+      DAIE[ChainId.ZKEVM],
+      MI[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
@@ -2398,6 +2402,8 @@ export const GlobalData = {
       USDC[ChainId.ZKEVM],
       USDT[ChainId.ZKEVM],
       DAI[ChainId.ZKEVM],
+      USDCE[ChainId.ZKEVM],
+      DAIE[ChainId.ZKEVM],
     ],
     [ChainId.ZKTESTNET]: [],
     [ChainId.KAVA]: [],
