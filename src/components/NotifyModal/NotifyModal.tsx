@@ -31,18 +31,19 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose }) => {
       onClose={onClose}
       modalWrapper='modalWrapperV3 assetModalWrapper'
     >
-      <Flex
-        style={{ margin: '1.5rem' }}
-        gap='3'
-        align='center'
-        justify='center'
-        direction='column'
+      <div
+        style={{
+          margin: '1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
       >
-        <Box>
+        <div>
           This Transaction may take 10-20 minutes to show up in your Leverage
           Wallet
-        </Box>
-      </Flex>
+        </div>
+      </div>
     </CustomModal>
   );
 };
