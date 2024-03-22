@@ -317,6 +317,7 @@ export const GlobalConst = {
     CRYPTOCOM: 'Crypto.com DeFi Wallet',
     UNSTOPPABLEDOMAINS: 'Unstoppable Domains',
     BINANCEWALLET: 'Binance Web3 Wallet',
+    PASSPORTWALLET: 'Passport Wallet',
   },
 };
 

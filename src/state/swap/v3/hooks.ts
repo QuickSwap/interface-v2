@@ -249,13 +249,17 @@ export function useDerivedSwapInfo(): {
     inputError = `Insufficient ${amountIn.currency.symbol} balance`;
   }
 
+  const parsedQs = useParsedQueryString();
+  const swapSlippage = parsedQs?.slippage
+    ? (parsedQs?.slippage as string)
+    : undefined;
   useEffect(() => {
     const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
         : [];
-    if (!slippageManuallySet) {
+    if (!swapSlippage && !slippageManuallySet) {
       if (
         inputCurrencyId &&
         outputCurrencyId &&
@@ -273,6 +277,7 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
     chainIdToUse,
     slippageManuallySet,
+    swapSlippage,
   ]);
 
   return {
