@@ -70,6 +70,7 @@ import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import '@orderly.network/react/dist/styles.css';
+import './index.scss';
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;

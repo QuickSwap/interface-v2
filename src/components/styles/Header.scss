@@ -72,6 +72,10 @@
   & a {
     display: flex;
   }
+  & > a {
+    position: relative;
+    z-index: 10;
+  }
   & > div {
     display: flex;
     align-items: center;
@@ -115,15 +119,16 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
+  width: 100%;
   & .menuItem {
     cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     height: 36px;
-    padding: 0 24px;
-    margin-right: 6px;
+    padding: 0 20px;
     overflow: hidden;
     border-radius: 10px;
     color: $textSecondary;

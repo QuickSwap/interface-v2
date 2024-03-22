@@ -407,7 +407,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           />
         </Link>
         {!tabletWindowSize && (
-          <Box className='mainMenu'>
+          <Box className='mainMenu' gridGap={6}>
             {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
               <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
             ))}
