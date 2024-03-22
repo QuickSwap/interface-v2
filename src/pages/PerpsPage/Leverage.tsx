@@ -16,6 +16,7 @@ import {
   OrderSide,
   OrderStatus,
   OrderType,
+  OrderEntity,
 } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Simulate } from 'react-dom/test-utils';
@@ -60,7 +61,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     side: 'BUY',
     order_symbol: perpToken,
   });
-  const { submit,onSubmit } = useOrderEntry(
+  const { onSubmit } = useOrderEntry(
     {
       symbol: perpToken,
       side: order.side,
@@ -590,8 +591,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               cursor: 'pointer',
             }}
             onClick={async () => {
-             const order=  await submit();
-             await onSubmit(order);
+              console.log("Order is ",order as OrderEntity);
+              await onSubmit(order as OrderEntity);
             }}
           >
             Create Order
