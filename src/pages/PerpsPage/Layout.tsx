@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import './Layout.css';
+import './Layout.scss';
 import { AdvancedChartWrapper } from './AdvancedChartWrapper';
 import { OrderbookV2 } from './OrderbookV2';
 import { Market } from './Market';
-import './Layout.css';
 import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
-import { useOrderStream } from '@orderly.network/hooks';
-import './Layout.css';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import { Footer } from './Footer';
 
@@ -24,28 +21,18 @@ type Order = {
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
   const [selectedItem, setSelectedItem] = useState('Portfolio');
-  const [selectedSide, setSelectedSide] = useState(null);
+  const [selectedSide, setSelectedSide] = useState<string>('');
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
   const [orderQuantity, setOrderQuantity] = useState(['']);
   const [selectedTab, setSelectedTab] = useState<'Orderbook' | 'Market'>(
     'Orderbook',
   );
-  const handleNavItemClick = (item) => {
-    setSelectedNavItem(item);
-  };
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-  };
-  const handleSideChange = (e) => {
-    setSelectedSide(e.target.value);
-  };
+
   const handleTabClick = (tab: 'Orderbook' | 'Market') => {
     setSelectedTab(tab);
   };
-  // const [o] = useOrderStream({ symbol: 'PERP_ETH_USDC' });
-  // const orders = o as Order[] | null;
   return (
-    <div className='container'>
+    <div className='perpsV2Container'>
       <div className='graph_footer'>
         <div className='graph_orderbook'>
           <div className='graph'>
@@ -53,15 +40,12 @@ export const Layout = () => {
               <GraphHeader setTokenName={setToken} />
             </div>
             <nav className='mobile-graph-navbar'>
-              <div onClick={() => handleNavItemClick('Chart')}>Chart</div>
-              <div onClick={() => handleNavItemClick('Trade')}>Trade</div>
-              <div onClick={() => handleNavItemClick('Data')}>Data</div>
+              <div onClick={() => setSelectedNavItem('Chart')}>Chart</div>
+              <div onClick={() => setSelectedNavItem('Trade')}>Trade</div>
+              <div onClick={() => setSelectedNavItem('Data')}>Data</div>
             </nav>
             {selectedNavItem === 'Chart' && (
-              <AdvancedChartWrapper
-                token={token}
-                widgetProps={{ height: '430' }}
-              />
+              <AdvancedChartWrapper token={token} />
             )}
             {selectedNavItem === 'Trade' && (
               <div className='nav-trade'>
@@ -120,7 +104,7 @@ export const Layout = () => {
                 <div
                   key={index}
                   className={selectedItem === item ? 'selected' : ''}
-                  onClick={() => handleItemClick(item)}
+                  onClick={() => setSelectedItem(item)}
                 >
                   {item}
                 </div>
@@ -131,7 +115,12 @@ export const Layout = () => {
           <div>
             {selectedItem !== 'Portfolio' ? (
               <div className='dropdown'>
-                <select id='dropdownSelect' onChange={handleSideChange}>
+                <select
+                  id='dropdownSelect'
+                  onChange={(e) => {
+                    setSelectedSide(e.target.value);
+                  }}
+                >
                   <option value='all' disabled selected>
                     All
                   </option>
@@ -189,7 +178,7 @@ export const Layout = () => {
               <div
                 key={index}
                 className={selectedItem === item ? 'selected' : ''}
-                onClick={() => handleItemClick(item)}
+                onClick={() => setSelectedItem(item)}
               >
                 {item}
               </div>
@@ -199,7 +188,10 @@ export const Layout = () => {
         <div>
           {selectedItem !== 'Portfolio' ? (
             <div className='dropdown'>
-              <select id='dropdownSelect' onChange={handleSideChange}>
+              <select
+                id='dropdownSelect'
+                onChange={(e) => setSelectedSide(e.target.value)}
+              >
                 <option value='all' disabled selected>
                   All
                 </option>

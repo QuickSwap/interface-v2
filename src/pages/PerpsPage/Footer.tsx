@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useOrderStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
-import './Layout.css';
+import './Layout.scss';
 type Order = {
   price: number;
   quantity: number;
