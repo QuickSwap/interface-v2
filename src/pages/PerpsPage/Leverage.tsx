@@ -55,8 +55,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
   const [order, setOrder] = useState<any>({
-    order_price: 0,
-    order_quantity: 0,
+    order_price: '',
+    order_quantity: '',
     order_type: 'LIMIT',
     side: 'BUY',
     order_symbol: perpToken,
@@ -363,7 +363,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <div>
             {order.order_type === 'LIMIT' ? (
               <input
-                min={0}
                 type={"number"}
                 disabled={state.status !== AccountStatusEnum.EnableTrading}
                 value={order.order_price}
@@ -407,7 +406,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <Text>Quantity</Text>
           <div>
             <input
-              min={0}
               type={"number"}
               value={order.order_quantity}
               onChange={(e) =>
