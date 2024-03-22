@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: row;
   width: 100vw;
-  height: 100vh;
+  height: 200vh;
 }
 
 .graph_orderbook {
@@ -118,11 +118,22 @@
 .dropdown select:focus {
   outline: none;
 }
+.orders{
+  display: flex;
+  flex-direction: column;
+}
+.order{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #61675a;
+}
 .footer_data {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  height: 20vh;
+  height: 2vh;
   color: #ccced9;
   font-family: Inter;
   font-weight: 500;

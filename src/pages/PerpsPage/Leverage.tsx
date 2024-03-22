@@ -61,7 +61,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     side: 'BUY',
     order_symbol: perpToken,
   });
-  const { onSubmit } = useOrderEntry(
+  const { onSubmit, submit } = useOrderEntry(
     {
       symbol: perpToken,
       side: order.side,
@@ -363,7 +363,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <div>
             {order.order_type === 'LIMIT' ? (
               <input
-                type={"number"}
+                type={'number'}
                 disabled={state.status !== AccountStatusEnum.EnableTrading}
                 value={order.order_price}
                 onChange={(e) =>
@@ -406,7 +406,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <Text>Quantity</Text>
           <div>
             <input
-              type={"number"}
+              type={'number'}
               value={order.order_quantity}
               onChange={(e) =>
                 setOrder({ ...order, order_quantity: e.target.value })
@@ -589,8 +589,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               cursor: 'pointer',
             }}
             onClick={async () => {
-              console.log("Order is ",order as OrderEntity);
-              await onSubmit(order as OrderEntity);
+              // console.log('Order is ', order as OrderEntity);
+              const order1 = await submit();
+              console.log(order1);
+              await onSubmit(order1);
             }}
           >
             Create Order
