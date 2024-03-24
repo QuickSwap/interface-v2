@@ -388,7 +388,9 @@ export function SelectRange({
     );
   });
 
-  const { data: steerVaults } = useSteerVaults(chainId);
+  const { loading: loadingSteerVaults, data: steerVaults } = useSteerVaults(
+    chainId,
+  );
   const steerVaultsForPair = steerVaults.filter((item) => {
     return (
       item.state !== SteerVaultState.Paused &&
@@ -412,48 +414,92 @@ export function SelectRange({
   const defiedgeStrategyExists = defiedgeStrategiesForPair.length > 0;
   const steerVaultExists = steerVaultsForPair.length > 0;
 
-  useEffect(() => {
+  const [isAutomatic, setIsAutoMatic] = useState(false);
+
+  const selectVaultEnabled =
+    (gammaPairExists && unipilotVaultExists) ||
+    (gammaPairExists && defiedgeStrategyExists) ||
+    (gammaPairExists && steerVaultExists) ||
+    (unipilotVaultExists && steerVaultExists) ||
+    (unipilotVaultExists && defiedgeStrategyExists) ||
+    (defiedgeStrategyExists && steerVaultExists);
+
+  const automaticEnabled =
+    gammaPairExists ||
+    unipilotVaultExists ||
+    defiedgeStrategyExists ||
+    steerVaultExists;
+
+  const enabledVaults = useMemo(() => {
+    const vaults: string[] = [];
     if (gammaPairExists) {
-      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.GAMMA_RANGE);
-    } else if (unipilotVaultExists) {
-      onChangeLiquidityRangeType(
-        GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
-      );
-    } else if (defiedgeStrategyExists) {
-      onChangeLiquidityRangeType(
-        GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
-      );
-    } else if (steerVaultExists) {
-      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.STEER_RANGE);
+      vaults.push('Gamma');
+    }
+    if (unipilotVaultExists) {
+      vaults.push('Unipilot');
+    }
+    if (defiedgeStrategyExists) {
+      vaults.push('DefiEdge');
+    }
+    if (steerVaultExists) {
+      vaults.push('Steer');
+    }
+    return vaults;
+  }, [
+    defiedgeStrategyExists,
+    gammaPairExists,
+    steerVaultExists,
+    unipilotVaultExists,
+  ]);
+
+  useEffect(() => {
+    if (!loadingSteerVaults) {
+      if (automaticEnabled) {
+        setIsAutoMatic(true);
+      } else {
+        setIsAutoMatic(false);
+      }
+    }
+  }, [loadingSteerVaults, automaticEnabled]);
+
+  useEffect(() => {
+    if (isAutomatic) {
+      if (selectVaultEnabled) {
+        onChangeLiquidityRangeType('');
+      } else {
+        if (gammaPairExists) {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+          );
+        } else if (steerVaultExists) {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+          );
+        } else if (defiedgeStrategyExists) {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
+          );
+        } else {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+          );
+        }
+      }
     } else {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    currencyA?.isNative,
-    currencyA?.wrapped.address,
-    currencyB?.isNative,
-    currencyB?.wrapped.address,
-    unipilotVaultExists,
-    steerVaultExists,
-    gammaPairExists,
     defiedgeStrategyExists,
+    gammaPairExists,
+    isAutomatic,
+    onChangeLiquidityRangeType,
+    selectVaultEnabled,
+    steerVaultExists,
+    currencyA?.isNative,
+    currencyB?.isNative,
+    currencyAAddress,
+    currencyBAddress,
   ]);
-
-  const isAutomatic =
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ||
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ||
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ||
-    liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE;
-
-  const selectVaultEnabled =
-    isAutomatic &&
-    ((gammaPairExists && unipilotVaultExists) ||
-      (gammaPairExists && defiedgeStrategyExists) ||
-      (gammaPairExists && steerVaultExists) ||
-      (unipilotVaultExists && steerVaultExists) ||
-      (unipilotVaultExists && defiedgeStrategyExists) ||
-      (defiedgeStrategyExists && steerVaultExists));
 
   const { data: gammaData } = useGammaData();
 
@@ -507,32 +553,13 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {(gammaPairExists ||
-        unipilotVaultExists ||
-        defiedgeStrategyExists ||
-        steerVaultExists) && (
+      {automaticEnabled && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
             <Button
               className={isAutomatic ? 'active' : ''}
               onClick={() => {
-                if (gammaPairExists) {
-                  onChangeLiquidityRangeType(
-                    GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
-                  );
-                } else if (unipilotVaultExists) {
-                  onChangeLiquidityRangeType(
-                    GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
-                  );
-                } else if (defiedgeStrategyExists) {
-                  onChangeLiquidityRangeType(
-                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
-                  );
-                } else {
-                  onChangeLiquidityRangeType(
-                    GlobalConst.v3LiquidityRangeType.STEER_RANGE,
-                  );
-                }
+                setIsAutoMatic(true);
               }}
             >
               <img
@@ -547,11 +574,12 @@ export function SelectRange({
                   ? 'active'
                   : ''
               }
-              onClick={() =>
+              onClick={() => {
+                setIsAutoMatic(false);
                 onChangeLiquidityRangeType(
                   GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
-                )
-              }
+                );
+              }}
             >
               {t('manual')}
             </Button>
@@ -578,43 +606,52 @@ export function SelectRange({
               alt='Defiedge Logo'
               style={{ height: '28px' }}
             />
-          ) : (
+          ) : liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.STEER_RANGE ? (
             <small className='text-bold'>&nbsp;Steer</small>
+          ) : (
+            <small className='text-bold'>
+              &nbsp;{enabledVaults.join(', ')}
+            </small>
           )}
         </Box>
       )}
 
-      <Box my={1}>
-        <PresetRanges
-          mintInfo={mintInfo}
-          baseCurrency={currencyA}
-          quoteCurrency={currencyB}
-          isStablecoinPair={isStablecoinPair}
-          activePreset={activePreset}
-          handlePresetRangeSelection={handlePresetRangeSelection}
-          priceLower={leftPrice?.toSignificant(5)}
-          priceUpper={rightPrice?.toSignificant(5)}
-          price={price}
-          isGamma={
-            liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
-          }
-          isUnipilot={
-            liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
-          }
-          isDefiedge={
-            liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
-          }
-          gammaPair={gammaPair}
-          unipilotPairs={unipilotVaultsForPair}
-          defiedgeStrategies={defiedgeStrategiesForPair}
-          isSteer={
-            liquidityRangeType === GlobalConst.v3LiquidityRangeType.STEER_RANGE
-          }
-          steerPairs={steerVaultsForPair}
-        />
-      </Box>
+      {!!liquidityRangeType && (
+        <Box my={1}>
+          <PresetRanges
+            mintInfo={mintInfo}
+            baseCurrency={currencyA}
+            quoteCurrency={currencyB}
+            isStablecoinPair={isStablecoinPair}
+            activePreset={activePreset}
+            handlePresetRangeSelection={handlePresetRangeSelection}
+            priceLower={leftPrice?.toSignificant(5)}
+            priceUpper={rightPrice?.toSignificant(5)}
+            price={price}
+            isGamma={
+              liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+            }
+            isUnipilot={
+              liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
+            }
+            isDefiedge={
+              liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+            }
+            gammaPair={gammaPair}
+            unipilotPairs={unipilotVaultsForPair}
+            defiedgeStrategies={defiedgeStrategiesForPair}
+            isSteer={
+              liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.STEER_RANGE
+            }
+            steerPairs={steerVaultsForPair}
+          />
+        </Box>
+      )}
       {liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
         presetRange &&
         gammaCurrencyA &&

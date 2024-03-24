@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { ChainId, Pair } from '@uniswap/sdk';
+import { getSigner } from 'utils';
 import {
   ConnectionType,
   arkaneConnection,
@@ -220,6 +221,14 @@ export const useTokenPriceUsd = (
   return [value, loading];
 };
 
+export function useGetSigner() {
+  const { account, library } = useActiveWeb3React();
+  if (!library || !account) {
+    return null;
+  }
+  const signer = getSigner(library, account);
+  return signer;
+}
 export const useConnectWallet = (isSupportedNetwork: boolean) => {
   const toggleWalletModal = useWalletModalToggle();
   const { setOpenNetworkSelection } = useOpenNetworkSelection();

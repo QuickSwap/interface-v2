@@ -103,9 +103,17 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
               currency1={token1}
               size={24}
             />
-            <p>
-              {token0?.symbol}/{token1?.symbol}
-            </p>
+            <Box className='flex items-center' gridGap={4}>
+              <p>
+                {token0?.symbol}/{token1?.symbol}
+              </p>
+              {(farm?.ammName ?? '').toLowerCase() === 'quickswapuni' &&
+                !!farm?.poolFee && (
+                  <Box className='farmAPRTitleWrapper bg-textSecondary'>
+                    <span className='text-gray32'>{farm.poolFee}%</span>
+                  </Box>
+                )}
+            </Box>
           </Box>
           <Box
             my={2}

@@ -64,6 +64,9 @@
   "perps": {
     "available": true
   },
+  "perpsV2": {
+    "available": true
+  },
   "bos": {
     "available": false
   },
@@ -87,5 +90,6 @@
   },
   "ichi": {
     "available": true
-  }
+  },
+  "maxHops": 3
 }

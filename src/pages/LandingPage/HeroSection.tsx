@@ -86,7 +86,29 @@ const HeroSection: React.FC = () => {
           </h1>
         </Box>
       )}
-      <h5>{t('topAssetExchange')}</h5>
+      <h5>
+        {chainIdToUse === ChainId.MATIC
+          ? t('topAssetExchangePolygon')
+          : chainIdToUse === ChainId.ZKEVM
+          ? t('topAssetExchangePolygonZkEVM')
+          : chainIdToUse === ChainId.MANTA
+          ? t('topAssetExchangeManta')
+          : chainIdToUse === ChainId.IMX
+          ? t('topAssetExchangeImmutable')
+          : chainIdToUse === ChainId.DOGECHAIN
+          ? t('topAssetExchangeDogechain')
+          : chainIdToUse === ChainId.ASTARZKEVM
+          ? t('topAssetExchangeAstar')
+          : chainIdToUse === ChainId.KAVA
+          ? t('topAssetExchangeKava')
+          : chainIdToUse === ChainId.ZKATANA
+          ? t('topAssetExchangeZKatana')
+          : chainIdToUse === ChainId.X1
+          ? t('topAssetExchangeX1Testnet')
+          : chainIdToUse === ChainId.TIMX
+          ? t('topAssetExchangeImmutableTestnet')
+          : t('topAssetExchangePolygon')}
+      </h5>
       <Box mt={2} width={200} height={48}>
         <Button
           fullWidth

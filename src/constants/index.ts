@@ -50,6 +50,7 @@ import {
   USDV,
   NFTE,
   CRS,
+  EURO3,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -63,12 +64,25 @@ export const merklAMMs: { [chainId in ChainId]?: string[] } = {
   [ChainId.ZKEVM]: ['quickswapalgebra', 'quickswapuni'],
 };
 
-export const blackListMerklFarms = [
-  '0x392DfB56cA9aA807571eC2a666c3bbf87c7FE63E',
-  '0xAb86C5DD50F4e0B54ECb07c4fB07219c60150eBF',
-  '0x19E4c89e983f5827e353ca0e8a0D6D26E703a8dF',
-  '0x0Df98245e23e776Fe059F5793d03AC4221A0ef50',
-];
+export const blackListMerklFarms: { [chainId in ChainId]?: string[] } = {
+  [ChainId.MATIC]: [
+    '0x392DfB56cA9aA807571eC2a666c3bbf87c7FE63E',
+    '0xAb86C5DD50F4e0B54ECb07c4fB07219c60150eBF',
+    '0x19E4c89e983f5827e353ca0e8a0D6D26E703a8dF',
+    '0x0Df98245e23e776Fe059F5793d03AC4221A0ef50',
+  ],
+  [ChainId.ZKEVM]: [
+    '0x8C6B3411c2d04dfBA5E8e00406e8F0F247830A58',
+    '0x29A529264a546B3526b0B2517D5369a6b6d43214',
+    '0x6637724eB283B66c87d995267E25e891B9658985',
+    '0x55d70076a5087a5BF22c927075Cca8ed2C8D1bf1',
+    '0xC2a3BcA5e2BfDd89EB20b162037d4e6B876c995E',
+    '0xE047186C37EfA99643660e4771D5F6602c35F33D',
+    '0xB2687CcE107DDc1424E30CfB375178984f55A444',
+    '0x885D9E016003E4EA6aa5e28C2f038C168a27Fc68',
+    '0x712EBEc422d283e6540227721241be3A461D7C04',
+  ],
+};
 
 export const subgraphNotReadyChains = [
   ChainId.ZKATANA,
@@ -1427,6 +1441,24 @@ export const GammaPairs: {
         token1Address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
       },
     ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x3c499c542cef5e3811e1192ce70d8cc03d5c3359': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x1cf4293125913cb3dea4ad7f2bb4795b9e896ce9',
+        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        token1Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+      },
+    ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0xb5c064f955d8e7f38fe0460c556a72987494ee17': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x36b511A006cAc909DC56C2c24eb69CA304f74999',
+        token0Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+        token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
@@ -1706,6 +1738,66 @@ export const GammaPairs: {
         token0Address: '0x819d1daa794c1c46b841981b61cc978d95a17b8e',
         token1Address: '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035',
         pid: 26,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-100': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0xb6537224d80a9d9a86eaf11260a1b222f3be3120',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0x68286607a1d43602d880d349187c3c48c0fd05e6-3000': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x95dd2ecba4d0472d0440d764e9a540c6a99e79ee',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0x68286607A1d43602d880D349187c3c48c0fD05E6',
+        fee: FeeAmount.MEDIUM,
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0xa2036f0538221a77a3937f1379699f44945018d0-500': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x63ff2134dd9a32607cdb42f4aeaecac2c3cda71d',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0xa2036f0538221a77A3937F1379699f44945018d0',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1-500': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x258d485a17e1ba65ff6367d0e8b8acc70ab200f2',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0x615b25500403eb688be49221b303084d9cf0e5b4-100': [
+      {
+        type: Presets.STABLE,
+        title: 'Stable',
+        address: '0xe7db8674dfb04adde4511de6897d21f28f9cde7d',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0x615B25500403Eb688Be49221b303084D9Cf0E5B4',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-500': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0xfd01230422d426955ac0bbb85eeeb752eb108a6e',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9',
+        fee: FeeAmount.LOW,
       },
     ],
   },
@@ -2247,6 +2339,7 @@ export const GlobalData = {
       USDD[ChainId.MATIC],
       DAVOS[ChainId.MATIC],
       USDV[ChainId.MATIC],
+      EURO3[ChainId.MATIC],
     ],
     [ChainId.MUMBAI]: [],
     [ChainId.DOGECHAIN]: [

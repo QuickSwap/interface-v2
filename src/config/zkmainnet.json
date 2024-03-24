@@ -19,7 +19,7 @@
     "bestTrade": true,
     "proMode": false,
     "limitOrder": false,
-    "liquidityHub": false,
+    "liquidityHub": true,
     "crossChain": false
   },
   "pools": {
@@ -62,6 +62,9 @@
     "available": true
   },
   "perps": {
+    "available": true
+  },
+  "perpsV2": {
     "available": true
   },
   "bos": {

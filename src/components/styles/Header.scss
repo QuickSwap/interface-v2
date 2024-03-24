@@ -54,6 +54,14 @@
   }
 }
 
+.desktopLogo {
+  height: 60px;
+}
+
+.mobileLogo {
+  height: 40px;
+}
+
 .menuBar {
   padding: 0 24px;
   min-height: 88px;
@@ -63,6 +71,10 @@
   justify-content: space-between;
   & a {
     display: flex;
+  }
+  & > a {
+    position: relative;
+    z-index: 10;
   }
   & > div {
     display: flex;
@@ -107,15 +119,16 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
+  width: 100%;
   & .menuItem {
     cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     height: 36px;
-    padding: 0 24px;
-    margin-right: 6px;
+    padding: 0 20px;
     overflow: hidden;
     border-radius: 10px;
     color: $textSecondary;

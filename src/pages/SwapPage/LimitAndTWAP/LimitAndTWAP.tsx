@@ -33,7 +33,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
   const allTokens = useAllTokens();
   const toggleWalletModal = useWalletModalToggle();
   const onCurrencySelection = useSwapActionHandlers().onCurrencySelection;
-  const { isProMode } = useIsProMode();
+  const isProMode = useIsProMode();
   const { redirectWithCurrency } = useSwapRedirects();
 
   const onSrcSelect = useCallback(
@@ -62,6 +62,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
         dstTokenAddress: value.dstToken.address,
         dstTokenSymbol: value.dstToken.symbol,
         dstTokenUsdValue: Number(value.dstUSD),
+        chainId,
       };
       if (limit) {
         liquidityHubAnalytics.onLimitTrade(args);
@@ -69,7 +70,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
         liquidityHubAnalytics.onTwapTrade(args);
       }
     },
-    [limit],
+    [limit, chainId],
   );
 
   return (

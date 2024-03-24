@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useV3SwapPools } from './useV3SwapPools';
 import { useUserSingleHopOnly } from 'state/user/hooks';
 import { ChainId } from '@uniswap/sdk';
+import { getConfig } from 'config/index';
 
 /**
  * Returns true if poolA is equivalent to poolB
@@ -90,7 +91,9 @@ export function useAllV3Routes(
       };
     }
 
-    const singleIfWrapped = currencyIn.isNative || currencyOut.isNative;
+    // const singleIfWrapped = currencyIn.isNative || currencyOut.isNative;
+    const config = getConfig(chainId);
+    const maxHops = config['maxHops'] ?? 2;
 
     const routes = computeAllRoutes(
       currencyIn,
@@ -100,12 +103,7 @@ export function useAllV3Routes(
       [],
       [],
       currencyIn,
-      singleHopOnly || singleIfWrapped
-        ? 1
-        : currencyIn.chainId === ChainId.ZKEVM ||
-          currencyOut.chainId === ChainId.ZKEVM
-        ? 2
-        : 3,
+      singleHopOnly ? 1 : maxHops,
     );
 
     return { loading: false, routes };
