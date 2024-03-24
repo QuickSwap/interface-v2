@@ -1,22 +1,8 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import {
-    Button,
-    Flex,
-    Grid,
-    Heading,
-    Table,
-    TextField,
-    Container,
-    Box,
-    Text,
-} from '@radix-ui/themes';
 import { FC, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import '../styles/AccountModal.scss';
-import num1 from '../../assets/images/num1.svg';
-import num2 from '../../assets/images/num2.svg';
-import success from '../../assets/images/success.svg';
 import { useAccount } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
 
