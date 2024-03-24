@@ -1,20 +1,11 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.perpsV2Container {
+.container {
   display: flex;
   flex-direction: row;
-  width: 100%;
-}
-
-.perpsTokenSelect {
-  background-color: transparent;
-  height: 100%;
-  border-right: 1px solid $divider;
-  display: flex;
-  align-items: center;
-  padding-right: 0 16px;
-  cursor: pointer;
+  width: 100vw;
+  height: 200vh;
 }
 
 .graph_orderbook {
@@ -25,11 +16,13 @@
 .graph {
   flex: 60%;
   height: fit-content;
+  border: 1px solid #61675a;
 }
 
 .orderbook {
   flex: 15%;
   height: fit-content;
+  border: 1px solid #61675a;
 }
 
 .graph_footer {
@@ -45,6 +38,7 @@
 .other {
   flex: 10%;
   height: fit-content;
+  border: 1px solid #61675a;
   height: 100vh;
 }
 
@@ -53,6 +47,7 @@
   justify-content: space-between;
   padding: 10px;
   color: white;
+  border-bottom: 1px solid #61675a;
 }
 
 .kingFooter {
@@ -126,17 +121,28 @@
 .dropdown select:focus {
   outline: none;
 }
+.orders{
+  display: flex;
+  flex-direction: column;
+}
+.order{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #61675a;
+}
 .footer_data {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  height: 20vh;
+  height: 2vh;
   color: #ccced9;
   font-family: Inter;
   font-weight: 500;
   font-size: 12px;
 }
-.tab-header {
+.tab-header{
   display: flex;
   justify-content: space-between;
   padding: 7px 68px;
