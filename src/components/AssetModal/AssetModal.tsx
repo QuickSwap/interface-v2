@@ -6,6 +6,7 @@ import 'components/styles/AssetModal.scss';
 import ArrowDownward from '../../assets/images/downward-arrow.svg';
 import { useSelectedWallet } from '../../state/user/hooks';
 import { getConnections } from '../../connectors';
+import NotifyModal from '../NotifyModal';
 import {
   useAccount,
   useChains,
@@ -34,6 +35,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
     : undefined;
   const { account, state } = useAccount();
   const collateral = useCollateral();
+    const [notifications, setNotifications] = useState(false);
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
@@ -181,11 +183,11 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
                   </small>
                   <input
-                    type='text'
+
                     value={
                       selectedTab === 'deposit' ? depositAmount : withdrawAmount
                     }
-                    min='0'
+                    type='number'
                     onChange={(event) => {
                       const value = event.target.value.replace(/\D/, '');
                       selectedTab === 'deposit'
@@ -222,7 +224,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   >
                     Available:{' '}
                     <span style={{ fontSize: '14px', marginLeft: '4px' }}>
-                      {deposit.balance}
+                        {parseFloat(deposit.balance).toFixed(2)}
                     </span>
                   </p>
                 </Box>
@@ -323,7 +325,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   >
                     Available:{' '}
                     <span style={{ fontSize: '14px', marginLeft: '4px' }}>
-                      {collateral.availableBalance}
+                      {collateral.availableBalance?.toFixed(2)}
                     </span>
                   </span>
                 </Box>
@@ -383,6 +385,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   } else {
                     deposit.setQuantity(depositAmount.toString());
                     const tx = await deposit.deposit();
+                      setNotifications(true);
                   }
                 }}
                 // onClick={() => {
@@ -422,6 +425,10 @@ const AssetModal: React.FC<AssetModalProps> = ({
           </Box>
         </Box>
       </Box>
+        <NotifyModal
+            open={notifications}
+            onClose={() => setNotifications(false)}
+        />
     </CustomModal>
   );
 };
