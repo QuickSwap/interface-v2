@@ -237,3 +237,73 @@
     padding: 10px;
   }
 }
+
+.leverageManageButton {
+  background-color: transparent;
+  border: 1px solid $primary;
+  color: $primary;
+  height: 26px;
+  border-radius: 6px;
+  &:hover {
+    background-color: transparent;
+  }
+  & span {
+    font-size: 12px;
+  }
+}
+
+.leverageGradient {
+  width: 100%;
+  height: 8px;
+  border-radius: 8px;
+  background-image: linear-gradient(to right, #24403a, #3f3c2f 48%, #402230);
+}
+
+.leverageTypesWrapper {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  & div {
+    width: 50%;
+    height: 36px;
+    background-color: $bgPalette;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+
+.leverageInputWrapper {
+  height: 36px;
+  background-color: $bgPalette;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  & div {
+    display: flex;
+    flex: 1;
+    & input {
+      flex: 1;
+      height: 100%;
+      background-color: transparent;
+      color: $textPrimary;
+    }
+  }
+}
+
+.leverageSquareWrapper {
+  display: flex;
+  align-items: center;
+  & svg {
+    width: 15px;
+    height: 15px;
+    color: $textSecondary;
+  }
+  & div {
+    flex: 1;
+    height: 2px;
+    background-color: $secondary1;
+  }
+}
