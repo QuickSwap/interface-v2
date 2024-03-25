@@ -1461,6 +1461,15 @@ export const GammaPairs: {
         token1Address: '0xb5c064f955d8e7f38fe0460c556a72987494ee17',
       },
     ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0xdcb72ae4d5dc6ae274461d57e65db8d50d0a33ad': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0x0566e8e9bae925894d80d9e0a4fd9a72aea1a2f2',
+        token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        token1Address: '0xdCb72AE4d5dc6Ae274461d57E65dB8D50d0a33AD',
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
