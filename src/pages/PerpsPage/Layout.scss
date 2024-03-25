@@ -1,6 +1,15 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
+.perpsTokenSelect {
+  cursor: pointer;
+  border-right: 1px solid $divider;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .container {
   display: flex;
   flex-direction: row;
@@ -121,11 +130,11 @@
 .dropdown select:focus {
   outline: none;
 }
-.orders{
+.orders {
   display: flex;
   flex-direction: column;
 }
-.order{
+.order {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -142,7 +151,7 @@
   font-weight: 500;
   font-size: 12px;
 }
-.tab-header{
+.tab-header {
   display: flex;
   justify-content: space-between;
   padding: 7px 68px;

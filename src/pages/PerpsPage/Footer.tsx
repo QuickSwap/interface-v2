@@ -1,7 +1,7 @@
 import React from 'react';
-import {useOrderStream} from '@orderly.network/hooks';
-import {OrderSide, OrderStatus, OrderType} from '@orderly.network/types';
-import './Layout.css';
+import { useOrderStream } from '@orderly.network/hooks';
+import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
+import './Layout.scss';
 
 type Order = {
   price: number;
@@ -15,9 +15,9 @@ type Order = {
   average_executed_price: number;
 };
 export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
-                                                                           token,
-                                                                           selectedTab,
-                                                                         }) => {
+  token,
+  selectedTab,
+}) => {
   const [orderStatus, setOrderStatus] = React.useState(OrderStatus.COMPLETED);
   // switch (selectedTab) {
   //   case 'Portfolio':
@@ -44,28 +44,28 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
   // }
 
   const [o] = useOrderStream({
-    symbol: token ,
+    symbol: token,
     status: OrderStatus.COMPLETED,
   });
   const orders = o as Order[] | null;
   console.log(orders);
   return (
-      <div className='orders'>
-        {orders && orders.length > 0 ? (
-            orders.map((order) => (
-                <div key={order?.order_id} className='order'>
-                  <div>{order?.price}</div>
-                  <div>{order?.quantity}</div>
-                  <div>{order?.created_time}</div>
-                  <div>{order?.side}</div>
-                  <div>{order?.type}</div>
-                  <div>{order?.status}</div>
-                  <div>{order?.average_executed_price}</div>
-                </div>
-            ))
-        ) : (
-            <div>No orders available</div>
-        )}
-      </div>
+    <div className='orders'>
+      {orders && orders.length > 0 ? (
+        orders.map((order) => (
+          <div key={order?.order_id} className='order'>
+            <div>{order?.price}</div>
+            <div>{order?.quantity}</div>
+            <div>{order?.created_time}</div>
+            <div>{order?.side}</div>
+            <div>{order?.type}</div>
+            <div>{order?.status}</div>
+            <div>{order?.average_executed_price}</div>
+          </div>
+        ))
+      ) : (
+        <div>No orders available</div>
+      )}
+    </div>
   );
 };

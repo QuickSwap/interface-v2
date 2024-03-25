@@ -3,10 +3,10 @@ import { OrderBook } from '@orderly.network/react';
 import { useOrderbookStream, useSymbolsInfo } from '@orderly.network/hooks';
 import '@orderly.network/react/dist/styles.css';
 
-export const OrderbookV2: React.FC<{ token: any; setOrderQuantity: any }> = ({
-  token,
-  setOrderQuantity,
-}) => {
+export const OrderbookV2: React.FC<{
+  token: any;
+  setOrderQuantity: (item: number[]) => void;
+}> = ({ token, setOrderQuantity }) => {
   const [symbol, setSymbol] = useState('PERP_ETH_USDC');
   const config = useSymbolsInfo();
   const symbolInfo = config ? config[token] : {};
@@ -18,7 +18,7 @@ export const OrderbookV2: React.FC<{ token: any; setOrderQuantity: any }> = ({
     level: 7,
   });
 
-  const handleItemClick = (item) => {
+  const handleItemClick = (item: number[]) => {
     setOrderQuantity(item);
   };
 
@@ -26,12 +26,12 @@ export const OrderbookV2: React.FC<{ token: any; setOrderQuantity: any }> = ({
     <div>
       <OrderBook
         level={7}
-        asks={data.asks}
-        bids={data.bids}
-        markPrice={data.markPrice}
-        lastPrice={data.middlePrice!}
-        depth={allDepths}
-        activeDepth={depth}
+        asks={data.asks ?? []}
+        bids={data.bids ?? []}
+        markPrice={data?.markPrice ?? 0}
+        lastPrice={data.middlePrice ?? []}
+        depth={allDepths ?? []}
+        activeDepth={depth ?? 0}
         base={symbolInfo('base')}
         quote={symbolInfo('quote')}
         isLoading={isLoading}

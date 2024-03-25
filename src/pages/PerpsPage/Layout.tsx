@@ -23,7 +23,7 @@ export const Layout = () => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
-  const [orderQuantity, setOrderQuantity] = useState(['']);
+  const [orderQuantity, setOrderQuantity] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState<'Orderbook' | 'Market'>(
     'Orderbook',
   );

@@ -15,7 +15,7 @@ import {
   OrderSide,
   OrderStatus,
   OrderType,
-    OrderEntity,
+  OrderEntity,
 } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Simulate } from 'react-dom/test-utils';
@@ -60,16 +60,16 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     side: 'BUY',
     order_symbol: perpToken,
   });
-    const { onSubmit, submit } = useOrderEntry(
-        {
-            symbol: perpToken,
-            side: order.side,
-            order_type: order.order_type,
-            order_price: order.order_price,
-            order_quantity: order.order_quantity,
-        },
-        { watchOrderbook: true },
-    );
+  const { onSubmit, submit } = useOrderEntry(
+    {
+      symbol: perpToken,
+      side: order.side,
+      order_type: order.order_type,
+      order_price: order.order_price,
+      order_quantity: order.order_quantity,
+    },
+    { watchOrderbook: true },
+  );
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
@@ -534,9 +534,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               cursor: 'pointer',
             }}
             onClick={async () => {
-                const order1 = await submit();
-                console.log(order1);
-                await onSubmit(order1);
+              const order1 = await submit();
+              console.log(order1);
+              await onSubmit(order1);
             }}
           >
             Create Order

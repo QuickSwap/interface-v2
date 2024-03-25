@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { OrderBook } from '@orderly.network/react';
 import { useOrderbookStream, useSymbolsInfo } from '@orderly.network/hooks';
 
-export const MyOrderBook = () => {
+export const MyOrderBook: React.FC = () => {
   const [symbol, setSymbol] = useState('PERP_ETH_USDC');
   const config = useSymbolsInfo();
   const symbolInfo = config ? config[symbol] : {};
@@ -18,12 +18,12 @@ export const MyOrderBook = () => {
     <div className='bg-neutral-900 px-5 py-3 w-[300px] rounded-lg h-[480px]'>
       <OrderBook
         level={7}
-        asks={data.asks}
-        bids={data.bids}
-        markPrice={data.markPrice}
-        lastPrice={data.middlePrice!}
-        depth={allDepths}
-        activeDepth={depth}
+        asks={data.asks ?? []}
+        bids={data.bids ?? []}
+        markPrice={data.markPrice ?? 0}
+        lastPrice={data.middlePrice ?? []}
+        depth={allDepths ?? []}
+        activeDepth={depth ?? 0}
         base={symbolInfo('base')}
         quote={symbolInfo('quote')}
         isLoading={isLoading}

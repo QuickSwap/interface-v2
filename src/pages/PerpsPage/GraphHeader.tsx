@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { SearchOutlined } from '@material-ui/icons';
-import { Box, Button, Popover } from '@material-ui/core';
+import { Box, Popover } from '@material-ui/core';
+import { formatNumber } from 'utils';
+import { WSMessage } from '@orderly.network/types';
 
 interface MarketData {
   symbol: string;
@@ -28,7 +30,7 @@ interface Props {
 
 export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   const { data } = useMarketsStream();
-  const [token, setToken] = useState<MarketData | null>();
+  const [tokenSymbol, setTokenSymbol] = useState<string | null>();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
@@ -42,19 +44,17 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   };
 
   const open = Boolean(anchorEl);
-  const handleTokenSelect = (token: MarketData) => {
-    setToken(token);
+  const handleTokenSelect = (token: any) => {
+    setTokenSymbol(token.symbol);
     setTokenName(token.symbol);
     handleClose();
   };
-  const perpEthUsdcToken = data?.find(
-    (token) => token.symbol === 'PERP_ETH_USDC',
-  );
+
   useEffect(() => {
-    if (perpEthUsdcToken) {
-      setToken(perpEthUsdcToken);
-    }
-  }, [perpEthUsdcToken]);
+    setTokenSymbol('PERP_ETH_USDC');
+  }, []);
+
+  const token: any = data?.find((item) => item.symbol === tokenSymbol);
 
   return (
     <Box className='border flex items-center' height='48px' gridGap={12}>
@@ -122,14 +122,13 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
             }}
           >
             {data ? (
-              data.map((item, index) => (
+              data.map((item: any, index) => (
                 <tr
                   key={index}
                   onClick={() => handleTokenSelect(item)}
                   style={{
                     margin: '7px 0',
                     cursor: 'pointer',
-                    ':hover': { backgroundColor: '#2c303e' },
                   }}
                   className='hover-row'
                 >
@@ -143,19 +142,19 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                     {item.symbol}
                   </td>
                   <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
-                    {item.index_price}
+                    {item?.index_price}
                   </td>
                   <td
                     style={{
                       textAlign: 'end',
                       verticalAlign: 'middle',
-                      color: item?.change < 0 ? 'red' : '#51b29f',
+                      color: (item?.change ?? 0) < 0 ? 'red' : '#51b29f',
                     }}
                   >
-                    {item?.change}
+                    {formatNumber(item?.change)}
                   </td>
                   <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
-                    {item['24h_volume']}
+                    {item?.['24h_volume']}
                   </td>
                 </tr>
               ))
@@ -174,148 +173,37 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
       </Popover>
 
       {/* Render Token Info */}
-      <p
-        style={{
-          fontFamily: 'Inter',
-          fontSize: 16,
-          fontWeight: 500,
-          color: ' #51b29f',
-        }}
-      >
-        {token?.mark_price}
-      </p>
+      <p>{token?.mark_price}</p>
       {/* Additional Flex Columns */}
       <Box>
+        <p className='span text-secondary'>24h Change</p>
         <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#61657a',
-          }}
+          className={`span weight-500 ${
+            (token?.change ?? 0) < 0 ? 'text-error' : 'text-success'
+          }`}
         >
-          24h Change
-        </p>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: 500,
-            color: token?.change < 0 ? 'red' : '#51b29f',
-          }}
-        >
-          {token?.change}
+          {formatNumber(token?.change)}
         </p>
       </Box>
       <Box>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#61657a',
-          }}
-        >
-          Mark
-        </p>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#c7cad9',
-          }}
-        >
-          {token?.mark_price}
-        </p>
+        <p className='span text-secondary'>Mark</p>
+        <p className='span'>{token?.mark_price}</p>
       </Box>
       <Box>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#61657a',
-          }}
-        >
-          Index
-        </p>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#c7cad9',
-          }}
-        >
-          {token?.index_price}
-        </p>
+        <p className='span text-secondary'>Index</p>
+        <p className='span'>{token?.index_price}</p>
       </Box>
       <Box>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#61657a',
-          }}
-        >
-          24h Volume
-        </p>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#c7cad9',
-          }}
-        >
-          {token?.['24h_volume']}
-        </p>
+        <p className='span text-secondary'>24h Volume</p>
+        <p className='span'>{token?.['24h_volume']}</p>
       </Box>
       <Box>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#61657a',
-          }}
-        >
-          Funding Rate
-        </p>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#c7cad9',
-          }}
-        >
-          {token?.est_funding_rate}
-        </p>
+        <p className='span text-secondary'>Funding Rate</p>
+        <p className='span'>{token?.est_funding_rate}</p>
       </Box>
       <Box>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 11,
-            fontWeight: 500,
-            color: '#61657a',
-          }}
-        >
-          Open Interest
-        </p>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: 500,
-            color: '#c7cad9',
-          }}
-        >
-          {token?.open_interest}
-        </p>
+        <p className='span text-secondary'>Open Interest</p>
+        <p className='span'>{token?.open_interest}</p>
       </Box>
     </Box>
   );
