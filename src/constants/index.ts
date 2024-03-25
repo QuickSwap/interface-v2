@@ -1811,6 +1811,42 @@ export const GammaPairs: {
         fee: FeeAmount.LOW,
       },
     ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0x68286607a1d43602d880d349187c3c48c0fd05e6': [
+      {
+        type: Presets.GAMMA_WIDE,
+        title: 'Wide',
+        address: '0xD2B816351c7eE21c41f540065bed5f55159D49bD',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0x68286607A1d43602d880D349187c3c48c0fD05E6',
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x497729103a496C445638Aa0A500f9309B1609FD8',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9',
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0xa2036f0538221a77a3937f1379699f44945018d0': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x12A848F8455F7691209DCd0416dF7Ef91Af6D696',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0xa2036f0538221a77A3937F1379699f44945018d0',
+      },
+    ],
+    '0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x2FD6FD1E3f1fE24cC1422D22e62884A4528d1A24',
+        token0Address: '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5',
+        token1Address: '0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1',
+      },
+    ],
   },
   [ChainId.MANTA]: {
     '0x0dc808adce2099a9f62aa87d9670745aba741746-0xb73603c5d87fa094b7314c74ace2e64d165016fb-500': [
