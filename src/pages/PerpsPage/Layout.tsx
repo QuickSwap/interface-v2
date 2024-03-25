@@ -5,19 +5,8 @@ import { OrderbookV2 } from './OrderbookV2';
 import { Market } from './Market';
 import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
-import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import { Footer } from './Footer';
 
-type Order = {
-  price: number;
-  quantity: number;
-  created_time: number;
-  order_id: number;
-  side: OrderSide;
-  type: OrderType;
-  status: OrderStatus;
-  executed: number;
-};
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
   const [selectedItem, setSelectedItem] = useState('Portfolio');

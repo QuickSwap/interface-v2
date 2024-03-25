@@ -96,36 +96,16 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         }}
       >
         {windowWidth > 768 && (
-          <Box>
-            <Box style={{ margin: '10px 15px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontFamily: 'Inter',
-                  fontWeight: '500',
-                  color: '#61657a',
-                }}
-              >
-                Balance
-              </p>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontFamily: 'Inter',
-                  fontWeight: '500',
-                  color: '#61657a',
-                }}
-              >
-                {deposit?.balance} {token?.symbol}
+          <Box className='flex items-center justify-between' gridGap={8}>
+            <Box>
+              <p className='span text-secondary'>Total Balance</p>
+              <p className='span'>
+                {deposit?.balance}{' '}
+                <span className='text-secondary'>{token?.symbol}</span>
               </p>
             </Box>
-            <Box style={{ marginRight: '15px' }}>
+            <Box className='flex items-center'>
               <Button
-                style={{
-                  color: '#448aff',
-                  borderColor: '#448aff',
-                  cursor: 'pointer',
-                }}
                 disabled={!quickSwapAccount}
                 onClick={() => {
                   setModalOpen(true);
@@ -133,12 +113,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               >
                 Manage
               </Button>
-              <img
-                src={Arrow}
-                width='16'
-                height='16'
-                style={{ margin: '5px 0 5px 16px' }}
-              />
+              <img src={Arrow} width='16' height='16' />
             </Box>
           </Box>
         )}
@@ -163,50 +138,14 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 margin: '0px 15px',
               }}
             />
-            <Box>
-              <Box style={{ margin: '10px 15px' }}>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                    color: '#61657a',
-                  }}
-                >
-                  Account Leverage
-                </p>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                    color: '#61657a',
-                  }}
-                >
-                  0.00x/-x
-                </p>
+            <Box className='flex justify-between' gridGap={8}>
+              <Box>
+                <p className='span text-secondary'>Account Leverage</p>
+                <p className='span'>0.00x/-x</p>
               </Box>
-              <Box style={{ margin: '10px 15px' }}>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                    color: '#61657a',
-                  }}
-                >
-                  Margin Ratio
-                </p>
-                <p
-                  style={{
-                    fontSize: '12px',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                    color: '#61657a',
-                  }}
-                >
-                  100%
-                </p>
+              <Box textAlign='right'>
+                <p className='span text-secondary'>Margin Ratio</p>
+                <p className='span'>100%</p>
               </Box>
             </Box>
             <Box
@@ -219,90 +158,37 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             />
           </div>
         )}
-        <Box style={{ cursor: 'pointer' }}>
-          <Box
-            style={{
-              width: 100,
-              height: 36,
-              padding: '0 43px',
-              borderRadius: '8px',
-              fontSize: '12px',
-              color: '#fff',
-              fontFamily: 'Inter',
-              backgroundColor:
-                order.side === 'BUY' ? 'rgb(4, 109, 4)' : '#1b1e29',
-              fontWeight: 500,
-              textAlign: 'center',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onClick={() => setOrder({ ...order, side: 'BUY' })}
-          >
+        <Box className='flex'>
+          <Box onClick={() => setOrder({ ...order, side: 'BUY' })}>
             Buy/Long
           </Box>
-          <Box
-            style={{
-              width: 100,
-              height: 36,
-              padding: '0 43px',
-              borderRadius: '8px',
-              backgroundColor: order.side === 'SELL' ? 'red' : '#1b1e29',
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#fff',
-              fontFamily: 'Inter',
-              textAlign: 'center',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onClick={() => setOrder({ ...order, side: 'SELL' })}
-          >
+          <Box onClick={() => setOrder({ ...order, side: 'SELL' })}>
             Sell/Short
           </Box>
         </Box>
-        <Box
-          style={{
-            margin: '16px 15px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            fontSize: '12px',
-          }}
-        >
-          <p style={{ color: ' #61657a' }}>
-            Available {collateral.availableBalance} USDC
-          </p>
+        <Box className='flex justify-between'>
+          <p className='span'>Available {collateral.availableBalance} USDC</p>
           <p
-            style={{ color: '#448aff', cursor: 'pointer' }}
+            className='span text-primary cursor-pointer'
             onClick={() => quickSwapAccount && setModalOpen(true)}
           >
             Deposit
           </p>
         </Box>
-        <Box
-          style={{
-            margin: '16px 15px',
-            fontWeight: 500,
-            fontFamily: 'Inter',
-            fontSize: '12px',
-          }}
-        >
+        <Box className='flex' gridGap={16}>
           <p
+            className={`span cursor-pointer ${
+              order.order_type === 'LIMIT' ? '' : 'text-secondary'
+            }`}
             onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
-            style={{
-              cursor: 'pointer',
-              color: order.order_type === 'LIMIT' ? '#fff' : '#61657a',
-            }}
           >
             Limit
           </p>
           <p
+            className={`span cursor-pointer ${
+              order.order_type === 'MARKET' ? '' : 'text-secondary'
+            }`}
             onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
-            style={{
-              color: order.order_type === 'MARKET' ? '#fff' : '#61657a',
-              cursor: 'pointer',
-            }}
           >
             Market
           </p>

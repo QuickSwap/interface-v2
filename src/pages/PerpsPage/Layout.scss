@@ -10,11 +10,9 @@
   align-items: center;
 }
 
-.container {
+.perpsV2Container {
   display: flex;
-  flex-direction: row;
   width: 100vw;
-  height: 200vh;
 }
 
 .graph_orderbook {
@@ -48,7 +46,7 @@
   flex: 10%;
   height: fit-content;
   border: 1px solid #61675a;
-  height: 100vh;
+  height: 100%;
 }
 
 .perp_footer {
@@ -70,10 +68,9 @@
   display: flex;
   flex-direction: row;
   font-size: 14px;
-  font-family: Inter;
   font-weight: 500;
   color: #61675a;
-  justify-content: start;
+  justify-content: flex-start;
   border-bottom: 1px solid #61675a;
   margin: 10px 5px;
 }
@@ -174,17 +171,8 @@
 .orderbook-leverage-container {
   display: none;
 }
-footer_data_ul {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0px 10px;
-  list-style: none;
-  flex-direction: row;
-  align-items: center;
-}
 
-@media (max-width: 768px) {
+@include media('screen', '<tablet') {
   .container {
     flex-direction: column;
     height: max-content;

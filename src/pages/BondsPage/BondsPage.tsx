@@ -210,7 +210,7 @@ const BondsPage: React.FC = () => {
           </Grid>
           <Box my={3} className='flex justify-center items-center' gridGap={6}>
             <p>{t('poweredBy')}</p>
-            <img src={ApeSwapLogo} height='16px' />
+            <img src={ApeSwapLogo} className='apeswapLogo' />
           </Box>
         </Box>
         <BondsList search={search} />
