@@ -145,6 +145,7 @@
     "@tanstack/react-query": "^4.32.0",
     "@uauth/web3-react": "^2.8.1",
     "@venly/web3-provider": "3.1.0-develop.0",
+    "@web3modal/ethers5": "^4.1.1",
     "apexcharts": "3.32.1",
     "i18next-http-backend": "^1.4.1",
     "numbro": "^2.3.5",

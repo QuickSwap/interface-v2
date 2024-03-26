@@ -67,6 +67,38 @@ import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
+
+const polygon = {
+  chainId: 137,
+  name: 'Polygon',
+  currency: 'MATIC',
+  explorerUrl: 'https://polygonscan.com',
+  rpcUrl: 'https://polygon-rpc.com',
+};
+
+const metadata = {
+  name: 'QuickSwap',
+  description: 'QuickSwap',
+  url: 'https://quickswap.exchange',
+  icons: [],
+};
+
+// 4. Create Ethers config
+const ethersConfig = defaultConfig({
+  /*Required*/
+  metadata,
+
+  defaultChainId: 137,
+});
+
+createWeb3Modal({
+  ethersConfig,
+  chains: [polygon],
+  projectId,
+  enableAnalytics: true,
+});
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;

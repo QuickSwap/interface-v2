@@ -383,7 +383,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         <Box>
           {!parsedChain && <NetworkSelection />}
 
-          {account ? (
+          {/* {account ? (
             <Box
               id='web3-status-connected'
               className='accountDetails'
@@ -399,7 +399,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
             >
               {t('connectWallet')}
             </Box>
-          )}
+          )} */}
+          <w3m-button />
         </Box>
       </Box>
     </Box>
