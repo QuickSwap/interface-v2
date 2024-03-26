@@ -6,8 +6,8 @@ import { getWalletKeys } from 'utils';
 
 const StatusIcon: React.FC = () => {
   const { t } = useTranslation();
-  const { connector } = useActiveWeb3React();
-  const icon = getWalletKeys(connector).map(
+  const { chainId, connector } = useActiveWeb3React();
+  const icon = getWalletKeys(connector, chainId).map(
     (connection) => connection.iconName,
   )[0];
   return (
