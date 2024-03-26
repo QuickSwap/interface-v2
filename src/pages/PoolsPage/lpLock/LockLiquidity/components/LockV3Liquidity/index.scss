@@ -1,0 +1,28 @@
+@use 'styles/variables' as *;
+
+.inputWrapper {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid $secondary2;
+  overflow: hidden;
+  padding: 12px 10px 12px 10px;
+}
+
+.errorInput {
+  border-color: $errorMain
+}
+
+.durationWrapper {
+  padding: 2px 8px 1px 8px;
+  border-radius: 10px;
+  background-color: $secondary3;
+  cursor: pointer;
+  & small {
+    color: $primary;
+    font-weight: 600
+  }
+}
+
+.selectedDurationWrapper {
+  border: 1px solid $primary;
+}

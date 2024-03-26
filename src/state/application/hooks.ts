@@ -17,6 +17,7 @@ import {
   updateTokenDetails,
   updateMaticPrice,
   updateIsV2,
+  updateIsLpLock,
   updateUDDomain,
   updateSoulZap,
   updateOpenNetworkSelection,
@@ -267,6 +268,21 @@ export function useIsV2(): {
     [dispatch],
   );
   return { isV2, updateIsV2: _updateIsV2 };
+}
+
+export function useIsLpLock(): {
+  isLpLock: boolean | undefined;
+  updateIsLpLock: (isLpLock: boolean) => void;
+} {
+  const isLpLock = useSelector((state: AppState) => state.application.isLpLock);
+  const dispatch = useDispatch();
+  const _updateIsLpLock = useCallback(
+    (isLpLock: boolean) => {
+      dispatch(updateIsLpLock(isLpLock));
+    },
+    [dispatch],
+  );
+  return { isLpLock, updateIsLpLock: _updateIsLpLock };
 }
 
 export function useUDDomain(): {

@@ -16,6 +16,7 @@ import {
   updateTokenDetails,
   updateMaticPrice,
   updateIsV2,
+  updateIsLpLock,
   updateUDDomain,
   updateSoulZap,
   updateOpenNetworkSelection,
@@ -60,6 +61,7 @@ export interface ApplicationState {
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
   readonly isV2: boolean | undefined;
+  readonly isLpLock: boolean | undefined;
   readonly udDomain: string | undefined;
   readonly soulZap: SoulZap_UniV2_ApeBond | null | undefined;
   readonly openNetworkSelection: boolean;
@@ -78,6 +80,7 @@ const initialState: ApplicationState = {
   tokenChartData: null,
   tokenDetails: [],
   isV2: undefined,
+  isLpLock: undefined,
   udDomain: undefined,
   soulZap: undefined,
   openNetworkSelection: false,
@@ -196,6 +199,9 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateIsV2, (state, { payload }) => {
       state.isV2 = payload;
+    })
+    .addCase(updateIsLpLock, (state, { payload }) => {
+      state.isLpLock = payload;
     })
     .addCase(updateUDDomain, (state, { payload }) => {
       state.udDomain = payload;
