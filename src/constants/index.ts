@@ -2102,6 +2102,38 @@ export const GammaPairs: {
       },
     ],
   },
+  [ChainId.IMX]: {
+    '0x3a0c2ba54d6cbd3121f01b96dfd20e99d1696c9d-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-500': [
+      {
+        address: '0x6e9d701fb6478ed5972a37886c2ba6c82a4cbb4c',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x3a0c2ba54d6cbd3121f01b96dfd20e99d1696c9d-0xb00ed913aaff8280c17bff33cce82fe6d79e85e8-3000': [
+      {
+        address: '0x4476433bc06210ba265d95736ebc630544d397d9',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
+        token1Address: '0xb00ed913aAFf8280C17BfF33CcE82fE6D79e85e8',
+        fee: FeeAmount.MEDIUM,
+      },
+    ],
+    '0x3a0c2ba54d6cbd3121f01b96dfd20e99d1696c9d-0x52a6c53869ce09a731cd772f245b97a4401d3348-3000': [
+      {
+        address: '0x6d257b17be32d4e7ebfebc3a337bf9c231da5aa7',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
+        token1Address: '0x52A6c53869Ce09a731CD772f245b97A4401d3348',
+        fee: FeeAmount.MEDIUM,
+      },
+    ],
+  },
 };
 
 export const UnipilotVaults: {
