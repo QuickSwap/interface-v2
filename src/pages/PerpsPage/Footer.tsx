@@ -48,7 +48,6 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
     status: OrderStatus.COMPLETED,
   });
   const orders = o as Order[] | null;
-  console.log(orders);
   return (
     <div className='orders'>
       {orders && orders.length > 0 ? (
