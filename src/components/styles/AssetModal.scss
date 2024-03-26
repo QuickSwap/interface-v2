@@ -1,7 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-
 .assetModalWrapper {
   max-width: 450px;
   @include media('screen', '<phone') {
@@ -9,3 +8,27 @@
   }
 }
 
+.assetTabsWrapper {
+  display: flex;
+  align-items: center;
+  & p {
+    border-bottom: 2px solid transparent;
+    color: $textSecondary;
+    padding-bottom: 8px;
+    cursor: pointer;
+    &.selectedAssetTab {
+      color: $textPrimary;
+      border-bottom: 2px solid $textPrimary;
+    }
+  }
+}
+
+.assetInfoWrapper {
+  width: 50%;
+  height: 40px;
+  background-color: $secondary1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}

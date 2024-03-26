@@ -8,7 +8,7 @@ import {
   useCollateral,
   useDeposit,
   useOrderEntry,
-  usePositionStream
+  usePositionStream,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
 import { AccountStatusEnum } from '@orderly.network/types';
@@ -22,13 +22,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   perpToken,
   orderQuantity,
 }) => {
-   const [x,positionInfo]=usePositionStream(perpToken)
+  const [x, positionInfo] = usePositionStream(perpToken);
 
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
-  const [clickedIndex, setClickedIndex] = useState<number | null>(0);
-
+  const [clickedIndex, setClickedIndex] = useState<number>(0);
 
   const { account, state } = useAccount();
   const token = useMemo(() => {
@@ -198,46 +197,56 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             </span>
           </Box>
         </Box>
-        <Box className='leverageSquareWrapper' style={{cursor:'pointer'}} my={2}>
+        <Box
+          className='leverageSquareWrapper'
+          style={{ cursor: 'pointer' }}
+          my={2}
+        >
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
-            onClick={()=>handleClick(0)}
+            onClick={() => handleClick(0)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
-            onClick={()=>handleClick(1)}
+            onClick={() => handleClick(1)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
-            onClick={()=>handleClick(2)}
+            onClick={() => handleClick(2)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
-            onClick={()=>handleClick(3)}
+            onClick={() => handleClick(3)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
-            style={{ transform: 'rotate(45deg)' }} 
-            onClick={()=>handleClick(4)}
+            style={{ transform: 'rotate(45deg)' }}
+            onClick={() => handleClick(4)}
           />
         </Box>
         <Box className='flex justify-between'>
-          <p className='span text-success'>{clickedIndex*25}%</p>
+          <p className='span text-success'>{clickedIndex * 25}%</p>
           <p className='span text-secondary'>
-            Max buy <span className='text-success'> {(collateral.availableBalance)*(clickedIndex*25)/100}</span>
+            Max buy{' '}
+            <span className='text-success'>
+              {' '}
+              {(collateral.availableBalance * (clickedIndex * 25)) / 100}
+            </span>
           </p>
         </Box>
         <Box className='leverageInputWrapper flex justify-between' my={2}>
           <span className='text-secondary'>Total</span>
-          <span className='text-secondary'>{order.order_price*order.order_quantity}  USDC</span>
+          <span className='text-secondary'>
+            {order.order_price * order.order_quantity} USDC
+          </span>
         </Box>
         <Box className='border-top flex justify-between items-center'>
           <Box>
@@ -250,15 +259,14 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             onClick={() => {
               setAccountModalOpen(true);
             }}
-              style={{
-                width: 267,
-                height: 40,
-                margin: '16px 15px',
-                padding: '11px 50px 12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-              }}
-            
+            style={{
+              width: 267,
+              height: 40,
+              margin: '16px 15px',
+              padding: '11px 50px 12px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+            }}
           >
             Sign In
           </Button>

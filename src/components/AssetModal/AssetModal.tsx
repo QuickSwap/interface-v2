@@ -5,7 +5,6 @@ import { useActiveWeb3React, useGetConnection } from 'hooks';
 import 'components/styles/AssetModal.scss';
 import ArrowDownward from '../../assets/images/downward-arrow.svg';
 import { useSelectedWallet } from '../../state/user/hooks';
-import { getConnections } from '../../connectors';
 import NotifyModal from '../NotifyModal';
 import {
   useAccount,
@@ -15,6 +14,7 @@ import {
   useWithdraw,
 } from '@orderly.network/hooks';
 import { Box, Button } from '@material-ui/core';
+
 interface AssetModalProps {
   open: boolean;
   onClose: () => void;
@@ -55,49 +55,28 @@ const AssetModal: React.FC<AssetModalProps> = ({
       modalWrapper='modalWrapperV3 assetModalWrapper'
     >
       <Box
+        padding={2}
         className='flex items-center justify-center flex-col'
-        style={{ margin: '1.5rem' }}
         gridGap='3'
       >
-        <Box
-          style={{
-            padding: '10px 15px',
-            width: 432,
-            height: 550,
-            borderRadius: 16,
-            boxShadow: '0 0 32px 0 rgba(46, 48, 60, 0.12)',
-            backgroundColor: '#1b1e29',
-          }}
-        >
-          <Box className='flex items-start justify-between' gridGap='2'>
-            <Box style={{ cursor: 'pointer' }}>
-              <h2
-                style={{
-                  color: selectedTab === 'deposit' ? '#ebecf2' : '#61657a',
-                  fontFamily: 'Inter',
-                  margin: '0 5px',
-                  fontSize: '16px',
-                  borderBottom:
-                    selectedTab === 'deposit' ? '2px solid #fff' : 'none',
-                }}
-                onClick={() => setSelectedTab('deposit')}
-              >
-                Deposit
-              </h2>
-              <h5
-                style={{
-                  color: selectedTab === 'withdraw' ? '#ebecf2' : '#61657a',
-                  fontFamily: 'Inter',
-                  margin: '0 5px',
-                  fontSize: '16px',
-                  borderBottom:
-                    selectedTab === 'withdraw' ? '2px solid #fff' : 'none',
-                }}
-                onClick={() => setSelectedTab('withdraw')}
-              >
-                Withdraw
-              </h5>
-            </Box>
+        <Box>
+          <Box className='assetTabsWrapper' gridGap={24}>
+            <p
+              className={`${
+                selectedTab === 'deposit' ? 'selectedAssetTab' : ''
+              }`}
+              onClick={() => setSelectedTab('deposit')}
+            >
+              Deposit
+            </p>
+            <p
+              className={`${
+                selectedTab === 'withdraw' ? 'selectedAssetTab' : ''
+              }`}
+              onClick={() => setSelectedTab('withdraw')}
+            >
+              Withdraw
+            </p>
           </Box>
           <Box
             className={`flex ${
@@ -105,60 +84,24 @@ const AssetModal: React.FC<AssetModalProps> = ({
             }`}
           >
             <Box className='flex flex-col'>
-              <Box
-                className='flex justify-between items-start'
-                style={{ marginTop: '20px' }}
-              >
-                <h2
-                  style={{
-                    color: '#ebecef',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                  }}
-                >
-                  Your web3 wallet
-                </h2>
+              <Box className='flex justify-between items-start'>
+                <small>Your web3 wallet</small>
                 {connections && (
                   <img src={connections.iconName} width='16' height='16' />
                 )}
               </Box>
-              <Box
-                className='flex items-center'
-                style={{ width: 'full', margin: '10px 0 16px 0' }}
-              >
-                <Box
-                  style={{
-                    width: '196px',
-                    height: '40px',
-                    backgroundColor: '#282d3d',
-                    color: '#ccced9',
-                    opacity: '0.6',
-                    borderRadius: '8px',
-                    margin: '0 8px 0 0',
-                    padding: '10px 99px 13px 16px',
-                  }}
-                >
-                  {quickSwapAccount
-                    ? quickSwapAccount.substring(0, 6) +
-                      '...' +
-                      quickSwapAccount.substring(quickSwapAccount.length - 4)
-                    : 'Connect Wallet'}
+              <Box className='flex items-center' gridGap={8}>
+                <Box className='assetInfoWrapper'>
+                  <small>
+                    {quickSwapAccount
+                      ? quickSwapAccount.substring(0, 6) +
+                        '...' +
+                        quickSwapAccount.substring(quickSwapAccount.length - 4)
+                      : 'Connect Wallet'}
+                  </small>
                 </Box>
-                <Box
-                  style={{
-                    width: '196px',
-                    height: '40px',
-                    backgroundColor: '#282d3d',
-                    color: '#ccced9',
-                    opacity: '0.6',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'start',
-                    padding: '10px 16px',
-                  }}
-                >
-                  {chains[0].network_infos.name}
+                <Box className='assetInfoWrapper'>
+                  <small>{chains[0].network_infos.name}</small>
                 </Box>
               </Box>
               <Box
