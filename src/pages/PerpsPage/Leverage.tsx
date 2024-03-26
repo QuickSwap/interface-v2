@@ -8,6 +8,7 @@ import {
   useCollateral,
   useDeposit,
   useOrderEntry,
+  usePositionStream
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
 import { AccountStatusEnum } from '@orderly.network/types';
@@ -15,14 +16,19 @@ import AccountModal from '../../components/AccountModal';
 import { Simulate } from 'react-dom/test-utils';
 import submit = Simulate.submit;
 import { Box, Button, Switch } from '@material-ui/core';
+import { pointer } from 'd3';
 
 export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   perpToken,
   orderQuantity,
 }) => {
+   const [x,positionInfo]=usePositionStream(perpToken)
+
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
+  const [clickedIndex, setClickedIndex] = useState<number | null>(0);
+
 
   const { account, state } = useAccount();
   const token = useMemo(() => {
@@ -39,8 +45,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
   const [order, setOrder] = useState<any>({
-    order_price: '',
-    order_quantity: '',
+    order_price: 0,
+    order_quantity: 0,
     order_type: 'LIMIT',
     side: 'BUY',
     order_symbol: perpToken,
@@ -70,6 +76,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       setAccountModalOpen(false);
     }
   }, [state.status]);
+
+  const handleClick = (index: number) => {
+    setClickedIndex(index);
+    const percentage = index * 25;
+    console.log(`Clicked box ${index + 1}, percentage: ${percentage}%`);
+  };
+
   return (
     <>
       <Box padding='15px 10px'>
@@ -185,41 +198,46 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             </span>
           </Box>
         </Box>
-        <Box className='leverageSquareWrapper' my={2}>
+        <Box className='leverageSquareWrapper' style={{cursor:'pointer'}} my={2}>
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
+            onClick={()=>handleClick(0)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
+            onClick={()=>handleClick(1)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
+            onClick={()=>handleClick(2)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
             style={{ transform: 'rotate(45deg)' }}
+            onClick={()=>handleClick(3)}
           />
           <Box />
           <CropSquareOutlined
             fontSize='small'
-            style={{ transform: 'rotate(45deg)' }}
+            style={{ transform: 'rotate(45deg)' }} 
+            onClick={()=>handleClick(4)}
           />
         </Box>
         <Box className='flex justify-between'>
-          <p className='span text-success'>0%</p>
+          <p className='span text-success'>{clickedIndex*25}%</p>
           <p className='span text-secondary'>
-            Max buy <span className='text-success'>0.000</span>
+            Max buy <span className='text-success'> {(collateral.availableBalance)*(clickedIndex*25)/100}</span>
           </p>
         </Box>
         <Box className='leverageInputWrapper flex justify-between' my={2}>
           <span className='text-secondary'>Total</span>
-          <span className='text-secondary'>USDC</span>
+          <span className='text-secondary'>{order.order_price*order.order_quantity}  USDC</span>
         </Box>
         <Box className='border-top flex justify-between items-center'>
           <Box>
@@ -232,13 +250,22 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             onClick={() => {
               setAccountModalOpen(true);
             }}
+              style={{
+                width: 267,
+                height: 40,
+                margin: '16px 15px',
+                padding: '11px 50px 12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+              }}
+            
           >
             Sign In
           </Button>
         ) : (
           <Button
             style={{
-              width: 220,
+              width: 267,
               height: 40,
               margin: '16px 15px',
               padding: '11px 50px 12px',

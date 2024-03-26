@@ -289,6 +289,11 @@
       height: 100%;
       background-color: transparent;
       color: $textPrimary;
+      appearance: none;
+      text-align:right ;
+      border: none;    
+      outline: none;
+      box-shadow: none;
     }
   }
 }
