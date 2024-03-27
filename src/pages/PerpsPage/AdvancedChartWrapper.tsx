@@ -1,12 +1,15 @@
+import { Box } from '@material-ui/core';
 import React from 'react';
 import { AdvancedChart } from 'react-tradingview-embed';
 
 interface AdvancedChartWrapperProps {
   token: string;
+  isSmall?: boolean;
 }
 
 export const AdvancedChartWrapper: React.FC<AdvancedChartWrapperProps> = ({
   token,
+  isSmall,
 }) => {
   function trimPairName(pairName: string): string {
     const parts = pairName.split('_');
@@ -25,8 +28,12 @@ export const AdvancedChartWrapper: React.FC<AdvancedChartWrapperProps> = ({
     withdateranges: true,
     save_image: false,
     allow_symbol_change: false,
-    height: '444',
+    height: isSmall ? 430 : '100%',
   };
 
-  return <AdvancedChart widgetProps={widgetProps} />;
+  return (
+    <Box flex={1}>
+      <AdvancedChart widgetProps={widgetProps} />
+    </Box>
+  );
 };

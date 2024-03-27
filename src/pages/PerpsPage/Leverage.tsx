@@ -144,25 +144,29 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         <Box className='leverageTypesWrapper' gridGap={2}>
           <Box
             onClick={() => setOrder({ ...order, side: 'BUY' })}
-            style={{
-              backgroundColor:
-                order.side == OrderSide.BUY ? '#448aff' : '#1b1e29',
-              color: '#fff',
-            }}
+            className={
+              order.side === OrderSide.BUY ? 'bg-primary' : 'bg-palette'
+            }
           >
-            <span className='text-secondary'>
+            <span
+              className={
+                order.side === OrderSide.BUY ? 'text-white' : 'text-secondary'
+              }
+            >
               {t('buy')}/{t('long')}
             </span>
           </Box>
           <Box
             onClick={() => setOrder({ ...order, side: 'SELL' })}
-            style={{
-              backgroundColor:
-                order.side == OrderSide.SELL ? '#448aff' : '#1b1e29',
-              color: '#fff',
-            }}
+            className={
+              order.side === OrderSide.SELL ? 'bg-primary' : 'bg-palette'
+            }
           >
-            <span className='text-secondary'>
+            <span
+              className={
+                order.side === OrderSide.SELL ? 'text-white' : 'text-secondary'
+              }
+            >
               {t('sell')}/{t('short')}
             </span>
           </Box>
@@ -264,7 +268,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             {order.order_price * order.order_quantity} USDC
           </span>
         </Box>
-        <Box className='border-top flex justify-between items-center' mb={2}>
+        <Box
+          className='border-top flex justify-between items-center'
+          pt={2}
+          mb={2}
+        >
           <Box className='flex items-center' gridGap={8}>
             <ToggleSwitch
               toggled={reducedOnly}

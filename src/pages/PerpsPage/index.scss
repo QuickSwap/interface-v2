@@ -1,8 +1,10 @@
+@use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
 .perpsV2PageWrapper {
   margin-top: -64px;
   width: 100vw;
+  background-color: $bgColor;
   @include media('screen', '<tablet') {
     margin-top: 0;
   }

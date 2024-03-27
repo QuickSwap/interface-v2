@@ -5,25 +5,6 @@ import { Box, Popover } from '@material-ui/core';
 import { formatNumber } from 'utils';
 import { SearchInput } from 'components';
 
-interface MarketData {
-  symbol: string;
-  index_price: number;
-  mark_price: number;
-  sum_unitary_funding: number;
-  est_funding_rate: number;
-  last_funding_rate: number;
-  next_funding_time: number;
-  open_interest: number;
-  '24h_open': number;
-  '24h_close': number;
-  '24h_high': number;
-  '24h_low': number;
-  '24h_volume': number;
-  '24h_amount': number;
-  '24h_volumn': number;
-  change: number;
-}
-
 interface Props {
   setTokenName: (token: string) => void;
 }
@@ -65,7 +46,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   }, [data, search]);
 
   return (
-    <Box className='flex items-center' height='48px' gridGap={12}>
+    <Box className='flex items-center border-bottom' height='48px' gridGap={12}>
       <Box className='perpsTokenSelect' onClick={handleClick} gridGap={8}>
         <p>{token ? token.symbol : 'Tokens'}</p>
         {open ? (
@@ -153,9 +134,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
         </Box>
       </Popover>
 
-      {/* Render Token Info */}
       <p>{token?.mark_price}</p>
-      {/* Additional Flex Columns */}
       <Box>
         <p className='span text-secondary'>24h Change</p>
         <p
@@ -163,7 +142,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
             (token?.change ?? 0) < 0 ? 'text-error' : 'text-success'
           }`}
         >
-          {formatNumber(token?.change)}
+          {formatNumber(token?.change)}%
         </p>
       </Box>
       <Box>
@@ -180,7 +159,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
       </Box>
       <Box>
         <p className='span text-secondary'>Funding Rate</p>
-        <p className='span'>{token?.est_funding_rate}</p>
+        <p className='span'>{token?.est_funding_rate}%</p>
       </Box>
       <Box>
         <p className='span text-secondary'>Open Interest</p>

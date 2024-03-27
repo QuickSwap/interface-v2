@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './Layout.scss';
 import { AdvancedChartWrapper } from './AdvancedChartWrapper';
 import { OrderbookV2 } from './OrderbookV2';
@@ -7,20 +7,38 @@ import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { Grid } from '@material-ui/core';
+import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
-  const [selectedNavItem, setSelectedNavItem] = useState('Chart');
   const [orderQuantity, setOrderQuantity] = useState<number[]>([]);
-  const [selectedTab, setSelectedTab] = useState<string>('Orderbook');
+  const [selectedTab, setSelectedTab] = useState<string>('orderbook');
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const isMd = useMediaQuery(breakpoints.down('md'));
 
-  const tabs = [
-    { id: 'Orderbook', text: 'Orderbook' },
-    { id: 'Market', text: 'Last Trades' },
-  ];
+  const tabs = useMemo(() => {
+    return isMobile
+      ? [
+          { id: 'chart', text: 'Chart' },
+          { id: 'orderbook', text: 'Orderbook' },
+          { id: 'trades', text: 'Last Trades' },
+          { id: 'bidAsk', text: 'Bids / Asks' },
+        ]
+      : [
+          { id: 'orderbook', text: 'Orderbook' },
+          { id: 'trades', text: 'Last Trades' },
+        ];
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!tabs.find((tab) => tab.id === selectedTab)) {
+      setSelectedTab(tabs[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile]);
 
   const footerTabs = [
     {
@@ -51,43 +69,20 @@ export const Layout = () => {
 
   return (
     <Grid container className='perpsV2Container'>
-      <Grid item xs={12} sm={12} md={9} xl={9} lg={10}>
-        <div className='graph_orderbook'>
-          <div className='graph'>
-            <div className='desktop-graph-navbar'>
-              <GraphHeader setTokenName={setToken} />
-            </div>
-            <nav className='mobile-graph-navbar'>
-              <div onClick={() => setSelectedNavItem('Chart')}>Chart</div>
-              <div onClick={() => setSelectedNavItem('Trade')}>Trade</div>
-              <div onClick={() => setSelectedNavItem('Data')}>Data</div>
-            </nav>
-            {selectedNavItem === 'Chart' && (
-              <AdvancedChartWrapper token={token} />
-            )}
-            {selectedNavItem === 'Trade' && (
-              <div className='nav-trade'>
-                <Market />
-              </div>
-            )}
-            {selectedNavItem === 'Data' && (
-              <div className='nav-data'>
-                <div className='item'>Mark Price</div>
-                <div className='item'>Index Price</div>
-                <div className='item'>24h Volume</div>
-                <div className='item'>24h High</div>
-                <div className='item'>24h Low</div>
-                <div className='item'>Open Interest</div>
-                <div className='item'>1</div>
-                <div className='item'>1</div>
-                <div className='item'>1</div>
-                <div className='item'>1</div>
-                <div className='item'>1</div>
-                <div className='item'>1</div>
-              </div>
-            )}
-          </div>
-          <div className='orderbook desktop_orderbook'>
+      <Grid item xs={12} sm={12} md={9} lg={9} xl={10}>
+        <Grid container className='border-top border-bottom'>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={12}
+            lg={9}
+            className='border-right flex flex-col'
+          >
+            <GraphHeader setTokenName={setToken} />
+            {!isMobile && <AdvancedChartWrapper token={token} />}
+          </Grid>
+          <Grid item xs={12} sm={12} md={12} lg={3}>
             <div className='border-bottom'>
               <CustomTabSwitch
                 items={tabs}
@@ -96,12 +91,18 @@ export const Layout = () => {
                 handleTabChange={setSelectedTab}
               />
             </div>
-            {selectedTab === 'Orderbook' && (
+            {selectedTab === 'chart' && (
+              <AdvancedChartWrapper token={token} isSmall={isMd} />
+            )}
+            {selectedTab === 'orderbook' && (
               <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
             )}
-            {selectedTab === 'Market' && <Market token={token} />}
-          </div>
-        </div>
+            {selectedTab === 'trades' && <Market token={token} />}
+            {selectedTab === 'bidAsk' && (
+              <Leverage perpToken={token} orderQuantity={orderQuantity[0]} />
+            )}
+          </Grid>
+        </Grid>
         <div className='kingFooter'>
           <div className='flex items-center justify-between border-bottom'>
             <CustomTabSwitch
@@ -146,17 +147,22 @@ export const Layout = () => {
           <Footer token={token} selectedTab={selectedItem} />
         </div>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={12}
-        md={3}
-        xl={3}
-        lg={2}
-        className='border-top border-left'
-      >
-        <Leverage perpToken={token} orderQuantity={orderQuantity[0]}></Leverage>
-      </Grid>
+      {!isMobile && (
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={3}
+          lg={3}
+          xl={2}
+          className='border-top border-left'
+        >
+          <Leverage
+            perpToken={token}
+            orderQuantity={orderQuantity[0]}
+          ></Leverage>
+        </Grid>
+      )}
       {/* <div className='mobile_footer'>
         <div className='perp_footer'>
           <div className='footer-left'>
