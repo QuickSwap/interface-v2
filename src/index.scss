@@ -156,14 +156,14 @@ wcm-modal {
   align-items: center;
   flex-direction: column;
   margin: 0 auto;
-  padding: 152px 32px 0;
+  padding: 0;
   @include media('screen', '<tablet') {
     padding: 190px 12px 0;
   }
 }
 
 .pageProModeWrapper {
-  padding-top: 128px;
+  padding-top: 0px;
   @include media('screen', '<tablet') {
     padding-top: 0;
   }

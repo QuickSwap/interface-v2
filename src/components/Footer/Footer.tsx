@@ -27,11 +27,16 @@ const Footer: React.FC = () => {
       title: t('services'),
       items: [
         { title: t('swap'), link: '/swap' },
+        { title: t('perpsV1'), link: '/' },
+        { title: t('perpsFalkor'), link: '/' },
         { title: t('pool'), link: '/pools' },
         { title: t('farm'), link: '/farm' },
+        { title: t('bonds'), link: '/onds' },
         { title: t('dragonslair'), link: '/dragons' },
+        { title: t('gamingHub'), link: '/' },
+        { title: t('leaderboard'), link: '/' },
         { title: t('convert'), link: '/convert' },
-        { title: t('calculator'), link: '/calculator/0.01-eth-to-usd' },
+        { title: t('dappos'), link: '/' },
         { title: t('analytics'), link: '/analytics' },
       ],
     },
@@ -39,6 +44,7 @@ const Footer: React.FC = () => {
       title: t('developers'),
       items: [
         { title: t('github'), link: 'https://github.com/QuickSwap' },
+        { title: t('gitBook'), link: '' },
         { title: t('docs'), link: 'https://docs.quickswap.exchange/' },
       ],
     },
@@ -46,6 +52,7 @@ const Footer: React.FC = () => {
       title: t('governance'),
       items: [
         { title: t('proposals'), link: 'https://snapshot.org/#/quickvote.eth' },
+        { title: t('vote'), link: '' },
       ],
     },
   ];
@@ -60,6 +67,33 @@ const Footer: React.FC = () => {
     <Box className='footer'>
       <Box className='footerContainer'>
         <Grid container spacing={4} className='socialMenuWrapper'>
+          <Grid item container xs={12} sm={12} md={8} spacing={4}>
+            {socialMenuItems.map((item) => (
+              <Grid key={item.title} item xs={12} sm={6} md={4}>
+                <small>{item.title}</small>
+                <Box mt={3}>
+                  {item.items.map((socialItem) => (
+                    <Box
+                      key={socialItem.title}
+                      className='cursor-pointer'
+                      my={1.5}
+                      onClick={() => {
+                        if (socialItem.link.includes('http')) {
+                          window.open(socialItem.link, '_blank');
+                        } else {
+                          history.push(socialItem.link);
+                        }
+                      }}
+                    >
+                      <small className='text-secondary'>
+                        {socialItem.title}
+                      </small>
+                    </Box>
+                  ))}
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <picture>
               <source height={40} srcSet={QUICKLogoWebP} type='image/webp' />
@@ -98,33 +132,6 @@ const Footer: React.FC = () => {
                 </Box>
               )}
             </Box>
-          </Grid>
-          <Grid item container xs={12} sm={12} md={8} spacing={4}>
-            {socialMenuItems.map((item) => (
-              <Grid key={item.title} item xs={12} sm={6} md={4}>
-                <small>{item.title}</small>
-                <Box mt={3}>
-                  {item.items.map((socialItem) => (
-                    <Box
-                      key={socialItem.title}
-                      className='cursor-pointer'
-                      my={1.5}
-                      onClick={() => {
-                        if (socialItem.link.includes('http')) {
-                          window.open(socialItem.link, '_blank');
-                        } else {
-                          history.push(socialItem.link);
-                        }
-                      }}
-                    >
-                      <small className='text-secondary'>
-                        {socialItem.title}
-                      </small>
-                    </Box>
-                  ))}
-                </Box>
-              </Grid>
-            ))}
           </Grid>
         </Grid>
         <Box

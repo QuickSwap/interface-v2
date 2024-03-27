@@ -13,9 +13,9 @@ const GlobalSection: React.FC = () => {
       <Box margin={mobileWindowSize ? '64px 0' : '100px 0 80px'}>
         <HeroSection />
       </Box>
-      <Box className='flex tradingInfo'>
+      {/* <Box className='flex tradingInfo'>
         <TradingInfo />
-      </Box>
+      </Box> */}
     </>
   );
 };

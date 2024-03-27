@@ -1,8 +1,7 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { useLocation } from 'react-router-dom';
-import HeroBkg from 'assets/images/heroBkg.png';
-import HeroBkgWebp from 'assets/images/heroBkg.webp';
+import HeroBkg from 'assets/images/landingPage/Bkg.png';
 import defaultHeroBkg from 'assets/images/heroBkg.svg';
 
 const Background: React.FC<{ fallback: boolean | undefined }> = ({
@@ -12,10 +11,11 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
   const showDefaultBG = fallback || pathname !== '/';
   return (
     <Box className='heroBkg'>
-      <picture className={showDefaultBG ? 'hidden' : ''}>
-        <source srcSet={HeroBkgWebp} type='image/webp' />
-        <img src={HeroBkg} alt='Hero Background' />
-      </picture>
+      <img
+        className={showDefaultBG ? 'hidden' : ''}
+        src={HeroBkg}
+        alt='Hero Background'
+      />
       <img
         className={showDefaultBG ? '' : 'hidden'}
         src={defaultHeroBkg}
