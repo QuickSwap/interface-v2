@@ -7,6 +7,7 @@ import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
+import { Grid } from '@material-ui/core';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
@@ -49,8 +50,8 @@ export const Layout = () => {
   ];
 
   return (
-    <div className='perpsV2Container'>
-      <div className='graph_footer'>
+    <Grid container className='perpsV2Container'>
+      <Grid item xs={12} sm={12} md={9} xl={9} lg={10}>
         <div className='graph_orderbook'>
           <div className='graph'>
             <div className='desktop-graph-navbar'>
@@ -144,31 +145,19 @@ export const Layout = () => {
           </div>
           <Footer token={token} selectedTab={selectedItem} />
         </div>
-      </div>
-      {/* Orderbook and Leverage in same div */}
-      <div className='orderbook-leverage-container'>
-        <div className='orderbook '>
-          <div
-            style={{
-              padding: '10px',
-              marginBottom: '34px',
-            }}
-          >
-            {/* Replace this with your Orderbook component */}
-            {/*<OrderbookV2 />*/}
-          </div>
-        </div>
-        <div className='leverage'>
-          {/* Leverage component */}
-          <div style={{ border: '1px solid #61675a', padding: '10px' }}>
-            <Leverage perpToken={token} orderQuantity={orderQuantity[0]} />
-          </div>
-        </div>
-      </div>
-      <div className='other'>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={12}
+        md={3}
+        xl={3}
+        lg={2}
+        className='border-top border-left'
+      >
         <Leverage perpToken={token} orderQuantity={orderQuantity[0]}></Leverage>
-      </div>
-      <div className='mobile_footer'>
+      </Grid>
+      {/* <div className='mobile_footer'>
         <div className='perp_footer'>
           <div className='footer-left'>
             {['Portfolio', 'Pending', 'Filled'].map((item, index) => (
@@ -207,7 +196,7 @@ export const Layout = () => {
         <div className='footer_data'>
           <div>NotFound</div>
         </div>
-      </div>
-    </div>
+      </div> */}
+    </Grid>
   );
 };

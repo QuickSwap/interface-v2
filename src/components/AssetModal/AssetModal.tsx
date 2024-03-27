@@ -119,9 +119,14 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
                 </small>
                 <Box className='flex items-center' gridGap={12}>
-                  <span className='text-primary cursor-pointer' onClick={()=>setDepositAmount(deposit.balance)}>
-                    {t('max')}
-                  </span>
+                  {selectedTab === 'deposit' && (
+                    <span
+                      className='text-primary cursor-pointer'
+                      onClick={() => setDepositAmount(deposit.balance)}
+                    >
+                      {t('max')}
+                    </span>
+                  )}
                   <Box className='flex items-center' gridGap={4}>
                     <CurrencyLogo
                       currency={currency ?? undefined}
@@ -168,9 +173,29 @@ const AssetModal: React.FC<AssetModalProps> = ({
             <Box className='assetModalInputWrapper' mt={1}>
               <Box className='flex justify-between'>
                 <small className='text-secondary'>
-                  {selectedTab === 'deposit' ? 'Receive' : 'Quantity'}
+                  {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
                 </small>
-                <span>USDC</span>
+                <Box className='flex items-center' gridGap={12}>
+                  {selectedTab === 'withdraw' && (
+                    <span
+                      className='text-primary cursor-pointer'
+                      onClick={() =>
+                        setWithdrawAmount(
+                          collateral?.availableBalance.toString(),
+                        )
+                      }
+                    >
+                      {t('max')}
+                    </span>
+                  )}
+                  <Box className='flex items-center' gridGap={4}>
+                    <CurrencyLogo
+                      currency={currency ?? undefined}
+                      size='16px'
+                    />
+                    <small>{token?.symbol}</small>
+                  </Box>
+                </Box>
               </Box>
               <Box className='flex' mt={1} gridGap={6}>
                 <NumericalInput
