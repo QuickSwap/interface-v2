@@ -126,7 +126,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <Box className='flex justify-between' gridGap={8}>
             <Box>
               <p className='span text-secondary'>{t('accountLeverage')}</p>
-              <p className='span'>{state.leverage}</p>
+              <p className='span'>{isNaN(state.leverage)?0:state.leverage}</p>
             </Box>
             <Box textAlign='right'>
               <p className='span text-secondary'>{t('marginRatio')}</p>
