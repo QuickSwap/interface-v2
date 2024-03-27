@@ -35,11 +35,13 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
+  const [searchItem,setSearchItem]=useState('');
+  const [tokenData,setTokenData]=useState(null)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
+  
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -50,12 +52,23 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
     setTokenName(token.symbol);
     handleClose();
   };
-
   useEffect(() => {
     setTokenSymbol('PERP_ETH_USDC');
   }, []);
-
+   
   const token: any = data?.find((item) => item.symbol === tokenSymbol);
+  const handleSearch = (searchItem) => {
+    if (searchItem === '') {
+        setTokenData(data);
+    } else {
+        const filteredData = data.filter((token) => token.symbol.replace("_USDC", "").replace("_", "-").toLowerCase().includes(searchItem.toLowerCase()));
+        setTokenData(filteredData);
+    }
+};
+
+  useEffect(()=>{
+    setTokenData(data)
+  },[data])
 
   return (
     <Box className='border flex items-center' height='48px' gridGap={12}>
@@ -76,6 +89,10 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
           <input
             type='text'
             placeholder='Search'
+            value={searchItem}
+            onChange={(e)=>{setSearchItem(e.target.value)
+            handleSearch(e.target.value)
+            }}
             style={{
               width: '100%',
               marginBottom: '20px',
@@ -123,8 +140,8 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
               color: '#c7cad9',
             }}
           >
-            {data ? (
-              data.map((item: any, index) => (
+            {tokenData ? (
+              tokenData.map((item: any, index) => (
                 <tr
                   key={index}
                   onClick={() => handleTokenSelect(item)}

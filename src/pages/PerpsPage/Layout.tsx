@@ -6,9 +6,11 @@ import { Market } from './Market';
 import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
+import { useMarketsStream } from '@orderly.network/hooks';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
+  const {data}=useMarketsStream()
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
@@ -16,7 +18,7 @@ export const Layout = () => {
   const [selectedTab, setSelectedTab] = useState<'Orderbook' | 'Market'>(
     'Orderbook',
   );
-
+  const [tokenData,setTokenData]=useState(data)
   const handleTabClick = (tab: 'Orderbook' | 'Market') => {
     setSelectedTab(tab);
   };
@@ -26,7 +28,7 @@ export const Layout = () => {
         <div className='graph_orderbook'>
           <div className='graph'>
             <div className='desktop-graph-navbar'>
-              <GraphHeader setTokenName={setToken} />
+              <GraphHeader setTokenName={setToken} data={tokenData} setData={setTokenData}/>
             </div>
             <nav className='mobile-graph-navbar'>
               <div onClick={() => setSelectedNavItem('Chart')}>Chart</div>
