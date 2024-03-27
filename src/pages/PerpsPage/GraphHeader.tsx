@@ -4,6 +4,7 @@ import { SearchOutlined } from '@material-ui/icons';
 import { Box, Popover } from '@material-ui/core';
 import { formatNumber } from 'utils';
 import { WSMessage } from '@orderly.network/types';
+import { ArrowDownward } from '@material-ui/icons';
 
 interface MarketData {
   symbol: string;
@@ -60,6 +61,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
     <Box className='border flex items-center' height='48px' gridGap={12}>
       <Box className='perpsTokenSelect' onClick={handleClick}>
         {token ? token.symbol.replace("_USDC", "").replace("_", "-") : 'Tokens'}
+        <ArrowDownward fontSize='small'/>
       </Box>
       <Popover
         open={open}
