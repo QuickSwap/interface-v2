@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Arrow from 'assets/images/downward.svg';
-import { CropSquareOutlined } from '@material-ui/icons';
+import { CropSquareOutlined, KeyboardArrowDown } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import {
   useAccount,
@@ -13,17 +12,19 @@ import {
 import AssetModal from '../../components/AssetModal';
 import { AccountStatusEnum } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
-import { Simulate } from 'react-dom/test-utils';
-import submit = Simulate.submit;
-import { Box, Button, Switch } from '@material-ui/core';
-import { pointer } from 'd3';
+import { Box, Button } from '@material-ui/core';
+import { ToggleSwitch } from 'components';
+import { useTranslation } from 'react-i18next';
+import { useWalletModalToggle } from 'state/application/hooks';
 
 export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   perpToken,
   orderQuantity,
 }) => {
+  const { t } = useTranslation();
   const [x, positionInfo] = usePositionStream(perpToken);
 
+  const [reducedOnly, setReducedOnly] = useState(false);
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
@@ -68,7 +69,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         id: chainId,
       },
     });
-  }, [library, account]);
+  }, [library, account, quickSwapAccount, chainId]);
 
   useEffect(() => {
     if (state.status === AccountStatusEnum.EnableTrading) {
@@ -81,6 +82,15 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     const percentage = index * 25;
     console.log(`Clicked box ${index + 1}, percentage: ${percentage}%`);
   };
+
+  const buttonText = useMemo(() => {
+    if (!quickSwapAccount) return t('connectWallet');
+    if (state.status === AccountStatusEnum.EnableTrading)
+      return t('createOrder');
+    return t('signIn');
+  }, [quickSwapAccount, state.status, t]);
+
+  const toggleWalletModal = useWalletModalToggle();
 
   return (
     <>
@@ -103,7 +113,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             >
               Manage
             </Button>
-            <img src={Arrow} width='16' height='16' />
+            <KeyboardArrowDown fontSize='small' className='text-secondary' />
           </Box>
         </Box>
         <Box
@@ -115,26 +125,30 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <Box className='leverageGradient' />
           <Box className='flex justify-between' gridGap={8}>
             <Box>
-              <p className='span text-secondary'>Account Leverage</p>
+              <p className='span text-secondary'>{t('accountLeverage')}</p>
               <p className='span'>0.00x/-x</p>
             </Box>
             <Box textAlign='right'>
-              <p className='span text-secondary'>Margin Ratio</p>
+              <p className='span text-secondary'>{t('marginRatio')}</p>
               <p className='span'>100%</p>
             </Box>
           </Box>
         </Box>
         <Box className='leverageTypesWrapper' gridGap={2}>
           <Box onClick={() => setOrder({ ...order, side: 'BUY' })}>
-            <span className='text-secondary'>Buy/Long</span>
+            <span className='text-secondary'>
+              {t('buy')}/{t('long')}
+            </span>
           </Box>
           <Box onClick={() => setOrder({ ...order, side: 'SELL' })}>
-            <span className='text-secondary'>Sell/Short</span>
+            <span className='text-secondary'>
+              {t('sell')}/{t('short')}
+            </span>
           </Box>
         </Box>
         <Box className='flex justify-between' mt={2}>
           <p className='span text-secondary'>
-            Available{' '}
+            {t('available')}{' '}
             <span className='text-primaryText'>
               {collateral.availableBalance}
             </span>{' '}
@@ -144,7 +158,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             className='span text-primary cursor-pointer'
             onClick={() => quickSwapAccount && setModalOpen(true)}
           >
-            Deposit
+            {t('deposit')}
           </p>
         </Box>
         <Box className='flex' gridGap={16} mt={2}>
@@ -154,7 +168,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             }`}
             onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
           >
-            Limit
+            {t('limit')}
           </p>
           <p
             className={`span cursor-pointer ${
@@ -162,12 +176,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             }`}
             onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
           >
-            Market
+            {t('market')}
           </p>
         </Box>
         {order.order_type === 'LIMIT' && (
           <Box className='leverageInputWrapper' mt={2}>
-            <span className='text-secondary'>Price</span>
+            <span className='text-secondary'>{t('price')}</span>
             <Box gridGap={5}>
               <input
                 min={0}
@@ -182,7 +196,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           </Box>
         )}
         <Box className='leverageInputWrapper' mt={2}>
-          <span className='text-secondary'>Quantity</span>
+          <span className='text-secondary'>{t('quantity')}</span>
           <Box gridGap={5}>
             <input
               min={0}
@@ -197,45 +211,21 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             </span>
           </Box>
         </Box>
-        <Box
-          className='leverageSquareWrapper'
-          style={{ cursor: 'pointer' }}
-          my={2}
-        >
-          <CropSquareOutlined
-            fontSize='small'
-            style={{ transform: 'rotate(45deg)' }}
-            onClick={() => handleClick(0)}
-          />
+        <Box className='leverageSquareWrapper' my={2}>
+          <CropSquareOutlined onClick={() => handleClick(0)} />
           <Box />
-          <CropSquareOutlined
-            fontSize='small'
-            style={{ transform: 'rotate(45deg)' }}
-            onClick={() => handleClick(1)}
-          />
+          <CropSquareOutlined onClick={() => handleClick(1)} />
           <Box />
-          <CropSquareOutlined
-            fontSize='small'
-            style={{ transform: 'rotate(45deg)' }}
-            onClick={() => handleClick(2)}
-          />
+          <CropSquareOutlined onClick={() => handleClick(2)} />
           <Box />
-          <CropSquareOutlined
-            fontSize='small'
-            style={{ transform: 'rotate(45deg)' }}
-            onClick={() => handleClick(3)}
-          />
+          <CropSquareOutlined onClick={() => handleClick(3)} />
           <Box />
-          <CropSquareOutlined
-            fontSize='small'
-            style={{ transform: 'rotate(45deg)' }}
-            onClick={() => handleClick(4)}
-          />
+          <CropSquareOutlined onClick={() => handleClick(4)} />
         </Box>
         <Box className='flex justify-between'>
           <p className='span text-success'>{clickedIndex * 25}%</p>
           <p className='span text-secondary'>
-            Max buy{' '}
+            {t('maxBuy')}{' '}
             <span className='text-success'>
               {' '}
               {(collateral.availableBalance * (clickedIndex * 25)) / 100}
@@ -243,53 +233,39 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           </p>
         </Box>
         <Box className='leverageInputWrapper flex justify-between' my={2}>
-          <span className='text-secondary'>Total</span>
+          <span className='text-secondary'>{t('total')}</span>
           <span className='text-secondary'>
             {order.order_price * order.order_quantity} USDC
           </span>
         </Box>
-        <Box className='border-top flex justify-between items-center'>
-          <Box>
-            <Switch defaultChecked /> Reduce Only
+        <Box className='border-top flex justify-between items-center' mb={2}>
+          <Box className='flex items-center' gridGap={8}>
+            <ToggleSwitch
+              toggled={reducedOnly}
+              onToggle={() => {
+                setReducedOnly(!reducedOnly);
+              }}
+            />
+            <span className='text-secondary'>{t('reduceOnly')}</span>
           </Box>
-          <img src={Arrow} width='16' height='16' />
+          <KeyboardArrowDown fontSize='small' className='text-secondary' />
         </Box>
-        {state.status !== AccountStatusEnum.EnableTrading ? (
-          <Button
-            onClick={() => {
-              setAccountModalOpen(true);
-            }}
-            style={{
-              width: 267,
-              height: 40,
-              margin: '16px 15px',
-              padding: '11px 50px 12px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-            }}
-          >
-            Sign In
-          </Button>
-        ) : (
-          <Button
-            style={{
-              width: 267,
-              height: 40,
-              margin: '16px 15px',
-              padding: '11px 50px 12px',
-              borderRadius: '8px',
-              backgroundColor: order.side === 'SELL' ? 'red' : 'rgb(4, 109, 4)',
-              cursor: 'pointer',
-            }}
-            onClick={async () => {
+        <Button
+          className='leverageSubmitButton'
+          onClick={async () => {
+            if (!quickSwapAccount) {
+              toggleWalletModal();
+            } else if (state.status === AccountStatusEnum.EnableTrading) {
               const order1 = await submit();
               console.log(order1);
               await onSubmit(order1);
-            }}
-          >
-            Create Order
-          </Button>
-        )}
+            } else {
+              setAccountModalOpen(true);
+            }
+          }}
+        >
+          {buttonText}
+        </Button>
       </Box>
       <AssetModal
         open={modalOpen}
@@ -298,7 +274,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       />
       <AccountModal
         open={accountModalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => setAccountModalOpen(false)}
       />
     </>
   );

@@ -1,14 +1,12 @@
-import React from 'react';
-import { CustomModal } from 'components';
+import React, { useState } from 'react';
+import { CustomModal, ToggleSwitch } from 'components';
 import { FC, useEffect } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import '../styles/AccountModal.scss';
-import num1 from '../../assets/images/num1.svg';
-import num2 from '../../assets/images/num2.svg';
-import success from '../../assets/images/success.svg';
 import { useAccount } from '@orderly.network/hooks';
 import { AccountStatusEnum } from '@orderly.network/types';
 import { Box, Button } from '@material-ui/core';
+import { Check } from '@material-ui/icons';
 
 interface AccountModalProps {
   open: boolean;
@@ -17,6 +15,7 @@ interface AccountModalProps {
 const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
   const { account, state } = useAccount();
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
@@ -48,140 +47,80 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
     <CustomModal
       open={open}
       onClose={onClose}
-      modalWrapper='modalWrapperV3 assetModalWrapper'
+      modalWrapper='modalWrapperV3 accountModalWrapper'
     >
       <Box
-        style={{ margin: '1.5rem' }}
-        gridGap='3'
+        padding={2}
+        gridGap={20}
         className='items-center justify-center flex flex-col'
       >
-        <Box
-          style={{
-            padding: '10px 15px',
-            width: 432,
-            borderRadius: 16,
-            boxShadow: '0 0 32px 0 rgba(46, 48, 60, 0.12)',
-            backgroundColor: '#1b1e29',
-          }}
-        >
-          <Box className='flex flex-col'>
-            <Box
-              className='flex items-start justify-between'
-              style={{ marginTop: '20px' }}
-            >
-              <p
-                style={{
-                  color: '#ebecef',
-                  fontFamily: 'Inter',
-                  fontWeight: '500',
-                }}
-              >
-                Sign two request to verify ownership of your wallet and enable
-                trading. Signing is free.
-              </p>
-            </Box>
-            <Box
-              className='flex justify-between flex-col'
-              style={{
-                width: '400px',
-                borderRadius: '8px',
-                margin: '8px 0 0',
-                padding: '16px 16px 16px',
-                backgroundColor: '#282d3d',
-                opacity: '0.6',
-              }}
-            >
-              <Box
-                style={{
-                  flexDirection: 'row',
-                  padding: '10px 15px',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
-              >
+        <small>
+          Sign two request to verify ownership of your wallet and enable
+          trading. Signing is free.
+        </small>
+        <Box>
+          <Box className='accountModalStepsWrapper'>
+            <Box className='flex' gridGap={16}>
+              <Box className='accountModalStep'>
                 {state.status === AccountStatusEnum.NotSignedIn ? (
-                  <img src={num1} width={32} height={32} />
+                  <p>1</p>
                 ) : (
-                  <img src={success} width={32} height={32} />
+                  <Check />
                 )}
-                {/* Text Container */}
-                <Box
-                  style={{ flexDirection: 'column', alignItems: 'flex-start' }}
-                >
-                  {/* Heading */}
-                  <p style={{ color: 'white' }}>Sign in</p>
-                  {/* Text */}
-                  <p style={{ color: 'grey' }}>Confirm you own this wallet</p>
-                </Box>
               </Box>
+              <Box>
+                <p>Sign in</p>
+                <small className='text-secondary'>
+                  Confirm you own this wallet
+                </small>
+              </Box>
+            </Box>
 
-              <Box
-                style={{
-                  flexDirection: 'row',
-                  padding: '10px 15px',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
-              >
+            <Box className='flex' gridGap={16} mt={2}>
+              <Box className='accountModalStep'>
                 {state.status > AccountStatusEnum.DisabledTrading ||
                 state.status === AccountStatusEnum.NotConnected ? (
-                  <img src={success} width={32} height={32} />
+                  <Check />
                 ) : (
-                  <img src={num2} width={32} height={32} />
+                  <p>2</p>
                 )}
-                {/* Text Container */}
-                <Box
-                  style={{ flexDirection: 'column', alignItems: 'flex-start' }}
-                >
-                  {/* Heading */}
-                  <h4 style={{ color: 'white' }}>Enable Trading</h4>
-                  {/* Text */}
-                  <p style={{ color: 'grey' }}>
-                    Enable ensures access to our API for lightning-fast trading.
-                  </p>
-                </Box>
+              </Box>
+              <Box>
+                <p>Enable Trading</p>
+                <small className='text-secondary'>
+                  Enable ensures access to our API for lightning-fast trading.
+                </small>
               </Box>
             </Box>
           </Box>
-          <Box style={{ marginTop: '20px' }}>
-            {state.status === AccountStatusEnum.NotSignedIn ? (
-              <Button
-                onClick={() => {
-                  account.createAccount();
-                }}
-                style={{
-                  width: '400px',
-                  height: '48px',
-                  padding: '15px 14px 15px',
-                  borderRadius: '14px',
-                  cursor: 'pointer',
-                  backgroundColor: '#448aff',
-                  color: '#fff',
-                }}
-              >
-                Sign in
-              </Button>
-            ) : state.status > AccountStatusEnum.DisabledTrading ||
-              state.status === AccountStatusEnum.NotConnected ? null : (
-              <Button
-                onClick={() => {
-                  account.createOrderlyKey(30);
-                }}
-                style={{
-                  width: '400px',
-                  height: '48px',
-                  padding: '15px 14px 15px',
-                  borderRadius: '14px',
-                  cursor: 'pointer',
-                  backgroundColor: '#448aff',
-                  color: '#fff',
-                }}
-              >
-                Enable Trading
-              </Button>
-            )}
+          <Box className='flex items-center justify-between' mt={1.5}>
+            <span className='text-secondary'>Remember me</span>
+            <ToggleSwitch
+              toggled={rememberMe}
+              onToggle={() => setRememberMe(!rememberMe)}
+            />
           </Box>
         </Box>
+        {state.status === AccountStatusEnum.NotSignedIn ? (
+          <Button
+            className='accountModalButton'
+            onClick={() => {
+              account.createAccount();
+            }}
+          >
+            Sign in
+          </Button>
+        ) : state.status > AccountStatusEnum.DisabledTrading ||
+          state.status === AccountStatusEnum.NotConnected ? null : (
+          <Button
+            className='accountModalButton'
+            onClick={() => {
+              account.createOrderlyKey(30);
+            }}
+          >
+            Enable Trading
+          </Button>
+        )}
       </Box>
     </CustomModal>
   );

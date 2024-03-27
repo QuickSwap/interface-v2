@@ -55,7 +55,7 @@ const SwapMain: React.FC = () => {
       tabs.push({ name: 'bestTrade', key: SWAP_BEST_TRADE });
     }
     if (v2) {
-      tabs.push({ name: 'market', key: SWAP_NORMAL });
+      tabs.push({ name: 'marketV2', key: SWAP_NORMAL });
     }
     if (v3) {
       tabs.push({ name: 'marketV3', key: SWAP_V3 });

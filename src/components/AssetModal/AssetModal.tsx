@@ -1,9 +1,8 @@
 import React from 'react';
-import { CustomModal } from 'components';
-import { FC, useMemo, useState } from 'react';
+import { CurrencyLogo, CustomModal } from 'components';
+import { useMemo, useState } from 'react';
 import { useActiveWeb3React, useGetConnection } from 'hooks';
 import 'components/styles/AssetModal.scss';
-import ArrowDownward from '../../assets/images/downward-arrow.svg';
 import { useSelectedWallet } from '../../state/user/hooks';
 import NotifyModal from '../NotifyModal';
 import {
@@ -14,6 +13,12 @@ import {
   useWithdraw,
 } from '@orderly.network/hooks';
 import { Box, Button } from '@material-ui/core';
+import { ArrowDownward } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
+import { getConfig } from 'config/index';
+import { useCurrency } from 'hooks/v3/Tokens';
+import { NumericalInput } from 'components';
+import QuickPerpsIcon from 'assets/images/quickPerpsIcon.svg';
 
 interface AssetModalProps {
   open: boolean;
@@ -25,6 +30,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
   onClose,
   modalType,
 }) => {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState(modalType);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const { selectedWallet } = useSelectedWallet();
@@ -48,324 +54,201 @@ const AssetModal: React.FC<AssetModalProps> = ({
     srcChainId: Number(chainId),
   });
   const { withdraw } = useWithdraw();
+  const config = getConfig(chainId);
+  const currency = useCurrency(token?.address);
+
   return (
     <CustomModal
       open={open}
       onClose={onClose}
       modalWrapper='modalWrapperV3 assetModalWrapper'
     >
-      <Box
-        padding={2}
-        className='flex items-center justify-center flex-col'
-        gridGap='3'
-      >
-        <Box>
-          <Box className='assetTabsWrapper' gridGap={24}>
-            <p
-              className={`${
-                selectedTab === 'deposit' ? 'selectedAssetTab' : ''
-              }`}
-              onClick={() => setSelectedTab('deposit')}
-            >
-              Deposit
-            </p>
-            <p
-              className={`${
-                selectedTab === 'withdraw' ? 'selectedAssetTab' : ''
-              }`}
-              onClick={() => setSelectedTab('withdraw')}
-            >
-              Withdraw
-            </p>
-          </Box>
-          <Box
-            className={`flex ${
-              selectedTab === 'deposit' ? 'flex-col' : 'flex-col-reverse'
+      <Box padding={2}>
+        <Box className='assetTabsWrapper' gridGap={24}>
+          <p
+            className={`${selectedTab === 'deposit' ? 'selectedAssetTab' : ''}`}
+            onClick={() => setSelectedTab('deposit')}
+          >
+            {t('deposit')}
+          </p>
+          <p
+            className={`${
+              selectedTab === 'withdraw' ? 'selectedAssetTab' : ''
             }`}
+            onClick={() => setSelectedTab('withdraw')}
           >
-            <Box className='flex flex-col'>
-              <Box className='flex justify-between items-start'>
-                <small>Your web3 wallet</small>
-                {connections && (
-                  <img src={connections.iconName} width='16' height='16' />
-                )}
+            {t('withdraw')}
+          </p>
+        </Box>
+        <Box
+          mt='20px'
+          className={`flex ${
+            selectedTab === 'deposit' ? 'flex-col' : 'flex-col-reverse'
+          }`}
+          gridGap={8}
+        >
+          <Box className='flex flex-col'>
+            <Box className='flex justify-between items-start'>
+              <small>{t('yourWeb3Wallet')}</small>
+              {connections && (
+                <img src={connections.iconName} width='16' height='16' />
+              )}
+            </Box>
+            <Box className='flex items-center' gridGap={8}>
+              <Box className='assetInfoWrapper'>
+                <small>
+                  {quickSwapAccount
+                    ? quickSwapAccount.substring(0, 6) +
+                      '...' +
+                      quickSwapAccount.substring(quickSwapAccount.length - 4)
+                    : 'Connect Wallet'}
+                </small>
               </Box>
-              <Box className='flex items-center' gridGap={8}>
-                <Box className='assetInfoWrapper'>
-                  <small>
-                    {quickSwapAccount
-                      ? quickSwapAccount.substring(0, 6) +
-                        '...' +
-                        quickSwapAccount.substring(quickSwapAccount.length - 4)
-                      : 'Connect Wallet'}
-                  </small>
-                </Box>
-                <Box className='assetInfoWrapper'>
-                  <small>{chains[0].network_infos.name}</small>
-                </Box>
-              </Box>
-              <Box
-                className='flex justify-between'
-                style={{
-                  width: '400px',
-                  height: '70px',
-                  borderRadius: '8px',
-                  margin: '8px 0 0',
-                  padding: '11px 16px 15px',
-                  backgroundColor: '#282d3d',
-                  opacity: '0.6',
-                }}
-              >
-                <Box className='flex flex-col justify-start'>
-                  <small
-                    style={{
-                      fontSize: '14px',
-                      fontFamily: 'Inter',
-                    }}
-                  >
-                    {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
-                  </small>
-                  <input
-                    value={
-                      selectedTab === 'deposit' ? depositAmount : withdrawAmount
-                    }
-                    type='number'
-                    onChange={(event) => {
-                      const value = event.target.value.replace(/\D/, '');
-                      selectedTab === 'deposit'
-                        ? setDepositAmount(value)
-                        : setWithdrawAmount(value);
-                    }}
-                    style={{
-                      width: 69,
-                      height: '17px',
-                      margin: '8px 200px 2px 0',
-                      fontFamily: 'Inter',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      color: '#fff',
-                      border: 'none',
-                      outline: 'none',
-                      appearance: 'none',
-                      backgroundColor: 'transparent',
-                    }}
-                    placeholder='$0.00'
-                  />
-                </Box>
-                <Box style={{ marginLeft: '20px' }}>
-                  <h2 style={{ marginBottom: '10px', fontSize: '12px' }}>
-                    {token?.symbol}
-                  </h2>
-                  <p
-                    style={{
-                      color: '#ccced9',
-                      fontSize: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    Available:{' '}
-                    <span style={{ fontSize: '14px', marginLeft: '4px' }}>
-                      {parseFloat(deposit.balance).toFixed(2)}
-                    </span>
-                  </p>
-                </Box>
+              <Box className='assetInfoWrapper' gridGap={8}>
+                <img
+                  src={config['nativeCurrencyImage']}
+                  width={20}
+                  height={20}
+                />
+                <small>{config['networkName']}</small>
               </Box>
             </Box>
-            <Box
-              style={{
-                height: '32px',
-                width: '400px',
-                background: 'transparent',
-                margin: '8px 0',
-              }}
-            >
-              <div
-                style={{
-                  width: '400px',
-                  height: '1px',
-                  margin: '16px 0 15px',
-                  backgroundColor: '#696c80',
-                  opacity: '0.12',
-                }}
-              />
-              <img src={ArrowDownward} width={32} height={32} />
-              <div
-                style={{
-                  width: '400px',
-                  height: '1px',
-                  margin: '16px 0 15px',
-                  backgroundColor: '#696c80',
-                  opacity: '0.12',
-                }}
-              />
-            </Box>
-            <Box>
-              <Box style={{ marginTop: '20px' }}>
-                <p
-                  style={{
-                    color: '#ebecef',
-                    fontFamily: 'Inter',
-                    fontWeight: '500',
-                  }}
-                >
-                  Your QuickPerps account
-                </p>
-              </Box>
-              <Box
-                style={{
-                  width: '400px',
-                  height: '70px',
-                  borderRadius: '8px',
-                  margin: '8px 0 0',
-                  padding: '11px 16px 15px',
-                  backgroundColor: '#282d3d',
-                  opacity: '0.6',
-                }}
-              >
-                <Box>
-                  <small>
-                    {selectedTab === 'deposit' ? 'Receive' : 'Quantity'}
-                  </small>
-                  <input
-                    type='text'
-                    value={
-                      selectedTab === 'deposit' ? depositAmount : withdrawAmount
-                    }
-                    onChange={(event) => {
-                      selectedTab === 'deposit'
-                        ? setDepositAmount(event.target.value)
-                        : setWithdrawAmount(event.target.value);
-                    }}
-                    style={{
-                      width: '69px',
-                      height: '17px',
-                      margin: '8px 200px 2px 0',
-                      fontFamily: 'Inter',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      color: '#fff',
-                      border: 'none',
-                      outline: 'none',
-                      appearance: 'none',
-                      backgroundColor: 'transparent',
-                    }}
-                    placeholder='$0.00'
-                  />
-                </Box>
-                <Box style={{ marginLeft: '20px' }}>
-                  <h1 style={{ marginBottom: '10px', fontSize: '12px' }}>
-                    USDC
-                  </h1>
-                  <span
-                    style={{
-                      color: '#ccced9',
-                      fontSize: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    Available:{' '}
-                    <span style={{ fontSize: '14px', marginLeft: '4px' }}>
-                      {collateral.availableBalance?.toFixed(2)}
-                    </span>
+            <Box className='assetModalInputWrapper' mt={1}>
+              <Box className='flex justify-between'>
+                <small className='text-secondary'>
+                  {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
+                </small>
+                <Box className='flex items-center' gridGap={12}>
+                  <span className='text-primary cursor-pointer'>
+                    {t('max')}
                   </span>
+                  <Box className='flex items-center' gridGap={4}>
+                    <CurrencyLogo
+                      currency={currency ?? undefined}
+                      size='16px'
+                    />
+                    <small>{token?.symbol}</small>
+                  </Box>
+                </Box>
+              </Box>
+              <Box className='flex' mt={1} gridGap={6}>
+                <NumericalInput
+                  value={
+                    (selectedTab === 'deposit'
+                      ? depositAmount
+                      : withdrawAmount) ?? ''
+                  }
+                  onUserInput={(value) => {
+                    selectedTab === 'deposit'
+                      ? setDepositAmount(value)
+                      : setWithdrawAmount(value);
+                  }}
+                  placeholder='$0.00'
+                  fontSize={14}
+                  fontWeight='500'
+                />
+                <Box className='flex' gridGap={4}>
+                  <span className='text-secondary'>{t('available')}:</span>
+                  <span>{parseFloat(deposit.balance).toFixed(2)}</span>
                 </Box>
               </Box>
             </Box>
           </Box>
-
-          <Box
-            style={{
-              width: '400px',
-              height: '55px',
-              margin: '10px 0 0',
-              fontSize: '12px',
-              padding: '0 5px',
-              fontFamily: 'Inter',
-              color: '#696c80',
-              fontWeight: 500,
-            }}
-          >
-            <Box gridGap={'1'}>
-              {selectedTab !== 'withdraw' && <p>1 USDC = 1 USD</p>}
-              <p>Fee = $0</p>
+          <Box className='assetModalLineWrapper'>
+            <div className='assetModalLine' />
+            <div className='assetModalArrow'>
+              <ArrowDownward />
+            </div>
+          </Box>
+          <Box>
+            <Box className='flex items-center justify-between'>
+              <small>{t('yourQuickPerpsAccount')}</small>
+              <img src={QuickPerpsIcon} />
             </Box>
-            <Box>{selectedTab !== 'withdraw' && <h5>Slippage: 1%</h5>}</Box>
-          </Box>
-
-          <Box
-            style={{
-              margin: '0 36px',
-              fontSize: '12px',
-              fontFamily: 'Inter',
-              textAlign: 'center',
-              fontWeight: 500,
-              color: '#ccced9',
-            }}
-          >
-            Cross-chain transaction fees will be charged. To avoid fees, use our
-            supported Bridgeless networks.
-          </Box>
-          <Box style={{ marginTop: '20px' }}>
-            {selectedTab === 'deposit' ? (
-              <Button
-                style={{
-                  width: '400px',
-                  height: '48px',
-                  padding: '13px 143px 15px',
-                  borderRadius: '14px',
-                  cursor: 'pointer',
-                  backgroundColor: '#448aff',
-                  color: '#fff',
-                }}
-                disabled={depositAmount == null}
-                onClick={async () => {
-                  if (depositAmount == null) return;
-                  if (Number(deposit.allowance) < Number(depositAmount)) {
-                    await deposit.approve(depositAmount.toString());
-                  } else {
-                    deposit.setQuantity(depositAmount.toString());
-                    const tx = await deposit.deposit();
-                    setNotifications(true);
+            <Box className='assetModalInputWrapper' mt={1}>
+              <Box className='flex justify-between'>
+                <small className='text-secondary'>
+                  {selectedTab === 'deposit' ? 'Receive' : 'Quantity'}
+                </small>
+                <span>USDC</span>
+              </Box>
+              <Box className='flex' mt={1} gridGap={6}>
+                <NumericalInput
+                  value={
+                    (selectedTab === 'deposit'
+                      ? depositAmount
+                      : withdrawAmount) ?? ''
                   }
-                }}
-                // onClick={() => {
-                //   console.log('Deposit Working');
-                // }}
-              >
-                {Number(deposit.allowance) < Number(depositAmount)
-                  ? 'Approve'
-                  : 'Deposit'}
-              </Button>
-            ) : (
-              <Button
-                style={{
-                  width: '400px',
-                  height: '48px',
-                  padding: '13px 143px 15px',
-                  borderRadius: '14px',
-                  cursor: 'pointer',
-                  backgroundColor: '#448aff',
-                  color: '#fff',
-                }}
-                disabled={withdrawAmount == null}
-                onClick={async () => {
-                  if (withdrawAmount == null) return;
-                  await withdraw({
-                    chainId: Number(chainId),
-                    amount: withdrawAmount,
-                    token: 'USDC',
-                    allowCrossChainWithdraw: false,
-                  });
-                }}
-              >
-                {/*{Number(deposit.allowance) < Number(amount) ? 'Approve' : 'Deposit'}*/}
-                Withdraw
-              </Button>
-            )}
+                  onUserInput={(val) => {
+                    selectedTab === 'deposit'
+                      ? setDepositAmount(val)
+                      : setWithdrawAmount(val);
+                  }}
+                  placeholder='$0.00'
+                  fontSize={14}
+                  fontWeight='500'
+                />
+                <Box className='flex' gridGap={4}>
+                  <span className='text-secondary'>{t('available')}:</span>
+                  <span>{collateral.availableBalance?.toFixed(2)}</span>
+                </Box>
+              </Box>
+            </Box>
           </Box>
         </Box>
+
+        {selectedTab !== 'withdraw' && (
+          <Box className='flex items-center justify-between' mt={2}>
+            <span className='text-secondary'>1 USDC = 1 USD</span>
+            <span className='text-secondary'>Slippage: 1%</span>
+          </Box>
+        )}
+        <Box mt={1}>
+          <span className='text-secondary'>Fee = $0</span>
+        </Box>
+
+        <Box my={2.5} className='text-center'>
+          <p className='span'>
+            Cross-chain transaction fees will be charged. To avoid fees, use our
+            supported Bridgeless networks.
+          </p>
+        </Box>
+        {selectedTab === 'deposit' ? (
+          <Button
+            className='assetModalButton'
+            disabled={depositAmount == null}
+            onClick={async () => {
+              if (depositAmount == null) return;
+              if (Number(deposit.allowance) < Number(depositAmount)) {
+                await deposit.approve(depositAmount.toString());
+              } else {
+                deposit.setQuantity(depositAmount.toString());
+                const tx = await deposit.deposit();
+                setNotifications(true);
+              }
+            }}
+          >
+            {Number(deposit.allowance) < Number(depositAmount)
+              ? t('approve')
+              : t('deposit')}
+          </Button>
+        ) : (
+          <Button
+            className='assetModalButton'
+            disabled={withdrawAmount == null}
+            onClick={async () => {
+              if (withdrawAmount == null) return;
+              await withdraw({
+                chainId: Number(chainId),
+                amount: withdrawAmount,
+                token: 'USDC',
+                allowCrossChainWithdraw: false,
+              });
+            }}
+          >
+            {t('withdraw')}
+          </Button>
+        )}
       </Box>
       <NotifyModal
         open={notifications}

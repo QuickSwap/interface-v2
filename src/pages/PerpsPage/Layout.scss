@@ -305,10 +305,21 @@
     width: 15px;
     height: 15px;
     color: $textSecondary;
+    transform: rotate(45deg);
   }
   & div {
     flex: 1;
     height: 2px;
     background-color: $secondary1;
+  }
+}
+
+.leverageSubmitButton {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  & span {
+    font-size: 14px;
+    font-weight: 500;
   }
 }

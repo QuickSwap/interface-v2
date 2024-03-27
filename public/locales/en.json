@@ -136,7 +136,7 @@
   "volume": "Volume",
   "bestTrade": "Best Trade",
   "crossChain": "Cross Chain",
-  "market": "Market (V2)",
+  "marketV2": "Market (V2)",
   "marketV3": "Market (V3)",
   "limit": "Limit",
   "twap": "TWAP",
@@ -910,5 +910,18 @@
   "last24hours": "Last 24 hours",
   "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch.",
   "mainnet": "Mainnet",
-  "testnet": "Testnet"
+  "testnet": "Testnet",
+  "createOrder": " Create Order",
+  "signIn": "Sign In",
+  "quantity": "Quantity",
+  "reduceOnly": "Reduce Only",
+  "maxBuy": "Max buy",
+  "accountLeverage": "Account Leverage",
+  "marginRatio": "Margin Ratio",
+  "long": "Long",
+  "sell": "Sell",
+  "short": "Short",
+  "market": "Market",
+  "yourWeb3Wallet": "Your web3 wallet",
+  "yourQuickPerpsAccount": "Your QuickPerps account"
 }
