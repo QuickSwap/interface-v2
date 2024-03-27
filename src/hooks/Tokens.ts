@@ -79,7 +79,11 @@ export function useToken(tokenAddress?: string): Token | undefined | null {
     address ? address : undefined,
     false,
   );
-  const token: Token | undefined = address ? tokens[address] : undefined;
+  const token: Token | undefined = address
+    ? Object.values(tokens).find(
+        (token) => token.address.toLowerCase() === address.toLowerCase(),
+      )
+    : undefined;
 
   const tokenName = useSingleCallResult(
     token ? undefined : tokenContract,

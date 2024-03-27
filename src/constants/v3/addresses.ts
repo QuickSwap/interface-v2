@@ -767,6 +767,13 @@ export const MI: { [chainId: number]: Token } = {
     'MAI',
     'miMATIC',
   ),
+  [ChainId.ZKEVM]: new Token(
+    ChainId.ZKEVM,
+    '0x615B25500403Eb688Be49221b303084D9Cf0E5B4',
+    18,
+    'MAI',
+    'miMATIC',
+  ),
 };
 
 export const DC: { [chainId: number]: Token } = {

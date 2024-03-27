@@ -71,7 +71,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
   const walletModalOpen = useModalOpen(ApplicationModal.WALLET);
   const toggleWalletModal = useWalletModalToggle();
 
-  const connections = getConnections();
+  const connections = getConnections(chainId);
 
   const iconify = true;
 
