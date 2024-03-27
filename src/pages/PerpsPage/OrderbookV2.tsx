@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { OrderBook } from '@orderly.network/react';
 import { useOrderbookStream, useSymbolsInfo } from '@orderly.network/hooks';
 import '@orderly.network/react/dist/styles.css';
+import { Box } from '@material-ui/core';
 
 export const OrderbookV2: React.FC<{
   token: any;
@@ -23,7 +24,7 @@ export const OrderbookV2: React.FC<{
   };
 
   return (
-    <div>
+    <Box padding='7px 10px'>
       <OrderBook
         level={7}
         asks={data.asks ?? []}
@@ -39,6 +40,6 @@ export const OrderbookV2: React.FC<{
         onDepthChange={onDepthChange}
         cellHeight={22}
       />
-    </div>
+    </Box>
   );
 };

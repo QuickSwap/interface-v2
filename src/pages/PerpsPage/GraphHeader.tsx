@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
-import { SearchOutlined } from '@material-ui/icons';
+import { Close, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { Box, Popover } from '@material-ui/core';
 import { formatNumber } from 'utils';
-import { WSMessage } from '@orderly.network/types';
+import { SearchInput } from 'components';
 
 interface MarketData {
   symbol: string;
@@ -55,11 +55,24 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   }, []);
 
   const token: any = data?.find((item) => item.symbol === tokenSymbol);
+  const [search, setSearch] = useState('');
+
+  const filteredData = useMemo(() => {
+    if (!data) return [];
+    return data.filter((item) =>
+      item.symbol.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [data, search]);
 
   return (
-    <Box className='border flex items-center' height='48px' gridGap={12}>
-      <Box className='perpsTokenSelect' onClick={handleClick}>
-        {token ? token.symbol : 'Tokens'}
+    <Box className='flex items-center' height='48px' gridGap={12}>
+      <Box className='perpsTokenSelect' onClick={handleClick} gridGap={8}>
+        <p>{token ? token.symbol : 'Tokens'}</p>
+        {open ? (
+          <KeyboardArrowUp className='text-secondary' />
+        ) : (
+          <KeyboardArrowDown className='text-secondary' />
+        )}
       </Box>
       <Popover
         open={open}
@@ -70,106 +83,74 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
           horizontal: 'left',
         }}
       >
-        <div style={{ position: 'relative' }}>
-          <input
-            type='text'
-            placeholder='Search'
-            style={{
-              width: '100%',
-              marginBottom: '20px',
-              padding: '10px 35px 10px 10px',
-              borderRadius: '4px',
-              border: '1px solid #61657a',
-              backgroundColor: '#2c303e',
-              color: '#c7cad9',
-              fontFamily: 'Inter',
-              fontSize: '14px',
-              fontWeight: 500,
-            }}
-          />
-          <SearchOutlined
-            style={{
-              position: 'absolute',
-              right: '10px',
-              top: '35%',
-              transform: 'translateY(-50%)',
-              color: '#61657a',
-            }}
-          />
-        </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr
-              style={{
-                fontFamily: 'Inter',
-                fontSize: 12,
-                fontWeight: 500,
-                color: '#61657a',
-              }}
-            >
-              <th style={{ textAlign: 'start' }}>Instrument</th>
-              <th style={{ textAlign: 'end' }}>Last</th>
-              <th style={{ textAlign: 'end' }}>24h%</th>
-              <th style={{ textAlign: 'end' }}>Volume</th>
-            </tr>
-          </thead>
-          <tbody
-            style={{
-              fontFamily: 'Inter',
-              fontSize: 14,
-              fontWeight: 500,
-              color: '#c7cad9',
-            }}
-          >
-            {data ? (
-              data.map((item: any, index) => (
-                <tr
-                  key={index}
-                  onClick={() => handleTokenSelect(item)}
-                  style={{
-                    margin: '7px 0',
-                    cursor: 'pointer',
-                  }}
-                  className='hover-row'
-                >
+        <Box padding={2}>
+          <Box className='flex items-center' gridGap={16}>
+            <SearchInput
+              placeholder='Search'
+              value={search}
+              setValue={setSearch}
+            />
+            <Close
+              className='cursor-pointer text-secondary'
+              onClick={handleClose}
+            />
+          </Box>
+          <table className='perpsTokenSearchTable'>
+            <thead>
+              <tr>
+                <th align='left'>
+                  <span className='text-secondary'>Instrument</span>
+                </th>
+                <th align='right'>
+                  <span className='text-secondary'>Last</span>
+                </th>
+                <th align='right'>
+                  <span className='text-secondary'>24h%</span>
+                </th>
+                <th align='right'>
+                  <span className='text-secondary'>Volume</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.length > 0 ? (
+                filteredData.map((item: any, index) => (
+                  <tr key={index} onClick={() => handleTokenSelect(item)}>
+                    <td align='left'>
+                      <small>{item.symbol}</small>
+                    </td>
+                    <td align='right'>
+                      <small>{item?.index_price}</small>
+                    </td>
+                    <td align='right'>
+                      <small
+                        className={
+                          Number(item?.change) < 0
+                            ? 'text-error'
+                            : 'text-success'
+                        }
+                      >
+                        {formatNumber(item?.change)}
+                      </small>
+                    </td>
+                    <td align='right'>
+                      <small>{item?.['24h_volume']}</small>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
                   <td
-                    style={{
-                      textAlign: 'start',
-                      verticalAlign: 'middle',
-                      margin: '0 5px',
-                    }}
+                    colSpan={4}
+                    style={{ textAlign: 'center', verticalAlign: 'middle' }}
                   >
-                    {item.symbol}
-                  </td>
-                  <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
-                    {item?.index_price}
-                  </td>
-                  <td
-                    style={{
-                      textAlign: 'end',
-                      verticalAlign: 'middle',
-                      color: (item?.change ?? 0) < 0 ? 'red' : '#51b29f',
-                    }}
-                  >
-                    {formatNumber(item?.change)}
-                  </td>
-                  <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
-                    {item?.['24h_volume']}
+                    <small>No data available</small>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={4}
-                  style={{ textAlign: 'center', verticalAlign: 'middle' }}
-                >
-                  No data available
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </Box>
       </Popover>
 
       {/* Render Token Info */}

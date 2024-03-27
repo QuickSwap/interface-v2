@@ -198,21 +198,14 @@ const AssetModal: React.FC<AssetModalProps> = ({
         </Box>
 
         {selectedTab !== 'withdraw' && (
-          <Box className='flex items-center justify-between' mt={2}>
+          <Box mt={2}>
             <span className='text-secondary'>1 USDC = 1 USD</span>
-            <span className='text-secondary'>Slippage: 1%</span>
           </Box>
         )}
-        <Box mt={1}>
+        <Box margin='8px 0 16px'>
           <span className='text-secondary'>Fee = $0</span>
         </Box>
 
-        <Box my={2.5} className='text-center'>
-          <p className='span'>
-            Cross-chain transaction fees will be charged. To avoid fees, use our
-            supported Bridgeless networks.
-          </p>
-        </Box>
         {selectedTab === 'deposit' ? (
           <Button
             className='assetModalButton'

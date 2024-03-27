@@ -25,7 +25,7 @@ export const AdvancedChartWrapper: React.FC<AdvancedChartWrapperProps> = ({
     withdateranges: true,
     save_image: false,
     allow_symbol_change: false,
-    height: '430',
+    height: '444',
   };
 
   return <AdvancedChart widgetProps={widgetProps} />;

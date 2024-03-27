@@ -6,6 +6,7 @@ import { Market } from './Market';
 import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
@@ -13,13 +14,13 @@ export const Layout = () => {
   const [selectedSide, setSelectedSide] = useState<string>('');
   const [selectedNavItem, setSelectedNavItem] = useState('Chart');
   const [orderQuantity, setOrderQuantity] = useState<number[]>([]);
-  const [selectedTab, setSelectedTab] = useState<'Orderbook' | 'Market'>(
-    'Orderbook',
-  );
+  const [selectedTab, setSelectedTab] = useState<string>('Orderbook');
 
-  const handleTabClick = (tab: 'Orderbook' | 'Market') => {
-    setSelectedTab(tab);
-  };
+  const tabs = [
+    { id: 'Orderbook', text: 'Orderbook' },
+    { id: 'Market', text: 'Last Trades' },
+  ];
+
   return (
     <div className='perpsV2Container'>
       <div className='graph_footer'>
@@ -59,19 +60,13 @@ export const Layout = () => {
             )}
           </div>
           <div className='orderbook desktop_orderbook'>
-            <div className='tab-header'>
-              <div
-                className={selectedTab === 'Orderbook' ? 'active-tab' : ''}
-                onClick={() => handleTabClick('Orderbook')}
-              >
-                Orderbook
-              </div>
-              <div
-                className={selectedTab === 'Market' ? 'active-tab' : ''}
-                onClick={() => handleTabClick('Market')}
-              >
-                Market
-              </div>
+            <div className='border-bottom'>
+              <CustomTabSwitch
+                items={tabs}
+                height={48}
+                value={selectedTab}
+                handleTabChange={setSelectedTab}
+              />
             </div>
             {selectedTab === 'Orderbook' && (
               <OrderbookV2 token={token} setOrderQuantity={setOrderQuantity} />
