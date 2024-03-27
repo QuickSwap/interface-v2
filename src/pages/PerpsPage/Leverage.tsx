@@ -23,7 +23,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 }) => {
   const { t } = useTranslation();
   const [data, positionInfo] = usePositionStream(perpToken);
-  
   const [reducedOnly, setReducedOnly] = useState(false);
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
@@ -40,7 +39,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
   });
-  console.log(state.status)
   const [modalOpen, setModalOpen] = useState(false);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
@@ -81,7 +79,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const handleClick = (index: number) => {
     setClickedIndex(index);
     setMaxBuy((collateral.availableBalance * (clickedIndex * 25)) / 100)
-  };
+  }; 
+  console.log(order.order_quantity*order.order_price,maxBuy);
+  
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
@@ -91,11 +91,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   }, [quickSwapAccount, state.status, t]);
 
   const toggleWalletModal = useWalletModalToggle();
-  // useEffect(()=>{
-  //  if(order.order_price*order.order_quantity>maxBuy){
-  //     console.warn("Max Buy Limit Exceeds")
-  //  }
-  // },[order.order_price*order.order_quantity])
+  useEffect(()=>{
+   if(order.order_price*order.order_quantity>maxBuy){
+      console.warn("Max Buy Limit Exceeds")
+   }
+  },[order.order_price*order.order_quantity])
   return (
     <>
       <Box padding='15px 10px'>
@@ -258,6 +258,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Button
           className='leverageSubmitButton'
+          disabled={order.order_price*order.order_quantity>maxBuy}
           onClick={async () => {
             if (!quickSwapAccount) {
               toggleWalletModal();
