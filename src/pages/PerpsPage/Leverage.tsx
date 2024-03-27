@@ -22,8 +22,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   orderQuantity,
 }) => {
   const { t } = useTranslation();
-  const [x, positionInfo] = usePositionStream(perpToken);
-
+  const [data, positionInfo] = usePositionStream(perpToken);
+  
   const [reducedOnly, setReducedOnly] = useState(false);
   const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
@@ -40,7 +40,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
   });
-
+  console.log(state.status)
   const [modalOpen, setModalOpen] = useState(false);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
@@ -126,11 +126,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <Box className='flex justify-between' gridGap={8}>
             <Box>
               <p className='span text-secondary'>{t('accountLeverage')}</p>
-              <p className='span'>0.00x/-x</p>
+              <p className='span'>{state.leverage}</p>
             </Box>
             <Box textAlign='right'>
               <p className='span text-secondary'>{t('marginRatio')}</p>
-              <p className='span'>100%</p>
+              <p className='span'>{data.totalUnrealizedROI}%</p>
             </Box>
           </Box>
         </Box>
