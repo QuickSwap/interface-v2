@@ -59,7 +59,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   return (
     <Box className='border flex items-center' height='48px' gridGap={12}>
       <Box className='perpsTokenSelect' onClick={handleClick}>
-        {token ? token.symbol : 'Tokens'}
+        {token ? token.symbol.replace("_USDC", "").replace("_", "-") : 'Tokens'}
       </Box>
       <Popover
         open={open}
@@ -139,7 +139,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                       margin: '0 5px',
                     }}
                   >
-                    {item.symbol}
+                    {item.symbol.replace("_USDC", "").replace("_", "-")}
                   </td>
                   <td style={{ textAlign: 'end', verticalAlign: 'middle' }}>
                     {item?.index_price}
