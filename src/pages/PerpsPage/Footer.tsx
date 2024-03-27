@@ -2,6 +2,7 @@ import React from 'react';
 import { useOrderStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
+import { Box } from '@material-ui/core';
 
 type Order = {
   price: number;
@@ -53,17 +54,19 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
       {orders && orders.length > 0 ? (
         orders.map((order) => (
           <div key={order?.order_id} className='order'>
-            <div>{order?.price}</div>
-            <div>{order?.quantity}</div>
-            <div>{order?.created_time}</div>
-            <div>{order?.side}</div>
-            <div>{order?.type}</div>
-            <div>{order?.status}</div>
-            <div>{order?.average_executed_price}</div>
+            <span>{order?.price}</span>
+            <span>{order?.quantity}</span>
+            <span>{order?.created_time}</span>
+            <span>{order?.side}</span>
+            <span>{order?.type}</span>
+            <span>{order?.status}</span>
+            <span>{order?.average_executed_price}</span>
           </div>
         ))
       ) : (
-        <div>No orders available</div>
+        <Box padding='20px 16px' className='flex justify-center'>
+          <small>No orders available</small>
+        </Box>
       )}
     </div>
   );

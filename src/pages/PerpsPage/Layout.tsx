@@ -21,6 +21,33 @@ export const Layout = () => {
     { id: 'Market', text: 'Last Trades' },
   ];
 
+  const footerTabs = [
+    {
+      id: 'Portfolio',
+      text: 'Portfolio',
+    },
+    {
+      id: 'Pending',
+      text: 'Pending',
+    },
+    {
+      id: 'Filled',
+      text: 'Filled',
+    },
+    {
+      id: 'Cancelled',
+      text: 'Cancelled',
+    },
+    {
+      id: 'Rejected',
+      text: 'Rejected',
+    },
+    {
+      id: 'OrderHistory',
+      text: 'Order History',
+    },
+  ];
+
   return (
     <div className='perpsV2Container'>
       <div className='graph_footer'>
@@ -75,59 +102,45 @@ export const Layout = () => {
           </div>
         </div>
         <div className='kingFooter'>
-          <div className='perp_footer'>
-            <div className='footer-left'>
-              {[
-                'Portfolio',
-                'Pending',
-                'Filled',
-                'Cancelled',
-                'Rejected',
-                'Order History',
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className={selectedItem === item ? 'selected' : ''}
-                  onClick={() => setSelectedItem(item)}
-                >
-                  {item}
-                </div>
-              ))}
+          <div className='flex items-center justify-between border-bottom'>
+            <CustomTabSwitch
+              items={footerTabs}
+              value={selectedItem}
+              handleTabChange={setSelectedItem}
+              height={45}
+            />
+            {/* <div className='footer-right'>Show All Instrument</div> */}
+          </div>
+          {selectedItem !== 'Portfolio' ? (
+            <div className='dropdown'>
+              <select
+                id='dropdownSelect'
+                onChange={(e) => {
+                  setSelectedSide(e.target.value);
+                }}
+              >
+                <option value='all' disabled selected>
+                  All
+                </option>
+                <option value='buy'>Buy</option>
+                <option value='sell'>Sell</option>
+              </select>
             </div>
-            <div className='footer-right'>Show All Instrument</div>
-          </div>
-          <div>
-            {selectedItem !== 'Portfolio' ? (
-              <div className='dropdown'>
-                <select
-                  id='dropdownSelect'
-                  onChange={(e) => {
-                    setSelectedSide(e.target.value);
-                  }}
-                >
-                  <option value='all' disabled selected>
-                    All
-                  </option>
-                  <option value='buy'>Buy</option>
-                  <option value='sell'>Sell</option>
-                </select>
-              </div>
-            ) : (
-              <div className='portfolio_status'>
-                <div>Unreal</div>
-                <div>Real</div>
-                <div>Margin</div>
-              </div>
-            )}
-          </div>
+          ) : (
+            <div className='portfolio_status'>
+              <div>Unreal</div>
+              <div>Real</div>
+              <div>Margin</div>
+            </div>
+          )}
           <div className='footer_data'>
-            <div>Price</div>
-            <div>Quantity</div>
-            <div>CreatedAt</div>
-            <div>Side</div>
-            <div>Type</div>
-            <div>Status</div>
-            <div>Price</div>
+            <span className='text-secondary weight-500'>Price</span>
+            <span className='text-secondary weight-500'>Quantity</span>
+            <span className='text-secondary weight-500'>Created At</span>
+            <span className='text-secondary weight-500'>Side</span>
+            <span className='text-secondary weight-500'>Type</span>
+            <span className='text-secondary weight-500'>Status</span>
+            <span className='text-secondary weight-500'>Price</span>
           </div>
           <Footer token={token} selectedTab={selectedItem} />
         </div>
