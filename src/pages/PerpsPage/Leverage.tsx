@@ -10,7 +10,7 @@ import {
   usePositionStream,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
-import { AccountStatusEnum } from '@orderly.network/types';
+import { AccountStatusEnum, OrderSide } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Box, Button } from '@material-ui/core';
 import { ToggleSwitch } from 'components';
@@ -29,7 +29,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
   const [clickedIndex, setClickedIndex] = useState<number>(0);
-
+  const [maxBuy,setMaxBuy]=useState<number>(0)
   const { account, state } = useAccount();
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
@@ -70,6 +70,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       },
     });
   }, [library, account, quickSwapAccount, chainId]);
+  
 
   useEffect(() => {
     if (state.status === AccountStatusEnum.EnableTrading) {
@@ -79,8 +80,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   const handleClick = (index: number) => {
     setClickedIndex(index);
-    const percentage = index * 25;
-    console.log(`Clicked box ${index + 1}, percentage: ${percentage}%`);
+    setMaxBuy((collateral.availableBalance * (clickedIndex * 25)) / 100)
   };
 
   const buttonText = useMemo(() => {
@@ -91,7 +91,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   }, [quickSwapAccount, state.status, t]);
 
   const toggleWalletModal = useWalletModalToggle();
-
+  // useEffect(()=>{
+  //  if(order.order_price*order.order_quantity>maxBuy){
+  //     console.warn("Max Buy Limit Exceeds")
+  //  }
+  // },[order.order_price*order.order_quantity])
   return (
     <>
       <Box padding='15px 10px'>
@@ -135,12 +139,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           </Box>
         </Box>
         <Box className='leverageTypesWrapper' gridGap={2}>
-          <Box onClick={() => setOrder({ ...order, side: 'BUY' })}>
+          <Box onClick={() => setOrder({ ...order, side: 'BUY' })} style={{backgroundColor:order.side==OrderSide.BUY?"#448aff":"#1b1e29",color:'#fff'}}>
             <span className='text-secondary'>
               {t('buy')}/{t('long')}
             </span>
           </Box>
-          <Box onClick={() => setOrder({ ...order, side: 'SELL' })}>
+          <Box onClick={() => setOrder({ ...order, side: 'SELL' })} style={{backgroundColor:order.side==OrderSide.SELL?"#448aff":"#1b1e29",color:'#fff'}}>
             <span className='text-secondary'>
               {t('sell')}/{t('short')}
             </span>
@@ -224,10 +228,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Box className='flex justify-between'>
           <p className='span text-success'>{clickedIndex * 25}%</p>
-          <p className='span text-secondary'>
+          <p className='span text-secondary' onClick={()=>{
+          setClickedIndex(4)
+        }}>
             {t('maxBuy')}{' '}
             <span className='text-success'>
-              {' '}
+              {' '} 
               {(collateral.availableBalance * (clickedIndex * 25)) / 100}
             </span>
           </p>

@@ -119,7 +119,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   {selectedTab === 'deposit' ? 'Quantity' : 'Receive'}
                 </small>
                 <Box className='flex items-center' gridGap={12}>
-                  <span className='text-primary cursor-pointer'>
+                  <span className='text-primary cursor-pointer' onClick={()=>setDepositAmount(deposit.balance)}>
                     {t('max')}
                   </span>
                   <Box className='flex items-center' gridGap={4}>
