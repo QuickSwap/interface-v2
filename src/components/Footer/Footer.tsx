@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
           <Grid item container xs={12} sm={12} md={8} spacing={4}>
             {socialMenuItems.map((item) => (
               <Grid key={item.title} item xs={12} sm={6} md={4}>
-                <small>{item.title}</small>
+                <small className='footer-title'>{item.title}</small>
                 <Box mt={3}>
                   {item.items.map((socialItem) => (
                     <Box
@@ -85,9 +85,7 @@ const Footer: React.FC = () => {
                         }
                       }}
                     >
-                      <small className='text-secondary'>
-                        {socialItem.title}
-                      </small>
+                      <small className='footer-text'>{socialItem.title}</small>
                     </Box>
                   ))}
                 </Box>

@@ -10,8 +10,8 @@ import {
 } from '@material-ui/core';
 import { useTranslation, Trans } from 'react-i18next';
 import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
-import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
+import { ReactComponent as DiscordIcon } from 'assets/images/social/discord_new.svg';
+import { ReactComponent as BlogIcon } from 'assets/images/social/blog_new.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
@@ -34,6 +34,7 @@ import Features4 from '../../assets/images/landingPage/features4.svg';
 import Earn1 from '../../assets/images/landingPage/earn1.svg';
 import Earn2 from '../../assets/images/landingPage/earn2.svg';
 import Earn3 from '../../assets/images/landingPage/earn3.svg';
+import GoAhead from '../../assets/images/landingPage/GoAhead.svg';
 
 import PolygonChain from '../../assets/images/Currency/Polygon.svg';
 import { useIsSupportedNetwork } from 'utils';
@@ -244,20 +245,20 @@ const LandingPage: React.FC = () => {
       <GlobalSection />
 
       <Box className='chainsContainer'>
-        <span>{t('AvailableOn')}</span>
+        <span className='font-14'>{t('AvailableOn')}</span>
         {/*  */}
         <Box className='chainsItems'>
           {supportedChains.map((chain) => {
             const config = getConfig(chain);
             return (
-              <Box className='networkItemWrapper' key={chain}>
+              <Box className='chainsAddress' key={chain}>
                 <img
                   src={config['nativeCurrencyImage']}
                   alt='network Image'
                   className='networkIcon'
                 />
-                <p className='weight-600'>{config['networkName']}</p>
-                <p className='chainDivider'></p>
+                <p className='font-14'>{config['networkName']}</p>
+                <p className='networkDivider'></p>
               </Box>
             );
           })}
@@ -280,10 +281,10 @@ const LandingPage: React.FC = () => {
         {/*  */}
       </Box>
 
-      <Box className='sectionContainer'>
+      <Box className='sectionContainer statsContainer'>
         <h3 className='sectionHeading'>{t('QuickStatistics')}</h3>
         <p className='sectionDesc'>{t('QuickStatisticsDesc')}</p>
-        <Box className='cardBox'>
+        <Box className='statsCardBox'>
           {statistics.map((val, index) => (
             <Box className='statsCard' key={index}>
               <h5>{val.title}</h5>
@@ -293,13 +294,13 @@ const LandingPage: React.FC = () => {
         </Box>
         <a href='/'>
           <p className='btn'>{t('ViewAnalytics')}</p>
+          <img src={GoAhead} alt='goAhead' />
         </a>
       </Box>
 
       <Box className='sectionContainer'>
         <h3 className='sectionHeading'>{t('TradeLiquidity')}</h3>
         <p className='sectionDesc'>{t('TradeLiquidityDesc')}</p>
-
         <Box className='cardBox'>
           {features.map((val, index) => (
             <Box className='sectionCard' key={index}>
@@ -308,6 +309,7 @@ const LandingPage: React.FC = () => {
               <p>{val.desc}</p>
               <a href={val.link}>
                 <p className='btn'>{val.button}</p>
+                <img src={GoAhead} alt='goAhead' />
               </a>
             </Box>
           ))}
@@ -317,18 +319,16 @@ const LandingPage: React.FC = () => {
       <Box className='sectionContainer'>
         <h3 className='sectionHeading'>{t('Earn')}</h3>
         <p className='sectionDesc'>{t('EarnDesc')}</p>
-
         <Box className='cardBox'>
           {earnContent.map((val, index) => (
             <Box className='sectionCard' key={index}>
               <img src={val.img} alt={val.title} />
-              <Box className='featureText'>
-                <h5>{val.title}</h5>
-                <p>{val.desc}</p>
-                <a href={val.link}>
-                  <p className='btn'>{val.button}</p>
-                </a>
-              </Box>
+              <h5>{val.title}</h5>
+              <p>{val.desc}</p>
+              <a href={val.link}>
+                <p className='btn'>{val.button}</p>
+                <img src={GoAhead} alt='goAhead' />
+              </a>
             </Box>
           ))}
         </Box>
@@ -362,104 +362,6 @@ const LandingPage: React.FC = () => {
           </Box>
         </Box>
       </div>
-      {/* <Box className='smallCommunityContainer'>
-        {socialicons.map((val, ind) => (
-          <Box
-            key={ind}
-            mx={1.5}
-            className={
-              val.title.toLowerCase() === 'geckoterminal' ? 'noFill' : 'svgFill'
-            }
-          >
-            <a href={val.link} target='_blank' rel='noopener noreferrer'>
-              {val.icon}
-            </a>
-          </Box>
-        ))}
-      </Box>
-      <Box mt={2} width={1}>
-        <TopMovers />
-      </Box>
-      <Box margin='32px auto'>
-        <HypeLabAds />
-      </Box>
-      <Box className='quickInfo'>
-        <h1 className='h4'>{t('quickInfoTitle')}</h1>
-        <img src={Motif} alt='Motif' />
-      </Box>
-      <Box margin='100px 0 120px'>
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={6}>
-            <BuyFiatSection />
-          </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <BuySpritzSection />
-          </Grid>
-        </Grid>
-      </Box>
-      <Box className='featureContainer'>
-        <Box className='featureHeading'>
-          <h3>{t('features')}</h3>
-          <Box className='featureDivider' />
-        </Box>
-        <Grid container spacing={4}>
-          {features.map((val, index) => (
-            <Grid item container alignItems='center' sm={12} md={6} key={index}>
-              <img src={val.img} alt={val.title} />
-              <Box className='featureText'>
-                <h5>{val.title}</h5>
-                <p>{val.desc}</p>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-      <Box my={4}>
-        <NewsletterSignupForm />
-      </Box>
-      <Box className='communityContainer'>
-        <Box className='featureHeading'>
-          <h3>{t('faqs')}</h3>
-          <Box className='featureDivider' />
-        </Box>
-        <Box>
-          {faqs.map((val, i) => (
-            <Accordion key={`accordation-${i}`}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreOutlined />}
-                aria-controls='panel1a-content'
-                id='panel1a-header'
-              >
-                <Typography>{val.header}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>{val.content}</AccordionDetails>
-            </Accordion>
-          ))}
-        </Box>
-      </Box>
-      <Box className='communityContainer'>
-        <Box className='featureHeading'>
-          <h3>{t('joinCommunity')}</h3>
-          <Box className='featureDivider' />
-        </Box>
-        <Box className='socialContent'>
-          {socialicons.map((val, ind) => (
-            <Box
-              key={ind}
-              className={
-                val.title.toLowerCase() === 'geckoterminal'
-                  ? 'noFill'
-                  : 'svgFill'
-              }
-            >
-              <a href={val.link} target='_blank' rel='noopener noreferrer'>
-                {val.icon}
-                <p>{val.title}</p>
-              </a>
-            </Box>
-          ))}
-        </Box> */}
-      {/* </Box> */}
     </div>
   );
 };
