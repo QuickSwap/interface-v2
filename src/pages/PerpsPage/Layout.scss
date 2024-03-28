@@ -27,12 +27,6 @@
   width: 100vw;
 }
 
-.perp_footer {
-  display: flex;
-  justify-content: space-between;
-  color: white;
-}
-
 .kingFooter {
   display: flex;
   flex-direction: column;
@@ -170,16 +164,28 @@
 .leverageSquareWrapper {
   display: flex;
   align-items: center;
-  & svg {
-    width: 15px;
-    height: 15px;
-    color: $textSecondary;
+  & .leverageSquare {
+    width: 11px;
+    height: 11px;
+    border: 2px solid $secondary1;
     transform: rotate(45deg);
+    cursor: pointer;
+    &.activeSquare {
+      background-color: white;
+      border: 2px solid $textSecondary;
+    }
+    &.filledSquare {
+      background-color: $textSecondary;
+      border: 2px solid $textSecondary;
+    }
   }
-  & div {
+  & .leverageLine {
     flex: 1;
     height: 2px;
     background-color: $secondary1;
+    &.activeLine {
+      background-color: $textSecondary;
+    }
   }
 }
 

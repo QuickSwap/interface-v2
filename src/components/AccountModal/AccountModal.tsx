@@ -15,7 +15,7 @@ interface AccountModalProps {
 const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
   const { account, state } = useAccount();
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
@@ -61,11 +61,17 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
         <Box>
           <Box className='accountModalStepsWrapper'>
             <Box className='flex' gridGap={16}>
-              <Box className='accountModalStep'>
+              <Box
+                className={`accountModalStep ${
+                  state.status === AccountStatusEnum.NotSignedIn
+                    ? 'bg-primary'
+                    : 'bg-success'
+                }`}
+              >
                 {state.status === AccountStatusEnum.NotSignedIn ? (
-                  <p>1</p>
+                  <p className='text-white'>1</p>
                 ) : (
-                  <Check />
+                  <Check className='text-white' />
                 )}
               </Box>
               <Box>
@@ -77,12 +83,29 @@ const AccountModal: React.FC<AccountModalProps> = ({ open, onClose }) => {
             </Box>
 
             <Box className='flex' gridGap={16} mt={2}>
-              <Box className='accountModalStep'>
+              <Box
+                className={`accountModalStep ${
+                  state.status > AccountStatusEnum.DisabledTrading ||
+                  state.status === AccountStatusEnum.NotConnected
+                    ? 'bg-success'
+                    : state.status === AccountStatusEnum.NotSignedIn
+                    ? 'bg-gray2'
+                    : 'bg-primary'
+                }`}
+              >
                 {state.status > AccountStatusEnum.DisabledTrading ||
                 state.status === AccountStatusEnum.NotConnected ? (
-                  <Check />
+                  <Check className='text-white' />
                 ) : (
-                  <p>2</p>
+                  <p
+                    className={
+                      state.status === AccountStatusEnum.NotSignedIn
+                        ? ''
+                        : 'text-white'
+                    }
+                  >
+                    2
+                  </p>
                 )}
               </Box>
               <Box>

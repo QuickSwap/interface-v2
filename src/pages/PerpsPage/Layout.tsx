@@ -80,7 +80,7 @@ export const Layout = () => {
             className='border-right flex flex-col'
           >
             <GraphHeader setTokenName={setToken} />
-            {!isMobile && <AdvancedChartWrapper token={token} />}
+            {!isMobile && <AdvancedChartWrapper token={token} isSmall={isMd} />}
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={3}>
             <div className='border-bottom'>
@@ -157,52 +157,9 @@ export const Layout = () => {
           xl={2}
           className='border-top border-left'
         >
-          <Leverage
-            perpToken={token}
-            orderQuantity={orderQuantity[0]}
-          ></Leverage>
+          <Leverage perpToken={token} orderQuantity={orderQuantity[0]} />
         </Grid>
       )}
-      {/* <div className='mobile_footer'>
-        <div className='perp_footer'>
-          <div className='footer-left'>
-            {['Portfolio', 'Pending', 'Filled'].map((item, index) => (
-              <div
-                key={index}
-                className={selectedItem === item ? 'selected' : ''}
-                onClick={() => setSelectedItem(item)}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          {selectedItem !== 'Portfolio' ? (
-            <div className='dropdown'>
-              <select
-                id='dropdownSelect'
-                onChange={(e) => setSelectedSide(e.target.value)}
-              >
-                <option value='all' disabled selected>
-                  All
-                </option>
-                <option value='buy'>Buy</option>
-                <option value='sell'>Sell</option>
-              </select>
-            </div>
-          ) : (
-            <div className='portfolio_status'>
-              <div>Unreal</div>
-              <div>Real</div>
-              <div>Margin</div>
-            </div>
-          )}
-        </div>
-        <div className='footer_data'>
-          <div>NotFound</div>
-        </div>
-      </div> */}
     </Grid>
   );
 };

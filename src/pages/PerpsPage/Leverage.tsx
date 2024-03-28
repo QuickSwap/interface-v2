@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CropSquareOutlined, KeyboardArrowDown } from '@material-ui/icons';
+import { KeyboardArrowDown } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import {
   useAccount,
@@ -12,7 +12,7 @@ import {
 import AssetModal from '../../components/AssetModal';
 import { AccountStatusEnum, OrderSide } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { ToggleSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
@@ -24,9 +24,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const { t } = useTranslation();
   const [maxBuy, setMaxBuy] = useState<number>(0);
   const [data, positionInfo] = usePositionStream(perpToken);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const [reducedOnly, setReducedOnly] = useState(false);
-  const [orderType, setOrderType] = useState<string | undefined>('limit');
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
   const [clickedIndex, setClickedIndex] = useState<number>(0);
@@ -80,8 +81,15 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   const handleClick = (index: number) => {
     setClickedIndex(index);
-    setMaxBuy((collateral.availableBalance * (clickedIndex * 25)) / 100);
+    setMaxBuy((collateral.availableBalance * (index * 25)) / 100);
   };
+
+  const buttonDisabled = useMemo(() => {
+    if (order.order_price * order.order_quantity > maxBuy) {
+      return true;
+    }
+    return false;
+  }, [maxBuy, order.order_price, order.order_quantity]);
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
@@ -91,42 +99,39 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   }, [quickSwapAccount, state.status, t]);
 
   const toggleWalletModal = useWalletModalToggle();
-  useEffect(() => {
-    if (order.order_price * order.order_quantity > maxBuy) {
-      console.warn('Max Buy Limit Exceeds');
-    }
-  }, [order.order_price, order.order_quantity]);
 
   return (
     <>
       <Box padding='15px 10px'>
-        <Box className='flex items-center justify-between' gridGap={8}>
-          <Box>
-            <p className='span text-secondary'>Total Balance</p>
-            <p className='span'>
-              {deposit?.balance}{' '}
-              <span className='text-secondary'>{token?.symbol}</span>
-            </p>
+        {!isMobile && (
+          <Box
+            className='flex items-center justify-between border-bottom'
+            gridGap={8}
+            mb={2}
+            pb={2}
+          >
+            <Box>
+              <p className='span text-secondary'>Total Balance</p>
+              <p className='span'>
+                {deposit?.balance}{' '}
+                <span className='text-secondary'>{token?.symbol}</span>
+              </p>
+            </Box>
+            <Box className='flex items-center' gridGap={8}>
+              <Button
+                className='leverageManageButton'
+                disabled={!quickSwapAccount}
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+              >
+                Manage
+              </Button>
+              <KeyboardArrowDown fontSize='small' className='text-secondary' />
+            </Box>
           </Box>
-          <Box className='flex items-center' gridGap={8}>
-            <Button
-              className='leverageManageButton'
-              disabled={!quickSwapAccount}
-              onClick={() => {
-                setModalOpen(true);
-              }}
-            >
-              Manage
-            </Button>
-            <KeyboardArrowDown fontSize='small' className='text-secondary' />
-          </Box>
-        </Box>
-        <Box
-          padding='15px 0'
-          margin='15px 0'
-          className='border-top border-bottom flex flex-col'
-          gridGap={12}
-        >
+        )}
+        <Box pb={2} mb={2} className='border-bottom flex flex-col' gridGap={12}>
           <Box className='leverageGradient' />
           <Box className='flex justify-between' gridGap={8}>
             <Box>
@@ -177,7 +182,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <span className='text-primaryText'>
               {collateral.availableBalance}
             </span>{' '}
-            USDC
+            {token?.symbol}
           </p>
           <p
             className='span text-primary cursor-pointer'
@@ -216,7 +221,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   setOrder({ ...order, order_price: e.target.value })
                 }
               />
-              <span className='text-secondary'>USDC</span>
+              <span className='text-secondary'>{token?.symbol}</span>
             </Box>
           </Box>
         )}
@@ -237,35 +242,44 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           </Box>
         </Box>
         <Box className='leverageSquareWrapper' my={2}>
-          <CropSquareOutlined onClick={() => handleClick(0)} />
-          <Box />
-          <CropSquareOutlined onClick={() => handleClick(1)} />
-          <Box />
-          <CropSquareOutlined onClick={() => handleClick(2)} />
-          <Box />
-          <CropSquareOutlined onClick={() => handleClick(3)} />
-          <Box />
-          <CropSquareOutlined onClick={() => handleClick(4)} />
+          {[0, 1, 2, 3, 4].map((item) => (
+            <>
+              <Box
+                className={`leverageSquare
+                  ${
+                    clickedIndex > item
+                      ? ' filledSquare'
+                      : clickedIndex === item
+                      ? ' activeSquare'
+                      : ''
+                  }`}
+                onClick={() => handleClick(item)}
+              />
+              {item < 4 && (
+                <Box
+                  className={`leverageLine${
+                    clickedIndex > item ? ' activeLine' : ''
+                  }`}
+                />
+              )}
+            </>
+          ))}
         </Box>
         <Box className='flex justify-between'>
           <p className='span text-success'>{clickedIndex * 25}%</p>
           <p
-            className='span text-secondary'
+            className='span text-secondary cursor-pointer'
             onClick={() => {
               setClickedIndex(4);
             }}
           >
-            {t('maxBuy')}{' '}
-            <span className='text-success'>
-              {' '}
-              {(collateral.availableBalance * (clickedIndex * 25)) / 100}
-            </span>
+            {t('maxBuy')} <span className='text-success'> {maxBuy}</span>
           </p>
         </Box>
         <Box className='leverageInputWrapper flex justify-between' my={2}>
           <span className='text-secondary'>{t('total')}</span>
           <span className='text-secondary'>
-            {order.order_price * order.order_quantity} USDC
+            {order.order_price * order.order_quantity} {token?.symbol}
           </span>
         </Box>
         <Box
@@ -286,7 +300,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Button
           className='leverageSubmitButton'
-          disabled={order.order_price * order.order_quantity > maxBuy}
+          disabled={buttonDisabled}
           onClick={async () => {
             if (!quickSwapAccount) {
               toggleWalletModal();
