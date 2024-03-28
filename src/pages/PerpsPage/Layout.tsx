@@ -24,15 +24,15 @@ export const Layout = () => {
   const tabs = useMemo(() => {
     return isMobile
       ? [
-        { id: 'chart', text: 'Chart' },
-        { id: 'orderbook', text: 'Orderbook' },
-        { id: 'trades', text: 'Last Trades' },
-        { id: 'bidAsk', text: 'Bids / Asks' },
-      ]
+          { id: 'chart', text: 'Chart' },
+          { id: 'orderbook', text: 'Orderbook' },
+          { id: 'trades', text: 'Last Trades' },
+          { id: 'bidAsk', text: 'Bids / Asks' },
+        ]
       : [
-        { id: 'orderbook', text: 'Orderbook' },
-        { id: 'trades', text: 'Last Trades' },
-      ];
+          { id: 'orderbook', text: 'Orderbook' },
+          { id: 'trades', text: 'Last Trades' },
+        ];
   }, [isMobile]);
 
   useEffect(() => {
@@ -132,13 +132,18 @@ export const Layout = () => {
             </div>
           ) : (
             <div className='portfolio_status'>
-              <div className='portfolio_status_item'><p>Unreal. PnL</p>
+              <div className='portfolio_status_item'>
+                <p>Unreal. PnL</p>
                 <p>{data.aggregated?.unrealPnL?.toFixed(2)}%</p>
               </div>
-              <div  className='portfolio_status_item'><p>Notional</p> 
-                <p>{data.aggregated?.notional?.toFixed(2)}%</p></div>
-              <div  className='portfolio_status_item'><p>Unsettled PnL</p>
-                <p>{data.aggregated?.unsettledPnL?.toFixed(2)}%</p></div>
+              <div className='portfolio_status_item'>
+                <p>Notional</p>
+                <p>{data.aggregated?.notional?.toFixed(2)}%</p>
+              </div>
+              <div className='portfolio_status_item'>
+                <p>Unsettled PnL</p>
+                <p>{data.aggregated?.unsettledPnL?.toFixed(2)}%</p>
+              </div>
             </div>
           )}
           <div className='footer_data'>
