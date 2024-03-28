@@ -16,7 +16,7 @@ export const MyOrderBook: React.FC = () => {
 
   return (
     <div className='bg-neutral-900 px-5 py-3 w-[300px] rounded-lg h-[480px]'>
-      <OrderBook
+      {/* <OrderBook
         level={7}
         asks={data.asks ?? []}
         bids={data.bids ?? []}
@@ -30,7 +30,7 @@ export const MyOrderBook: React.FC = () => {
         onItemClick={onItemClick}
         onDepthChange={onDepthChange}
         cellHeight={22}
-      />
+      /> */}
     </div>
   );
 };

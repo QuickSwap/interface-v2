@@ -10,7 +10,7 @@ export const OrderbookV2: React.FC<{
 }> = ({ token, setOrderQuantity }) => {
   const [symbol, setSymbol] = useState('PERP_ETH_USDC');
   const config = useSymbolsInfo();
-  const symbolInfo = config ? config[token] : {};
+  const symbolInfo = config && token && config[token] ? config[token] : {};
 
   const [
     data,
@@ -25,7 +25,7 @@ export const OrderbookV2: React.FC<{
 
   return (
     <Box padding='7px 10px'>
-      <OrderBook
+      {/* <OrderBook
         level={7}
         asks={data.asks ?? []}
         bids={data.bids ?? []}
@@ -33,13 +33,14 @@ export const OrderbookV2: React.FC<{
         lastPrice={data.middlePrice ?? []}
         depth={allDepths ?? []}
         activeDepth={depth ?? 0}
-        base={symbolInfo('base')}
-        quote={symbolInfo('quote')}
+        base={symbolInfo.base}
+        quote={symbolInfo.quote} 
         isLoading={isLoading}
         onItemClick={handleItemClick}
         onDepthChange={onDepthChange}
         cellHeight={22}
-      />
+      /> */}
+      hello
     </Box>
   );
 };
