@@ -13,13 +13,7 @@ import { rpcMap } from 'constants/providers';
 import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
-  const {
-    library,
-    chainId,
-    connector,
-    provider,
-    account,
-  } = useActiveWeb3React();
+  const { library, chainId, provider, account } = useActiveWeb3React();
 
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
@@ -112,32 +106,30 @@ export default function Updater(): null {
 
     library.on('block', blockNumberCallback);
 
-    if (connector.provider) {
-      connector.provider.on('chainChanged', () => {
-        setTimeout(() => {
-          document.location.reload();
-        }, 1500);
+    if (library) {
+      library.on('network', (newNetwork, oldNetwork) => {
+        if (oldNetwork) {
+          setTimeout(() => {
+            document.location.reload();
+          }, 1500);
+        }
       });
     }
 
     return () => {
       library.removeListener('block', blockNumberCallback);
-      if (connector.provider) {
-        connector.provider.removeListener('chainChanged', () => {
-          setTimeout(() => {
-            document.location.reload();
-          }, 1500);
+      if (library) {
+        library.removeListener('network', (newNetwork, oldNetwork) => {
+          if (oldNetwork) {
+            setTimeout(() => {
+              document.location.reload();
+            }, 1500);
+          }
         });
       }
     };
-  }, [
-    dispatch,
-    chainId,
-    library,
-    blockNumberCallback,
-    windowVisible,
-    connector,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, chainId, blockNumberCallback, windowVisible]);
 
   const debouncedState = useDebounce(state, 100);
 
@@ -184,7 +176,7 @@ export default function Updater(): null {
       dispatch(updateSoulZap(soulZapInstance));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainId, provider, ethersProvider, account]);
+  }, [chainId, account]);
 
   return null;
 }

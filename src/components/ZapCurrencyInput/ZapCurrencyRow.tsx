@@ -78,7 +78,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { account, chainId, connector } = useActiveWeb3React();
+  const { account, chainId, library } = useActiveWeb3React();
   const key = currencyKey(currency);
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
@@ -91,12 +91,19 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
     tokenDecimals: any,
     tokenImage: any,
   ) => {
-    if (connector.watchAsset) {
-      connector.watchAsset({
-        address: tokenAddress,
-        symbol: tokenSymbol,
-        decimals: tokenDecimals,
-        image: tokenImage,
+    if (library && library.provider && library.provider.request) {
+      library.provider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          //@ts-ignore
+          type: 'ERC20',
+          options: {
+            address: tokenAddress,
+            symbol: tokenSymbol,
+            decimals: tokenDecimals,
+            image: tokenImage,
+          },
+        },
       });
     }
   };
