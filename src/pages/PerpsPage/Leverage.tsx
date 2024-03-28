@@ -64,6 +64,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     },
     { watchOrderbook: true },
   );
+
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
     account.setAddress(quickSwapAccount, {
@@ -87,7 +88,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   };
 
   const buttonDisabled = useMemo(() => {
-    if (order.order_price * order.order_quantity > maxBuy) {
+    if (
+      order.order_price * order.order_quantity === 0 ||
+      order.order_price * order.order_quantity > maxBuy
+    ) {
       return true;
     }
     return false;
@@ -302,7 +306,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Button
           className='leverageSubmitButton'
-          disabled={buttonDisabled || collateral.availableBalance < 10}
+          disabled={buttonDisabled}
           onClick={async () => {
             if (!quickSwapAccount) {
               toggleWalletModal();
