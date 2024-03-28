@@ -68,15 +68,12 @@ import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
-const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
+import { ChainId } from '@uniswap/sdk';
+import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { getConfig } from 'config/index';
+import MetamaskIcon from 'assets/images/metamask.png';
 
-const polygon = {
-  chainId: 137,
-  name: 'Polygon',
-  currency: 'MATIC',
-  explorerUrl: 'https://polygonscan.com',
-  rpcUrl: 'https://polygon-rpc.com',
-};
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
 const metadata = {
   name: 'QuickSwap',
@@ -85,17 +82,37 @@ const metadata = {
   icons: [],
 };
 
-// 4. Create Ethers config
 const ethersConfig = defaultConfig({
-  /*Required*/
   metadata,
+  defaultChainId: ChainId.MATIC,
+});
 
-  defaultChainId: 137,
+const chainsToShow = SUPPORTED_CHAINIDS.filter((chainId) => {
+  const config = getConfig(chainId);
+  return !!config;
+});
+const chains = chainsToShow.map((chainId) => {
+  const config = getConfig(chainId);
+  return {
+    chainId,
+    name: config['networkName'],
+    currency: config['nativeCurrency']['symbol'],
+    explorerUrl: config['blockExplorer'],
+    rpcUrl: config['rpc'],
+    image: `https://quickswap.exchange${config['nativeCurrencyImage']}`,
+  };
+});
+
+const chainImages: { [chainId: number]: string } = {};
+chainsToShow.forEach((chainId) => {
+  const config = getConfig(chainId);
+  chainImages[chainId] = config['nativeCurrencyImage'];
 });
 
 createWeb3Modal({
   ethersConfig,
-  chains: [polygon],
+  chains,
+  chainImages,
   projectId,
   enableAnalytics: true,
 });

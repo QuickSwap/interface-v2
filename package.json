@@ -116,6 +116,9 @@
       "node_modules"
     ]
   },
+  "overrides": {
+    "@web3modal/ui": "4.1.1"
+  },
   "browserslist": [
     ">0.2%",
     "not android <= 4.4.4",
