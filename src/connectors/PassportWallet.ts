@@ -48,17 +48,18 @@ export class PassportWallet extends Connector {
       return;
     const connector = new passport.Passport({
       baseConfig: {
-        environment: config.Environment.PRODUCTION,
+        environment: config.Environment.SANDBOX,
         publishableKey: process.env.REACT_APP_PASSPORT_PUBLISHABLE_KEY,
       },
       clientId: process.env.REACT_APP_PASSPORT_CLIENT_ID,
-      redirectUri: 'https://quickswap.exchange',
-      logoutRedirectUri: 'https://quickswap.exchange',
+      redirectUri: 'http://localhost:3000',
+      logoutRedirectUri: 'http://localhost:3000',
       audience: 'platform_api',
       scope: 'openid offline_access email transact',
     });
 
     return (this.eagerConnection = import('@imtbl/sdk').then(async () => {
+      await connector.loginCallback();
       const provider = connector.connectEvm();
       this.provider = provider;
 
