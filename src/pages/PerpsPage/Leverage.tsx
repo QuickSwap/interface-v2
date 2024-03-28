@@ -24,6 +24,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const { t } = useTranslation();
   const [maxBuy, setMaxBuy] = useState<number>(0);
   const [data, positionInfo] = usePositionStream(perpToken);
+  console.log(data);
+  
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -193,17 +195,15 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Box className='flex' gridGap={16} mt={2}>
           <p
-            className={`span cursor-pointer ${
-              order.order_type === 'LIMIT' ? '' : 'text-secondary'
-            }`}
+            className={`span cursor-pointer ${order.order_type === 'LIMIT' ? '' : 'text-secondary'
+              }`}
             onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
           >
             {t('limit')}
           </p>
           <p
-            className={`span cursor-pointer ${
-              order.order_type === 'MARKET' ? '' : 'text-secondary'
-            }`}
+            className={`span cursor-pointer ${order.order_type === 'MARKET' ? '' : 'text-secondary'
+              }`}
             onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
           >
             {t('market')}
@@ -246,10 +246,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <>
               <Box
                 className={`leverageSquare
-                  ${
-                    clickedIndex > item
-                      ? ' filledSquare'
-                      : clickedIndex === item
+                  ${clickedIndex > item
+                    ? ' filledSquare'
+                    : clickedIndex === item
                       ? ' activeSquare'
                       : ''
                   }`}
@@ -257,9 +256,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               />
               {item < 4 && (
                 <Box
-                  className={`leverageLine${
-                    clickedIndex > item ? ' activeLine' : ''
-                  }`}
+                  className={`leverageLine${clickedIndex > item ? ' activeLine' : ''
+                    }`}
                 />
               )}
             </>
@@ -300,7 +298,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Button
           className='leverageSubmitButton'
-          disabled={buttonDisabled}
+          disabled={buttonDisabled || collateral.availableBalance < 10}
           onClick={async () => {
             if (!quickSwapAccount) {
               toggleWalletModal();

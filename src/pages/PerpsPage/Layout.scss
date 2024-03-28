@@ -198,3 +198,9 @@
     font-weight: 500;
   }
 }
+
+.portfolio_status_item{
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+}
