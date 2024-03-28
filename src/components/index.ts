@@ -39,11 +39,8 @@ export { default as FarmCard } from './FarmCard';
 export { default as Swap, AdvancedSwapDetails } from './Swap';
 export { default as AddLiquidity } from './AddLiquidity';
 export { default as RewardSlider } from './RewardSlider';
-export { default as WalletModal } from './WalletModal';
 export { default as MeldModal } from './MeldModal';
-export { default as AccountDetails } from './AccountDetails';
 export { default as CopyHelper } from './AccountDetails/CopyHelper';
-export { default as Web3ReactManager } from './Web3ReactManager';
 export {
   default as ConfirmSwapModal,
   FormattedPriceImpact,

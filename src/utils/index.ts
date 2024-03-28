@@ -46,7 +46,6 @@ import {
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import {
   DLQUICK,
@@ -57,7 +56,6 @@ import {
 import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
-import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { LiquidityDex } from '@ape.swap/apeswap-lists';
@@ -692,16 +690,6 @@ export function returnFullWidthMobile(isMobile: boolean) {
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
-export function getWalletKeys(
-  connector: Connector,
-  chainId?: ChainId,
-): Connection[] {
-  const { ethereum } = window as any;
-  const connections = getConnections(chainId);
-
-  return connections.filter((option) => option.connector === connector);
 }
 
 export function getTokenAddress(token: Token | undefined) {

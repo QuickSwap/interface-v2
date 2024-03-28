@@ -20,7 +20,6 @@ import {
 } from 'state/swap/hooks';
 import {
   useExpertModeManager,
-  useSelectedWallet,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field, SwapDelay } from 'state/swap/actions';
@@ -34,7 +33,6 @@ import {
   useIsProMode,
   useActiveWeb3React,
   useMasaAnalytics,
-  useGetConnection,
   useConnectWallet,
 } from 'hooks';
 import {
@@ -495,8 +493,6 @@ const Swap: React.FC<{
 
   const { fireEvent } = useMasaAnalytics();
   const config = getConfig(chainId);
-  const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
   const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     fromTokenWrapped?.address ?? '',
@@ -566,10 +562,10 @@ const Swap: React.FC<{
           if (
             account &&
             fromTokenWrapped &&
-            selectedWallet &&
+            // selectedWallet &&
             chainId === ChainId.MATIC
           ) {
-            const connection = getConnection(selectedWallet);
+            // const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -577,7 +573,7 @@ const Swap: React.FC<{
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: fromTokenWrapped.symbol ?? '',
               additionalEventData: {
-                wallet: connection.name,
+                // wallet: connection.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -615,9 +611,7 @@ const Swap: React.FC<{
     account,
     trade,
     fromTokenWrapped,
-    selectedWallet,
     chainId,
-    getConnection,
     fireEvent,
     config,
     formattedAmounts,
