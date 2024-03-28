@@ -117,6 +117,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showLeaderboard = config['leaderboard']['available'];
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
+  const showPerpsV2 = config['perpsV2']['available'];
   const showBOS = config['bos']['available'];
   const showBonds = config['bonds']['available'];
   const showDappOS = config['dappos']['available'];
@@ -138,37 +139,85 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'swap-page-link',
     });
   }
-  if (showPerps) {
-    menuItems.push({
-      link: '/perps',
-      text: 'Perps',
+  const perpsTab: HeaderMenuItem = {
+    text: t('Perps'),
+    id: 'earn-tab',
+    link: '/',
+    items: [],
+    isNew: true,
+  };
+  if (showPerpsV2) {
+    menuItems.push(perpsTab);
+    perpsTab.items?.push({
+      link: `/perpsV2`,
+      text: t('Perps V2') as string,
       id: 'perps-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-      onClick: async () => {
-        if (chainId !== ChainId.ZKEVM) {
-          const zkEVMconfig = getConfig(ChainId.ZKEVM);
-          const chainParam = {
-            chainId: ChainId.ZKEVM,
-            chainName: `${zkEVMconfig['networkName']} Network`,
-            rpcUrls: [zkEVMconfig['rpc']],
-            nativeCurrency: zkEVMconfig['nativeCurrency'],
-            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-          };
-          if (
-            connector === walletConnectConnection.connector ||
-            connector === networkConnection.connector
-          ) {
-            await connector.activate(ChainId.ZKEVM);
-          } else {
-            await connector.activate(chainParam);
-          }
-        }
-        if (process.env.REACT_APP_PERPS_URL) {
-          window.open(process.env.REACT_APP_PERPS_URL, '_self');
-        }
-      },
     });
+  }
+  if (showPerps) {
+    if (showPerpsV2) {
+      perpsTab.items?.push({
+        link: '/perps',
+        text: 'Perps',
+        id: 'perps-page-link',
+        isExternal: true,
+        externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+        onClick: async () => {
+          if (chainId !== ChainId.ZKEVM) {
+            const zkEVMconfig = getConfig(ChainId.ZKEVM);
+            const chainParam = {
+              chainId: ChainId.ZKEVM,
+              chainName: `${zkEVMconfig['networkName']} Network`,
+              rpcUrls: [zkEVMconfig['rpc']],
+              nativeCurrency: zkEVMconfig['nativeCurrency'],
+              blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+            };
+            if (
+              connector === walletConnectConnection.connector ||
+              connector === networkConnection.connector
+            ) {
+              await connector.activate(ChainId.ZKEVM);
+            } else {
+              await connector.activate(chainParam);
+            }
+          }
+          if (process.env.REACT_APP_PERPS_URL) {
+            window.open(process.env.REACT_APP_PERPS_URL, '_self');
+          }
+        },
+      });
+    } else {
+      menuItems.push({
+        link: '/perps',
+        text: 'Perps',
+        id: 'perps-page-link',
+        isExternal: true,
+        externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+        onClick: async () => {
+          if (chainId !== ChainId.ZKEVM) {
+            const zkEVMconfig = getConfig(ChainId.ZKEVM);
+            const chainParam = {
+              chainId: ChainId.ZKEVM,
+              chainName: `${zkEVMconfig['networkName']} Network`,
+              rpcUrls: [zkEVMconfig['rpc']],
+              nativeCurrency: zkEVMconfig['nativeCurrency'],
+              blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+            };
+            if (
+              connector === walletConnectConnection.connector ||
+              connector === networkConnection.connector
+            ) {
+              await connector.activate(ChainId.ZKEVM);
+            } else {
+              await connector.activate(chainParam);
+            }
+          }
+          if (process.env.REACT_APP_PERPS_URL) {
+            window.open(process.env.REACT_APP_PERPS_URL, '_self');
+          }
+        },
+      });
+    }
   }
   if (showPool) {
     menuItems.push({
@@ -353,17 +402,17 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         />
         <Link to='/'>
           {mobileWindowSize && (
-            <img src={QuickIcon} alt='QuickLogo' height={40} />
+            <img src={QuickIcon} alt='QuickLogo' className='mobileLogo' />
           )}
           {!mobileWindowSize && (
             <picture>
-              <source height={60} srcSet={QuickLogoWebP} type='image/webp' />
-              <img src={QuickLogo} alt='QuickLogo' height={60} />
+              <source srcSet={QuickLogoWebP} type='image/webp' />
+              <img src={QuickLogo} alt='QuickLogo' className='desktopLogo' />
             </picture>
           )}
         </Link>
         {!tabletWindowSize && (
-          <Box className='mainMenu'>
+          <Box className='mainMenu' gridGap={6}>
             {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
               <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
             ))}

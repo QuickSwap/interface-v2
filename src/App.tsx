@@ -8,6 +8,8 @@ import {
 import { Provider } from 'react-redux';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
+import { OrderlyConfigProvider } from '@orderly.network/hooks';
+const PerpsPage = lazy(() => import('./pages/PerpsPage'));
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -67,6 +69,8 @@ import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
+import '@orderly.network/react/dist/styles.css';
+import './index.scss';
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;
@@ -141,6 +145,16 @@ const App: React.FC = () => {
                   <Route exact strict path='/pool/:tokenId'>
                     <PageLayout>
                       <PositionPage></PositionPage>
+                    </PageLayout>
+                  </Route>
+                  <Route exact strict path='/perpsV2'>
+                    <PageLayout>
+                      <OrderlyConfigProvider
+                        brokerId='quick_perps'
+                        networkId='mainnet'
+                      >
+                        <PerpsPage />
+                      </OrderlyConfigProvider>
                     </PageLayout>
                   </Route>
                   <Route
