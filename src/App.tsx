@@ -71,7 +71,6 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 import { ChainId } from '@uniswap/sdk';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config/index';
-import MetamaskIcon from 'assets/images/metamask.png';
 
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
@@ -79,7 +78,7 @@ const metadata = {
   name: 'QuickSwap',
   description: 'QuickSwap',
   url: 'https://quickswap.exchange',
-  icons: [],
+  icons: ['./logo_circle.png'],
 };
 
 const ethersConfig = defaultConfig({
@@ -99,7 +98,6 @@ const chains = chainsToShow.map((chainId) => {
     currency: config['nativeCurrency']['symbol'],
     explorerUrl: config['blockExplorer'],
     rpcUrl: config['rpc'],
-    image: `https://quickswap.exchange${config['nativeCurrencyImage']}`,
   };
 });
 

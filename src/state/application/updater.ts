@@ -13,7 +13,13 @@ import { rpcMap } from 'constants/providers';
 import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
-  const { library, chainId, provider, account } = useActiveWeb3React();
+  const {
+    library,
+    currentChainId,
+    chainId,
+    provider,
+    account,
+  } = useActiveWeb3React();
 
   const dispatch = useDispatch();
   const { updateEthPrice } = useEthPrice();
@@ -25,7 +31,7 @@ export default function Updater(): null {
     chainId: number | undefined;
     blockNumber: number | null;
   }>({
-    chainId,
+    chainId: currentChainId,
     blockNumber: null,
   });
 
@@ -107,8 +113,8 @@ export default function Updater(): null {
     library.on('block', blockNumberCallback);
 
     if (library) {
-      library.on('network', (newNetwork, oldNetwork) => {
-        if (oldNetwork) {
+      library.on('network', (newNetwork) => {
+        if (state.chainId && newNetwork.chainId !== state.chainId) {
           setTimeout(() => {
             document.location.reload();
           }, 1500);
@@ -119,8 +125,8 @@ export default function Updater(): null {
     return () => {
       library.removeListener('block', blockNumberCallback);
       if (library) {
-        library.removeListener('network', (newNetwork, oldNetwork) => {
-          if (oldNetwork) {
+        library.removeListener('network', (newNetwork) => {
+          if (state.chainId && newNetwork.chainId !== state.chainId) {
             setTimeout(() => {
               document.location.reload();
             }, 1500);
