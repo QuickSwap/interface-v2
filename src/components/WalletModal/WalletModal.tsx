@@ -177,7 +177,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
     // const isPhantomWallet =
     //   (ethereum && ethereum.isPhantom) || (phantom && phantom.ethereum);
     const isCoinbaseWallet = ethereum && ethereum.isCoinbaseWallet;
-    // const isOkxwallet = (window as any).okxwallet;
+    const isOkxwallet = (window as any).okxwallet;
     const isDefiConnectProvider = (window as any).deficonnectProvider;
 
     return connections.map((option) => {
@@ -277,22 +277,22 @@ const WalletModal: React.FC<WalletModalProps> = ({
             iconify={iconify}
           />
         );
-        // } else if (
-        //   option.name === GlobalConst.walletName.OKXWALLET &&
-        //   !isOkxwallet
-        // ) {
-        //   return (
-        //     <WalletOption
-        //       id={`connect-${option.name}`}
-        //       key={option.name}
-        //       color={'#E8831D'}
-        //       header={t('installOkxWallet')}
-        //       subheader={null}
-        //       link={'https://www.okx.com/web3'}
-        //       icon={option.iconName}
-        //       iconify={iconify}
-        //     />
-        //   );
+      } else if (
+        option.name === GlobalConst.walletName.OKXWALLET &&
+        !isOkxwallet
+      ) {
+        return (
+          <WalletOption
+            id={`connect-${option.name}`}
+            key={option.name}
+            color={'#E8831D'}
+            header={t('installOkxWallet')}
+            subheader={null}
+            link={'https://www.okx.com/web3'}
+            icon={option.iconName}
+            iconify={iconify}
+          />
+        );
       } else if (
         option.name === GlobalConst.walletName.CRYPTOCOM &&
         !isDefiConnectProvider
