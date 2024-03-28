@@ -11,7 +11,6 @@ export const OrderbookV2: React.FC<{
   const [symbol, setSymbol] = useState('PERP_ETH_USDC');
   const config = useSymbolsInfo();
   const symbolInfo = config[token];
-  console.log(symbolInfo);
 
   const [
     data,

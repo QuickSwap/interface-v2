@@ -7,8 +7,8 @@ import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { usePositionStream } from '@orderly.network/hooks';
+import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { PortfolioStatus } from './PortfolioStatus';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
@@ -16,7 +16,6 @@ export const Layout = () => {
   const [selectedSide, setSelectedSide] = useState<string>('');
   const [orderQuantity, setOrderQuantity] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState<string>('orderbook');
-  const [data] = usePositionStream(token);
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const isMd = useMediaQuery(breakpoints.down('md'));
@@ -116,9 +115,8 @@ export const Layout = () => {
             {/* <div className='footer-right'>Show All Instrument</div> */}
           </div>
           {selectedItem !== 'Portfolio' ? (
-            <div className='dropdown'>
+            <Box className='perpsBottomDropdown' padding='16px 12px'>
               <select
-                id='dropdownSelect'
                 onChange={(e) => {
                   setSelectedSide(e.target.value);
                 }}
@@ -129,22 +127,9 @@ export const Layout = () => {
                 <option value='buy'>Buy</option>
                 <option value='sell'>Sell</option>
               </select>
-            </div>
+            </Box>
           ) : (
-            <div className='portfolio_status'>
-              <div className='portfolio_status_item'>
-                <p>Unreal. PnL</p>
-                <p>{data.aggregated?.unrealPnL?.toFixed(2)}%</p>
-              </div>
-              <div className='portfolio_status_item'>
-                <p>Notional</p>
-                <p>{data.aggregated?.notional?.toFixed(2)}%</p>
-              </div>
-              <div className='portfolio_status_item'>
-                <p>Unsettled PnL</p>
-                <p>{data.aggregated?.unsettledPnL?.toFixed(2)}%</p>
-              </div>
-            </div>
+            <PortfolioStatus token={token} />
           )}
           <div className='footer_data'>
             <span className='text-secondary weight-500'>Price</span>

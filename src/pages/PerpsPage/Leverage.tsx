@@ -23,8 +23,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 }) => {
   const { t } = useTranslation();
   const [maxBuy, setMaxBuy] = useState<number>(0);
-  const [data, positionInfo] = usePositionStream(perpToken);
-  console.log(data);
+  const [data] = usePositionStream(perpToken);
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -73,7 +72,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         id: chainId,
       },
     });
-  }, [library, account, quickSwapAccount, chainId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickSwapAccount, chainId]);
 
   useEffect(() => {
     if (state.status === AccountStatusEnum.EnableTrading) {
