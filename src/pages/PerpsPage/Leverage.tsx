@@ -24,6 +24,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const { t } = useTranslation();
   const [maxBuy, setMaxBuy] = useState<number>(0);
   const [data, positionInfo] = usePositionStream(perpToken);
+
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -72,7 +73,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         id: chainId,
       },
     });
-  }, [library, account, quickSwapAccount, chainId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickSwapAccount, chainId]);
 
   useEffect(() => {
     if (state.status === AccountStatusEnum.EnableTrading) {
@@ -87,7 +89,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   };
 
   const buttonDisabled = useMemo(() => {
-    if (order.order_price * order.order_quantity > maxBuy) {
+    if (
+      order.order_price * order.order_quantity === 0 ||
+      order.order_price * order.order_quantity > maxBuy
+    ) {
       return true;
     }
     return false;
@@ -297,6 +302,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <KeyboardArrowDown fontSize='small' className='text-secondary' />
         </Box>
         <Button
+
   className='leverageSubmitButton'
   disabled={buttonDisabled ||  collateral.availableBalance<10}
   onClick={async () => {

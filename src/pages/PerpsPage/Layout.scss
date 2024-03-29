@@ -32,36 +32,25 @@
   flex-direction: column;
 }
 
-.dropdown,
 .portfolio_status {
   display: flex;
   flex-direction: row;
-  font-size: 14px;
-  font-weight: 500;
-  color: $textSecondary;
+  flex-wrap: wrap;
   justify-content: flex-start;
   border-bottom: 1px solid $divider;
-  margin: 10px 0;
+  padding: 16px 12px;
 }
 
-.portfolio_status div {
-  margin: 5px 10px;
-}
-
-.dropdown {
-  border-bottom: 1px solid $divider;
-  padding-bottom: 5px;
-}
-
-.dropdown select {
+.perpsBottomDropdown select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background-color: transparent;
   border: 1px solid #ffffff;
   color: #ffffff;
-  padding: 8px 16px;
+  padding: 2px 16px;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 .dropdown select::-ms-expand {
@@ -197,10 +186,4 @@
     font-size: 14px;
     font-weight: 500;
   }
-}
-
-.portfolio_status_item {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }

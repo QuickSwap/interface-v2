@@ -7,8 +7,8 @@ import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { usePositionStream } from '@orderly.network/hooks';
+import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { PortfolioStatus } from './PortfolioStatus';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
@@ -79,7 +79,6 @@ export const Layout = () => {
           </Grid>
         </Grid>
         <div className='kingFooter'>
-          
           <Footer token={token} selectedTab={selectedItem} />
         </div>
       </Grid>
