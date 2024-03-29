@@ -22,6 +22,7 @@ import { ToggleSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { formatNumber } from 'utils';
+import { formatDecimalInput } from 'utils/numbers';
 
 type Inputs = {
   side: 'BUY' | 'SELL';
@@ -55,7 +56,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const [reducedOnly, setReducedOnly] = useState(false);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
-  const [clickedIndex, setClickedIndex] = useState<number>(0);
   const [orderValidation, setOrderValidation] = useState<any>({});
 
   const { account, state } = useAccount();
@@ -63,6 +63,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
   const quoteToken = perpToken.split('_')[1] ?? 'ETH';
+  const [orderFilterLoading, setOrderFilterLoading] = useState(false);
   const [orderFilter, setOrderFilter] = useState<any>(undefined);
 
   const deposit = useDeposit({
@@ -83,7 +84,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     order_symbol: perpToken,
   });
 
-  const { onSubmit, helper, maxQty } = useOrderEntry(
+  const { onSubmit, helper, maxQty, markPrice } = useOrderEntry(
     {
       symbol: perpToken,
       side: order.side as OrderSide,
@@ -97,11 +98,17 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   useEffect(() => {
     if (!process.env.REACT_APP_ORDERLY_API_URL) return;
     (async () => {
-      const res = await fetch(
-        `${process.env.REACT_APP_ORDERLY_API_URL}/v1/public/info/${perpToken}`,
-      );
-      const data = await res.json();
-      setOrderFilter(data.data);
+      try {
+        setOrderFilterLoading(true);
+        const res = await fetch(
+          `${process.env.REACT_APP_ORDERLY_API_URL}/v1/public/info/${perpToken}`,
+        );
+        const data = await res.json();
+        setOrderFilter(data.data);
+        setOrderFilterLoading(false);
+      } catch {
+        setOrderFilterLoading(false);
+      }
     })();
   }, [perpToken]);
 
@@ -131,17 +138,23 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   }, [state.status]);
 
   const handleClick = (index: number) => {
-    setOrder({ ...order, order_quantity: ((maxQty / 4) * index).toString() });
+    const value = formatDecimalInput(
+      ((maxQty / 4) * index).toString(),
+      Math.log10(1 / Number(orderFilter.base_tick)),
+    );
+    if (value !== null) {
+      setOrder({ ...order, order_quantity: value });
+    }
   };
 
-  const buttonDisabled = useMemo(() => {
-    if (Number(order.order_price) * Number(order.order_quantity) === 0) {
-      return true;
-    } else if (Object.values(orderValidation).length > 0) {
-      return true;
-    }
-    return false;
-  }, [order, orderValidation]);
+  const orderValue =
+    (order.order_type === 'LIMIT' ? Number(order.order_price) : markPrice) *
+    Number(order.order_quantity);
+
+  const buttonDisabled =
+    orderFilterLoading ||
+    Object.values(orderValidation).length > 0 ||
+    orderValue < 10;
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
@@ -149,17 +162,17 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       if (Object.values(orderValidation).length > 0) {
         const validationErrors: any[] = Object.values(orderValidation);
         return validationErrors[0].message;
+      } else if (orderValue < 10) {
+        return 'The order value should be greater or equal to 10';
       }
       return t('createOrder');
     }
     return t('signIn');
-  }, [orderValidation, quickSwapAccount, state.status, t]);
+  }, [orderValidation, orderValue, quickSwapAccount, state.status, t]);
 
   const toggleWalletModal = useWalletModalToggle();
 
   const quantityPercent = (Number(order.order_quantity) / maxQty) * 100;
-
-  console.log('aaa', orderFilter);
 
   return (
     <>
@@ -275,12 +288,23 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <span className='text-secondary'>{t('price')}</span>
             <Box gridGap={5}>
               <input
-                min={0}
+                placeholder='0'
                 disabled={state.status !== AccountStatusEnum.EnableTrading}
                 value={order.order_price}
-                onChange={(e) =>
-                  setOrder({ ...order, order_price: e.target.value })
-                }
+                onChange={(e) => {
+                  const value = formatDecimalInput(
+                    e.target.value,
+                    orderFilter && orderFilter.quote_tick > 0
+                      ? Math.log10(1 / Number(orderFilter.quote_tick))
+                      : undefined,
+                  );
+                  if (value !== null) {
+                    setOrder({
+                      ...order,
+                      order_price: value,
+                    });
+                  }
+                }}
               />
               <span className='text-secondary'>{token?.symbol}</span>
             </Box>
@@ -290,11 +314,22 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <span className='text-secondary'>{t('quantity')}</span>
           <Box gridGap={5}>
             <input
-              min={0}
+              placeholder='0'
               value={order.order_quantity}
-              onChange={(e) =>
-                setOrder({ ...order, order_quantity: e.target.value })
-              }
+              onChange={(e) => {
+                const value = formatDecimalInput(
+                  e.target.value,
+                  orderFilter && orderFilter.quote_tick > 0
+                    ? Math.log10(1 / Number(orderFilter.base_tick))
+                    : undefined,
+                );
+                if (value !== null) {
+                  setOrder({
+                    ...order,
+                    order_quantity: value,
+                  });
+                }
+              }}
               disabled={state.status !== AccountStatusEnum.EnableTrading}
             />
             <span className='text-secondary'>{quoteToken}</span>
@@ -328,7 +363,16 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <p
             className='span text-secondary cursor-pointer'
             onClick={() => {
-              setOrder({ ...order, order_quantity: maxQty.toString() });
+              const value = formatDecimalInput(
+                maxQty.toString(),
+                Math.log10(1 / Number(orderFilter.base_tick)),
+              );
+              if (value !== null) {
+                setOrder({
+                  ...order,
+                  order_quantity: value,
+                });
+              }
             }}
           >
             {order.side === 'BUY' ? t('maxBuy') : t('maxSell')}{' '}
@@ -343,8 +387,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         <Box className='leverageInputWrapper flex justify-between' my={2}>
           <span className='text-secondary'>{t('total')}</span>
           <span className='text-secondary'>
-            {Number(order.order_price) * Number(order.order_quantity)}{' '}
-            {token?.symbol}
+            {formatNumber(orderValue)} {token?.symbol}
           </span>
         </Box>
         <Box

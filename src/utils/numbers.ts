@@ -72,3 +72,57 @@ export const formatAmountTokens = (num: number | undefined, average?: any) => {
     },
   });
 };
+
+export function formatDecimalInput(
+  inputFieldValue: string,
+  decimal?: number,
+): string | null {
+  const decimalCutOffIndedx = decimal !== undefined ? decimal : 18;
+  let value = inputFieldValue.replace(',', '.').replace(/[^0-9.]/g, '');
+  const decSeperatorCount = value.replace(/[^.]/g, '').length;
+  if (decSeperatorCount > 1) {
+    return null;
+  }
+
+  if (decimal === 0) {
+    return value.split('.')[0];
+  }
+
+  if (value === '') {
+    return '';
+  }
+  if (value === '.') {
+    return '0.';
+  }
+  if (value === '0') {
+    return '0';
+  }
+  // prevent numbers smaller than a satoshi *even for 18 decimal tokens.
+  if (
+    (value.startsWith('0.0000000') || value.startsWith('.0000000')) &&
+    Number(value) < 0.00000001
+  ) {
+    return Number(value).toPrecision(7);
+  }
+  if (value.startsWith('0') && value[1] !== '.') {
+    const last = value.length;
+    value = value.slice(1, last);
+  }
+  if (value.includes('.')) {
+    // remove extra decimal values:
+    const decialSplit = value.split('.');
+    if (decialSplit[1].length > 1) {
+      const afterDecimal = decialSplit[1];
+      if (afterDecimal.length > decimalCutOffIndedx) {
+        const decimalIndex = value.indexOf('.');
+        const lastDecimalIndex = decimalIndex + decimalCutOffIndedx;
+        value = value.slice(0, lastDecimalIndex + 1);
+      }
+    }
+  }
+  if (value) {
+    return value;
+  }
+
+  return '';
+}

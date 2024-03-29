@@ -150,7 +150,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     menuItems.push(perpsTab);
     perpsTab.items?.push({
       link: `/perpsV2`,
-      text: t('Perps V2') as string,
+      text: 'Falkor',
       id: 'perps-page-link',
     });
   }
