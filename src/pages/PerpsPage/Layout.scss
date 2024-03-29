@@ -154,28 +154,38 @@
   display: flex;
   align-items: center;
   position: relative;
+  height: 2px;
+  background-color: $secondary1;
   & .leverageSquare {
     width: 11px;
     height: 11px;
     border: 2px solid $secondary1;
     transform: rotate(45deg);
     cursor: pointer;
-    &.activeSquare {
-      background-color: white;
-      border: 2px solid $textSecondary;
-    }
+    position: absolute;
+    background-color: $bgColor;
     &.filledSquare {
       background-color: $textSecondary;
       border: 2px solid $textSecondary;
     }
   }
-  & .leverageLine {
-    flex: 1;
-    height: 2px;
-    background-color: $secondary1;
-    &.activeLine {
-      background-color: $textSecondary;
-    }
+}
+
+.leverageActiveWrapper {
+  position: absolute;
+  left: 0;
+  height: 2px;
+  background-color: $textSecondary;
+  display: flex;
+  align-items: center;
+  & > div {
+    background-color: white;
+    border: 2px solid $textSecondary;
+    width: 11px;
+    height: 11px;
+    position: absolute;
+    left: calc(100% - 8px);
+    transform: rotate(45deg);
   }
 }
 

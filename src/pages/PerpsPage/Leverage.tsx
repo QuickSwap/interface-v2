@@ -63,6 +63,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
   const quoteToken = perpToken.split('_')[1] ?? 'ETH';
+  const [orderFilter, setOrderFilter] = useState<any>(undefined);
 
   const deposit = useDeposit({
     address: token?.address,
@@ -94,6 +95,17 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   );
 
   useEffect(() => {
+    if (!process.env.REACT_APP_ORDERLY_API_URL) return;
+    (async () => {
+      const res = await fetch(
+        `${process.env.REACT_APP_ORDERLY_API_URL}/v1/public/info/${perpToken}`,
+      );
+      const data = await res.json();
+      setOrderFilter(data.data);
+    })();
+  }, [perpToken]);
+
+  useEffect(() => {
     (async () => {
       const validation = await helper.validator(getInput(order));
       setOrderValidation(validation);
@@ -119,7 +131,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   }, [state.status]);
 
   const handleClick = (index: number) => {
-    setClickedIndex(index);
     setOrder({ ...order, order_quantity: ((maxQty / 4) * index).toString() });
   };
 
@@ -148,6 +159,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   const quantityPercent = (Number(order.order_quantity) / maxQty) * 100;
 
+  console.log('aaa', orderFilter);
+
   return (
     <>
       <Box padding='15px 10px'>
@@ -159,7 +172,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             pb={2}
           >
             <Box>
-              <p className='span text-secondary'>Total Balance</p>
+              <p className='span text-secondary'>{t('totalBalance')}</p>
               <p className='span'>
                 {deposit?.balance}{' '}
                 <span className='text-secondary'>{token?.symbol}</span>
@@ -287,17 +300,22 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <span className='text-secondary'>{quoteToken}</span>
           </Box>
         </Box>
-        <Box className='leverageSquareWrapper' my={2}>
+        <Box className='leverageSquareWrapper' margin='16px 4px 16px 12px'>
           {[0, 1, 2, 3, 4].map((item) => (
-            <>
-              <Box
-                className={`leverageSquare
-                  ${clickedIndex > item ? ' filledSquare' : ''}`}
-                onClick={() => handleClick(item)}
-              />
-              {item < 4 && <Box className='leverageLine' />}
-            </>
+            <Box
+              key={item}
+              className={`leverageSquare
+                  ${quantityPercent > item * 25 ? ' filledSquare' : ''}`}
+              onClick={() => handleClick(item)}
+              left={`calc(${(item / 4) * 100}% - 8px)`}
+            />
           ))}
+          <Box
+            className='leverageActiveWrapper'
+            width={`${Math.min(quantityPercent, 100)}%`}
+          >
+            <Box />
+          </Box>
         </Box>
         <Box className='flex justify-between'>
           <p
@@ -310,7 +328,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <p
             className='span text-secondary cursor-pointer'
             onClick={() => {
-              setClickedIndex(4);
+              setOrder({ ...order, order_quantity: maxQty.toString() });
             }}
           >
             {order.side === 'BUY' ? t('maxBuy') : t('maxSell')}{' '}
