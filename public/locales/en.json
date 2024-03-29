@@ -916,6 +916,7 @@
   "quantity": "Quantity",
   "reduceOnly": "Reduce Only",
   "maxBuy": "Max buy",
+  "maxSell": "Max sell",
   "accountLeverage": "Account Leverage",
   "marginRatio": "Margin Ratio",
   "long": "Long",

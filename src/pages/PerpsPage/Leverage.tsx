@@ -10,19 +10,43 @@ import {
   usePositionStream,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
-import { AccountStatusEnum, OrderSide } from '@orderly.network/types';
+import {
+  AccountStatusEnum,
+  OrderEntity,
+  OrderSide,
+  OrderType,
+} from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { ToggleSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
+import { formatNumber } from 'utils';
+
+type Inputs = {
+  side: 'BUY' | 'SELL';
+  order_type: 'MARKET' | 'LIMIT';
+  order_price: string;
+  order_quantity: string;
+  order_symbol: string;
+};
+
+function getInput(data: Inputs): OrderEntity {
+  return {
+    symbol: data.order_symbol,
+    side: data.side === 'BUY' ? OrderSide.BUY : OrderSide.SELL,
+    order_type:
+      data.order_type === 'MARKET' ? OrderType.MARKET : OrderType.LIMIT,
+    order_price: data.order_price,
+    order_quantity: data.order_quantity,
+  };
+}
 
 export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   perpToken,
   orderQuantity,
 }) => {
   const { t } = useTranslation();
-  const [maxBuy, setMaxBuy] = useState<number>(0);
   const [data] = usePositionStream(perpToken);
 
   const { breakpoints } = useTheme();
@@ -32,11 +56,14 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
   const [clickedIndex, setClickedIndex] = useState<number>(0);
+  const [orderValidation, setOrderValidation] = useState<any>({});
 
   const { account, state } = useAccount();
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
+  const quoteToken = perpToken.split('_')[1] ?? 'ETH';
+
   const deposit = useDeposit({
     address: token?.address,
     decimals: token?.decimals,
@@ -47,23 +74,32 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
-  const [order, setOrder] = useState<any>({
-    order_price: 0,
-    order_quantity: 0,
+  const [order, setOrder] = useState<Inputs>({
+    order_price: '0',
+    order_quantity: '0',
     order_type: 'LIMIT',
     side: 'BUY',
     order_symbol: perpToken,
   });
-  const { onSubmit, submit } = useOrderEntry(
+
+  const { onSubmit, helper, maxQty } = useOrderEntry(
     {
       symbol: perpToken,
-      side: order.side,
-      order_type: order.order_type,
+      side: order.side as OrderSide,
+      order_type: order.order_type as OrderType,
       order_price: order.order_price,
       order_quantity: order.order_quantity,
     },
     { watchOrderbook: true },
   );
+
+  useEffect(() => {
+    (async () => {
+      const validation = await helper.validator(getInput(order));
+      setOrderValidation(validation);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order]);
 
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
@@ -84,27 +120,33 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   const handleClick = (index: number) => {
     setClickedIndex(index);
-    setMaxBuy((collateral.availableBalance * (index * 25)) / 100);
+    setOrder({ ...order, order_quantity: ((maxQty / 4) * index).toString() });
   };
 
   const buttonDisabled = useMemo(() => {
-    if (
-      order.order_price * order.order_quantity === 0 ||
-      order.order_price * order.order_quantity > maxBuy
-    ) {
+    if (Number(order.order_price) * Number(order.order_quantity) === 0) {
+      return true;
+    } else if (Object.values(orderValidation).length > 0) {
       return true;
     }
     return false;
-  }, [maxBuy, order.order_price, order.order_quantity]);
+  }, [order, orderValidation]);
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
-    if (state.status === AccountStatusEnum.EnableTrading)
+    if (state.status === AccountStatusEnum.EnableTrading) {
+      if (Object.values(orderValidation).length > 0) {
+        const validationErrors: any[] = Object.values(orderValidation);
+        return validationErrors[0].message;
+      }
       return t('createOrder');
+    }
     return t('signIn');
-  }, [quickSwapAccount, state.status, t]);
+  }, [orderValidation, quickSwapAccount, state.status, t]);
 
   const toggleWalletModal = useWalletModalToggle();
+
+  const quantityPercent = (Number(order.order_quantity) / maxQty) * 100;
 
   return (
     <>
@@ -131,7 +173,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   setModalOpen(true);
                 }}
               >
-                Manage
+                {t('manage')}
               </Button>
               <KeyboardArrowDown fontSize='small' className='text-secondary' />
             </Box>
@@ -242,9 +284,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               }
               disabled={state.status !== AccountStatusEnum.EnableTrading}
             />
-            <span className='text-secondary'>
-              {perpToken.split('_')[1] || 'ETH'}
-            </span>
+            <span className='text-secondary'>{quoteToken}</span>
           </Box>
         </Box>
         <Box className='leverageSquareWrapper' my={2}>
@@ -252,40 +292,41 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <>
               <Box
                 className={`leverageSquare
-                  ${
-                    clickedIndex > item
-                      ? ' filledSquare'
-                      : clickedIndex === item
-                      ? ' activeSquare'
-                      : ''
-                  }`}
+                  ${clickedIndex > item ? ' filledSquare' : ''}`}
                 onClick={() => handleClick(item)}
               />
-              {item < 4 && (
-                <Box
-                  className={`leverageLine${
-                    clickedIndex > item ? ' activeLine' : ''
-                  }`}
-                />
-              )}
+              {item < 4 && <Box className='leverageLine' />}
             </>
           ))}
         </Box>
         <Box className='flex justify-between'>
-          <p className='span text-success'>{clickedIndex * 25}%</p>
+          <p
+            className={`span ${
+              order.side === 'BUY' ? 'text-success' : 'text-error'
+            }`}
+          >
+            {formatNumber(quantityPercent)}%
+          </p>
           <p
             className='span text-secondary cursor-pointer'
             onClick={() => {
               setClickedIndex(4);
             }}
           >
-            {t('maxBuy')} <span className='text-success'> {maxBuy}</span>
+            {order.side === 'BUY' ? t('maxBuy') : t('maxSell')}{' '}
+            <span
+              className={order.side === 'BUY' ? 'text-success' : 'text-error'}
+            >
+              {' '}
+              {formatNumber(maxQty)}
+            </span>
           </p>
         </Box>
         <Box className='leverageInputWrapper flex justify-between' my={2}>
           <span className='text-secondary'>{t('total')}</span>
           <span className='text-secondary'>
-            {order.order_price * order.order_quantity} {token?.symbol}
+            {Number(order.order_price) * Number(order.order_quantity)}{' '}
+            {token?.symbol}
           </span>
         </Box>
         <Box
@@ -311,9 +352,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             if (!quickSwapAccount) {
               toggleWalletModal();
             } else if (state.status === AccountStatusEnum.EnableTrading) {
-              const order1 = await submit();
-              console.log(order1);
-              await onSubmit(order1);
+              await onSubmit(getInput(order));
             } else {
               setAccountModalOpen(true);
             }

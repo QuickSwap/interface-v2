@@ -143,7 +143,7 @@ export function TransactionErrorContent({
         <h5 className='text-error'>{t('error')}</h5>
         <X className='cursor-pointer' onClick={onDismiss} />
       </Box>
-      <Box mt={2} className='txModalContent'>
+      <Box mt={2} className='txModalContent flex items-center flex-col'>
         <img src={TransactionFailed} alt='Transaction Failed' />
         <p>{message}</p>
       </Box>

@@ -153,6 +153,7 @@
 .leverageSquareWrapper {
   display: flex;
   align-items: center;
+  position: relative;
   & .leverageSquare {
     width: 11px;
     height: 11px;
@@ -185,5 +186,6 @@
   & span {
     font-size: 14px;
     font-weight: 500;
+    text-transform: capitalize;
   }
 }
