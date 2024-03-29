@@ -41,33 +41,6 @@ export const Layout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
-  const footerTabs = [
-    {
-      id: 'Portfolio',
-      text: 'Portfolio',
-    },
-    {
-      id: 'Pending',
-      text: 'Pending',
-    },
-    {
-      id: 'Filled',
-      text: 'Filled',
-    },
-    {
-      id: 'Cancelled',
-      text: 'Cancelled',
-    },
-    {
-      id: 'Rejected',
-      text: 'Rejected',
-    },
-    {
-      id: 'OrderHistory',
-      text: 'Order History',
-    },
-  ];
-
   return (
     <Grid container className='perpsV2Container'>
       <Grid item xs={12} sm={12} md={9} lg={9} xl={10}>
@@ -105,41 +78,6 @@ export const Layout = () => {
           </Grid>
         </Grid>
         <div className='kingFooter'>
-          <div className='flex items-center justify-between border-bottom'>
-            <CustomTabSwitch
-              items={footerTabs}
-              value={selectedItem}
-              handleTabChange={setSelectedItem}
-              height={45}
-            />
-            {/* <div className='footer-right'>Show All Instrument</div> */}
-          </div>
-          {selectedItem !== 'Portfolio' ? (
-            <Box className='perpsBottomDropdown' padding='16px 12px'>
-              <select
-                onChange={(e) => {
-                  setSelectedSide(e.target.value);
-                }}
-              >
-                <option value='all' disabled selected>
-                  All
-                </option>
-                <option value='buy'>Buy</option>
-                <option value='sell'>Sell</option>
-              </select>
-            </Box>
-          ) : (
-            <PortfolioStatus token={token} />
-          )}
-          <div className='footer_data'>
-            <span className='text-secondary weight-500'>Price</span>
-            <span className='text-secondary weight-500'>Quantity</span>
-            <span className='text-secondary weight-500'>Created At</span>
-            <span className='text-secondary weight-500'>Side</span>
-            <span className='text-secondary weight-500'>Type</span>
-            <span className='text-secondary weight-500'>Status</span>
-            <span className='text-secondary weight-500'>Price</span>
-          </div>
           <Footer token={token} selectedTab={selectedItem} />
         </div>
       </Grid>
