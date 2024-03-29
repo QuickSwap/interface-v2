@@ -54,7 +54,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     side: 'BUY',
     order_symbol: perpToken,
   });
-  const { onSubmit, submit, helper: { validator }, } = useOrderEntry(
+  const {
+    onSubmit,
+    submit,
+    helper: { validator },
+  } = useOrderEntry(
     {
       symbol: perpToken,
       side: order.side,
@@ -82,7 +86,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     }
   }, [state.status]);
 
-
   const handleClick = (index: number) => {
     setClickedIndex(index);
     setMaxBuy((collateral.availableBalance * (index * 25)) / 100);
@@ -96,7 +99,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       return true;
     }
     return false;
-  }, [maxBuy, order.order_price, order.order_quantity,collateral.availableBalance]);
+  }, [
+    maxBuy,
+    order.order_price,
+    order.order_quantity,
+    collateral.availableBalance,
+  ]);
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
@@ -200,15 +208,17 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Box className='flex' gridGap={16} mt={2}>
           <p
-            className={`span cursor-pointer ${order.order_type === 'LIMIT' ? '' : 'text-secondary'
-              }`}
+            className={`span cursor-pointer ${
+              order.order_type === 'LIMIT' ? '' : 'text-secondary'
+            }`}
             onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
           >
             {t('limit')}
           </p>
           <p
-            className={`span cursor-pointer ${order.order_type === 'MARKET' ? '' : 'text-secondary'
-              }`}
+            className={`span cursor-pointer ${
+              order.order_type === 'MARKET' ? '' : 'text-secondary'
+            }`}
             onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
           >
             {t('market')}
@@ -251,9 +261,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <>
               <Box
                 className={`leverageSquare
-                  ${clickedIndex > item
-                    ? ' filledSquare'
-                    : clickedIndex === item
+                  ${
+                    clickedIndex > item
+                      ? ' filledSquare'
+                      : clickedIndex === item
                       ? ' activeSquare'
                       : ''
                   }`}
@@ -261,8 +272,9 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               />
               {item < 4 && (
                 <Box
-                  className={`leverageLine${clickedIndex > item ? ' activeLine' : ''
-                    }`}
+                  className={`leverageLine${
+                    clickedIndex > item ? ' activeLine' : ''
+                  }`}
                 />
               )}
             </>
@@ -302,31 +314,29 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <KeyboardArrowDown fontSize='small' className='text-secondary' />
         </Box>
         <Button
-
-  className='leverageSubmitButton'
-  disabled={buttonDisabled ||  collateral.availableBalance<10}
-  onClick={async () => {
-    try {
-      if (!quickSwapAccount) {
-        toggleWalletModal();
-      } else if (state.status === AccountStatusEnum.EnableTrading) {
-        const order1 = await submit();
-        const errors = validator(order1);
-        if (errors.length > 0) {
-          throw new Error(errors.join('\n'));
-        }
-        await onSubmit(order1);
-      } else {
-        setAccountModalOpen(true);
-      }
-    } catch (error) {
-      alert('An error occurred: ' + error.message);
-    }
-  }}
->
-  {buttonText}
-</Button>
-
+          className='leverageSubmitButton'
+          disabled={buttonDisabled || collateral.availableBalance < 10}
+          onClick={async () => {
+            try {
+              if (!quickSwapAccount) {
+                toggleWalletModal();
+              } else if (state.status === AccountStatusEnum.EnableTrading) {
+                const order1 = await submit();
+                const errors = validator(order1);
+                if (errors.length > 0) {
+                  throw new Error(errors.join('\n'));
+                }
+                await onSubmit(order1);
+              } else {
+                setAccountModalOpen(true);
+              }
+            } catch (error) {
+              alert('An error occurred: ' + error.message);
+            }
+          }}
+        >
+          {buttonText}
+        </Button>
       </Box>
       <AssetModal
         open={modalOpen}

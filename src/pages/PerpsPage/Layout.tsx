@@ -41,7 +41,6 @@ export const Layout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
- 
   return (
     <Grid container className='perpsV2Container'>
       <Grid item xs={12} sm={12} md={9} lg={9} xl={10}>
