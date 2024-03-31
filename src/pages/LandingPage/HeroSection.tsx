@@ -138,7 +138,9 @@ const HeroSection: React.FC = () => {
       <h1>{t('HeroTitle')}</h1>
       <p>{t('HeroDesc1')}</p>
       <p>{t('HeroDesc2')}</p>
-      <button>{t('LaunchApp')}</button>
+      <a href='/#/swap'>
+        <button>{t('LaunchApp')}</button>
+      </a>
     </Box>
   );
 };

@@ -119,28 +119,28 @@ const LandingPage: React.FC = () => {
       title: t('swap'),
       desc: t('featureSwapDesc'),
       button: t('TradeNow'),
-      link: '',
+      link: '/#/swap',
     },
     {
       img: Features2,
       title: t('addLiquidity'),
       desc: t('featureLiquidityDesc'),
       button: t('LPNow'),
-      link: '',
+      link: '/#/pools',
     },
     {
       img: Features3,
       title: t('perpetual'),
       desc: t('featurePerpetualDesc'),
       button: t('TradeNow'),
-      link: '',
+      link: 'https://perps.quickswap.exchange/#/trade',
     },
     {
       img: Features4,
       title: t('buyWithFiat'),
       desc: t('featureBuyFiatDesc'),
       button: t('BuyNow'),
-      link: '',
+      link: '/#/swap',
     },
   ];
 
@@ -150,21 +150,21 @@ const LandingPage: React.FC = () => {
       title: t('DragonLair'),
       desc: t('earnDragonDesc'),
       button: t('Stake'),
-      link: '',
+      link: '/#/dragons',
     },
     {
       img: Earn2,
       title: t('Farm'),
       desc: t('earnFarmDesc'),
       button: t('Add'),
-      link: '',
+      link: '/#/farm',
     },
     {
       img: Earn3,
       title: t('Bonds'),
       desc: t('earnBondsDesc'),
       button: t('TradeNow'),
-      link: '',
+      link: '/#/bonds',
     },
   ];
 
@@ -205,7 +205,7 @@ const LandingPage: React.FC = () => {
       title: 'Reddit',
     },
     {
-      link: 'https://www.tiktok.com/@quickswapofficial',
+      link: 'https://medium.com/@quickswap-layer2',
       icon: <Medium />,
       title: 'Medium',
     },
@@ -220,7 +220,7 @@ const LandingPage: React.FC = () => {
       title: 'Coinpaprika',
     },
     {
-      link: 'https://www.coingecko.com/en/exchanges/quickswap',
+      link: 'https://coinmarketcap.com/currencies/quickswap-new/',
       icon: <img src={CoinMarketCap} alt='CoinMarketCao' />,
       title: 'CoinMarketCap',
     },
@@ -296,7 +296,7 @@ const LandingPage: React.FC = () => {
             </Box>
           ))}
         </Box>
-        <a href='/' className='analytics'>
+        <a href='/#/analytics' className='analytics'>
           <p className='btn'>{t('ViewAnalytics')}</p>
           <img src={GoAhead} alt='goAhead' />
         </a>
