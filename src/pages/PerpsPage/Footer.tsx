@@ -54,7 +54,8 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       text: 'Order History',
     },
   ];
-
+  const [data]=usePositionStream(token)
+  
   const [o, { cancelOrder }] = useOrderStream({
     symbol: token,
     status: orderStatus,
@@ -62,7 +63,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const { onSubmit, maxQty } = useOrderEntry(
     {
       symbol: token,
-      side: OrderSide.BUY,
+      side: OrderSide.SELL,
       order_type: OrderType.MARKET,
       reduce_only: true,
     },
@@ -141,7 +142,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
               <span>{order?.type}</span>
               <span>{order?.status}</span>
               <span>{order?.average_executed_price}</span>
-              {selectedItem !== 'Filled' ? (
+              {selectedItem == 'Portfolio' ? (
                 <span>
                   <select
                     value={orderType}
@@ -166,15 +167,20 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
 
                   <Button
                     onClick={async () => {
-                      await onSubmit({
+                      console.log(order?.quantity);
+                      console.log(token);
+                      
+                      await  onSubmit({
                         order_type: orderType,
-                        symbol: order?.side === 'BUY' ? 'SELL' : 'BUY',
+                        symbol: token, 
                         reduce_only: true,
-                        side: OrderSide.BUY,
+                        side:  OrderSide.SELL,
                         order_quantity: order?.quantity,
                         order_price:
-                          orderType === OrderType.LIMIT ? limitPrice : '',
+                          orderType === OrderType.LIMIT ? limitPrice : 0,
                       });
+                     
+                      
                       refresh();
                     }}
                   >
@@ -186,7 +192,10 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
                   {' '}
                   <Button
                     onClick={async () => {
-                      await cancelOrder(order?.order_id);
+
+                     const res= await cancelOrder(order?.order_id,token);
+                     console.log(res);
+                     
                     }}
                   >
                     Cancel
