@@ -1362,7 +1362,7 @@ function useLairInfo(
     inputs,
   );
 
-  accountArg = [lairAddress ?? undefined];
+  accountArg = [(lairAddress as any) ?? undefined];
 
   const lairsQuickBalance = useSingleCallResult(
     quickContract,

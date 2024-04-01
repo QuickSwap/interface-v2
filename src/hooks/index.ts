@@ -1,26 +1,9 @@
-import { useCallback, useMemo } from 'react';
-import { useWeb3React } from '@web3-react/core';
-import { ChainId, Pair } from '@uniswap/sdk';
+import { useMemo } from 'react';
 import {
-  ConnectionType,
-  arkaneConnection,
-  bitgetConnection,
-  blockWalletConnection,
-  braveWalletConnection,
-  coinbaseWalletConnection,
-  cryptoComConnection,
-  cypherDConnection,
-  getConnections,
-  gnosisSafeConnection,
-  metamaskConnection,
-  networkConnection,
-  okxWalletConnection,
-  phantomConnection,
-  trustWalletConnection,
-  walletConnectConnection,
-  unstoppableDomainsConnection,
-  binanceWalletConnection,
-} from 'connectors';
+  useWeb3ModalProvider,
+  useWeb3ModalAccount,
+} from '@web3modal/ethers5/react';
+import { ChainId, Pair } from '@uniswap/sdk';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import {
   useArgentWalletDetectorContract,
@@ -32,11 +15,10 @@ import { usePairs } from 'data/Reserves';
 import useParsedQueryString from './useParsedQueryString';
 import { useParams } from 'react-router-dom';
 import { getConfig } from 'config/index';
-import { Connector } from '@web3-react/types';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 import { Currency } from '@uniswap/sdk-core';
-import { BigNumber } from 'ethers';
+import { BigNumber, providers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
 import {
   useOpenNetworkSelection,
@@ -44,7 +26,8 @@ import {
 } from 'state/application/hooks';
 
 export function useActiveWeb3React() {
-  const context = useWeb3React();
+  const context = useWeb3ModalAccount();
+  const { walletProvider } = useWeb3ModalProvider();
 
   const chainId: ChainId | undefined = useMemo(() => {
     if (!context.chainId || !SUPPORTED_CHAINIDS.includes(context.chainId)) {
@@ -54,10 +37,16 @@ export function useActiveWeb3React() {
   }, [context.chainId]);
 
   return {
-    ...context,
+    account: context.address,
     chainId,
     currentChainId: context.chainId,
-    library: context.provider,
+    provider: walletProvider
+      ? new providers.Web3Provider(walletProvider)
+      : undefined,
+    library: walletProvider
+      ? new providers.Web3Provider(walletProvider)
+      : undefined,
+    isActive: context.isConnected,
   };
 }
 
@@ -71,57 +60,6 @@ export function useIsArgentWallet(): boolean {
     NEVER_RELOAD,
   );
   return call?.result?.[0] ?? false;
-}
-
-export function useGetConnection() {
-  return useCallback((c: Connector | ConnectionType) => {
-    if (c instanceof Connector) {
-      const connection = getConnections().find(
-        (connection) => connection.connector === c,
-      );
-      if (!connection) {
-        throw Error('unsupported connector');
-      }
-      return connection;
-    } else {
-      switch (c) {
-        case ConnectionType.METAMASK:
-          return metamaskConnection;
-        case ConnectionType.COINBASE_WALLET:
-          return coinbaseWalletConnection;
-        case ConnectionType.WALLET_CONNECT:
-          return walletConnectConnection;
-        case ConnectionType.NETWORK:
-          return networkConnection;
-        case ConnectionType.GNOSIS_SAFE:
-          return gnosisSafeConnection;
-        case ConnectionType.ARKANE:
-          return arkaneConnection;
-        case ConnectionType.PHATOM:
-          return phantomConnection;
-        case ConnectionType.TRUSTWALLET:
-          return trustWalletConnection;
-        case ConnectionType.BITGET:
-          return bitgetConnection;
-        case ConnectionType.BLOCKWALLET:
-          return blockWalletConnection;
-        case ConnectionType.BRAVEWALLET:
-          return braveWalletConnection;
-        case ConnectionType.CYPHERD:
-          return cypherDConnection;
-        case ConnectionType.OKXWALLET:
-          return okxWalletConnection;
-        case ConnectionType.CRYPTOCOM:
-          return cryptoComConnection;
-        case ConnectionType.UNSTOPPABLEDOMAINS:
-          return unstoppableDomainsConnection;
-        case ConnectionType.BINANCEWALLET:
-          return binanceWalletConnection;
-        default:
-          throw Error('unsupported connector');
-      }
-    }
-  }, []);
 }
 
 export function useV2LiquidityPools(account?: string) {
