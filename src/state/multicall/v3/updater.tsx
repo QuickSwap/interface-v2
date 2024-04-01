@@ -6,7 +6,7 @@ import {
   updateV3MulticallResults,
 } from './actions';
 import { useAppDispatch, useAppSelector } from 'state/hooks';
-import { Call, parseCallKey } from './utils';
+import { Call, parseCallKey, toCallKey } from './utils';
 import { chunkArray } from 'utils/chunkArray';
 import { AppState } from 'state';
 import useDebounce from 'hooks/useDebounce';
@@ -14,7 +14,7 @@ import { useBlockNumber } from 'state/application/hooks';
 import { retry, RetryableError } from 'utils/retry';
 import { useMulticall2Contract } from 'hooks/useContract';
 
-const DEFAULT_GAS_REQUIRED = 10_000_000;
+const DEFAULT_CALL_GAS_REQUIRED = 10_000_000;
 
 /**
  * Fetches a chunk of calls, enforcing a minimum block number constraint
@@ -27,13 +27,13 @@ async function fetchChunk(
   chunk: Call[],
   blockNumber: number,
 ): Promise<{ success: boolean; returnData: string }[]> {
-  // console.debug('Fetching chunk', chunk, blockNumber)
+  console.debug('Fetching chunk', chunk, blockNumber);
   try {
     const { returnData } = await multicall.callStatic.multicall(
       chunk.map((obj) => ({
         target: obj.address,
         callData: obj.callData,
-        gasLimit: obj.gasRequired ?? DEFAULT_GAS_REQUIRED,
+        gasLimit: obj.gasRequired ?? DEFAULT_CALL_GAS_REQUIRED,
       })),
       { blockTag: blockNumber },
     );
@@ -44,13 +44,15 @@ async function fetchChunk(
           !r.success &&
           r.returnData.length === 2 &&
           r.gasUsed.gte(
-            Math.floor((chunk[i].gasRequired ?? DEFAULT_GAS_REQUIRED) * 0.95),
+            Math.floor(
+              (chunk[i].gasRequired ?? DEFAULT_CALL_GAS_REQUIRED) * 0.95,
+            ),
           )
         ) {
           console.warn(
             `A call failed due to requiring ${r.gasUsed.toString()} vs. allowed ${chunk[
               i
-            ].gasRequired ?? DEFAULT_GAS_REQUIRED}`,
+            ].gasRequired ?? DEFAULT_CALL_GAS_REQUIRED}`,
             chunk[i],
           );
         }
@@ -66,8 +68,23 @@ async function fetchChunk(
       throw new RetryableError(
         `header not found for block number ${blockNumber}`,
       );
+    } else if (
+      error.code === -32603 ||
+      error.message?.indexOf('execution ran out of gas') !== -1
+    ) {
+      if (chunk.length > 1) {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Splitting a chunk in 2', chunk);
+        }
+        const half = Math.floor(chunk.length / 2);
+        const [c0, c1] = await Promise.all([
+          fetchChunk(multicall, chunk.slice(0, half), blockNumber),
+          fetchChunk(multicall, chunk.slice(half, chunk.length), blockNumber),
+        ]);
+        return c0.concat(c1);
+      }
     }
-    // console.error('Failed to fetch chunk', error)
+    console.error('Failed to fetch chunk', error);
     throw error;
   }
 }
@@ -148,7 +165,7 @@ export default function Updater(): null {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state.multicallV3);
   // wait for listeners to settle before triggering updates
-  const debouncedListeners = useDebounce(state.callListeners, 100);
+  const debouncedListeners = useDebounce(state.callListeners, 1000);
   const latestBlockNumber = useBlockNumber();
   const { chainId } = useActiveWeb3React();
   const multicall2Contract = useMulticall2Contract();
@@ -175,6 +192,8 @@ export default function Updater(): null {
     [unserializedOutdatedCallKeys],
   );
 
+  const chunkGasLimit = 100_000_000;
+
   useEffect(() => {
     if (!latestBlockNumber || !chainId || !multicall2Contract) return;
 
@@ -182,7 +201,7 @@ export default function Updater(): null {
     if (outdatedCallKeys.length === 0) return;
     const calls = outdatedCallKeys.map((key) => parseCallKey(key));
 
-    const chunkedCalls = chunkArray(calls);
+    const chunkedCalls = chunkArray(calls, chunkGasLimit);
 
     if (
       cancellations.current &&
@@ -213,7 +232,7 @@ export default function Updater(): null {
         promise
           .then((returnData) => {
             // accumulates the length of all previous indices
-            const firstCallKeyIndex = chunkedCalls
+            /**const firstCallKeyIndex = chunkedCalls
               .slice(0, index)
               .reduce<number>((memo, curr) => memo + curr.length, 0);
             const lastCallKeyIndex = firstCallKeyIndex + returnData.length;
@@ -221,18 +240,19 @@ export default function Updater(): null {
             const slice = outdatedCallKeys.slice(
               firstCallKeyIndex,
               lastCallKeyIndex,
-            );
+            );*/
 
             // split the returned slice into errors and success
-            const { erroredCalls, results } = slice.reduce<{
+            const { erroredCalls, results } = chunk.reduce<{
               erroredCalls: Call[];
               results: { [callKey: string]: string | null };
             }>(
-              (memo, callKey, i) => {
+              (memo, call, i) => {
                 if (returnData[i].success) {
-                  memo.results[callKey] = returnData[i].returnData ?? null;
+                  memo.results[toCallKey(call)] =
+                    returnData[i].returnData ?? null;
                 } else {
-                  memo.erroredCalls.push(parseCallKey(callKey));
+                  memo.erroredCalls.push(call);
                 }
                 return memo;
               },
@@ -251,7 +271,15 @@ export default function Updater(): null {
 
             // dispatch any errored calls
             if (erroredCalls.length > 0) {
-              console.debug('Calls errored in fetch', erroredCalls);
+              if (process.env.NODE_ENV === 'development') {
+                returnData.forEach((returnData, ix) => {
+                  if (!returnData.success) {
+                    console.debug('Call failed', chunk[ix], returnData);
+                  }
+                });
+              } else {
+                console.debug('Calls errored in fetch', erroredCalls);
+              }
               dispatch(
                 errorFetchingV3MulticallResults({
                   calls: erroredCalls,
