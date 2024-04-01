@@ -7,13 +7,11 @@ import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { PortfolioStatus } from './PortfolioStatus';
+import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
   const [selectedItem, setSelectedItem] = useState('Portfolio');
-  const [selectedSide, setSelectedSide] = useState<string>('');
   const [orderQuantity, setOrderQuantity] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState<string>('orderbook');
   const { breakpoints } = useTheme();

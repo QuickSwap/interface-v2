@@ -152,9 +152,10 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     Number(order.order_quantity);
 
   const buttonDisabled =
-    orderFilterLoading ||
-    Object.values(orderValidation).length > 0 ||
-    orderValue < 10;
+    state.status === AccountStatusEnum.EnableTrading &&
+    (orderFilterLoading ||
+      Object.values(orderValidation).length > 0 ||
+      orderValue < 10);
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
