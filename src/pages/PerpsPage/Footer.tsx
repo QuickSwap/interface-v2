@@ -1,8 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { useOrderStream } from '@orderly.network/hooks';
+import React, { useEffect, useState } from 'react';
+import {
+  useOrderEntry,
+  useOrderStream,
+  usePositionStream,
+} from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
 import dayjs from 'dayjs';
@@ -10,7 +14,7 @@ import dayjs from 'dayjs';
 type Order = {
   price: number;
   quantity: number;
-  created_time: number;
+  created_time: string;
   order_id: number;
   side: OrderSide;
   type: OrderType;
@@ -18,7 +22,15 @@ type Order = {
   executed: number;
   average_executed_price: number;
 };
-export const Footer: React.FC<{ token: string }> = ({ token }) => {
+export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
+  token,
+  selectedTab,
+}) => {
+  const [orderStatus, setOrderStatus] = React.useState(OrderStatus.COMPLETED);
+  const [selectedItem, setSelectedItem] = useState('Portfolio');
+  const [selectedSide, setSelectedSide] = useState<string>('');
+  const [positions, _, { refresh }] = usePositionStream('PERP_ETH_USDC');
+
   const footerTabs = [
     {
       id: 'Portfolio',
@@ -46,24 +58,41 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     },
   ];
 
-  const [selectedItem, setSelectedItem] = useState('Portfolio');
-  const [selectedSide, setSelectedSide] = useState<string>('all');
+  console.log(orderStatus);
   const [o] = useOrderStream({
     symbol: token,
-    status:
-      selectedItem === 'Pending'
-        ? OrderStatus.INCOMPLETE
-        : selectedItem === 'Portfolio' || selectedItem === 'OrderHistory'
-        ? undefined
-        : (selectedItem.toUpperCase() as OrderStatus),
+    status: orderStatus,
   });
-  const orders = useMemo(() => {
-    if (!o) return [];
-    if (selectedSide === 'all') return o as Order[];
-    return o.filter(
-      (item) => item.side === selectedSide.toUpperCase(),
-    ) as Order[];
-  }, [o, selectedSide]);
+  const { onSubmit, maxQty } = useOrderEntry(
+    {
+      symbol: token,
+      side: OrderSide.BUY,
+      order_type: OrderType.MARKET,
+      reduce_only: true,
+    },
+    { watchOrderbook: true },
+  );
+
+  useEffect(() => {
+    switch (selectedItem) {
+      case 'Pending':
+        setOrderStatus(OrderStatus.INCOMPLETE);
+        break;
+      case 'Filled':
+        setOrderStatus(OrderStatus.FILLED);
+        break;
+      case 'Cancelled':
+        setOrderStatus(OrderStatus.CANCELLED);
+        break;
+      case 'Rejected':
+        setOrderStatus(OrderStatus.REJECTED);
+        break;
+      default:
+        setOrderStatus(OrderStatus.COMPLETED);
+        break;
+    }
+  }, [selectedItem]);
+  const orders = o as Order[] | null;
 
   return (
     <div>
@@ -100,6 +129,8 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
         <span className='text-secondary weight-500'>Side</span>
         <span className='text-secondary weight-500'>Type</span>
         <span className='text-secondary weight-500'>Status</span>
+        <span className='text-secondary weight-500'>Price</span>
+        <span className='text-secondary weight-500'>Action</span>
       </div>
       <div className='orders'>
         {orders && orders.length > 0 ? (
@@ -107,13 +138,28 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
             <div key={order?.order_id} className='order'>
               <span>{order?.price}</span>
               <span>{order?.quantity}</span>
-              <span>
-                {dayjs(order?.created_time).format('YYYY-MM-DD HH:mm:ss')}
-              </span>
+              <span>{new Date(order?.created_time).toLocaleString()}</span>
               <span>{order?.side}</span>
               <span>{order?.type}</span>
               <span>{order?.status}</span>
               <span>{order?.average_executed_price}</span>
+              <span>
+                {' '}
+                <Button
+                  onClick={async () => {
+                    await onSubmit({
+                      order_type: OrderType.MARKET,
+                      symbol: order?.side === 'BUY' ? 'SELL' : 'BUY',
+                      reduce_only: true,
+                      side: OrderSide.BUY,
+                      order_quantity: order?.quantity,
+                    });
+                    refresh();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </span>
             </div>
           ))
         ) : (

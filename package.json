@@ -149,6 +149,7 @@
     "@uauth/web3-react": "^2.8.1",
     "@venly/web3-provider": "3.1.0-develop.0",
     "apexcharts": "3.32.1",
+    "dayjs": "^1.11.10",
     "i18next-http-backend": "^1.4.1",
     "numbro": "^2.3.5",
     "react-apexcharts": "1.3.9",
