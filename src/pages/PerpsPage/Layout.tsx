@@ -11,7 +11,6 @@ import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
-  const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [orderQuantity, setOrderQuantity] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState<string>('orderbook');
   const { breakpoints } = useTheme();
@@ -42,7 +41,7 @@ export const Layout = () => {
   return (
     <Grid container className='perpsV2Container'>
       <Grid item xs={12} sm={12} md={9} lg={9} xl={10}>
-        <Grid container className='border-top border-bottom'>
+        <Grid container className='border-bottom'>
           <Grid
             item
             xs={12}
@@ -76,19 +75,11 @@ export const Layout = () => {
           </Grid>
         </Grid>
         <div className='kingFooter'>
-          <Footer token={token} selectedTab={selectedItem} />
+          <Footer token={token} />
         </div>
       </Grid>
       {!isMobile && (
-        <Grid
-          item
-          xs={12}
-          sm={12}
-          md={3}
-          lg={3}
-          xl={2}
-          className='border-top border-left'
-        >
+        <Grid item xs={12} sm={12} md={3} lg={3} xl={2} className='border-left'>
           <Leverage perpToken={token} orderQuantity={orderQuantity[0]} />
         </Grid>
       )}

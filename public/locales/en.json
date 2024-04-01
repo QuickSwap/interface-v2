@@ -923,7 +923,7 @@
   "sell": "Sell",
   "short": "Short",
   "market": "Market",
-  "yourWeb3Wallet": "Your web3 wallet",
-  "yourQuickPerpsAccount": "Your QuickPerps account",
+  "yourWallet": "Your wallet",
+  "yourFalkorAccount": "Your Falkor account",
   "totalBalance": "Total Balance"
 }

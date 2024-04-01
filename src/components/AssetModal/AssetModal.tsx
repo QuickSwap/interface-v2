@@ -6,7 +6,6 @@ import 'components/styles/AssetModal.scss';
 import { useSelectedWallet } from '../../state/user/hooks';
 import NotifyModal from '../NotifyModal';
 import {
-  useAccount,
   useChains,
   useCollateral,
   useDeposit,
@@ -32,14 +31,13 @@ const AssetModal: React.FC<AssetModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState(modalType);
-  const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  const { account: quickSwapAccount, chainId } = useActiveWeb3React();
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
   const [chains, { findByChainId }] = useChains('mainnet');
   const connections = selectedWallet
     ? getConnection(selectedWallet)
     : undefined;
-  const { account, state } = useAccount();
   const collateral = useCollateral();
   const [notifications, setNotifications] = useState(false);
   const token = useMemo(() => {
@@ -89,7 +87,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
         >
           <Box className='flex flex-col'>
             <Box className='flex justify-between items-start'>
-              <small>{t('yourWeb3Wallet')}</small>
+              <small>{t('yourWallet')}</small>
               {connections && (
                 <img src={connections.iconName} width='16' height='16' />
               )}
@@ -101,7 +99,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     ? quickSwapAccount.substring(0, 6) +
                       '...' +
                       quickSwapAccount.substring(quickSwapAccount.length - 4)
-                    : 'Connect Wallet'}
+                    : t('connectWallet')}
                 </small>
               </Box>
               <Box className='assetInfoWrapper' gridGap={8}>
@@ -167,7 +165,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
           </Box>
           <Box>
             <Box className='flex items-center justify-between'>
-              <small>{t('yourQuickPerpsAccount')}</small>
+              <small>{t('yourFalkorAccount')}</small>
               <img src={QuickPerpsIcon} />
             </Box>
             <Box className='assetModalInputWrapper' mt={1}>
@@ -228,7 +226,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
           </Box>
         )}
         <Box margin='8px 0 16px'>
-          <span className='text-secondary'>Fee = $0</span>
+          <span className='text-secondary'>{t('fee')} = $0</span>
         </Box>
 
         {selectedTab === 'deposit' ? (

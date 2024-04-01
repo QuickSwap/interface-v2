@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useOrderStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
 import { Box } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
+import dayjs from 'dayjs';
 
 type Order = {
   price: number;
@@ -17,34 +18,7 @@ type Order = {
   executed: number;
   average_executed_price: number;
 };
-export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
-  token,
-  selectedTab,
-}) => {
-  const [orderStatus, setOrderStatus] = React.useState(OrderStatus.COMPLETED);
-  // switch (selectedTab) {
-  //   case 'Portfolio':
-  //     setOrderStatus(OrderStatus.COMPLETED);
-  //     break;
-  //   case 'Pending':
-  //     setOrderStatus(OrderStatus.INCOMPLETE);
-  //     break;
-  //   case 'Filled':
-  //     setOrderStatus(OrderStatus.FILLED);
-  //     break;
-  //   case 'Cancelled':
-  //     setOrderStatus(OrderStatus.CANCELLED);
-  //     break;
-  //   case 'Rejected':
-  //     setOrderStatus(OrderStatus.REJECTED);
-  //     break;
-  //   case 'Order History':
-  //     setOrderStatus(OrderStatus.COMPLETED);
-  //     break;
-  //   default:
-  //     setOrderStatus(OrderStatus.COMPLETED);
-  //     break;
-  // }
+export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const footerTabs = [
     {
       id: 'Portfolio',
@@ -72,13 +46,24 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
     },
   ];
 
+  const [selectedItem, setSelectedItem] = useState('Portfolio');
+  const [selectedSide, setSelectedSide] = useState<string>('all');
   const [o] = useOrderStream({
     symbol: token,
-    status: OrderStatus.COMPLETED,
+    status:
+      selectedItem === 'Pending'
+        ? OrderStatus.INCOMPLETE
+        : selectedItem === 'Portfolio' || selectedItem === 'OrderHistory'
+        ? undefined
+        : (selectedItem.toUpperCase() as OrderStatus),
   });
-  const orders = o as Order[] | null;
-  const [selectedItem, setSelectedItem] = useState('Portfolio');
-  const [selectedSide, setSelectedSide] = useState<string>('');
+  const orders = useMemo(() => {
+    if (!o) return [];
+    if (selectedSide === 'all') return o as Order[];
+    return o.filter(
+      (item) => item.side === selectedSide.toUpperCase(),
+    ) as Order[];
+  }, [o, selectedSide]);
 
   return (
     <div>
@@ -115,7 +100,6 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
         <span className='text-secondary weight-500'>Side</span>
         <span className='text-secondary weight-500'>Type</span>
         <span className='text-secondary weight-500'>Status</span>
-        <span className='text-secondary weight-500'>Price</span>
       </div>
       <div className='orders'>
         {orders && orders.length > 0 ? (
@@ -123,7 +107,9 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
             <div key={order?.order_id} className='order'>
               <span>{order?.price}</span>
               <span>{order?.quantity}</span>
-              <span>{order?.created_time}</span>
+              <span>
+                {dayjs(order?.created_time).format('YYYY-MM-DD HH:mm:ss')}
+              </span>
               <span>{order?.side}</span>
               <span>{order?.type}</span>
               <span>{order?.status}</span>

@@ -24,7 +24,7 @@ export const OrderbookV2: React.FC<{
   };
 
   return (
-    <Box padding='7px 10px'>
+    <Box padding='7px 16px'>
       <OrderBook
         level={7}
         asks={data.asks ?? []}
