@@ -862,11 +862,20 @@ export function AddLiquidityButton({
               {baseCurrency?.symbol}-{quoteCurrency?.symbol}
             </h4>
           </Box>
-          <RangeBadge
-            removed={false}
-            withTooltip={false}
-            inRange={!mintInfo.outOfRange}
-          />
+          {mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ? (
+            <RangeBadge
+              removed={false}
+              withTooltip={false}
+              inRange={!mintInfo.outOfRange}
+            />
+          ) : mintInfo.presetRange?.title ? (
+            <div className='automatic-liquidity-range'>
+              {mintInfo.presetRange?.title} {t('range').toLowerCase()}
+            </div>
+          ) : (
+            <></>
+          )}
         </Box>
         <Box
           mt='20px'
