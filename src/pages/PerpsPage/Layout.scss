@@ -198,3 +198,42 @@
     text-transform: capitalize;
   }
 }
+
+.leverageDetailsArrow {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.radio-wrapper {
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  border: 1px solid $textSecondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & div {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background-color: $textPrimary;
+  }
+}
+
+.checkbox-wrapper {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $textSecondary;
+  border-radius: 2px;
+  &.checkbox-wrapper-filled {
+    border: 1px solid $textPrimary;
+    background-color: $textPrimary;
+  }
+}

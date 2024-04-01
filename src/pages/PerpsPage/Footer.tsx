@@ -22,10 +22,7 @@ type Order = {
   executed: number;
   average_executed_price: number;
 };
-export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
-  token,
-  selectedTab,
-}) => {
+export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [orderStatus, setOrderStatus] = React.useState(OrderStatus.COMPLETED);
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
@@ -58,7 +55,6 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
     },
   ];
 
-  console.log(orderStatus);
   const [o] = useOrderStream({
     symbol: token,
     status: orderStatus,

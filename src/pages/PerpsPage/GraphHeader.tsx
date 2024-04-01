@@ -58,7 +58,11 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
         gridGap={12}
       >
         <Box className='perpsTokenSelect' onClick={handleClick} gridGap={8}>
-          <p>{token ? token.symbol.split('_')[1] + '_' + token.symbol.split('_')[0] : 'Tokens'}</p>
+          <p>
+            {token
+              ? token.symbol.split('_')[1] + '_' + token.symbol.split('_')[0]
+              : 'Tokens'}
+          </p>
           {open ? (
             <KeyboardArrowUp className='text-secondary' />
           ) : (
@@ -108,7 +112,11 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                   filteredData.map((item: any, index) => (
                     <tr key={index} onClick={() => handleTokenSelect(item)}>
                       <td align='left'>
-                        <small>{item.symbol.split('_')[1] + '_' + item.symbol.split('_')[0]}</small>
+                        <small>
+                          {item.symbol.split('_')[1] +
+                            '_' +
+                            item.symbol.split('_')[0]}
+                        </small>
                       </td>
                       <td align='right'>
                         <small>{item?.index_price}</small>

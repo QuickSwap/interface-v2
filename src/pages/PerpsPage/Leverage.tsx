@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { KeyboardArrowDown } from '@material-ui/icons';
+import { Check, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import {
   useAccount,
@@ -32,7 +32,7 @@ type Inputs = {
   order_symbol: string;
 };
 
-function getInput(data: Inputs): OrderEntity {
+function getInput(data: Inputs, reduce_only?: boolean): OrderEntity {
   return {
     symbol: data.order_symbol,
     side: data.side === 'BUY' ? OrderSide.BUY : OrderSide.SELL,
@@ -40,6 +40,7 @@ function getInput(data: Inputs): OrderEntity {
       data.order_type === 'MARKET' ? OrderType.MARKET : OrderType.LIMIT,
     order_price: data.order_price,
     order_quantity: data.order_quantity,
+    reduce_only,
   };
 }
 
@@ -54,6 +55,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const [reducedOnly, setReducedOnly] = useState(false);
+  const [openDetails, setOpenDetails] = useState(false);
+  const orderTypes = ['Post Only', 'IOC', 'FOK'];
+  const [orderType, setOrderType] = useState('');
+  const [orderConfirm, setOrderConfirm] = useState(false);
+  const [orderHidden, setOrderHidden] = useState(false);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains, { findByChainId }] = useChains('mainnet');
   const [orderValidation, setOrderValidation] = useState<any>({});
@@ -91,6 +97,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       order_type: order.order_type as OrderType,
       order_price: order.order_price,
       order_quantity: order.order_quantity,
+      reduce_only: reducedOnly,
     },
     { watchOrderbook: true },
   );
@@ -114,11 +121,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   useEffect(() => {
     (async () => {
-      const validation = await helper.validator(getInput(order));
+      const validation = await helper.validator(getInput(order, reducedOnly));
       setOrderValidation(validation);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order]);
+  }, [order, reducedOnly]);
 
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
@@ -380,7 +387,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             <span
               className={order.side === 'BUY' ? 'text-success' : 'text-error'}
             >
-              {' '}
               {formatNumber(maxQty)}
             </span>
           </p>
@@ -393,8 +399,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         <Box
           className='border-top flex justify-between items-center'
-          pt={2}
-          mb={2}
+          padding='16px 0'
         >
           <Box className='flex items-center' gridGap={8}>
             <ToggleSwitch
@@ -405,8 +410,75 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             />
             <span className='text-secondary'>{t('reduceOnly')}</span>
           </Box>
-          <KeyboardArrowDown fontSize='small' className='text-secondary' />
+          <Box
+            className='leverageDetailsArrow'
+            onClick={() => setOpenDetails(!openDetails)}
+          >
+            {openDetails ? (
+              <KeyboardArrowUp fontSize='small' className='text-secondary' />
+            ) : (
+              <KeyboardArrowDown fontSize='small' className='text-secondary' />
+            )}
+          </Box>
         </Box>
+        {openDetails && (
+          <Box pb={2}>
+            <Box className='flex items-center' gridGap={12}>
+              {orderTypes.map((item) => (
+                <Box
+                  key={item}
+                  className='cursor-pointer'
+                  onClick={() => setOrderType(item)}
+                >
+                  <Box className='flex items-center' gridGap={5}>
+                    <Box className='radio-wrapper'>
+                      {item === orderType && <Box />}
+                    </Box>
+                    <small
+                      className={item === orderType ? '' : 'text-secondary'}
+                    >
+                      {item}
+                    </small>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Box className='flex items-center' mt={2} gridGap={12}>
+              <Box
+                className='flex items-center cursor-pointer'
+                gridGap={5}
+                onClick={() => setOrderConfirm(!orderConfirm)}
+              >
+                <Box
+                  className={`checkbox-wrapper ${
+                    orderConfirm ? 'checkbox-wrapper-filled' : ''
+                  }`}
+                >
+                  {orderConfirm && (
+                    <Check fontSize='small' className='text-bgColor' />
+                  )}
+                </Box>
+                <small>Order confirm</small>
+              </Box>
+              <Box
+                className='flex items-center cursor-pointer'
+                gridGap={5}
+                onClick={() => setOrderHidden(!orderHidden)}
+              >
+                <Box
+                  className={`checkbox-wrapper ${
+                    orderHidden ? 'checkbox-wrapper-filled' : ''
+                  }`}
+                >
+                  {orderHidden && (
+                    <Check fontSize='small' className='text-bgColor' />
+                  )}
+                </Box>
+                <small>Hidden</small>
+              </Box>
+            </Box>
+          </Box>
+        )}
         <Button
           className='leverageSubmitButton'
           disabled={buttonDisabled}
@@ -414,7 +486,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             if (!quickSwapAccount) {
               toggleWalletModal();
             } else if (state.status === AccountStatusEnum.EnableTrading) {
-              await onSubmit(getInput(order));
+              await onSubmit(getInput(order, reducedOnly));
             } else {
               setAccountModalOpen(true);
             }
