@@ -117,8 +117,8 @@ const App: React.FC = () => {
         <Route component={GoogleAnalyticsReporter} />
         <Provider store={store}>
           <Providers>
-            <TermsWrapper>
-              <Web3ReactManager>
+            <Web3ReactManager>
+              <TermsWrapper>
                 <Updaters />
                 <Popups />
                 <Switch>
@@ -263,8 +263,8 @@ const App: React.FC = () => {
                     </PageLayout>
                   </Route>
                 </Switch>
-              </Web3ReactManager>
-            </TermsWrapper>
+              </TermsWrapper>
+            </Web3ReactManager>
           </Providers>
         </Provider>
       </QueryClientProvider>

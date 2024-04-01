@@ -5,6 +5,9 @@ import 'components/styles/TermsWrapper.scss';
 import { Box, Button, Checkbox } from '@material-ui/core';
 import PerpsBanner from 'assets/images/perpsBanner.png';
 import PerpsBannerWebP from 'assets/images/perpsBanner.webp';
+import liquidityHubBanner from 'assets/images/liquidityHubBanner.webp';
+import { useActiveWeb3React } from 'hooks';
+import { getConfig } from 'config/index';
 
 export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -12,6 +15,9 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const currentTOSVersion = process.env.REACT_APP_TOS_VERSION;
+  const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const showPerpsV2 = config['perpsV2']['available'];
 
   useEffect(() => {
     const savedTermsVersion = localStorage.getItem('tosVersion');
@@ -66,8 +72,15 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             <p>{t('disclaimerText3')}</p>
           </Box>
           <picture>
-            <source srcSet={PerpsBannerWebP} type='image/webp' />
-            <img src={PerpsBanner} alt='perps banner' width='100%' />
+            <source
+              srcSet={showPerpsV2 ? liquidityHubBanner : PerpsBannerWebP}
+              type='image/webp'
+            />
+            <img
+              src={showPerpsV2 ? liquidityHubBanner : PerpsBanner}
+              alt='perps banner'
+              width='100%'
+            />
           </picture>
           <Box my={2}>
             <p className='caption text-secondary'>

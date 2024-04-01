@@ -38,7 +38,7 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   border-bottom: 1px solid $divider;
-  padding: 16px 12px;
+  padding: 16px;
 }
 
 .perpsBottomDropdown select {
@@ -74,7 +74,6 @@
   flex-direction: row;
   justify-content: space-between;
   padding: 10px;
-  border-bottom: 1px solid #61675a;
 }
 .footer_data {
   display: flex;
