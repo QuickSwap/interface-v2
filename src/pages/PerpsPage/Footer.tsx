@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   useOrderEntry,
   useOrderStream,
   usePositionStream,
 } from '@orderly.network/hooks';
-import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
+import { API, OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Button } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
+import { Check } from '@material-ui/icons';
+import { formatNumber } from 'utils';
 import dayjs from 'dayjs';
+import { CustomTable } from 'components';
+import { GlobalConst } from 'constants/index';
 
 type Order = {
+  symbol: string;
   price: number;
   quantity: number;
   created_time: string;
@@ -19,14 +24,19 @@ type Order = {
   side: OrderSide;
   type: OrderType;
   status: OrderStatus;
-  executed: number;
+  total_executed_quantity: number;
   average_executed_price: number;
+  total_fee: number;
+  reduce_only?: boolean;
+  visible_quantity?: number;
 };
 export const Footer: React.FC<{ token: string }> = ({ token }) => {
-  const [orderStatus, setOrderStatus] = React.useState(OrderStatus.COMPLETED);
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
-  const [positions, _, { refresh }] = usePositionStream('PERP_ETH_USDC');
+  const [showAllInstrument, setShowAllInstrument] = useState(false);
+  const [{ rows }, _, { refresh }] = usePositionStream(
+    showAllInstrument ? undefined : token,
+  );
 
   const footerTabs = [
     {
@@ -55,8 +65,21 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     },
   ];
 
+  const orderStatus = useMemo(() => {
+    if (selectedItem === 'Pending') {
+      return OrderStatus.INCOMPLETE;
+    } else if (selectedItem === 'Filled') {
+      return OrderStatus.FILLED;
+    } else if (selectedItem === 'Cancelled') {
+      return OrderStatus.CANCELLED;
+    } else if (selectedItem === 'Rejected') {
+      return OrderStatus.REJECTED;
+    }
+    return;
+  }, [selectedItem]);
+
   const [o, { cancelOrder }] = useOrderStream({
-    symbol: token,
+    symbol: showAllInstrument ? undefined : token,
     status: orderStatus,
   });
   const { onSubmit, maxQty } = useOrderEntry(
@@ -68,41 +91,337 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     },
     { watchOrderbook: true },
   );
-  const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET);
-  const [limitPrice, setLimitPrice] = useState('');
 
-  useEffect(() => {
-    switch (selectedItem) {
-      case 'Pending':
-        setOrderStatus(OrderStatus.INCOMPLETE);
-        break;
-      case 'Filled':
-        setOrderStatus(OrderStatus.FILLED);
-        break;
-      case 'Cancelled':
-        setOrderStatus(OrderStatus.CANCELLED);
-        break;
-      case 'Rejected':
-        setOrderStatus(OrderStatus.REJECTED);
-        break;
-      default:
-        setOrderStatus(OrderStatus.COMPLETED);
-        break;
-    }
-  }, [selectedItem]);
   const orders = o as Order[] | null;
+
+  const filteredOrders = useMemo(() => {
+    if (!orders) return [];
+    return orders.filter((order) =>
+      selectedSide === '' || selectedSide === 'all'
+        ? true
+        : order.side.toLowerCase() === selectedSide.toLowerCase(),
+    );
+  }, [orders, selectedSide]);
+
+  const portfolioHeadCells = [
+    {
+      id: 'instrument',
+      label: 'Instrument',
+      sortKey: (item: API.PositionExt) => item.symbol,
+    },
+    {
+      id: 'quantity',
+      numeric: false,
+      label: 'Quantity',
+      sortKey: (item: API.PositionExt) => item.position_qty,
+    },
+    {
+      id: 'avgOpen',
+      numeric: false,
+      label: 'Avg.open',
+      sortKey: (item: API.PositionExt) => item.average_open_price,
+    },
+    {
+      id: 'markPrice',
+      numeric: true,
+      label: 'Mark price',
+      sortKey: (item: API.PositionExt) => item.mark_price,
+    },
+    {
+      id: 'liqPrice',
+      numeric: true,
+      label: 'Liq. price',
+      sortKey: (item: API.PositionExt) => item.est_liq_price,
+    },
+    {
+      id: 'unrealPNL',
+      numeric: true,
+      label: 'Unreal. PnL',
+      sortKey: (item: API.PositionExt) => item.unrealized_pnl,
+    },
+    {
+      id: 'estTotal',
+      numeric: true,
+      label: 'Est. total',
+      sortKey: (item: API.PositionExt) => item.mark_price * item.position_qty,
+    },
+    {
+      id: 'qtyInput',
+      label: 'Qty.',
+      sortDisabled: true,
+    },
+    {
+      id: 'priceInput',
+      label: 'Price',
+      sortDisabled: true,
+    },
+  ];
+
+  const orderHeadCells = [
+    {
+      id: 'instrument',
+      label: 'Instrument',
+      sortKey: (item: Order) => item.symbol,
+    },
+    {
+      id: 'type',
+      label: 'Type',
+      sortKey: (item: Order) => item.type,
+    },
+    {
+      id: 'side',
+      label: 'Side',
+      sortKey: (item: Order) => item.side,
+    },
+    {
+      id: 'quantity',
+      numeric: true,
+      label: 'Filled / Quantity',
+      sortKey: (item: Order) => item.quantity,
+    },
+    {
+      id: 'price',
+      numeric: true,
+      label: 'Order Price',
+      sortKey: (item: Order) => item.price,
+    },
+    {
+      id: 'avgPrice',
+      numeric: true,
+      label: 'Avg. Price',
+      sortKey: (item: Order) => item.average_executed_price,
+    },
+    {
+      id: 'fee',
+      numeric: true,
+      label: 'Fee',
+      sortKey: (item: Order) => item.total_fee,
+    },
+    {
+      id: 'status',
+      label: 'Status',
+      sortKey: (item: Order) => item.status,
+    },
+    {
+      id: 'reduce',
+      label: 'Reduce',
+      sortKey: (item: Order) => !!item.reduce_only,
+    },
+    {
+      id: 'hidden',
+      label: 'Hidden',
+      sortKey: (item: Order) => !item.visible_quantity,
+    },
+    {
+      id: 'orderTime',
+      numeric: true,
+      label: 'Order Time',
+      sortKey: (item: Order) => item.created_time,
+    },
+  ];
+
+  const portfolioMobileHTML = (item: API.PositionExt, index: number) => {
+    return (
+      <Box mt={index === 0 ? 0 : 3}>
+        <Box className='mobileRow'>
+          <p>Instrument</p>
+          <p>{item.symbol}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Quantity</p>
+          <p>{formatNumber(item.position_qty)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Avg.open</p>
+          <p>{formatNumber(item.average_open_price)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Mark price</p>
+          <p>{formatNumber(item.mark_price)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Liq. price</p>
+          <p>{formatNumber(item.est_liq_price ?? 0)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Unreal. PnL</p>
+          <p>{formatNumber(item.unrealized_pnl)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Est. total</p>
+          <p>{formatNumber(item.mark_price * item.position_qty)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Qty</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Price</p>
+        </Box>
+      </Box>
+    );
+  };
+
+  const portfolioDesktopHTML = (item: API.PositionExt) => {
+    return [
+      {
+        html: <small>{item.symbol}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.position_qty)}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.average_open_price)}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.mark_price)}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.est_liq_price ?? 0)}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.unrealized_pnl)}</small>,
+      },
+      {
+        html: (
+          <small>{formatNumber(item.mark_price * item.position_qty)}</small>
+        ),
+      },
+    ];
+  };
+
+  const orderMobileHTML = (item: Order, index: number) => {
+    return (
+      <Box mt={index === 0 ? 0 : 3}>
+        <Box className='mobileRow'>
+          <p>Instrument</p>
+          <p>{item.symbol}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Type</p>
+          <p>{item.type}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Side</p>
+          <p>{item.side}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Filled / Quantity</p>
+          <p>
+            {formatNumber(item.total_executed_quantity)} /
+            {formatNumber(item.quantity)}
+          </p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Order Price</p>
+          <p>{formatNumber(item.price)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Avg. Price</p>
+          <p>{formatNumber(item.average_executed_price)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Fee</p>
+          <p>{formatNumber(item.total_fee)}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Status</p>
+          <p>{item.status}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Reduce</p>
+          <p>{item.reduce_only ? 'Yes' : 'No'}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Hidden</p>
+          <p>{!item.visible_quantity ? 'Yes' : 'No'}</p>
+        </Box>
+        <Box className='mobileRow'>
+          <p>Order Time</p>
+          <p>{dayjs(item.created_time).format('YYYY-MM-DD HH:mm:ss')}</p>
+        </Box>
+      </Box>
+    );
+  };
+
+  const orderDesktopHTML = (item: Order) => {
+    return [
+      {
+        html: <small>{item.symbol}</small>,
+      },
+      {
+        html: <small>{item.type}</small>,
+      },
+      {
+        html: <small>{item.side}</small>,
+      },
+      {
+        html: (
+          <small>
+            {formatNumber(item.total_executed_quantity)} /
+            {formatNumber(item.quantity)}
+          </small>
+        ),
+      },
+      {
+        html: <small>{formatNumber(item.price)}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.average_executed_price)}</small>,
+      },
+      {
+        html: <small>{formatNumber(item.total_fee)}</small>,
+      },
+      {
+        html: <small>{item.status}</small>,
+      },
+      {
+        html: <small>{item.reduce_only ? 'Yes' : 'No'}</small>,
+      },
+      {
+        html: <small>{!item.visible_quantity ? 'Yes' : 'No'}</small>,
+      },
+      {
+        html: (
+          <small>
+            {dayjs(item.created_time).format('YYYY-MM-DD HH:mm:ss')}
+          </small>
+        ),
+      },
+    ];
+  };
 
   return (
     <div>
-      <div className='flex items-center justify-between border-bottom'>
-        <CustomTabSwitch
-          items={footerTabs}
-          value={selectedItem}
-          handleTabChange={setSelectedItem}
-          height={45}
-        />
-        {/* <div className='footer-right'>Show All Instrument</div> */}
-      </div>
+      <Box
+        className='flex items-center flex-wrap justify-between border-bottom'
+        gridGap={12}
+      >
+        <Box flex={1}>
+          <CustomTabSwitch
+            items={footerTabs}
+            value={selectedItem}
+            handleTabChange={setSelectedItem}
+            height={45}
+          />
+        </Box>
+        <Box
+          className='flex items-center cursor-pointer'
+          onClick={() => setShowAllInstrument(!showAllInstrument)}
+          gridGap={5}
+          pr='12px'
+        >
+          <Box
+            className={`checkbox-wrapper ${
+              showAllInstrument ? 'checkbox-wrapper-filled' : ''
+            }`}
+          >
+            {showAllInstrument && (
+              <Check fontSize='small' className='text-bgColor' />
+            )}
+          </Box>
+          Show All Instruments
+        </Box>
+      </Box>
       {selectedItem !== 'Portfolio' ? (
         <Box className='perpsBottomDropdown' padding='16px 12px'>
           <select
@@ -120,87 +439,19 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       ) : (
         <PortfolioStatus token={token} />
       )}
-      <div className='footer_data'>
-        <span className='text-secondary weight-500'>Price</span>
-        <span className='text-secondary weight-500'>Quantity</span>
-        <span className='text-secondary weight-500'>Created At</span>
-        <span className='text-secondary weight-500'>Side</span>
-        <span className='text-secondary weight-500'>Type</span>
-        <span className='text-secondary weight-500'>Status</span>
-        <span className='text-secondary weight-500'>Price</span>
-        <span className='text-secondary weight-500'>Action</span>
-      </div>
-      <div className='orders'>
-        {orders && orders.length > 0 ? (
-          orders.map((order) => (
-            <div key={order?.order_id} className='order'>
-              <span>{order?.price}</span>
-              <span>{order?.quantity}</span>
-              <span>{new Date(order?.created_time).toLocaleString()}</span>
-              <span>{order?.side}</span>
-              <span>{order?.type}</span>
-              <span>{order?.status}</span>
-              <span>{order?.average_executed_price}</span>
-              {selectedItem !== 'Filled' ? (
-                <span>
-                  <select
-                    value={orderType}
-                    onChange={(e) => {
-                      setOrderType(e.target.value as OrderType);
-                    }}
-                  >
-                    <option value={OrderType.MARKET}>MARKET</option>
-                    <option value={OrderType.LIMIT}>LIMIT</option>
-                  </select>
-
-                  {orderType === OrderType.LIMIT && (
-                    <input
-                      type='number'
-                      value={limitPrice}
-                      onChange={(e) => {
-                        setLimitPrice(e.target.value);
-                      }}
-                      placeholder='Limit Price'
-                    />
-                  )}
-
-                  <Button
-                    onClick={async () => {
-                      await onSubmit({
-                        order_type: orderType,
-                        symbol: order?.side === 'BUY' ? 'SELL' : 'BUY',
-                        reduce_only: true,
-                        side: OrderSide.BUY,
-                        order_quantity: order?.quantity,
-                        order_price:
-                          orderType === OrderType.LIMIT ? limitPrice : '',
-                      });
-                      refresh();
-                    }}
-                  >
-                    Close
-                  </Button>
-                </span>
-              ) : (
-                <span>
-                  {' '}
-                  <Button
-                    onClick={async () => {
-                      await cancelOrder(order?.order_id);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </span>
-              )}
-            </div>
-          ))
-        ) : (
-          <Box padding='20px 16px' className='flex justify-center'>
-            <small>No orders available</small>
-          </Box>
-        )}
-      </div>
+      <CustomTable
+        headCells={
+          selectedItem === 'Portfolio' ? portfolioHeadCells : orderHeadCells
+        }
+        rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
+        data={selectedItem === 'Portfolio' ? rows ?? [] : filteredOrders}
+        mobileHTML={
+          selectedItem === 'Portfolio' ? portfolioMobileHTML : orderMobileHTML
+        }
+        desktopHTML={
+          selectedItem === 'Portfolio' ? portfolioDesktopHTML : orderDesktopHTML
+        }
+      />
     </div>
   );
 };

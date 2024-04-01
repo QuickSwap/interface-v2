@@ -23,24 +23,29 @@ import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { formatNumber } from 'utils';
 import { formatDecimalInput } from 'utils/numbers';
+import OrderConfirmModal from './OrderConfirmModal';
 
 type Inputs = {
-  side: 'BUY' | 'SELL';
-  order_type: 'MARKET' | 'LIMIT';
+  side: OrderSide;
+  order_type: OrderType;
   order_price: string;
   order_quantity: string;
   order_symbol: string;
 };
 
-function getInput(data: Inputs, reduce_only?: boolean): OrderEntity {
+function getInput(
+  data: Inputs,
+  reduce_only?: boolean,
+  orderHidden?: boolean,
+): OrderEntity {
   return {
     symbol: data.order_symbol,
-    side: data.side === 'BUY' ? OrderSide.BUY : OrderSide.SELL,
-    order_type:
-      data.order_type === 'MARKET' ? OrderType.MARKET : OrderType.LIMIT,
+    side: data.side,
+    order_type: data.order_type,
     order_price: data.order_price,
     order_quantity: data.order_quantity,
     reduce_only,
+    visible_quantity: orderHidden ? 0 : undefined,
   };
 }
 
@@ -56,12 +61,20 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   const [reducedOnly, setReducedOnly] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
-  const orderTypes = ['Post Only', 'IOC', 'FOK'];
-  const [orderType, setOrderType] = useState('');
+  const otherOrderTypes = [
+    { id: OrderType.POST_ONLY, text: 'Post Only' },
+    { id: OrderType.IOC, text: 'IOC' },
+    { id: OrderType.FOK, text: 'FOK' },
+  ];
+  const [orderType, setOrderType] = useState<OrderType>(OrderType.LIMIT);
+  const [otherOrderType, setOtherOrderType] = useState<OrderType | undefined>(
+    undefined,
+  );
   const [orderConfirm, setOrderConfirm] = useState(false);
   const [orderHidden, setOrderHidden] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
-  const [chains, { findByChainId }] = useChains('mainnet');
+  const [chains] = useChains('mainnet');
   const [orderValidation, setOrderValidation] = useState<any>({});
 
   const { account, state } = useAccount();
@@ -85,19 +98,20 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const [order, setOrder] = useState<Inputs>({
     order_price: '0',
     order_quantity: '0',
-    order_type: 'LIMIT',
-    side: 'BUY',
+    order_type: OrderType.LIMIT,
+    side: OrderSide.BUY,
     order_symbol: perpToken,
   });
 
   const { onSubmit, helper, maxQty, markPrice } = useOrderEntry(
     {
       symbol: perpToken,
-      side: order.side as OrderSide,
-      order_type: order.order_type as OrderType,
+      side: order.side,
+      order_type: order.order_type,
       order_price: order.order_price,
       order_quantity: order.order_quantity,
       reduce_only: reducedOnly,
+      visible_quantity: orderHidden ? 0 : undefined,
     },
     { watchOrderbook: true },
   );
@@ -121,11 +135,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   useEffect(() => {
     (async () => {
-      const validation = await helper.validator(getInput(order, reducedOnly));
+      const validation = await helper.validator(
+        getInput(order, reducedOnly, orderHidden),
+      );
       setOrderValidation(validation);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order, reducedOnly]);
+  }, [order, reducedOnly, orderHidden]);
 
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
@@ -180,7 +196,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
 
   const toggleWalletModal = useWalletModalToggle();
 
-  const quantityPercent = (Number(order.order_quantity) / maxQty) * 100;
+  const quantityPercent =
+    maxQty > 0 ? (Number(order.order_quantity) / maxQty) * 100 : 0;
 
   return (
     <>
@@ -224,13 +241,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             </Box>
             <Box textAlign='right'>
               <p className='span text-secondary'>{t('marginRatio')}</p>
-              <p className='span'>{data.totalUnrealizedROI}%</p>
+              <p className='span'>{formatNumber(data.totalUnrealizedROI)}%</p>
             </Box>
           </Box>
         </Box>
         <Box className='leverageTypesWrapper' gridGap={2}>
           <Box
-            onClick={() => setOrder({ ...order, side: 'BUY' })}
+            onClick={() => setOrder({ ...order, side: OrderSide.BUY })}
             className={
               order.side === OrderSide.BUY ? 'bg-primary' : 'bg-palette'
             }
@@ -244,7 +261,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             </span>
           </Box>
           <Box
-            onClick={() => setOrder({ ...order, side: 'SELL' })}
+            onClick={() => setOrder({ ...order, side: OrderSide.SELL })}
             className={
               order.side === OrderSide.SELL ? 'bg-primary' : 'bg-palette'
             }
@@ -262,7 +279,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
           <p className='span text-secondary'>
             {t('available')}{' '}
             <span className='text-primaryText'>
-              {collateral.availableBalance}
+              {formatNumber(collateral.availableBalance)}
             </span>{' '}
             {token?.symbol}
           </p>
@@ -276,22 +293,28 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         <Box className='flex' gridGap={16} mt={2}>
           <p
             className={`span cursor-pointer ${
-              order.order_type === 'LIMIT' ? '' : 'text-secondary'
+              orderType === 'LIMIT' ? '' : 'text-secondary'
             }`}
-            onClick={() => setOrder({ ...order, order_type: 'LIMIT' })}
+            onClick={() => {
+              setOrderType(OrderType.LIMIT);
+              setOrder({ ...order, order_type: OrderType.LIMIT });
+            }}
           >
             {t('limit')}
           </p>
           <p
             className={`span cursor-pointer ${
-              order.order_type === 'MARKET' ? '' : 'text-secondary'
+              orderType === OrderType.MARKET ? '' : 'text-secondary'
             }`}
-            onClick={() => setOrder({ ...order, order_type: 'MARKET' })}
+            onClick={() => {
+              setOrderType(OrderType.MARKET);
+              setOrder({ ...order, order_type: OrderType.MARKET });
+            }}
           >
             {t('market')}
           </p>
         </Box>
-        {order.order_type === 'LIMIT' && (
+        {orderType === 'LIMIT' && (
           <Box className='leverageInputWrapper' mt={2}>
             <span className='text-secondary'>{t('price')}</span>
             <Box gridGap={5}>
@@ -353,12 +376,14 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               left={`calc(${(item / 4) * 100}% - 8px)`}
             />
           ))}
-          <Box
-            className='leverageActiveWrapper'
-            width={`${Math.min(quantityPercent, 100)}%`}
-          >
-            <Box />
-          </Box>
+          {maxQty > 0 && (
+            <Box
+              className='leverageActiveWrapper'
+              width={`${Math.min(quantityPercent, 100)}%`}
+            >
+              <Box />
+            </Box>
+          )}
         </Box>
         <Box className='flex justify-between'>
           <p
@@ -423,27 +448,31 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         </Box>
         {openDetails && (
           <Box pb={2}>
-            <Box className='flex items-center' gridGap={12}>
-              {orderTypes.map((item) => (
-                <Box
-                  key={item}
-                  className='cursor-pointer'
-                  onClick={() => setOrderType(item)}
-                >
-                  <Box className='flex items-center' gridGap={5}>
-                    <Box className='radio-wrapper'>
-                      {item === orderType && <Box />}
+            {orderType === OrderType.LIMIT && (
+              <Box className='flex items-center' mb={2} gridGap={12}>
+                {otherOrderTypes.map((item) => (
+                  <Box
+                    key={item.id}
+                    className='cursor-pointer'
+                    onClick={() => setOtherOrderType(item.id)}
+                  >
+                    <Box className='flex items-center' gridGap={5}>
+                      <Box className='radio-wrapper'>
+                        {item.id === otherOrderType && <Box />}
+                      </Box>
+                      <small
+                        className={
+                          item.id === otherOrderType ? '' : 'text-secondary'
+                        }
+                      >
+                        {item.text}
+                      </small>
                     </Box>
-                    <small
-                      className={item === orderType ? '' : 'text-secondary'}
-                    >
-                      {item}
-                    </small>
                   </Box>
-                </Box>
-              ))}
-            </Box>
-            <Box className='flex items-center' mt={2} gridGap={12}>
+                ))}
+              </Box>
+            )}
+            <Box className='flex items-center' gridGap={12}>
               <Box
                 className='flex items-center cursor-pointer'
                 gridGap={5}
@@ -458,7 +487,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                     <Check fontSize='small' className='text-bgColor' />
                   )}
                 </Box>
-                <small>Order confirm</small>
+                <small className='text-secondary'>Order confirm</small>
               </Box>
               <Box
                 className='flex items-center cursor-pointer'
@@ -474,7 +503,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                     <Check fontSize='small' className='text-bgColor' />
                   )}
                 </Box>
-                <small>Hidden</small>
+                <small className='text-secondary'>Hidden</small>
               </Box>
             </Box>
           </Box>
@@ -486,7 +515,11 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             if (!quickSwapAccount) {
               toggleWalletModal();
             } else if (state.status === AccountStatusEnum.EnableTrading) {
-              await onSubmit(getInput(order, reducedOnly));
+              if (orderConfirm) {
+                setOpenConfirmModal(true);
+              } else {
+                await onSubmit(getInput(order, reducedOnly, orderHidden));
+              }
             } else {
               setAccountModalOpen(true);
             }
@@ -503,6 +536,14 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
       <AccountModal
         open={accountModalOpen}
         onClose={() => setAccountModalOpen(false)}
+      />
+      <OrderConfirmModal
+        open={openConfirmModal}
+        onClose={() => setOpenConfirmModal(false)}
+        order={getInput(order, reducedOnly, orderHidden)}
+        orderValue={orderValue}
+        tokenSymbol={token?.symbol}
+        onSubmit={onSubmit}
       />
     </>
   );

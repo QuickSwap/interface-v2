@@ -237,3 +237,16 @@
     background-color: $textPrimary;
   }
 }
+
+.orderConfirmButton,
+.orderConfirmCancelButton {
+  width: 50%;
+  height: 40px;
+}
+
+.orderConfirmCancelButton {
+  background-color: $secondary1;
+  &:hover {
+    background-color: $secondary1;
+  }
+}
