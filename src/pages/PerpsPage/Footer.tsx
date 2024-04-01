@@ -55,7 +55,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     },
   ];
 
-  const [o] = useOrderStream({
+  const [o, { cancelOrder }] = useOrderStream({
     symbol: token,
     status: orderStatus,
   });
@@ -68,6 +68,8 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     },
     { watchOrderbook: true },
   );
+  const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET);
+  const [limitPrice, setLimitPrice] = useState('');
 
   useEffect(() => {
     switch (selectedItem) {
@@ -139,23 +141,58 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
               <span>{order?.type}</span>
               <span>{order?.status}</span>
               <span>{order?.average_executed_price}</span>
-              <span>
-                {' '}
-                <Button
-                  onClick={async () => {
-                    await onSubmit({
-                      order_type: OrderType.MARKET,
-                      symbol: order?.side === 'BUY' ? 'SELL' : 'BUY',
-                      reduce_only: true,
-                      side: OrderSide.BUY,
-                      order_quantity: order?.quantity,
-                    });
-                    refresh();
-                  }}
-                >
-                  Cancel
-                </Button>
-              </span>
+              {selectedItem !== 'Filled' ? (
+                <span>
+                  <select
+                    value={orderType}
+                    onChange={(e) => {
+                      setOrderType(e.target.value as OrderType);
+                    }}
+                  >
+                    <option value={OrderType.MARKET}>MARKET</option>
+                    <option value={OrderType.LIMIT}>LIMIT</option>
+                  </select>
+
+                  {orderType === OrderType.LIMIT && (
+                    <input
+                      type='number'
+                      value={limitPrice}
+                      onChange={(e) => {
+                        setLimitPrice(e.target.value);
+                      }}
+                      placeholder='Limit Price'
+                    />
+                  )}
+
+                  <Button
+                    onClick={async () => {
+                      await onSubmit({
+                        order_type: orderType,
+                        symbol: order?.side === 'BUY' ? 'SELL' : 'BUY',
+                        reduce_only: true,
+                        side: OrderSide.BUY,
+                        order_quantity: order?.quantity,
+                        order_price:
+                          orderType === OrderType.LIMIT ? limitPrice : '',
+                      });
+                      refresh();
+                    }}
+                  >
+                    Close
+                  </Button>
+                </span>
+              ) : (
+                <span>
+                  {' '}
+                  <Button
+                    onClick={async () => {
+                      await cancelOrder(order?.order_id);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </span>
+              )}
             </div>
           ))
         ) : (
