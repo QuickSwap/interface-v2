@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useOrderEntry, useOrderStream,usePositionStream } from '@orderly.network/hooks';
+import {
+  useOrderEntry,
+  useOrderStream,
+  usePositionStream,
+} from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
-import { Box,Button } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
 import dayjs from 'dayjs';
@@ -54,8 +58,7 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
     },
   ];
 
-  
-  console.log(orderStatus)
+  console.log(orderStatus);
   const [o] = useOrderStream({
     symbol: token,
     status: orderStatus,
@@ -63,13 +66,13 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
   const { onSubmit, maxQty } = useOrderEntry(
     {
       symbol: token,
-      side:OrderSide.BUY,
+      side: OrderSide.BUY,
       order_type: OrderType.MARKET,
-      reduce_only: true
+      reduce_only: true,
     },
-    { watchOrderbook: true }
+    { watchOrderbook: true },
   );
-  
+
   useEffect(() => {
     switch (selectedItem) {
       case 'Pending':
@@ -129,7 +132,7 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
         <span className='text-secondary weight-500'>Price</span>
         <span className='text-secondary weight-500'>Action</span>
       </div>
-      <div className='orders'>     
+      <div className='orders'>
         {orders && orders.length > 0 ? (
           orders.map((order) => (
             <div key={order?.order_id} className='order'>
@@ -140,20 +143,23 @@ export const Footer: React.FC<{ token: string; selectedTab: string }> = ({
               <span>{order?.type}</span>
               <span>{order?.status}</span>
               <span>{order?.average_executed_price}</span>
-              <span>  <Button
-          onClick={async () => {
-            await onSubmit({
-              order_type: OrderType.MARKET,
-              symbol:order?.side ==='BUY'?"SELL":"BUY" ,
-              reduce_only: true,
-              side:OrderSide.BUY,
-              order_quantity: order?.quantity  
-            });
-            refresh();
-          }}
-        >
-          Cancel
-        </Button></span>
+              <span>
+                {' '}
+                <Button
+                  onClick={async () => {
+                    await onSubmit({
+                      order_type: OrderType.MARKET,
+                      symbol: order?.side === 'BUY' ? 'SELL' : 'BUY',
+                      reduce_only: true,
+                      side: OrderSide.BUY,
+                      order_quantity: order?.quantity,
+                    });
+                    refresh();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </span>
             </div>
           ))
         ) : (
