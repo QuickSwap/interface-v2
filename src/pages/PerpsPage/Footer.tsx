@@ -12,8 +12,7 @@ import { PortfolioStatus } from './PortfolioStatus';
 import { Check } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import dayjs from 'dayjs';
-import { CustomTable } from 'components';
-import { GlobalConst } from 'constants/index';
+import { ClosePositionButton } from './ClosePositionButton';
 
 type Order = {
   symbol: string;
@@ -34,9 +33,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
   const [showAllInstrument, setShowAllInstrument] = useState(false);
-  const [{ rows }, _, { refresh }] = usePositionStream(
-    showAllInstrument ? undefined : token,
-  );
+  const [{ rows }] = usePositionStream(showAllInstrument ? undefined : token);
 
   const footerTabs = [
     {
@@ -186,23 +183,15 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       id: 'action',
       label: '',
       html: (item: API.PositionExt, ind: number) => (
-        <Button
-          className='orderTableActionButton'
-          onClick={() => {
-            onSubmit({
-              order_quantity: Number(positionQtyInputs[ind]),
-              order_type: positionPriceInputs[ind]
-                ? OrderType.LIMIT
-                : OrderType.MARKET,
-              order_price: positionPriceInputs[ind] ?? undefined,
-              reduce_only: true,
-              side: item.position_qty < 0 ? OrderSide.BUY : OrderSide.SELL,
-              symbol: item.symbol,
-            });
-          }}
-        >
-          Close
-        </Button>
+        <ClosePositionButton
+          position={item}
+          quantity={Number(positionQtyInputs[ind])}
+          price={
+            positionPriceInputs[ind] === ''
+              ? undefined
+              : Number(positionPriceInputs[ind])
+          }
+        />
       ),
     },
   ];
