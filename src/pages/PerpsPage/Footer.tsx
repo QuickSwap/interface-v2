@@ -123,7 +123,9 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     {
       id: 'instrument',
       label: 'Instrument',
-      html: (item: API.PositionExt) => <small>{item.symbol}</small>,
+      html: (item: API.PositionExt) => (
+        <small>{item.symbol.replace('PERP_', '')}</small>
+      ),
     },
     {
       id: 'quantity',
@@ -245,7 +247,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     {
       id: 'instrument',
       label: 'Instrument',
-      html: (item: Order) => <small>{item.symbol}</small>,
+      html: (item: Order) => <small>{item.symbol.replace('PERP_', '')}</small>,
     },
     {
       id: 'type',
@@ -431,67 +433,73 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
           </Box>
         )
       ) : (
-        <table className='perpsFooterTable'>
-          <thead>
-            <tr>
-              {(selectedItem === 'Portfolio'
-                ? portfolioHeadCells
-                : orderHeadCells
-              ).map((item) => (
-                <th key={item.id} align='left' className='border-bottom'>
-                  <Box p='6px' height='40px' className='flex items-center'>
-                    <small className='text-secondary weight-500'>
-                      {item.label}
-                    </small>
-                  </Box>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {selectedItem === 'Portfolio' ? (
-              rows && rows.length > 0 ? (
-                rows.map((row, ind) => (
-                  <tr key={ind}>
-                    {portfolioHeadCells.map((cell) => (
+        <div className='perpsFooterTable'>
+          <table>
+            <thead>
+              <tr>
+                {(selectedItem === 'Portfolio'
+                  ? portfolioHeadCells
+                  : orderHeadCells
+                ).map((item) => (
+                  <th key={item.id} align='left' className='border-bottom'>
+                    <Box p='6px' height='40px' className='flex items-center'>
+                      <small className='text-secondary weight-500'>
+                        {item.label}
+                      </small>
+                    </Box>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {selectedItem === 'Portfolio' ? (
+                rows && rows.length > 0 ? (
+                  rows.map((row, ind) => (
+                    <tr key={ind}>
+                      {portfolioHeadCells.map((cell) => (
+                        <td key={cell.id}>
+                          <Box p='6px'>{cell.html(row, ind)}</Box>
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={portfolioHeadCells.length}>
+                      <Box className='flex items-center justify-center' py={2}>
+                        <p>No Positions</p>
+                      </Box>
+                    </td>
+                  </tr>
+                )
+              ) : filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
+                  <tr key={order.order_id}>
+                    {orderHeadCells.map((cell) => (
                       <td key={cell.id}>
-                        <Box p='6px'>{cell.html(row, ind)}</Box>
+                        <Box
+                          p='6px'
+                          height='40px'
+                          className='flex items-center'
+                        >
+                          {cell.html(order)}
+                        </Box>
                       </td>
                     ))}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={portfolioHeadCells.length}>
+                  <td colSpan={orderHeadCells.length}>
                     <Box className='flex items-center justify-center' py={2}>
-                      <p>No Positions</p>
+                      <p>No Orders</p>
                     </Box>
                   </td>
                 </tr>
-              )
-            ) : filteredOrders.length > 0 ? (
-              filteredOrders.map((order) => (
-                <tr key={order.order_id}>
-                  {orderHeadCells.map((cell) => (
-                    <td key={cell.id}>
-                      <Box p='6px' height='40px' className='flex items-center'>
-                        {cell.html(order)}
-                      </Box>
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={orderHeadCells.length}>
-                  <Box className='flex items-center justify-center' py={2}>
-                    <p>No Orders</p>
-                  </Box>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

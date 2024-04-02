@@ -58,11 +58,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
         gridGap={12}
       >
         <Box className='perpsTokenSelect' onClick={handleClick} gridGap={8}>
-          <p>
-            {token
-              ? token.symbol.split('_')[1] + '_' + token.symbol.split('_')[0]
-              : 'Tokens'}
-          </p>
+          <p>{token ? token.symbol.replace('PERP_', '') : 'Tokens'}</p>
           {open ? (
             <KeyboardArrowUp className='text-secondary' />
           ) : (
@@ -78,8 +74,8 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
             horizontal: 'left',
           }}
         >
-          <Box padding={2}>
-            <Box className='flex items-center' gridGap={16}>
+          <Box className='flex flex-col' maxHeight='calc(100% - 32px)'>
+            <Box padding={2} className='flex items-center' gridGap={16}>
               <SearchInput
                 placeholder='Search'
                 value={search}
@@ -90,65 +86,63 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                 onClick={handleClose}
               />
             </Box>
-            <table className='perpsTokenSearchTable'>
-              <thead>
-                <tr>
-                  <th align='left'>
-                    <span className='text-secondary'>Instrument</span>
-                  </th>
-                  <th align='right'>
-                    <span className='text-secondary'>Last</span>
-                  </th>
-                  <th align='right'>
-                    <span className='text-secondary'>24h%</span>
-                  </th>
-                  <th align='right'>
-                    <span className='text-secondary'>Volume</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.length > 0 ? (
-                  filteredData.map((item: any, index) => (
-                    <tr key={index} onClick={() => handleTokenSelect(item)}>
-                      <td align='left'>
-                        <small>
-                          {item.symbol.split('_')[1] +
-                            '_' +
-                            item.symbol.split('_')[0]}
-                        </small>
-                      </td>
-                      <td align='right'>
-                        <small>{item?.index_price}</small>
-                      </td>
-                      <td align='right'>
-                        <small
-                          className={
-                            Number(item?.change) < 0
-                              ? 'text-error'
-                              : 'text-success'
-                          }
-                        >
-                          {formatNumber(item?.change)}
-                        </small>
-                      </td>
-                      <td align='right'>
-                        <small>{item?.['24h_volume']}</small>
+            <div className='perpsTokenSearchTable'>
+              <table>
+                <thead>
+                  <tr>
+                    <th align='left'>
+                      <span className='text-secondary'>Instrument</span>
+                    </th>
+                    <th align='right'>
+                      <span className='text-secondary'>Last</span>
+                    </th>
+                    <th align='right'>
+                      <span className='text-secondary'>24h%</span>
+                    </th>
+                    <th align='right'>
+                      <span className='text-secondary'>Volume</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((item: any, index) => (
+                      <tr key={index} onClick={() => handleTokenSelect(item)}>
+                        <td align='left'>
+                          <small>{item.symbol.replace('PERP_', '')}</small>
+                        </td>
+                        <td align='right'>
+                          <small>{item?.index_price}</small>
+                        </td>
+                        <td align='right'>
+                          <small
+                            className={
+                              Number(item?.change) < 0
+                                ? 'text-error'
+                                : 'text-success'
+                            }
+                          >
+                            {formatNumber(Number(item?.change ?? 0) * 100)}%
+                          </small>
+                        </td>
+                        <td align='right'>
+                          <small>{item?.['24h_volume']}</small>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+                      >
+                        <small>No data available</small>
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      style={{ textAlign: 'center', verticalAlign: 'middle' }}
-                    >
-                      <small>No data available</small>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </Box>
         </Popover>
 

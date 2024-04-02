@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { useOrderEntry } from '@orderly.network/hooks';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, Popover } from '@material-ui/core';
 import { API, OrderSide, OrderType } from '@orderly.network/types';
 import { useQuery } from '@tanstack/react-query';
 import { CustomTooltip } from 'components';
+import { Close } from '@material-ui/icons';
+import { formatNumber } from 'utils';
 
 export const ClosePositionButton: React.FC<{
   position: API.PositionExt;
@@ -36,6 +38,19 @@ export const ClosePositionButton: React.FC<{
     return;
   }, [orderValidation]);
 
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null,
+  );
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+
+  const token = position.symbol.split('_')?.[2];
+
   return disabledContent ? (
     <CustomTooltip
       title={
@@ -48,13 +63,103 @@ export const ClosePositionButton: React.FC<{
       </Box>
     </CustomTooltip>
   ) : (
-    <Button
-      className='orderTableActionButton'
-      onClick={() => {
-        onSubmit(order);
-      }}
-    >
-      Close
-    </Button>
+    <>
+      <Button className='orderTableActionButton' onClick={handleClick}>
+        Close
+      </Button>
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Box padding={2} maxWidth={360}>
+          <Box
+            className='flex items-center justify-between border-bottom'
+            pb={1}
+          >
+            <h6>Market Close</h6>
+            <Close
+              className='cursor-pointer text-secondary'
+              onClick={handleClose}
+            />
+          </Box>
+          <Box pt={2}>
+            <p className='font-bold'>
+              You agree closing {formatNumber(quantity)}{' '}
+              {position.symbol?.split('_')?.[1]} at {price ? 'limit' : 'market'}{' '}
+              price
+            </p>
+            {price && (
+              <Box className='border-top' mt={2} py={2} gridGap={12}>
+                <p>{position.symbol.replace('PERP_', '')}</p>
+                <Box className='flex' mt='12px' gridGap={32}>
+                  <Box className='flex flex-col' gridGap={8}>
+                    <p
+                      className={
+                        order.side === OrderSide.SELL
+                          ? 'text-error'
+                          : 'text-success'
+                      }
+                    >
+                      {order.order_type} {order.side}
+                    </p>
+                  </Box>
+                  <Box flex={1} className='flex flex-col' gridGap={8}>
+                    <Box className='flex justify-between'>
+                      <p>Qty.</p>
+                      <p
+                        className={
+                          order.side === OrderSide.SELL
+                            ? 'text-error'
+                            : 'text-success'
+                        }
+                      >
+                        {formatNumber(order.order_quantity)}
+                      </p>
+                    </Box>
+                    <Box className='flex justify-between'>
+                      <p>Price</p>
+                      <p>
+                        {formatNumber(order.order_price)} {token}
+                      </p>
+                    </Box>
+                    <Box className='flex justify-between'>
+                      <p>Total</p>
+                      <p>
+                        {formatNumber(
+                          (order.order_price ?? 0) * order.order_quantity,
+                        )}{' '}
+                        {token}
+                      </p>
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+            )}
+            <Box mt={2} className='flex' gridGap={12}>
+              <Button
+                className='orderConfirmButton'
+                onClick={() => {
+                  onSubmit(order);
+                }}
+              >
+                Confirm
+              </Button>
+              <Button
+                className='orderConfirmCancelButton'
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Popover>
+    </>
   );
 };

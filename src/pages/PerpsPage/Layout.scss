@@ -11,14 +11,20 @@
 }
 
 .perpsTokenSearchTable {
-  margin-top: 20px;
+  padding: 0 16px;
   width: 100%;
-  & th,
-  & td {
-    padding: 4px 6px;
-  }
-  & tbody tr {
-    cursor: pointer;
+  flex: 1;
+  max-height: 500px;
+  overflow: auto;
+  margin-bottom: 20px;
+  & table {
+    & th,
+    & td {
+      padding: 6px 8px;
+    }
+    & tbody tr {
+      cursor: pointer;
+    }
   }
 }
 
@@ -253,6 +259,14 @@
 
 .perpsFooterTable {
   width: 100%;
+  overflow: auto;
+  & table {
+    min-width: 100%;
+    & th small,
+    & td small {
+      white-space: nowrap;
+    }
+  }
 }
 
 .orderTableActionButton {

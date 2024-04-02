@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { KeyboardArrowDown } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import { useChains, useCollateral, useDeposit } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
@@ -52,7 +51,7 @@ export const LeverageManage: React.FC = () => {
               setModalOpen(true);
             }}
           >
-            Manage
+            Deposit
           </Button>
         </Box>
       </Box>
