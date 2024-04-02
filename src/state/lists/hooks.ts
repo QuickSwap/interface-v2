@@ -4,7 +4,10 @@ import { GlobalConst } from 'constants/index';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-const { DEFAULT_TOKEN_LIST_URL } = GlobalConst.utils;
+const {
+  DEFAULT_TOKEN_LIST_URL,
+  COINGECKO_POLYGON_TOKEN_LIST_URL,
+} = GlobalConst.utils;
 
 type TagDetails = Tags[keyof Tags];
 export interface TagInfo extends TagDetails {
@@ -130,9 +133,17 @@ export function useSelectedListUrl(): string | undefined {
 }
 
 export function useSelectedTokenList(): TokenAddressMap {
-  // return useTokenList(useSelectedListUrl());
-  //TODO: Add support for selected list when @latest doesn't store the redirected url
-  return useTokenList(DEFAULT_TOKEN_LIST_URL);
+  const defaultTokenList = useTokenList(DEFAULT_TOKEN_LIST_URL);
+  const polygonTokenList = useTokenList(COINGECKO_POLYGON_TOKEN_LIST_URL);
+
+  // Merge the token lists
+  const combinedTokenList = useMemo(() => {
+    const combined = { ...defaultTokenList };
+    combined[ChainId.MATIC] = polygonTokenList[ChainId.MATIC];
+    return combined;
+  }, [defaultTokenList, polygonTokenList]);
+
+  return combinedTokenList;
 }
 
 export function useSelectedListInfo(): {
