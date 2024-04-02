@@ -87,5 +87,6 @@
   },
   "defiedge": {
     "available": false
-  }
+  },
+  "maxChunks": 20
 }

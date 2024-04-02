@@ -13,8 +13,11 @@ import useDebounce from 'hooks/useDebounce';
 import { useBlockNumber } from 'state/application/hooks';
 import { retry, RetryableError } from 'utils/retry';
 import { useMulticall2Contract } from 'hooks/useContract';
+import { getConfig } from 'config/index';
 
 const DEFAULT_CALL_GAS_REQUIRED = 10_000_000;
+
+const CHUNK_SIZE = 100;
 
 /**
  * Fetches a chunk of calls, enforcing a minimum block number constraint
@@ -26,51 +29,61 @@ async function fetchChunk(
   multicall: any,
   chunk: Call[],
   blockNumber: number,
+  chainId?: number
 ): Promise<{ success: boolean; returnData: string }[]> {
+  const config = getConfig(chainId);
+  const maxChunks = config['maxChunks'] ?? CHUNK_SIZE;
   console.debug('Fetching chunk', chunk, blockNumber);
+  let finalReturnData: any = [];
   try {
-    const { returnData } = await multicall.callStatic.multicall(
-      chunk.map((obj) => ({
-        target: obj.address,
-        callData: obj.callData,
-        gasLimit: obj.gasRequired ?? DEFAULT_CALL_GAS_REQUIRED,
-      })),
-      { blockTag: blockNumber },
-    );
-
-    if (process.env.NODE_ENV === 'development') {
-      returnData.forEach((r: any, i: number) => {
-        if (
-          !r.success &&
-          r.returnData.length === 2 &&
-          r.gasUsed.gte(
-            Math.floor(
-              (chunk[i].gasRequired ?? DEFAULT_CALL_GAS_REQUIRED) * 0.95,
-            ),
-          )
-        ) {
-          console.warn(
-            `A call failed due to requiring ${r.gasUsed.toString()} vs. allowed ${chunk[
-              i
-            ].gasRequired ?? DEFAULT_CALL_GAS_REQUIRED}`,
-            chunk[i],
-          );
-        }
-      });
+    for (let i = 0; i < chunk.length; i = i + maxChunks) {
+      const localChunk = chunk.slice(
+        i,
+        i + maxChunks > chunk.length ? chunk.length : i + maxChunks,
+      );
+      console.debug(localChunk.length);
+      const { returnData } = await multicall.callStatic.multicall(
+        localChunk.map((obj) => ({
+          target: obj.address,
+          callData: obj.callData,
+          gasLimit: obj.gasRequired ?? DEFAULT_CALL_GAS_REQUIRED,
+        })),
+        { blockTag: blockNumber },
+      );
+      finalReturnData = finalReturnData.concat(returnData);
+      if (process.env.NODE_ENV === 'development') {
+        returnData.forEach((r: any, i: number) => {
+          if (
+            !r.success &&
+            r.returnData.length === 2 &&
+            r.gasUsed.gte(
+              Math.floor(
+                (localChunk[i].gasRequired ?? DEFAULT_CALL_GAS_REQUIRED) * 0.95,
+              ),
+            )
+          ) {
+            console.warn(
+              `A call failed due to requiring ${r.gasUsed.toString()} vs. allowed ${localChunk[
+                i
+              ].gasRequired ?? DEFAULT_CALL_GAS_REQUIRED}`,
+              localChunk[i],
+            );
+          }
+        });
+      }
     }
-
-    return returnData;
+    return finalReturnData;
   } catch (error) {
     if (
-      error.code === -32000 ||
-      error.message?.indexOf('header not found') !== -1
+      error.error.code === -32000 ||
+      error.error.message?.indexOf('header not found') !== -1
     ) {
       throw new RetryableError(
         `header not found for block number ${blockNumber}`,
       );
     } else if (
-      error.code === -32603 ||
-      error.message?.indexOf('execution ran out of gas') !== -1
+      error.error.code === -32603 ||
+      error.error.message?.indexOf('execution ran out of gas') !== -1
     ) {
       if (chunk.length > 1) {
         if (process.env.NODE_ENV === 'development') {
@@ -78,8 +91,8 @@ async function fetchChunk(
         }
         const half = Math.floor(chunk.length / 2);
         const [c0, c1] = await Promise.all([
-          fetchChunk(multicall, chunk.slice(0, half), blockNumber),
-          fetchChunk(multicall, chunk.slice(half, chunk.length), blockNumber),
+          fetchChunk(multicall, chunk.slice(0, half), blockNumber, chainId),
+          fetchChunk(multicall, chunk.slice(half, chunk.length), blockNumber, chainId),
         ]);
         return c0.concat(c1);
       }
@@ -222,7 +235,7 @@ export default function Updater(): null {
       blockNumber: latestBlockNumber,
       cancellations: chunkedCalls.map((chunk, index) => {
         const { cancel, promise } = retry(
-          () => fetchChunk(multicall2Contract, chunk, latestBlockNumber),
+          () => fetchChunk(multicall2Contract, chunk, latestBlockNumber, chainId),
           {
             n: Infinity,
             minWait: 1000,
