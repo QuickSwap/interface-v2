@@ -34,9 +34,15 @@ const NEW_LIST_STATE: ListState = {
   pendingUpdate: null,
 };
 
-const { DEFAULT_TOKEN_LIST_URL } = GlobalConst.utils;
+const {
+  DEFAULT_TOKEN_LIST_URL,
+  COINGECKO_POLYGON_TOKEN_LIST_URL,
+} = GlobalConst.utils;
 
-const DEFAULT_LIST_OF_LISTS = [DEFAULT_TOKEN_LIST_URL];
+const DEFAULT_LIST_OF_LISTS = [
+  DEFAULT_TOKEN_LIST_URL,
+  COINGECKO_POLYGON_TOKEN_LIST_URL,
+];
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer U> ? U[] : T[P];

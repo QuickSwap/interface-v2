@@ -247,6 +247,8 @@ export const GlobalConst = {
     // we add '' to remove the possibility of nulls
     DEFAULT_ADS_LIST_URL: process.env.REACT_APP_ADS_LIST_DEFAULT_URL + '',
     DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
+    COINGECKO_POLYGON_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_POLYGON_LIST + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
