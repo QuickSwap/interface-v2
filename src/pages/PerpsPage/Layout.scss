@@ -259,6 +259,11 @@
   height: 30px;
   background-color: transparent;
   border: 1px solid $textPrimary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  min-width: unset;
   &:hover {
     background-color: transparent;
   }

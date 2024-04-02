@@ -13,6 +13,8 @@ import { Check } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import dayjs from 'dayjs';
 import { ClosePositionButton } from './ClosePositionButton';
+import { formatDecimalInput } from 'utils/numbers';
+import { useQuery } from '@tanstack/react-query';
 
 type Order = {
   symbol: string;
@@ -79,15 +81,6 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     symbol: showAllInstrument ? undefined : token,
     status: orderStatus,
   });
-  const { onSubmit, maxQty } = useOrderEntry(
-    {
-      symbol: token,
-      side: OrderSide.BUY,
-      order_type: OrderType.MARKET,
-      reduce_only: true,
-    },
-    { watchOrderbook: true },
-  );
 
   const orders = o as Order[] | null;
 
@@ -112,6 +105,19 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows?.length]);
+
+  const { data: orderFiltersData } = useQuery({
+    queryKey: ['orderly-filters'],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.REACT_APP_ORDERLY_API_URL}/v1/public/info`,
+      );
+      const data = await res.json();
+      return data?.data?.rows ?? [];
+    },
+  });
+
+  const orderFilters: any[] = orderFiltersData ?? [];
 
   const portfolioHeadCells = [
     {
@@ -164,18 +170,57 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     {
       id: 'qtyInput',
       label: 'Qty.',
-      html: (_: API.PositionExt, ind: number) => (
-        <input className='perpsTableInput' value={positionQtyInputs[ind]} />
+      html: (pos: API.PositionExt, ind: number) => (
+        <input
+          className='perpsTableInput'
+          value={positionQtyInputs[ind] ?? ''}
+          onChange={(e) => {
+            const orderFilter = orderFilters.find(
+              (item) => item.symbol === pos.symbol,
+            );
+            const value = formatDecimalInput(
+              e.target.value,
+              orderFilter && orderFilter.base_tick > 0
+                ? Math.log10(1 / Number(orderFilter.base_tick))
+                : undefined,
+            );
+            if (value !== null) {
+              setPositionQtyInputs([
+                ...positionQtyInputs.slice(0, ind),
+                value,
+                ...positionQtyInputs.slice(ind + 1),
+              ]);
+            }
+          }}
+        />
       ),
     },
     {
       id: 'priceInput',
       label: 'Price',
-      html: (_: API.PositionExt, ind: number) => (
+      html: (pos: API.PositionExt, ind: number) => (
         <input
           className='perpsTableInput'
           placeholder='Market'
-          value={positionPriceInputs[ind]}
+          value={positionPriceInputs[ind] ?? ''}
+          onChange={(e) => {
+            const orderFilter = orderFilters.find(
+              (item) => item.symbol === pos.symbol,
+            );
+            const value = formatDecimalInput(
+              e.target.value,
+              orderFilter && orderFilter.quote_tick > 0
+                ? Math.log10(1 / Number(orderFilter.quote_tick))
+                : undefined,
+            );
+            if (value !== null) {
+              setPositionPriceInputs([
+                ...positionPriceInputs.slice(0, ind),
+                value,
+                ...positionPriceInputs.slice(ind + 1),
+              ]);
+            }
+          }}
         />
       ),
     },
@@ -185,9 +230,9 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       html: (item: API.PositionExt, ind: number) => (
         <ClosePositionButton
           position={item}
-          quantity={Number(positionQtyInputs[ind])}
+          quantity={Number(positionQtyInputs[ind] ?? '0')}
           price={
-            positionPriceInputs[ind] === ''
+            !positionPriceInputs[ind] || positionPriceInputs[ind] === ''
               ? undefined
               : Number(positionPriceInputs[ind])
           }

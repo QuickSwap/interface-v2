@@ -24,6 +24,7 @@ import { useWalletModalToggle } from 'state/application/hooks';
 import { formatNumber } from 'utils';
 import { formatDecimalInput } from 'utils/numbers';
 import OrderConfirmModal from './OrderConfirmModal';
+import { useQuery } from '@tanstack/react-query';
 
 type Inputs = {
   side: OrderSide;
@@ -75,15 +76,12 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains] = useChains('mainnet');
-  const [orderValidation, setOrderValidation] = useState<any>({});
 
   const { account, state } = useAccount();
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
   }, [chains]);
   const quoteToken = perpToken.split('_')[1] ?? 'ETH';
-  const [orderFilterLoading, setOrderFilterLoading] = useState(false);
-  const [orderFilter, setOrderFilter] = useState<any>(undefined);
 
   const deposit = useDeposit({
     address: token?.address,
@@ -116,32 +114,26 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     { watchOrderbook: true },
   );
 
-  useEffect(() => {
-    if (!process.env.REACT_APP_ORDERLY_API_URL) return;
-    (async () => {
-      try {
-        setOrderFilterLoading(true);
-        const res = await fetch(
-          `${process.env.REACT_APP_ORDERLY_API_URL}/v1/public/info/${perpToken}`,
-        );
-        const data = await res.json();
-        setOrderFilter(data.data);
-        setOrderFilterLoading(false);
-      } catch {
-        setOrderFilterLoading(false);
-      }
-    })();
-  }, [perpToken]);
+  const { isLoading: orderFilterLoading, data: orderFilter } = useQuery({
+    queryKey: ['orderly-filter', perpToken],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.REACT_APP_ORDERLY_API_URL}/v1/public/info/${perpToken}`,
+      );
+      const data = await res.json();
+      return data?.data ?? null;
+    },
+  });
 
-  useEffect(() => {
-    (async () => {
+  const { data: orderValidation } = useQuery({
+    queryKey: ['orderly-order-validation', order, reducedOnly, orderHidden],
+    queryFn: async () => {
       const validation = await helper.validator(
         getInput(order, reducedOnly, orderHidden),
       );
-      setOrderValidation(validation);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order, reducedOnly, orderHidden]);
+      return validation;
+    },
+  });
 
   useEffect(() => {
     if (!library || !quickSwapAccount) return;
@@ -177,13 +169,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
   const buttonDisabled =
     state.status === AccountStatusEnum.EnableTrading &&
     (orderFilterLoading ||
-      Object.values(orderValidation).length > 0 ||
+      (orderValidation && Object.values(orderValidation).length > 0) ||
       orderValue < 10);
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
     if (state.status === AccountStatusEnum.EnableTrading) {
-      if (Object.values(orderValidation).length > 0) {
+      if (orderValidation && Object.values(orderValidation).length > 0) {
         const validationErrors: any[] = Object.values(orderValidation);
         return validationErrors[0].message;
       } else if (orderValue < 10) {
@@ -224,7 +216,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                   setModalOpen(true);
                 }}
               >
-                {t('manage')}
+                {t('deposit')}
               </Button>
               <KeyboardArrowDown fontSize='small' className='text-secondary' />
             </Box>
@@ -350,7 +342,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               onChange={(e) => {
                 const value = formatDecimalInput(
                   e.target.value,
-                  orderFilter && orderFilter.quote_tick > 0
+                  orderFilter && orderFilter.base_tick > 0
                     ? Math.log10(1 / Number(orderFilter.base_tick))
                     : undefined,
                 );
