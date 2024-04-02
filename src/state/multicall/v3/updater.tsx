@@ -29,7 +29,7 @@ async function fetchChunk(
   multicall: any,
   chunk: Call[],
   blockNumber: number,
-  chainId?: number
+  chainId?: number,
 ): Promise<{ success: boolean; returnData: string }[]> {
   const config = getConfig(chainId);
   const maxChunks = config['maxChunks'] ?? CHUNK_SIZE;
@@ -92,7 +92,12 @@ async function fetchChunk(
         const half = Math.floor(chunk.length / 2);
         const [c0, c1] = await Promise.all([
           fetchChunk(multicall, chunk.slice(0, half), blockNumber, chainId),
-          fetchChunk(multicall, chunk.slice(half, chunk.length), blockNumber, chainId),
+          fetchChunk(
+            multicall,
+            chunk.slice(half, chunk.length),
+            blockNumber,
+            chainId,
+          ),
         ]);
         return c0.concat(c1);
       }
@@ -235,7 +240,8 @@ export default function Updater(): null {
       blockNumber: latestBlockNumber,
       cancellations: chunkedCalls.map((chunk, index) => {
         const { cancel, promise } = retry(
-          () => fetchChunk(multicall2Contract, chunk, latestBlockNumber, chainId),
+          () =>
+            fetchChunk(multicall2Contract, chunk, latestBlockNumber, chainId),
           {
             n: Infinity,
             minWait: 1000,
