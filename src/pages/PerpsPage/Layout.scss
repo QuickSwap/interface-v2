@@ -250,3 +250,30 @@
     background-color: $secondary1;
   }
 }
+
+.perpsFooterTable {
+  width: 100%;
+}
+
+.orderTableActionButton {
+  height: 30px;
+  background-color: transparent;
+  border: 1px solid $textPrimary;
+  &:hover {
+    background-color: transparent;
+  }
+  & span {
+    font-size: 14px;
+  }
+}
+
+.perpsTableInput {
+  background-color: $secondary1;
+  outline: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 14px;
+  max-width: 120px;
+}

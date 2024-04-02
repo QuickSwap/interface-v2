@@ -6,7 +6,7 @@ import {
 } from '@orderly.network/hooks';
 import { API, OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
 import { Check } from '@material-ui/icons';
@@ -103,57 +103,107 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     );
   }, [orders, selectedSide]);
 
+  const [positionQtyInputs, setPositionQtyInputs] = useState<string[]>([]);
+  const [positionPriceInputs, setPositionPriceInputs] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (rows && rows.length > 0) {
+      setPositionQtyInputs(
+        rows.map((row) => Math.abs(row.position_qty).toString()),
+      );
+      setPositionPriceInputs(rows.map(() => ''));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows?.length]);
+
   const portfolioHeadCells = [
     {
       id: 'instrument',
       label: 'Instrument',
-      sortKey: (item: API.PositionExt) => item.symbol,
+      html: (item: API.PositionExt) => <small>{item.symbol}</small>,
     },
     {
       id: 'quantity',
-      numeric: false,
       label: 'Quantity',
-      sortKey: (item: API.PositionExt) => item.position_qty,
+      html: (item: API.PositionExt) => (
+        <small>{formatNumber(item.position_qty)}</small>
+      ),
     },
     {
       id: 'avgOpen',
-      numeric: false,
       label: 'Avg.open',
-      sortKey: (item: API.PositionExt) => item.average_open_price,
+      html: (item: API.PositionExt) => (
+        <small>{formatNumber(item.average_open_price)}</small>
+      ),
     },
     {
       id: 'markPrice',
-      numeric: true,
       label: 'Mark price',
-      sortKey: (item: API.PositionExt) => item.mark_price,
+      html: (item: API.PositionExt) => (
+        <small>{formatNumber(item.mark_price)}</small>
+      ),
     },
     {
       id: 'liqPrice',
-      numeric: true,
       label: 'Liq. price',
-      sortKey: (item: API.PositionExt) => item.est_liq_price,
+      html: (item: API.PositionExt) => (
+        <small>{formatNumber(item.est_liq_price ?? 0)}</small>
+      ),
     },
     {
       id: 'unrealPNL',
-      numeric: true,
       label: 'Unreal. PnL',
-      sortKey: (item: API.PositionExt) => item.unrealized_pnl,
+      html: (item: API.PositionExt) => (
+        <small>{formatNumber(item.unrealized_pnl)}</small>
+      ),
     },
     {
       id: 'estTotal',
-      numeric: true,
       label: 'Est. total',
-      sortKey: (item: API.PositionExt) => item.mark_price * item.position_qty,
+      html: (item: API.PositionExt) => (
+        <small>{formatNumber(item.mark_price * item.position_qty)}</small>
+      ),
     },
     {
       id: 'qtyInput',
       label: 'Qty.',
-      sortDisabled: true,
+      html: (_: API.PositionExt, ind: number) => (
+        <input className='perpsTableInput' value={positionQtyInputs[ind]} />
+      ),
     },
     {
       id: 'priceInput',
       label: 'Price',
-      sortDisabled: true,
+      html: (_: API.PositionExt, ind: number) => (
+        <input
+          className='perpsTableInput'
+          placeholder='Market'
+          value={positionPriceInputs[ind]}
+        />
+      ),
+    },
+    {
+      id: 'action',
+      label: '',
+      html: (item: API.PositionExt, ind: number) => (
+        <Button
+          className='orderTableActionButton'
+          onClick={() => {
+            onSubmit({
+              order_quantity: Number(positionQtyInputs[ind]),
+              order_type: positionPriceInputs[ind]
+                ? OrderType.LIMIT
+                : OrderType.MARKET,
+              order_price: positionPriceInputs[ind] ?? undefined,
+              reduce_only: true,
+              side: item.position_qty < 0 ? OrderSide.BUY : OrderSide.SELL,
+              symbol: item.symbol,
+            });
+          }}
+        >
+          Close
+        </Button>
+      ),
     },
   ];
 
@@ -161,234 +211,98 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     {
       id: 'instrument',
       label: 'Instrument',
-      sortKey: (item: Order) => item.symbol,
+      html: (item: Order) => <small>{item.symbol}</small>,
     },
     {
       id: 'type',
       label: 'Type',
-      sortKey: (item: Order) => item.type,
+      html: (item: Order) => <small>{item.type}</small>,
     },
     {
       id: 'side',
       label: 'Side',
-      sortKey: (item: Order) => item.side,
+      html: (item: Order) => <small>{item.side}</small>,
     },
     {
       id: 'quantity',
-      numeric: true,
       label: 'Filled / Quantity',
-      sortKey: (item: Order) => item.quantity,
+      html: (item: Order) => (
+        <small>
+          {formatNumber(item.total_executed_quantity)} /
+          {formatNumber(item.quantity)}
+        </small>
+      ),
     },
     {
       id: 'price',
-      numeric: true,
       label: 'Order Price',
-      sortKey: (item: Order) => item.price,
+      html: (item: Order) => <small>{formatNumber(item.price)}</small>,
     },
     {
       id: 'avgPrice',
-      numeric: true,
       label: 'Avg. Price',
-      sortKey: (item: Order) => item.average_executed_price,
+      html: (item: Order) => (
+        <small>{formatNumber(item.average_executed_price)}</small>
+      ),
     },
     {
       id: 'fee',
-      numeric: true,
       label: 'Fee',
-      sortKey: (item: Order) => item.total_fee,
+      html: (item: Order) => <small>{formatNumber(item.total_fee)}</small>,
     },
     {
       id: 'status',
       label: 'Status',
-      sortKey: (item: Order) => item.status,
+      html: (item: Order) => <small>{item.status}</small>,
     },
     {
       id: 'reduce',
       label: 'Reduce',
-      sortKey: (item: Order) => !!item.reduce_only,
+      html: (item: Order) => <small>{item.reduce_only ? 'Yes' : 'No'}</small>,
     },
     {
       id: 'hidden',
       label: 'Hidden',
-      sortKey: (item: Order) => !item.visible_quantity,
+      html: (item: Order) => (
+        <small>{!item.visible_quantity ? 'Yes' : 'No'}</small>
+      ),
     },
     {
       id: 'orderTime',
-      numeric: true,
       label: 'Order Time',
-      sortKey: (item: Order) => item.created_time,
+      html: (item: Order) => (
+        <small>{dayjs(item.created_time).format('YYYY-MM-DD HH:mm:ss')}</small>
+      ),
     },
+    ...(orderStatus === OrderStatus.FILLED ||
+    orderStatus === OrderStatus.REJECTED ||
+    orderStatus === OrderStatus.CANCELLED
+      ? []
+      : [
+          {
+            id: 'action',
+            label: '',
+            html: (item: Order) =>
+              item.status === OrderStatus.FILLED ||
+              item.status === OrderStatus.REJECTED ||
+              item.status === OrderStatus.CANCELLED ? (
+                <></>
+              ) : (
+                <Button
+                  className='orderTableActionButton'
+                  onClick={() => {
+                    cancelOrder(item.order_id, item.symbol);
+                  }}
+                >
+                  Cancel
+                </Button>
+              ),
+          },
+        ]),
   ];
 
-  const portfolioMobileHTML = (item: API.PositionExt, index: number) => {
-    return (
-      <Box mt={index === 0 ? 0 : 3}>
-        <Box className='mobileRow'>
-          <p>Instrument</p>
-          <p>{item.symbol}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Quantity</p>
-          <p>{formatNumber(item.position_qty)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Avg.open</p>
-          <p>{formatNumber(item.average_open_price)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Mark price</p>
-          <p>{formatNumber(item.mark_price)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Liq. price</p>
-          <p>{formatNumber(item.est_liq_price ?? 0)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Unreal. PnL</p>
-          <p>{formatNumber(item.unrealized_pnl)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Est. total</p>
-          <p>{formatNumber(item.mark_price * item.position_qty)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Qty</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Price</p>
-        </Box>
-      </Box>
-    );
-  };
-
-  const portfolioDesktopHTML = (item: API.PositionExt) => {
-    return [
-      {
-        html: <small>{item.symbol}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.position_qty)}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.average_open_price)}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.mark_price)}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.est_liq_price ?? 0)}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.unrealized_pnl)}</small>,
-      },
-      {
-        html: (
-          <small>{formatNumber(item.mark_price * item.position_qty)}</small>
-        ),
-      },
-    ];
-  };
-
-  const orderMobileHTML = (item: Order, index: number) => {
-    return (
-      <Box mt={index === 0 ? 0 : 3}>
-        <Box className='mobileRow'>
-          <p>Instrument</p>
-          <p>{item.symbol}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Type</p>
-          <p>{item.type}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Side</p>
-          <p>{item.side}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Filled / Quantity</p>
-          <p>
-            {formatNumber(item.total_executed_quantity)} /
-            {formatNumber(item.quantity)}
-          </p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Order Price</p>
-          <p>{formatNumber(item.price)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Avg. Price</p>
-          <p>{formatNumber(item.average_executed_price)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Fee</p>
-          <p>{formatNumber(item.total_fee)}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Status</p>
-          <p>{item.status}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Reduce</p>
-          <p>{item.reduce_only ? 'Yes' : 'No'}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Hidden</p>
-          <p>{!item.visible_quantity ? 'Yes' : 'No'}</p>
-        </Box>
-        <Box className='mobileRow'>
-          <p>Order Time</p>
-          <p>{dayjs(item.created_time).format('YYYY-MM-DD HH:mm:ss')}</p>
-        </Box>
-      </Box>
-    );
-  };
-
-  const orderDesktopHTML = (item: Order) => {
-    return [
-      {
-        html: <small>{item.symbol}</small>,
-      },
-      {
-        html: <small>{item.type}</small>,
-      },
-      {
-        html: <small>{item.side}</small>,
-      },
-      {
-        html: (
-          <small>
-            {formatNumber(item.total_executed_quantity)} /
-            {formatNumber(item.quantity)}
-          </small>
-        ),
-      },
-      {
-        html: <small>{formatNumber(item.price)}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.average_executed_price)}</small>,
-      },
-      {
-        html: <small>{formatNumber(item.total_fee)}</small>,
-      },
-      {
-        html: <small>{item.status}</small>,
-      },
-      {
-        html: <small>{item.reduce_only ? 'Yes' : 'No'}</small>,
-      },
-      {
-        html: <small>{!item.visible_quantity ? 'Yes' : 'No'}</small>,
-      },
-      {
-        html: (
-          <small>
-            {dayjs(item.created_time).format('YYYY-MM-DD HH:mm:ss')}
-          </small>
-        ),
-      },
-    ];
-  };
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   return (
     <div>
@@ -408,7 +322,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
           className='flex items-center cursor-pointer'
           onClick={() => setShowAllInstrument(!showAllInstrument)}
           gridGap={5}
-          pr='12px'
+          p='12px'
         >
           <Box
             className={`checkbox-wrapper ${
@@ -425,11 +339,12 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       {selectedItem !== 'Portfolio' ? (
         <Box className='perpsBottomDropdown' padding='16px 12px'>
           <select
+            defaultValue='all'
             onChange={(e) => {
               setSelectedSide(e.target.value);
             }}
           >
-            <option value='all' disabled selected>
+            <option value='all' disabled>
               All
             </option>
             <option value='buy'>Buy</option>
@@ -439,19 +354,111 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       ) : (
         <PortfolioStatus token={token} />
       )}
-      <CustomTable
-        headCells={
-          selectedItem === 'Portfolio' ? portfolioHeadCells : orderHeadCells
-        }
-        rowsPerPage={GlobalConst.utils.ROWSPERPAGE}
-        data={selectedItem === 'Portfolio' ? rows ?? [] : filteredOrders}
-        mobileHTML={
-          selectedItem === 'Portfolio' ? portfolioMobileHTML : orderMobileHTML
-        }
-        desktopHTML={
-          selectedItem === 'Portfolio' ? portfolioDesktopHTML : orderDesktopHTML
-        }
-      />
+      {isMobile ? (
+        selectedItem === 'Portfolio' ? (
+          rows && rows.length > 0 ? (
+            rows.map((row, ind) => (
+              <Box key={ind} padding='12px'>
+                <Grid container spacing={1}>
+                  {portfolioHeadCells.map((item) => (
+                    <Grid item xs={6} sm={4} key={item.id}>
+                      <small className='text-secondary weight-500'>
+                        {item.label}
+                      </small>
+                      <Box mt='6px'>{item.html(row, ind)}</Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            ))
+          ) : (
+            <Box className='flex items-center justify-center' p={2}>
+              <p>No Positions</p>
+            </Box>
+          )
+        ) : filteredOrders.length > 0 ? (
+          filteredOrders.map((order) => (
+            <Box key={order.order_id} padding='12px'>
+              <Grid container spacing={1}>
+                {orderHeadCells.map((item) => (
+                  <Grid item key={item.id} xs={6} sm={4}>
+                    <small className='text-secondary weight-500'>
+                      {item.label}
+                    </small>
+                    <Box mt='6px'>{item.html(order)}</Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          ))
+        ) : (
+          <Box className='flex items-center justify-center' p={2}>
+            <p>No Positions</p>
+          </Box>
+        )
+      ) : (
+        <table className='perpsFooterTable'>
+          <thead>
+            <tr>
+              {(selectedItem === 'Portfolio'
+                ? portfolioHeadCells
+                : orderHeadCells
+              ).map((item) => (
+                <th key={item.id} align='left' className='border-bottom'>
+                  <Box p='6px' height='40px' className='flex items-center'>
+                    <small className='text-secondary weight-500'>
+                      {item.label}
+                    </small>
+                  </Box>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {selectedItem === 'Portfolio' ? (
+              rows && rows.length > 0 ? (
+                rows.map((row, ind) => (
+                  <tr key={ind}>
+                    {portfolioHeadCells.map((cell) => (
+                      <td key={cell.id}>
+                        <Box p='6px'>{cell.html(row, ind)}</Box>
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={portfolioHeadCells.length}>
+                    <Box className='flex items-center justify-center' py={2}>
+                      <p>No Positions</p>
+                    </Box>
+                  </td>
+                </tr>
+              )
+            ) : filteredOrders.length > 0 ? (
+              filteredOrders.map((order) => (
+                <tr key={order.order_id}>
+                  {orderHeadCells.map((cell) => (
+                    <td key={cell.id}>
+                      <Box p='6px' height='40px' className='flex items-center'>
+                        {cell.html(order)}
+                      </Box>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={orderHeadCells.length}>
+                  <Box className='flex items-center justify-center' py={2}>
+                    <p>No Orders</p>
+                  </Box>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
