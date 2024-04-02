@@ -1,6 +1,7 @@
 import { ChainId, Token } from '@uniswap/sdk';
 import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists';
 import { GlobalConst } from 'constants/index';
+import { useToken } from 'hooks/Tokens';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
@@ -133,17 +134,13 @@ export function useSelectedListUrl(): string | undefined {
 }
 
 export function useSelectedTokenList(): TokenAddressMap {
-  const defaultTokenList = useTokenList(DEFAULT_TOKEN_LIST_URL);
-  const polygonTokenList = useTokenList(COINGECKO_POLYGON_TOKEN_LIST_URL);
+  // return useTokenList(useSelectedListUrl());
+  //TODO: Add support for selected list when @latest doesn't store the redirected url
+  return useTokenList(DEFAULT_TOKEN_LIST_URL);
+}
 
-  // Merge the token lists
-  const combinedTokenList = useMemo(() => {
-    const combined = { ...defaultTokenList };
-    combined[ChainId.MATIC] = polygonTokenList[ChainId.MATIC];
-    return combined;
-  }, [defaultTokenList, polygonTokenList]);
-
-  return combinedTokenList;
+export function useInactiveTokenList(): TokenAddressMap {
+  return useTokenList(COINGECKO_POLYGON_TOKEN_LIST_URL);
 }
 
 export function useSelectedListInfo(): {
