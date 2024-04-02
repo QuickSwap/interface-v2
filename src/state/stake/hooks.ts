@@ -1307,7 +1307,7 @@ export function useOldLairInfo(): LairInfo | undefined {
   );
 }
 
-export function useNewLairInfo(): LairInfo | undefined {
+export function useNewLairInfo(ignore?: boolean): LairInfo | undefined {
   const lairContract = useNewLairContract();
   const quickContract = useNewQUICKContract();
   const { chainId } = useActiveWeb3React();
@@ -1322,6 +1322,7 @@ export function useNewLairInfo(): LairInfo | undefined {
     lairAddress,
     quickToken,
     dQuickToken,
+    ignore,
   );
 }
 
@@ -1331,6 +1332,7 @@ function useLairInfo(
   lairAddress: string,
   quickToken: Token,
   dQuickToken: Token,
+  ignore?: boolean,
 ) {
   const { account, chainId } = useActiveWeb3React();
   let accountArg = useMemo(() => [account ?? undefined], [account]);
@@ -1339,27 +1341,37 @@ function useLairInfo(
     lairContract,
     'totalSupply',
     [],
+    undefined,
+    ignore,
   );
 
   const quickBalance = useSingleCallResult(
     lairContract,
     'QUICKBalance',
     accountArg,
+    undefined,
+    ignore,
   );
   const dQuickBalance = useSingleCallResult(
     lairContract,
     'balanceOf',
     accountArg,
+    undefined,
+    ignore,
   );
   const dQuickToQuick = useSingleCallResult(
     lairContract,
     'dQUICKForQUICK',
     inputs,
+    undefined,
+    ignore,
   );
   const quickToDQuick = useSingleCallResult(
     lairContract,
     'QUICKForDQUICK',
     inputs,
+    undefined,
+    ignore,
   );
 
   accountArg = [lairAddress ?? undefined];
@@ -1368,6 +1380,8 @@ function useLairInfo(
     quickContract,
     'balanceOf',
     accountArg,
+    undefined,
+    ignore,
   );
 
   const getOneDayVol = async () => {
@@ -1390,7 +1404,7 @@ function useLairInfo(
   });
 
   return useMemo(() => {
-    if (!quickToken || !dQuickToQuick) {
+    if (!quickToken || !dQuickToQuick || ignore) {
       return;
     }
 

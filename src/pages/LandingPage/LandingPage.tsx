@@ -40,7 +40,6 @@ const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
 const GlobalSection = lazy(() => import('./GlobalSection'));
 const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
 const TopMovers = lazy(() => import('components/TopMovers'));
-const RewardSlider = lazy(() => import('components/RewardSlider'));
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -286,23 +285,6 @@ const LandingPage: React.FC = () => {
         <img src={Motif} alt='Motif' />
       </Box>
       <SwapSection />
-      {isFarmAvailable && (
-        <Box className='rewardsContainer'>
-          <Box maxWidth='80%' width='100%'>
-            <h1 className='h4'>{t('earnRewardsbyDeposit')}</h1>
-            <p style={{ marginTop: '20px' }}>{t('depositLPTokensRewards')}</p>
-          </Box>
-          <RewardSlider />
-          <Box
-            className='allRewardPairs'
-            onClick={() => {
-              history.push('/farm');
-            }}
-          >
-            <p>{t('seeAllPairs')}</p>
-          </Box>
-        </Box>
-      )}
       <Box margin='100px 0 120px'>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6}>
