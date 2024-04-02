@@ -29,8 +29,9 @@ const HeroSection: React.FC = () => {
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
   const v3 = config['v3'];
+  const lairAvailable = config['lair']['newLair'];
 
-  const lairInfo = useNewLairInfo(true);
+  const lairInfo = useNewLairInfo(!lairAvailable);
   const quickToken = DLQUICK[chainIdToUse];
   const {
     loading: loadingQuickPrice,

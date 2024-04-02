@@ -3,11 +3,6 @@ import { Box } from '@material-ui/core';
 import { ChevronDown, ChevronUp } from 'react-feather';
 import { Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
-import {
-  useStakingInfo,
-  getBulkPairData,
-  useDualStakingInfo,
-} from 'state/stake/hooks';
 import { DoubleCurrencyLogo } from 'components';
 import PoolPositionCardDetails from './PoolPositionCardDetails';
 import 'components/styles/PoolPositionCard.scss';

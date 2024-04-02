@@ -35,7 +35,6 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
