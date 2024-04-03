@@ -8,44 +8,44 @@ import {
 import { Provider } from 'react-redux';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
-//const DragonPage = lazy(() => import('./pages/DragonPage'));
-//const FarmPage = lazy(() => import('./pages/FarmPage'));
+const DragonPage = lazy(() => import('./pages/DragonPage'));
+const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
-//const PoolsPage = lazy(() => import('./pages/PoolsPage'));
-//const SwapPage = lazy(() => import('./pages/SwapPage'));
-//const ContestPage = lazy(() => import('./pages/ContestPage'));
-//const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
-//const BondsPage = lazy(() => import('./pages/BondsPage'));
-//const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
-//const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
-//const TOSPage = lazy(() => import('./pages/TOSPage'));
-//const AnalyticsTokenDetails = lazy(() =>
-//  import('./pages/AnalyticsTokenDetails'),
-//);
-//const AnalyticsPairDetails = lazy(() => import('./pages/AnalyticsPairDetails'));
-//const AnalyticsOverview = lazy(() =>
-//  import('./pages/AnalyticsPage/AnalyticsOverview'),
-//);
-//const AnalyticsHeader = lazy(() => import('./pages/AnalyticsPage'));
-//const AnalyticsTokens = lazy(() =>
-//  import('./pages/AnalyticsPage/AnalyticsTokens'),
-//);
-//const AnalyticsPairs = lazy(() =>
-//  import('./pages/AnalyticsPage/AnalyticsPairs'),
-//);
-//const RemoveLiquidityV3Page = lazy(() =>
-//  import('./pages/PoolsPage/v3/RemoveLiquidityPage'),
-//);
-//const IncreaseLiquidityV3Page = lazy(() =>
-//  import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
-//);
-//const MigrateV2LiquidityPage = lazy(() =>
-//  import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
-//);
-//const MigrateV2DetailsPage = lazy(() =>
-//  import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
-//);
-//const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
+const PoolsPage = lazy(() => import('./pages/PoolsPage'));
+const SwapPage = lazy(() => import('./pages/SwapPage'));
+const ContestPage = lazy(() => import('./pages/ContestPage'));
+const ConvertQUICKPage = lazy(() => import('./pages/ConvertQUICKPage'));
+const BondsPage = lazy(() => import('./pages/BondsPage'));
+const CalculatorPage = lazy(() => import('./pages/CalculatorPage'));
+const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
+const TOSPage = lazy(() => import('./pages/TOSPage'));
+const AnalyticsTokenDetails = lazy(() =>
+  import('./pages/AnalyticsTokenDetails'),
+);
+const AnalyticsPairDetails = lazy(() => import('./pages/AnalyticsPairDetails'));
+const AnalyticsOverview = lazy(() =>
+  import('./pages/AnalyticsPage/AnalyticsOverview'),
+);
+const AnalyticsHeader = lazy(() => import('./pages/AnalyticsPage'));
+const AnalyticsTokens = lazy(() =>
+  import('./pages/AnalyticsPage/AnalyticsTokens'),
+);
+const AnalyticsPairs = lazy(() =>
+  import('./pages/AnalyticsPage/AnalyticsPairs'),
+);
+const RemoveLiquidityV3Page = lazy(() =>
+  import('./pages/PoolsPage/v3/RemoveLiquidityPage'),
+);
+const IncreaseLiquidityV3Page = lazy(() =>
+  import('./pages/PoolsPage/v3/IncreaseLiquidityPage'),
+);
+const MigrateV2LiquidityPage = lazy(() =>
+  import('./pages/PoolsPage/v3/MigrateV2LiquidityPage'),
+);
+const MigrateV2DetailsPage = lazy(() =>
+  import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
+);
+const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
 import { Web3ReactManager, Popups, TermsWrapper } from 'components';
@@ -117,7 +117,6 @@ const App: React.FC = () => {
                       <LandingPage />
                     </PageLayout>
                   </Route>
-                  {/**
                   <Route exact path='/swap/:version?'>
                     <PageLayout>
                       <SwapPage />
@@ -238,13 +237,11 @@ const App: React.FC = () => {
                       <CalculatorPage />
                     </PageLayout>
                   </Route>
-                  
                   <Route path='*'>
                     <PageLayout>
                       <NotFound404Page />
                     </PageLayout>
                   </Route>
-                  */}
                 </Switch>
               </Web3ReactManager>
             </TermsWrapper>

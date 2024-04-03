@@ -8,14 +8,14 @@ import { getConfig } from 'config/index';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
-import { Limit, TWAP } from './LimitAndTWAP/LimitAndTWAP';
-import SwapCrossChain from './SwapCrossChain';
 import SwapV3Page from './V3/Swap';
 import { SlippageWrapper } from './SlippageWrapper';
+const SwapCrossChain = lazy(() => import('./SwapCrossChain'));
+const TWAPBase = lazy(() => import('./LimitAndTWAP/LimitAndTWAP'));
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -389,8 +389,10 @@ const SwapMain: React.FC = () => {
         {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
           <SwapCrossChain />
         )}
-        {showLimitOrder && Number(swapType) === SWAP_LIMIT && <Limit />}
-        {swapType === SWAP_TWAP.toString() && <TWAP />}
+        {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
+          <TWAPBase limit={true} />
+        )}
+        {swapType === SWAP_TWAP.toString() && <TWAPBase limit={false} />}
       </Box>
     </>
   );
