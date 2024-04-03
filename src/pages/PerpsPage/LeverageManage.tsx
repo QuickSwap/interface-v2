@@ -4,6 +4,7 @@ import { useChains, useCollateral, useDeposit } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { formatNumber } from 'utils';
 
 export const LeverageManage: React.FC = () => {
   const { t } = useTranslation();
@@ -28,18 +29,16 @@ export const LeverageManage: React.FC = () => {
     <>
       <Box className='flex items-center justify-between' gridGap={8}>
         <Box>
-          <p className='span text-secondary'>Total Balance</p>
+          <p className='span text-secondary'>{t('totalWalletBalance')}</p>
           <p className='span'>
-            {deposit?.balance}{' '}
+            {formatNumber(deposit?.balance)}{' '}
             <span className='text-secondary'>{token?.symbol}</span>
           </p>
-          <Box mt={2}>
-            <p className='span text-secondary'>
-              {t('available')}{' '}
-              <span className='text-primaryText'>
-                {collateral.availableBalance}
-              </span>{' '}
-              {token?.symbol}
+          <Box mt={1}>
+            <p className='span text-secondary'>{t('totalTradingBalance')} </p>
+            <p className='span'>
+              {formatNumber(collateral.availableBalance)}
+              <span className='text-secondary'> {token?.symbol}</span>
             </p>
           </Box>
         </Box>
@@ -51,7 +50,7 @@ export const LeverageManage: React.FC = () => {
               setModalOpen(true);
             }}
           >
-            Deposit
+            {t('deposit')}
           </Button>
         </Box>
       </Box>

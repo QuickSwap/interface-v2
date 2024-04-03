@@ -926,7 +926,8 @@
   "market": "Market",
   "yourWallet": "Your wallet",
   "yourFalkorAccount": "Your Falkor trading account",
-  "totalBalance": "Total Balance",
+  "totalWalletBalance": "Total Wallet Balance",
+  "totalTradingBalance": "Total Trading Balance",
   "cancel": "Cancel",
   "canceling": "Canceling"
 }

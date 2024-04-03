@@ -153,16 +153,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     }
   }, [state.status]);
 
-  const handleClick = (index: number) => {
-    const value = formatDecimalInput(
-      ((maxQty / 4) * index).toString(),
-      Math.log10(1 / Number(orderFilter.base_tick)),
-    );
-    if (value !== null) {
-      setOrder({ ...order, order_quantity: value });
-    }
-  };
-
   const orderValue =
     (order.order_type === 'LIMIT' ? Number(order.order_price) : markPrice) *
     Number(order.order_quantity);
@@ -206,11 +196,20 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
             pb={2}
           >
             <Box>
-              <p className='span text-secondary'>{t('totalBalance')}</p>
+              <p className='span text-secondary'>{t('totalWalletBalance')} </p>
               <p className='span'>
-                {deposit?.balance}{' '}
+                {formatNumber(deposit?.balance)}{' '}
                 <span className='text-secondary'>{token?.symbol}</span>
               </p>
+              <Box mt={1}>
+                <p className='span text-secondary'>
+                  {t('totalTradingBalance')}{' '}
+                </p>
+                <p className='span'>
+                  {formatNumber(collateral.availableBalance)}{' '}
+                  <span className='text-secondary'>{token?.symbol}</span>
+                </p>
+              </Box>
             </Box>
             <Button
               className='leverageManageButton'
@@ -267,21 +266,6 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               {t('sell')}/{t('short')}
             </span>
           </Box>
-        </Box>
-        <Box className='flex justify-between' mt={2}>
-          <p className='span text-secondary'>
-            {t('available')}{' '}
-            <span className='text-primaryText'>
-              {formatNumber(collateral.availableBalance)}
-            </span>{' '}
-            {token?.symbol}
-          </p>
-          <p
-            className='span text-primary cursor-pointer'
-            onClick={() => quickSwapAccount && setModalOpen(true)}
-          >
-            {t('deposit')}
-          </p>
         </Box>
         <Box className='flex' gridGap={16} mt={2}>
           <p
