@@ -5,7 +5,11 @@ import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
-import { Check } from '@material-ui/icons';
+import {
+  Check,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+} from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import dayjs from 'dayjs';
 import { ClosePositionButton } from './ClosePositionButton';
@@ -35,6 +39,9 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [{ rows }, _, { refresh }] = usePositionStream(
     showAllInstrument ? undefined : token,
   );
+  const countPerPageOptions = [5, 10, 15];
+  const [countPerPage, setCountPerPage] = useState(5);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const footerTabs = [
     {
@@ -337,6 +344,8 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
+  const tableData = selectedItem === 'Portfolio' ? rows ?? [] : filteredOrders;
+
   return (
     <div>
       <Box
@@ -390,40 +399,44 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       {isMobile ? (
         selectedItem === 'Portfolio' ? (
           rows && rows.length > 0 ? (
-            rows.map((row, ind) => (
-              <Box key={ind} padding='12px'>
-                <Grid container spacing={1}>
-                  {portfolioHeadCells.map((item) => (
-                    <Grid item xs={6} sm={4} key={item.id}>
-                      <small className='text-secondary weight-500'>
-                        {item.label}
-                      </small>
-                      <Box mt='6px'>{item.html(row, ind)}</Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            ))
+            rows
+              .slice(countPerPage * pageIndex, countPerPage * (pageIndex + 1))
+              .map((row, ind) => (
+                <Box key={ind} padding='12px'>
+                  <Grid container spacing={1}>
+                    {portfolioHeadCells.map((item) => (
+                      <Grid item xs={6} sm={4} key={item.id}>
+                        <small className='text-secondary weight-500'>
+                          {item.label}
+                        </small>
+                        <Box mt='6px'>{item.html(row, ind)}</Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              ))
           ) : (
             <Box className='flex items-center justify-center' p={2}>
               <p>No Positions</p>
             </Box>
           )
         ) : filteredOrders.length > 0 ? (
-          filteredOrders.map((order) => (
-            <Box key={order.order_id} padding='12px'>
-              <Grid container spacing={1}>
-                {orderHeadCells.map((item) => (
-                  <Grid item key={item.id} xs={6} sm={4}>
-                    <small className='text-secondary weight-500'>
-                      {item.label}
-                    </small>
-                    <Box mt='6px'>{item.html(order)}</Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          ))
+          filteredOrders
+            .slice(countPerPage * pageIndex, countPerPage * (pageIndex + 1))
+            .map((order) => (
+              <Box key={order.order_id} padding='12px'>
+                <Grid container spacing={1}>
+                  {orderHeadCells.map((item) => (
+                    <Grid item key={item.id} xs={6} sm={4}>
+                      <small className='text-secondary weight-500'>
+                        {item.label}
+                      </small>
+                      <Box mt='6px'>{item.html(order)}</Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            ))
         ) : (
           <Box className='flex items-center justify-center' p={2}>
             <p>No Positions</p>
@@ -451,15 +464,20 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
             <tbody>
               {selectedItem === 'Portfolio' ? (
                 rows && rows.length > 0 ? (
-                  rows.map((row, ind) => (
-                    <tr key={ind}>
-                      {portfolioHeadCells.map((cell) => (
-                        <td key={cell.id}>
-                          <Box p='6px'>{cell.html(row, ind)}</Box>
-                        </td>
-                      ))}
-                    </tr>
-                  ))
+                  rows
+                    .slice(
+                      countPerPage * pageIndex,
+                      countPerPage * (pageIndex + 1),
+                    )
+                    .map((row, ind) => (
+                      <tr key={ind}>
+                        {portfolioHeadCells.map((cell) => (
+                          <td key={cell.id}>
+                            <Box p='6px'>{cell.html(row, ind)}</Box>
+                          </td>
+                        ))}
+                      </tr>
+                    ))
                 ) : (
                   <tr>
                     <td colSpan={portfolioHeadCells.length}>
@@ -470,21 +488,26 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
                   </tr>
                 )
               ) : filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  <tr key={order.order_id}>
-                    {orderHeadCells.map((cell) => (
-                      <td key={cell.id}>
-                        <Box
-                          p='6px'
-                          height='40px'
-                          className='flex items-center'
-                        >
-                          {cell.html(order)}
-                        </Box>
-                      </td>
-                    ))}
-                  </tr>
-                ))
+                filteredOrders
+                  .slice(
+                    countPerPage * pageIndex,
+                    countPerPage * (pageIndex + 1),
+                  )
+                  .map((order) => (
+                    <tr key={order.order_id}>
+                      {orderHeadCells.map((cell) => (
+                        <td key={cell.id}>
+                          <Box
+                            p='6px'
+                            height='40px'
+                            className='flex items-center'
+                          >
+                            {cell.html(order)}
+                          </Box>
+                        </td>
+                      ))}
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan={orderHeadCells.length}>
@@ -497,6 +520,66 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
             </tbody>
           </table>
         </div>
+      )}
+      {tableData.length > countPerPage && (
+        <Box className='perpsFooterPagination' gridGap={8} mb={2}>
+          <Box className='perpsBottomDropdown'>
+            <select
+              defaultValue={5}
+              onChange={(e) => {
+                setCountPerPage(Number(e.target.value));
+              }}
+            >
+              {countPerPageOptions.map((option) => (
+                <option value={option} key={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </Box>
+          <Box className='perpFooterPaginationPage'>
+            <Box
+              className={pageIndex > 0 ? 'cursor-pointer' : ''}
+              onClick={() => {
+                if (pageIndex > 0) {
+                  setPageIndex(pageIndex - 1);
+                }
+              }}
+            >
+              <KeyboardArrowLeft
+                className={pageIndex > 0 ? '' : 'text-secondary'}
+              />
+            </Box>
+            <Box
+              className={
+                pageIndex <
+                Math.floor(tableData.length / countPerPage) -
+                  (tableData.length % countPerPage > 0 ? 0 : 1)
+                  ? 'cursor-pointer'
+                  : ''
+              }
+              onClick={() => {
+                if (
+                  pageIndex <
+                  Math.floor(tableData.length / countPerPage) -
+                    (tableData.length % countPerPage > 0 ? 0 : 1)
+                ) {
+                  setPageIndex(pageIndex + 1);
+                }
+              }}
+            >
+              <KeyboardArrowRight
+                className={
+                  pageIndex <
+                  Math.floor(tableData.length / countPerPage) -
+                    (tableData.length % countPerPage > 0 ? 0 : 1)
+                    ? ''
+                    : 'text-secondary'
+                }
+              />
+            </Box>
+          </Box>
+        </Box>
       )}
     </div>
   );

@@ -57,6 +57,7 @@
   padding: 2px 16px;
   cursor: pointer;
   border-radius: 8px;
+  text-align: center;
 }
 
 .dropdown select::-ms-expand {
@@ -294,4 +295,23 @@
   padding: 3px 6px;
   font-size: 14px;
   max-width: 120px;
+}
+
+.perpsFooterPagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+}
+
+.perpFooterPaginationPage {
+  display: flex;
+  align-items: center;
+  & > div {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
