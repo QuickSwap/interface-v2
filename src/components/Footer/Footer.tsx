@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
       ],
     },
     {
-      title: '',
+      title: `${' '}`,
       items: [
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('gamingHub'), link: '/' },

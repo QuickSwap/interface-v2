@@ -24,7 +24,6 @@ import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
-import { HypeLabAds } from 'components';
 import NewsletterSignupForm from './NewsletterSignupForm';
 import Features1 from '../../assets/images/landingPage/features1.svg';
 import Features2 from '../../assets/images/landingPage/features2.svg';
@@ -34,10 +33,18 @@ import Earn1 from '../../assets/images/landingPage/earn1.svg';
 import Earn2 from '../../assets/images/landingPage/earn2.svg';
 import Earn3 from '../../assets/images/landingPage/earn3.svg';
 import GoAhead from '../../assets/images/landingPage/GoAhead.svg';
-
-import PolygonChain from '../../assets/images/Currency/Polygon.svg';
+import { HypeLabAds } from 'components';
 import { useIsSupportedNetwork } from 'utils';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+
+import Polygon from '../../assets/images/landingPage/chains/aMATIC.svg';
+import PolygonZK from '../../assets/images/landingPage/chains/PolygonZK.png';
+import MantaPacific from '../../assets/images/landingPage/chains/MantaPacific.png';
+import ImmutableZK from '../../assets/images/landingPage/chains/Immutable.png';
+import AstarZK from '../../assets/images/landingPage/chains/Astar.png';
+import X1Network from '../../assets/images/landingPage/chains/x1.png';
+import DogeChain from '../../assets/images/landingPage/chains/dogechain.png';
+import Kava from '../../assets/images/landingPage/chains/KAVA.svg';
 
 const GlobalSection = lazy(() => import('./GlobalSection'));
 // const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
@@ -53,35 +60,35 @@ const LandingPage: React.FC = () => {
 
   const availableChains = [
     {
-      icon: PolygonChain,
+      icon: Polygon,
       name: 'Polygon',
     },
     {
-      icon: PolygonChain,
+      icon: PolygonZK,
       name: 'Polygon zkEVM',
     },
     {
-      icon: PolygonChain,
+      icon: MantaPacific,
       name: 'Manta Pacific',
     },
     {
-      icon: PolygonChain,
+      icon: ImmutableZK,
       name: 'Immutable zkEVM',
     },
     {
-      icon: PolygonChain,
+      icon: AstarZK,
       name: 'Astar zkEVM',
     },
     {
-      icon: PolygonChain,
+      icon: X1Network,
       name: 'X1 Network',
     },
     {
-      icon: PolygonChain,
+      icon: DogeChain,
       name: 'DogeChain',
     },
     {
-      icon: PolygonChain,
+      icon: Kava,
       name: 'Kava - Kinetix',
     },
   ];
@@ -247,7 +254,7 @@ const LandingPage: React.FC = () => {
       <Box className='chainsContainer'>
         <span className='font-14'>{t('AvailableOn')}</span>
         {/*  */}
-        <Box className='chainsItems'>
+        {/* <Box className='chainsItems'>
           {supportedChains.map((chain) => {
             const config = getConfig(chain);
             return (
@@ -262,22 +269,17 @@ const LandingPage: React.FC = () => {
               </Box>
             );
           })}
-        </Box>
+        </Box> */}
         {/*  */}
-        {/* <Box className='chainsItems'>
+        <Box className='chainsItems'>
           {availableChains.map((val, index) => (
             <Box key={index} className='chainsAddress'>
-              <img
-                className='networkIcon'
-                src={val.icon}
-                alt={val.name}
-                height={2}
-              />
-              <p>{val.name}</p>
-              <p className='chainDivider'></p>
+              <img className='networkIcon' src={val.icon} alt={val.name} />
+              <p className='font-14'>{val.name}</p>
+              <p className='networkDivider'></p>
             </Box>
           ))}
-        </Box> */}
+        </Box>
         {/*  */}
       </Box>
 

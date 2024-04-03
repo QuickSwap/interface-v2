@@ -46,7 +46,6 @@
 
 .chainsContainer {
   margin-top: 154px;
-  padding-left: 3rem;
   width: 90%;
   display: flex;
   align-items: center;
@@ -78,6 +77,7 @@
       .networkDivider {
         border-left: 1px dotted rgb(81, 76, 76);
         height: 16px;
+        // margin-left: 10px;
       }
     }
   }
@@ -85,7 +85,6 @@
 
 .sectionContainer {
   margin-top: 112px;
-  padding: 0 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -164,12 +163,6 @@
         width: 32px;
         height: 32px;
       }
-
-      // &>div {
-      //   display: flex;
-      //   flex-direction: column;
-      //   gap: 1rem;
-      // }
 
       div>& h5 {
         margin-top: 20px;
@@ -381,9 +374,7 @@
   display: flex;
   justify-content: space-between;
   color: white;
-  padding-top: 2rem;
-  padding-right: 3rem;
-  padding-left: 3rem;
-  padding-bottom: 0.5rem;
+  padding-top: 18px;
+  padding-bottom: 27px;
   font-size: 0.8rem;
 }
