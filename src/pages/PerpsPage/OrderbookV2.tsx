@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { OrderBook } from '@orderly.network/react';
 import { useOrderbookStream, useSymbolsInfo } from '@orderly.network/hooks';
 import '@orderly.network/react/dist/styles.css';
 import { Box } from '@material-ui/core';
 
-export const OrderbookV2: React.FC<{
+const OrderbookV2: React.FC<{
   token: any;
-  setOrderQuantity: (item: number[]) => void;
-}> = ({ token, setOrderQuantity }) => {
-  const [symbol, setSymbol] = useState('PERP_ETH_USDC');
+  setOrderItem: (item: number[]) => void;
+}> = ({ token, setOrderItem }) => {
   const config = useSymbolsInfo();
   const symbolInfo = config[token];
 
@@ -20,7 +19,7 @@ export const OrderbookV2: React.FC<{
   });
 
   const handleItemClick = (item: number[]) => {
-    setOrderQuantity(item);
+    setOrderItem(item);
   };
 
   return (
@@ -43,3 +42,5 @@ export const OrderbookV2: React.FC<{
     </Box>
   );
 };
+
+export default React.memo(OrderbookV2);

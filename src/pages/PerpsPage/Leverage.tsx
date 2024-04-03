@@ -50,9 +50,9 @@ function getInput(
   };
 }
 
-export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
+export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   perpToken,
-  orderQuantity,
+  orderItem,
 }) => {
   const { t } = useTranslation();
   const [data] = usePositionStream(perpToken);
@@ -101,6 +101,20 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     side: OrderSide.BUY,
     order_symbol: perpToken,
   });
+
+  const selectedOrderPrice = orderItem[0];
+  const selectedOrderQuantity = orderItem[1];
+  useEffect(() => {
+    const orderToSelect = order;
+    if (selectedOrderPrice) {
+      orderToSelect.order_price = selectedOrderPrice.toString();
+    }
+    if (selectedOrderQuantity) {
+      orderToSelect.order_quantity = selectedOrderQuantity.toString();
+    }
+    setOrder(orderToSelect);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOrderPrice, selectedOrderQuantity]);
 
   const { onSubmit, helper, maxQty, markPrice } = useOrderEntry(
     {
