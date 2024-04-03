@@ -32,10 +32,7 @@ export const Layout = () => {
   }, [isMobile]);
 
   useEffect(() => {
-    if (!tabs.find((tab) => tab.id === selectedTab)) {
-      setSelectedTab(tabs[0].id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setSelectedTab(isMobile ? 'chart' : 'orderbook');
   }, [isMobile]);
 
   return (

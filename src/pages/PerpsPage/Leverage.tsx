@@ -18,7 +18,7 @@ import {
 } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { ToggleSwitch } from 'components';
+import { ColoredSlider, ToggleSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { formatNumber } from 'utils';
@@ -90,6 +90,7 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     srcChainId: Number(chainId),
   });
 
+  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const collateral = useCollateral();
@@ -170,7 +171,8 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
     state.status === AccountStatusEnum.EnableTrading &&
     (orderFilterLoading ||
       (orderValidation && Object.values(orderValidation).length > 0) ||
-      orderValue < 10);
+      orderValue < 10 ||
+      loading);
 
   const buttonText = useMemo(() => {
     if (!quickSwapAccount) return t('connectWallet');
@@ -180,11 +182,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
         return validationErrors[0].message;
       } else if (orderValue < 10) {
         return 'The order value should be greater or equal to 10';
+      } else if (loading) {
+        return t('creatingOrder');
       }
       return t('createOrder');
     }
     return t('signIn');
-  }, [orderValidation, orderValue, quickSwapAccount, state.status, t]);
+  }, [loading, orderValidation, orderValue, quickSwapAccount, state.status, t]);
 
   const toggleWalletModal = useWalletModalToggle();
 
@@ -208,18 +212,15 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
                 <span className='text-secondary'>{token?.symbol}</span>
               </p>
             </Box>
-            <Box className='flex items-center' gridGap={8}>
-              <Button
-                className='leverageManageButton'
-                disabled={!quickSwapAccount}
-                onClick={() => {
-                  setModalOpen(true);
-                }}
-              >
-                {t('deposit')}
-              </Button>
-              <KeyboardArrowDown fontSize='small' className='text-secondary' />
-            </Box>
+            <Button
+              className='leverageManageButton'
+              disabled={!quickSwapAccount}
+              onClick={() => {
+                setModalOpen(true);
+              }}
+            >
+              {t('deposit')}
+            </Button>
           </Box>
         )}
         <Box pb={2} mb={2} className='border-bottom flex flex-col' gridGap={12}>
@@ -364,18 +365,29 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               key={item}
               className={`leverageSquare
                   ${quantityPercent > item * 25 ? ' filledSquare' : ''}`}
-              onClick={() => handleClick(item)}
               left={`calc(${(item / 4) * 100}% - 8px)`}
             />
           ))}
-          {maxQty > 0 && (
-            <Box
-              className='leverageActiveWrapper'
-              width={`${Math.min(quantityPercent, 100)}%`}
-            >
-              <Box />
-            </Box>
-          )}
+          <ColoredSlider
+            min={0}
+            max={100}
+            step={1}
+            value={quantityPercent}
+            handleChange={(_, percent) => {
+              const value = formatDecimalInput(
+                ((Number(percent) / 100) * maxQty).toString(),
+                orderFilter && orderFilter.base_tick > 0
+                  ? Math.log10(1 / Number(orderFilter.base_tick))
+                  : undefined,
+              );
+              if (value !== null) {
+                setOrder({
+                  ...order,
+                  order_quantity: value,
+                });
+              }
+            }}
+          />
         </Box>
         <Box className='flex justify-between'>
           <p
@@ -510,7 +522,13 @@ export const Leverage: React.FC<{ perpToken: string; orderQuantity: any }> = ({
               if (orderConfirm) {
                 setOpenConfirmModal(true);
               } else {
-                await onSubmit(getInput(order, reducedOnly, orderHidden));
+                try {
+                  setLoading(true);
+                  await onSubmit(getInput(order, reducedOnly, orderHidden));
+                  setLoading(false);
+                } catch {
+                  setLoading(false);
+                }
               }
             } else {
               setAccountModalOpen(true);

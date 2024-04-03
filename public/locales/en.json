@@ -912,6 +912,7 @@
   "mainnet": "Mainnet",
   "testnet": "Testnet",
   "createOrder": " Create Order",
+  "creatingOrder": " Creating Order",
   "signIn": "Sign In",
   "quantity": "Quantity",
   "reduceOnly": "Reduce Only",
@@ -924,6 +925,8 @@
   "short": "Short",
   "market": "Market",
   "yourWallet": "Your wallet",
-  "yourFalkorAccount": "Your Falkor account",
-  "totalBalance": "Total Balance"
+  "yourFalkorAccount": "Your Falkor trading account",
+  "totalBalance": "Total Balance",
+  "cancel": "Cancel",
+  "canceling": "Canceling"
 }

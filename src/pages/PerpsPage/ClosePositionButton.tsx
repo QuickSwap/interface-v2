@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useOrderEntry } from '@orderly.network/hooks';
 import { Box, Button, Popover } from '@material-ui/core';
 import { API, OrderSide, OrderType } from '@orderly.network/types';
@@ -11,7 +11,8 @@ export const ClosePositionButton: React.FC<{
   position: API.PositionExt;
   quantity: number;
   price?: number;
-}> = ({ position, quantity, price }) => {
+  afterClose: () => void;
+}> = ({ position, quantity, price, afterClose }) => {
   const order = {
     order_quantity: quantity,
     order_type: price ? OrderType.LIMIT : OrderType.MARKET,
@@ -20,6 +21,7 @@ export const ClosePositionButton: React.FC<{
     symbol: position.symbol,
     order_price: price,
   };
+  const [loading, setLoading] = useState(false);
   const { onSubmit, helper } = useOrderEntry(order, { watchOrderbook: true });
 
   const { data: orderValidation } = useQuery({
@@ -144,11 +146,20 @@ export const ClosePositionButton: React.FC<{
             <Box mt={2} className='flex' gridGap={12}>
               <Button
                 className='orderConfirmButton'
-                onClick={() => {
-                  onSubmit(order);
+                disabled={loading}
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    await onSubmit(order);
+                    setLoading(false);
+                    handleClose();
+                    afterClose();
+                  } catch {
+                    setLoading(false);
+                  }
                 }}
               >
-                Confirm
+                {loading ? 'Closing Position' : 'Confirm'}
               </Button>
               <Button
                 className='orderConfirmCancelButton'

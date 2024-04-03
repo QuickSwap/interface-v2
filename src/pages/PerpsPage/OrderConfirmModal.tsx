@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
 import { OrderEntity, OrderSide } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import './Layout.scss';
+import { useTranslation } from 'react-i18next';
 
 interface OrderConfirmModalProps {
   open: boolean;
@@ -22,6 +23,8 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
   tokenSymbol,
   onSubmit,
 }) => {
+  const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
   return (
     <CustomModal
       open={open}
@@ -76,14 +79,22 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
         <Box className='flex items-center' gridGap={12}>
           <Button
             className='orderConfirmButton'
+            disabled={loading}
             onClick={async () => {
-              await onSubmit(order);
+              try {
+                setLoading(true);
+                await onSubmit(order);
+                setLoading(false);
+                onClose();
+              } catch {
+                setLoading(false);
+              }
             }}
           >
-            Confirm
+            {loading ? t('creatingOrder') : t('confirm')}
           </Button>
           <Button className='orderConfirmCancelButton' onClick={onClose}>
-            Cancel
+            {t('cancel')}
           </Button>
         </Box>
       </Box>

@@ -34,11 +34,12 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const { account: quickSwapAccount, chainId } = useActiveWeb3React();
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
-  const [chains, { findByChainId }] = useChains('mainnet');
+  const [chains] = useChains('mainnet');
   const connections = selectedWallet
     ? getConnection(selectedWallet)
     : undefined;
   const collateral = useCollateral();
+  const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const token = useMemo(() => {
     return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
@@ -232,37 +233,59 @@ const AssetModal: React.FC<AssetModalProps> = ({
         {selectedTab === 'deposit' ? (
           <Button
             className='assetModalButton'
-            disabled={depositAmount == null}
+            disabled={loading || depositAmount == null}
             onClick={async () => {
               if (depositAmount == null) return;
               if (Number(deposit.allowance) < Number(depositAmount)) {
-                await deposit.approve(depositAmount.toString());
+                try {
+                  setLoading(true);
+                  await deposit.approve(depositAmount.toString());
+                  setLoading(false);
+                } catch {
+                  setLoading(false);
+                }
               } else {
                 deposit.setQuantity(depositAmount.toString());
-                const tx = await deposit.deposit();
-                setNotifications(true);
+                try {
+                  setLoading(true);
+                  await deposit.deposit();
+                  setNotifications(true);
+                  setLoading(false);
+                } catch {
+                  setLoading(false);
+                }
               }
             }}
           >
             {Number(deposit.allowance) < Number(depositAmount)
-              ? t('approve')
+              ? loading
+                ? t('approving')
+                : t('approve')
+              : loading
+              ? t('depositing')
               : t('deposit')}
           </Button>
         ) : (
           <Button
             className='assetModalButton'
-            disabled={withdrawAmount == null}
+            disabled={loading || withdrawAmount == null}
             onClick={async () => {
               if (withdrawAmount == null) return;
-              await withdraw({
-                chainId: Number(chainId),
-                amount: withdrawAmount,
-                token: 'USDC',
-                allowCrossChainWithdraw: false,
-              });
+              try {
+                setLoading(true);
+                await withdraw({
+                  chainId: Number(chainId),
+                  amount: withdrawAmount,
+                  token: 'USDC',
+                  allowCrossChainWithdraw: false,
+                });
+                setLoading(false);
+              } catch {
+                setLoading(false);
+              }
             }}
           >
-            {t('withdraw')}
+            {loading ? t('withdrawing') : t('withdraw')}
           </Button>
         )}
       </Box>

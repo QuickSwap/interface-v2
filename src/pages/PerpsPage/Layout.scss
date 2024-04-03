@@ -174,23 +174,22 @@
       border: 2px solid $textSecondary;
     }
   }
-}
-
-.leverageActiveWrapper {
-  position: absolute;
-  left: 0;
-  height: 2px;
-  background-color: $textSecondary;
-  display: flex;
-  align-items: center;
-  & > div {
-    background-color: white;
-    border: 2px solid $textSecondary;
-    width: 11px;
-    height: 11px;
-    position: absolute;
-    left: calc(100% - 8px);
-    transform: rotate(45deg);
+  & .coloredSlider {
+    width: calc(100% + 8px);
+    margin-left: -8px;
+    margin-top: 4px;
+    & .MuiSlider-track {
+      background-color: $textSecondary;
+    }
+    & .MuiSlider-thumb {
+      background-color: white;
+      border: 2px solid $textSecondary;
+      transform: rotate(45deg);
+      border-radius: 0;
+      width: 13px;
+      height: 13px;
+      margin-top: -5px;
+    }
   }
 }
 

@@ -1,10 +1,6 @@
 import React from 'react';
 import { CustomModal } from 'components';
-import { FC, useEffect } from 'react';
-import { useActiveWeb3React } from 'hooks';
 import '../styles/AccountModal.scss';
-import { useAccount } from '@orderly.network/hooks';
-import { AccountStatusEnum } from '@orderly.network/types';
 
 interface NotifyModalProps {
   open: boolean;

@@ -82,30 +82,34 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
               width='100%'
             />
           </picture>
-          <Box my={2}>
-            <p className='caption text-secondary'>
-              <Trans
-                i18nKey='perpsBannerText'
-                components={{
-                  alink: (
-                    <a
-                      className='text-primary'
-                      href={process.env.REACT_APP_PERPS_URL}
-                      rel='noreferrer'
-                      target='_blank'
-                    />
-                  ),
-                }}
-              />
-            </p>
+          {!showPerpsV2 && (
+            <Box mt={2}>
+              <p className='caption text-secondary'>
+                <Trans
+                  i18nKey='perpsBannerText'
+                  components={{
+                    alink: (
+                      <a
+                        className='text-primary'
+                        href={process.env.REACT_APP_PERPS_URL}
+                        rel='noreferrer'
+                        target='_blank'
+                      />
+                    ),
+                  }}
+                />
+              </p>
+            </Box>
+          )}
+          <Box mt={2}>
+            <Button
+              fullWidth
+              disabled={!readTerms || !agreeTerms}
+              onClick={confirmTOS}
+            >
+              {t('confirm')}
+            </Button>
           </Box>
-          <Button
-            fullWidth
-            disabled={!readTerms || !agreeTerms}
-            onClick={confirmTOS}
-          >
-            {t('confirm')}
-          </Button>
         </div>
       </CustomModal>
     );

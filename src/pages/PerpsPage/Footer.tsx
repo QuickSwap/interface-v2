@@ -1,12 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  useOrderEntry,
-  useOrderStream,
-  usePositionStream,
-} from '@orderly.network/hooks';
+import { useOrderStream, usePositionStream } from '@orderly.network/hooks';
 import { API, OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
-import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
 import { Check } from '@material-ui/icons';
@@ -15,6 +11,7 @@ import dayjs from 'dayjs';
 import { ClosePositionButton } from './ClosePositionButton';
 import { formatDecimalInput } from 'utils/numbers';
 import { useQuery } from '@tanstack/react-query';
+import { CancelOrderButton } from './CancelOrderButton';
 
 type Order = {
   symbol: string;
@@ -35,7 +32,9 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('');
   const [showAllInstrument, setShowAllInstrument] = useState(false);
-  const [{ rows }] = usePositionStream(showAllInstrument ? undefined : token);
+  const [{ rows }, _, { refresh }] = usePositionStream(
+    showAllInstrument ? undefined : token,
+  );
 
   const footerTabs = [
     {
@@ -233,6 +232,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
         <ClosePositionButton
           position={item}
           quantity={Number(positionQtyInputs[ind] ?? '0')}
+          afterClose={() => refresh()}
           price={
             !positionPriceInputs[ind] || positionPriceInputs[ind] === ''
               ? undefined
@@ -324,14 +324,11 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
               item.status === OrderStatus.CANCELLED ? (
                 <></>
               ) : (
-                <Button
-                  className='orderTableActionButton'
-                  onClick={() => {
-                    cancelOrder(item.order_id, item.symbol);
-                  }}
-                >
-                  Cancel
-                </Button>
+                <CancelOrderButton
+                  order_id={item.order_id}
+                  symbol={item.symbol}
+                  cancelOrder={cancelOrder}
+                />
               ),
           },
         ]),
