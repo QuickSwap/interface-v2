@@ -2,7 +2,7 @@ import { Box, Button, Menu, MenuItem, Typography } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 import { ReactComponent as CrossChainIcon } from 'assets/images/crossChainIcon.svg';
-import { SettingsModal, Swap, ToggleSwitch } from 'components';
+import { SettingsModal, ToggleSwitch } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
@@ -12,8 +12,11 @@ import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
-import SwapV3Page from './V3/Swap';
 import { SlippageWrapper } from './SlippageWrapper';
+const SwapV3Page = lazy(() => import('./V3/Swap'));
+const Swap = lazy(() =>
+  import('components').then((module) => ({ default: module.Swap })),
+);
 const SwapCrossChain = lazy(() => import('./SwapCrossChain'));
 const TWAPBase = lazy(() => import('./LimitAndTWAP/LimitAndTWAP'));
 
