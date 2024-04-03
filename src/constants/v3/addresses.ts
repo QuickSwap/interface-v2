@@ -1428,13 +1428,13 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
 } = {
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
-    DAI[ChainId.MATIC],
-    USDC[ChainId.MATIC],
-    USDT[ChainId.MATIC],
-    OLD_QUICK[ChainId.MATIC],
-    NEW_QUICK[ChainId.MATIC],
+    //DAI[ChainId.MATIC],
+    //USDC[ChainId.MATIC],
+    //USDT[ChainId.MATIC],
+    //OLD_QUICK[ChainId.MATIC],
+    //NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
-    WBTC[ChainId.MATIC],
+    //WBTC[ChainId.MATIC],
     USDCE[ChainId.MATIC],
   ],
   [ChainId.DOGECHAIN]: [
@@ -1454,7 +1454,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(DAI[ChainId.MATIC]),
     toV3Token(USDC[ChainId.MATIC]),
     toV3Token(USDT[ChainId.MATIC]),
-    toV3Token(OLD_QUICK[ChainId.MATIC]),
+    //toV3Token(OLD_QUICK[ChainId.MATIC]),
     toV3Token(NEW_QUICK[ChainId.MATIC]),
     toV3Token(ETHER[ChainId.MATIC]),
     toV3Token(WBTC[ChainId.MATIC]),

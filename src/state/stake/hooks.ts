@@ -528,6 +528,7 @@ function useLairInfo(
   const { account, chainId } = useActiveWeb3React();
   let accountArg = useMemo(() => [account ?? undefined], [account]);
   const inputs = ['1000000000000000000'];
+  // use this options object
   const _dQuickTotalSupply = useSingleCallResult(
     lairContract,
     'totalSupply',

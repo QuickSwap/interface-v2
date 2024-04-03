@@ -88,5 +88,6 @@
   "defiedge": {
     "available": false
   },
-  "maxChunks": 20
+  "maxChunks": 20,
+  "blocksPerFetch": 25
 }
