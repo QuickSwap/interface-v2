@@ -35,7 +35,6 @@ import { useActiveWeb3React } from 'hooks';
 import { HypeLabAds } from 'components';
 import NewsletterSignupForm from './NewsletterSignupForm';
 
-const SwapSection = lazy(() => import('./SwapSection'));
 const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
 const GlobalSection = lazy(() => import('./GlobalSection'));
 const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
@@ -284,7 +283,6 @@ const LandingPage: React.FC = () => {
         <h1 className='h4'>{t('quickInfoTitle')}</h1>
         <img src={Motif} alt='Motif' />
       </Box>
-      <SwapSection />
       <Box margin='100px 0 120px'>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6}>

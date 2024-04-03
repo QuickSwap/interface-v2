@@ -200,7 +200,6 @@ const SwapV3Page: React.FC = () => {
 
   const handleTypeInput = useCallback(
     (value: string) => {
-      console.log('USER INPUT SAMEEP');
       onUserInput(Field.INPUT, value);
     },
     [onUserInput],

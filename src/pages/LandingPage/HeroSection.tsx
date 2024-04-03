@@ -57,10 +57,9 @@ const HeroSection: React.FC = () => {
   }, [lairInfo, quickPrice]);
 
   const loading =
-    (v2 ? loadingV2GlobalData : false) ||
-    (v3 ? loadingV3GlobalData : false) ||
-    loadingQuickPrice ||
-    lairInfo?.loading;
+    ((v2 ? loadingV2GlobalData : false) ||
+      (v3 ? loadingV3GlobalData : false)) &&
+    (loadingQuickPrice || lairInfo?.loading);
 
   return (
     <Box className='heroSection'>
