@@ -9,12 +9,15 @@ import { formatNumber } from 'utils';
 export const LeverageManage: React.FC = () => {
   const { t } = useTranslation();
 
-  const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
+  const { account: quickSwapAccount, chainId } = useActiveWeb3React();
   const [chains] = useChains('mainnet');
+  const chainData = chains.find(
+    (item) => item.network_infos.chain_id === chainId,
+  );
 
   const token = useMemo(() => {
-    return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
-  }, [chains]);
+    return chainData ? chainData.token_infos[0] : undefined;
+  }, [chainData]);
   const deposit = useDeposit({
     address: token?.address,
     decimals: token?.decimals,

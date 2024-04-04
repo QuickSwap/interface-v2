@@ -38,11 +38,12 @@ function getInput(
   data: Inputs,
   reduce_only?: boolean,
   orderHidden?: boolean,
+  otherOrderType?: OrderType,
 ): OrderEntity {
   return {
     symbol: data.order_symbol,
     side: data.side,
-    order_type: data.order_type,
+    order_type: otherOrderType ?? data.order_type,
     order_price: data.order_price,
     order_quantity: data.order_quantity,
     reduce_only,
@@ -76,11 +77,14 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
   const [chains] = useChains('mainnet');
+  const chainData = chains.find(
+    (item) => item.network_infos.chain_id === chainId,
+  );
 
   const { account, state } = useAccount();
   const token = useMemo(() => {
-    return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
-  }, [chains]);
+    return chainData ? chainData.token_infos[0] : undefined;
+  }, [chainData]);
   const quoteToken = perpToken.split('_')[1] ?? 'ETH';
 
   const deposit = useDeposit({
@@ -120,7 +124,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
     {
       symbol: perpToken,
       side: order.side,
-      order_type: order.order_type,
+      order_type: otherOrderType ?? order.order_type,
       order_price: order.order_price,
       order_quantity: order.order_quantity,
       reduce_only: reducedOnly,
@@ -141,10 +145,16 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   });
 
   const { data: orderValidation } = useQuery({
-    queryKey: ['orderly-order-validation', order, reducedOnly, orderHidden],
+    queryKey: [
+      'orderly-order-validation',
+      order,
+      reducedOnly,
+      orderHidden,
+      otherOrderType,
+    ],
     queryFn: async () => {
       const validation = await helper.validator(
-        getInput(order, reducedOnly, orderHidden),
+        getInput(order, reducedOnly, orderHidden, otherOrderType),
       );
       return validation;
     },
@@ -168,8 +178,10 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   }, [state.status]);
 
   const orderValue =
-    (order.order_type === 'LIMIT' ? Number(order.order_price) : markPrice) *
+    (orderType === OrderType.LIMIT ? Number(order.order_price) : markPrice) *
     Number(order.order_quantity);
+
+  const [totalValue, setTotalValue] = useState('');
 
   const buttonDisabled =
     state.status === AccountStatusEnum.EnableTrading &&
@@ -325,6 +337,15 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
                       ...order,
                       order_price: value,
                     });
+                    const totalVal = formatDecimalInput(
+                      (Number(value) * Number(order.order_quantity)).toString(),
+                      orderFilter && orderFilter.base_tick > 0
+                        ? Math.log10(1 / Number(orderFilter.base_tick))
+                        : undefined,
+                    );
+                    if (totalVal !== null) {
+                      setTotalValue(totalVal);
+                    }
                   }
                 }}
               />
@@ -350,6 +371,19 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
                     ...order,
                     order_quantity: value,
                   });
+                  const orderPrice =
+                    orderType === OrderType.LIMIT
+                      ? Number(order.order_price)
+                      : markPrice;
+                  const totalVal = formatDecimalInput(
+                    (Number(value) * orderPrice).toString(),
+                    orderFilter && orderFilter.base_tick > 0
+                      ? Math.log10(1 / Number(orderFilter.base_tick))
+                      : undefined,
+                  );
+                  if (totalVal !== null) {
+                    setTotalValue(totalVal);
+                  }
                 }
               }}
               disabled={state.status !== AccountStatusEnum.EnableTrading}
@@ -383,6 +417,19 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
                   ...order,
                   order_quantity: value,
                 });
+                const orderPrice =
+                  orderType === OrderType.LIMIT
+                    ? Number(order.order_price)
+                    : markPrice;
+                const totalVal = formatDecimalInput(
+                  (Number(value) * orderPrice).toString(),
+                  orderFilter && orderFilter.base_tick > 0
+                    ? Math.log10(1 / Number(orderFilter.base_tick))
+                    : undefined,
+                );
+                if (totalVal !== null) {
+                  setTotalValue(totalVal);
+                }
               }
             }}
           />
@@ -407,6 +454,19 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
                   ...order,
                   order_quantity: value,
                 });
+                const orderPrice =
+                  orderType === OrderType.LIMIT
+                    ? Number(order.order_price)
+                    : markPrice;
+                const totalVal = formatDecimalInput(
+                  (Number(value) * orderPrice).toString(),
+                  orderFilter && orderFilter.base_tick > 0
+                    ? Math.log10(1 / Number(orderFilter.base_tick))
+                    : undefined,
+                );
+                if (totalVal !== null) {
+                  setTotalValue(totalVal);
+                }
               }
             }}
           >
@@ -420,9 +480,43 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
         </Box>
         <Box className='leverageInputWrapper flex justify-between' my={2}>
           <span className='text-secondary'>{t('total')}</span>
-          <span className='text-secondary'>
-            {formatNumber(orderValue)} {token?.symbol}
-          </span>
+          <Box gridGap={5}>
+            <input
+              placeholder='0'
+              value={totalValue}
+              onChange={(e) => {
+                const value = formatDecimalInput(
+                  e.target.value,
+                  orderFilter && orderFilter.base_tick > 0
+                    ? Math.log10(1 / Number(orderFilter.base_tick))
+                    : undefined,
+                );
+                if (value !== null) {
+                  setTotalValue(value);
+                  const orderPrice =
+                    orderType === OrderType.LIMIT
+                      ? Number(order.order_price) > 0
+                        ? Number(order.order_price)
+                        : markPrice
+                      : markPrice;
+                  const orderQuantity = formatDecimalInput(
+                    (Number(value) / orderPrice).toString(),
+                    orderFilter && orderFilter.base_tick > 0
+                      ? Math.log10(1 / Number(orderFilter.base_tick))
+                      : undefined,
+                  );
+                  if (orderQuantity !== null) {
+                    setOrder({
+                      ...order,
+                      order_quantity: orderQuantity,
+                    });
+                  }
+                }
+              }}
+              disabled={state.status !== AccountStatusEnum.EnableTrading}
+            />
+            <span className='text-secondary'>{token?.symbol}</span>
+          </Box>
         </Box>
         <Box
           className='border-top flex justify-between items-center'
@@ -522,7 +616,9 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
               } else {
                 try {
                   setLoading(true);
-                  await onSubmit(getInput(order, reducedOnly, orderHidden));
+                  await onSubmit(
+                    getInput(order, reducedOnly, orderHidden, otherOrderType),
+                  );
                   setLoading(false);
                 } catch {
                   setLoading(false);
@@ -548,7 +644,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
       <OrderConfirmModal
         open={openConfirmModal}
         onClose={() => setOpenConfirmModal(false)}
-        order={getInput(order, reducedOnly, orderHidden)}
+        order={getInput(order, reducedOnly, orderHidden, otherOrderType)}
         orderValue={orderValue}
         tokenSymbol={token?.symbol}
         onSubmit={onSubmit}

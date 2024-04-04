@@ -35,6 +35,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const { selectedWallet } = useSelectedWallet();
   const getConnection = useGetConnection();
   const [chains] = useChains('mainnet');
+  const chainData = chains.find(
+    (item) => item.network_infos.chain_id === chainId,
+  );
   const connections = selectedWallet
     ? getConnection(selectedWallet)
     : undefined;
@@ -42,8 +45,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const token = useMemo(() => {
-    return Array.isArray(chains) ? chains[0].token_infos[0] : undefined;
-  }, [chains]);
+    return chainData ? chainData.token_infos[0] : undefined;
+  }, [chainData]);
   const [depositAmount, setDepositAmount] = useState<string | undefined>();
   const [withdrawAmount, setWithdrawAmount] = useState<string | undefined>();
   const deposit = useDeposit({
