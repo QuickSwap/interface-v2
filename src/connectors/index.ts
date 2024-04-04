@@ -565,9 +565,9 @@ export function getConnections(chainId?: ChainId) {
     cryptoComConnection,
     unstoppableDomainsConnection,
   ];
-  // if (chainId === ChainId.IMX) {
-  //   mobileConnections.push(passportWalletConnection);
-  //   desktopConnections.push(passportWalletConnection);
-  // }
+  if (chainId === ChainId.IMX) {
+    mobileConnections.push(passportWalletConnection);
+    desktopConnections.push(passportWalletConnection);
+  }
   return isMobile ? mobileConnections : desktopConnections;
 }

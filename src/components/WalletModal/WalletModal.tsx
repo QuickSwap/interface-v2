@@ -36,6 +36,7 @@ import { useGetConnection, useMasaAnalytics } from 'hooks';
 import { UAuthConnector } from '@uauth/web3-react';
 import UAuth from '@uauth/js';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import { config, passport } from '@imtbl/sdk';
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -104,6 +105,23 @@ const WalletModal: React.FC<WalletModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, arcxSdk]);
+
+  useEffect(() => {
+    if (process.env.REACT_APP_PASSPORT_CLIENT_ID) {
+      const connector = new passport.Passport({
+        baseConfig: {
+          environment: config.Environment.PRODUCTION,
+          publishableKey: process.env.REACT_APP_PASSPORT_PUBLISHABLE_KEY,
+        },
+        clientId: process.env.REACT_APP_PASSPORT_CLIENT_ID,
+        redirectUri: 'https://quickswap.exchange',
+        logoutRedirectUri: 'https://quickswap.exchange',
+        audience: 'platform_api',
+        scope: 'openid offline_access transact',
+      });
+      connector.loginCallback();
+    }
+  }, []);
 
   const tryActivation = async (connection: Connection) => {
     // log selected wallet

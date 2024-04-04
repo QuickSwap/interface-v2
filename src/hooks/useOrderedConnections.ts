@@ -18,6 +18,7 @@ const SELECTABLE_WALLETS = [
   ConnectionType.CRYPTOCOM,
   ConnectionType.UNSTOPPABLEDOMAINS,
   ConnectionType.BINANCEWALLET,
+  ConnectionType.PASSPORTWALLET,
 ];
 
 export default function useOrderedConnections() {
