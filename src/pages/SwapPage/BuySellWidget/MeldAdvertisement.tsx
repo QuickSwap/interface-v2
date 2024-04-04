@@ -4,6 +4,7 @@ import { BuyFiatButton } from 'components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import MeldIcon from 'assets/images/meldIcon.png';
+import MeldIconWebP from 'assets/images/meldIcon.webp';
 
 export const MeldAdvertisement: React.FC = () => {
   const { t } = useTranslation();
@@ -16,12 +17,20 @@ export const MeldAdvertisement: React.FC = () => {
         <Box className='text-white text-lg'>{t('buyOrSellCryptoFiat')}</Box>
         <Box className='flex items-center'>
           <small>{t('poweredBy')}</small>
-          <img
-            className='meldLogo'
-            src={MeldIcon}
-            alt='MELD'
-            style={{ height: 15, marginLeft: 6 }}
-          />
+          <picture>
+            <source
+              className='meldLogo'
+              srcSet={MeldIconWebP}
+              type='image/webp'
+              style={{ height: 15, marginLeft: 6 }}
+            />
+            <img
+              className='meldLogo'
+              src={MeldIcon}
+              alt='MELD'
+              style={{ height: 15, marginLeft: 6 }}
+            />
+          </picture>
         </Box>
         <Box>
           <BuyFiatButton textOnly={true} />

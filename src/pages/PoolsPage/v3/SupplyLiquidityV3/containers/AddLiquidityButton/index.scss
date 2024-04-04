@@ -11,7 +11,17 @@
     font-size: 13px;
     color: $textSecondary;
   }
-  & p, & h6{
+  & p,
+  & h6 {
     margin: 8px 0;
   }
+}
+
+.automatic-liquidity-range {
+  background-color: $grey12;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 11px;
 }

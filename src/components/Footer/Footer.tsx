@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import QUICKLogo from 'assets/images/quickLogo.png';
+import QUICKLogoWebP from 'assets/images/quickLogo.webp';
 import 'components/styles/Footer.scss';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +61,10 @@ const Footer: React.FC = () => {
       <Box className='footerContainer'>
         <Grid container spacing={4} className='socialMenuWrapper'>
           <Grid item xs={12} sm={12} md={4}>
-            <img src={QUICKLogo} alt='QUICK' height={40} />
+            <picture>
+              <source height={40} srcSet={QUICKLogoWebP} type='image/webp' />
+              <img src={QUICKLogo} alt='QUICK' height={40} />
+            </picture>
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>

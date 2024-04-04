@@ -4,6 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import 'components/styles/TermsWrapper.scss';
 import { Box, Button, Checkbox } from '@material-ui/core';
 import PerpsBanner from 'assets/images/perpsBanner.png';
+import PerpsBannerWebP from 'assets/images/perpsBanner.webp';
 
 export default function TermsWrapper({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -64,7 +65,10 @@ export default function TermsWrapper({ children }: { children: ReactNode }) {
             />
             <p>{t('disclaimerText3')}</p>
           </Box>
-          <img src={PerpsBanner} alt='perps banner' width='100%' />
+          <picture>
+            <source srcSet={PerpsBannerWebP} type='image/webp' />
+            <img src={PerpsBanner} alt='perps banner' width='100%' />
+          </picture>
           <Box my={2}>
             <p className='caption text-secondary'>
               <Trans

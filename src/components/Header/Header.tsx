@@ -15,6 +15,7 @@ import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
+import QuickLogoWebP from 'assets/images/quickLogo.webp';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 // import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
@@ -351,11 +352,15 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           confirmedTransactions={confirmed}
         />
         <Link to='/'>
-          <img
-            src={mobileWindowSize ? QuickIcon : QuickLogo}
-            alt='QuickLogo'
-            height={mobileWindowSize ? 40 : 60}
-          />
+          {mobileWindowSize && (
+            <img src={QuickIcon} alt='QuickLogo' height={40} />
+          )}
+          {!mobileWindowSize && (
+            <picture>
+              <source height={60} srcSet={QuickLogoWebP} type='image/webp' />
+              <img src={QuickLogo} alt='QuickLogo' height={60} />
+            </picture>
+          )}
         </Link>
         {!tabletWindowSize && (
           <Box className='mainMenu'>

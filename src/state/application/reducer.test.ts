@@ -12,14 +12,6 @@ import reducer, { ApplicationState } from './reducer';
 describe('application reducer', () => {
   let store: Store<ApplicationState>;
 
-  beforeEach(() => {
-    store = createStore(reducer, {
-      popupList: [],
-      blockNumber: {
-        [ChainId.MATIC]: 3,
-      },
-    });
-  });
 
   describe('addPopup', () => {
     it('adds the popup to list with a generated id', () => {

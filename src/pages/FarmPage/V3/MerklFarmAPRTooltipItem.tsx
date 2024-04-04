@@ -58,7 +58,11 @@ export const MerklFarmAPRTooltipItem: React.FC<{
           </Box>
         )}
         <Box className='farmAPRTitleWrapper bg-textSecondary'>
-          <span className='text-gray32'>{farmType.toUpperCase()}</span>
+          <span className='text-gray32'>
+            {farmType.toUpperCase().includes('QUICKSWAP')
+              ? 'QUICKSWAP'
+              : farmType.toUpperCase()}
+          </span>
         </Box>
       </Box>
       <Box mt='8px'>
