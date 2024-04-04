@@ -9,7 +9,7 @@ export const getTokenLogoURL = (address: string, tokenList?: any) => {
       if (!tokenList) {
         return 'Error';
       }
-      return tokenList[address].tokenInfo?.logoURI;
+      return tokenList[address]?.tokenInfo?.logoURI;
     }
   });
 };
