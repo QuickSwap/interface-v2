@@ -47,27 +47,28 @@
   padding: 16px;
 }
 
-.perpsBottomDropdown select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: transparent;
-  border: 1px solid #ffffff;
-  color: #ffffff;
-  padding: 2px 16px;
-  cursor: pointer;
-  border-radius: 8px;
-  text-align: center;
-  &::-ms-expand {
-    display: none;
+.perpsBottomDropdown {
+  & > div {
+    padding: 0 12px;
+    border: 1px solid white !important;
+    border-radius: 12px;
+    &::before,
+    &::after {
+      display: none;
+    }
+    & svg {
+      color: white;
+    }
+    & .MuiSelect-select {
+      &:hover {
+        border: none;
+      }
+    }
   }
-  &:focus {
-    outline: none;
-  }
-  & option {
-    background-color: $secondary;
-    color: #ffffff;
-  }
+}
+
+.perpsBottomDropdownItem {
+  padding: 4px 16px;
 }
 
 .orders {

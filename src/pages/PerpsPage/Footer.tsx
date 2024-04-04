@@ -2,7 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useOrderStream, usePositionStream } from '@orderly.network/hooks';
 import { API, OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import './Layout.scss';
-import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import {
+  Box,
+  Grid,
+  MenuItem,
+  Select,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
 import {
@@ -111,6 +118,10 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows?.length]);
+
+  useEffect(() => {
+    setPageIndex(0);
+  }, [selectedItem, selectedSide]);
 
   const { data: orderFiltersData } = useQuery({
     queryKey: ['orderly-filters'],
@@ -379,19 +390,24 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
         </Box>
       </Box>
       {selectedItem !== 'Portfolio' ? (
-        <Box className='perpsBottomDropdown' padding='16px 12px'>
-          <select
+        <Box className='perpsBottomDropdown border-bottom' padding='16px 12px'>
+          <Select
             defaultValue='all'
+            value={selectedSide}
             onChange={(e) => {
-              setSelectedSide(e.target.value);
+              setSelectedSide(e.target.value as string);
             }}
           >
-            <option value='all' disabled>
+            <MenuItem value='all' className='perpsBottomDropdownItem'>
               All
-            </option>
-            <option value='buy'>Buy</option>
-            <option value='sell'>Sell</option>
-          </select>
+            </MenuItem>
+            <MenuItem value='buy' className='perpsBottomDropdownItem'>
+              Buy
+            </MenuItem>
+            <MenuItem value='sell' className='perpsBottomDropdownItem'>
+              Sell
+            </MenuItem>
+          </Select>
         </Box>
       ) : (
         <PortfolioStatus token={token} />
@@ -521,21 +537,26 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
           </table>
         </div>
       )}
-      {tableData.length > countPerPage && (
-        <Box className='perpsFooterPagination' gridGap={8} mb={2}>
+      {tableData.length > 5 && (
+        <Box className='perpsFooterPagination' gridGap={8} my={2}>
           <Box className='perpsBottomDropdown'>
-            <select
+            <Select
               defaultValue={5}
+              value={countPerPage}
               onChange={(e) => {
                 setCountPerPage(Number(e.target.value));
               }}
             >
               {countPerPageOptions.map((option) => (
-                <option value={option} key={option}>
+                <MenuItem
+                  className='perpsBottomDropdownItem'
+                  value={option}
+                  key={option}
+                >
                   {option}
-                </option>
+                </MenuItem>
               ))}
-            </select>
+            </Select>
           </Box>
           <Box className='perpFooterPaginationPage'>
             <Box
