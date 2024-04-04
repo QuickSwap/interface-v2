@@ -58,20 +58,18 @@
   cursor: pointer;
   border-radius: 8px;
   text-align: center;
+  &::-ms-expand {
+    display: none;
+  }
+  &:focus {
+    outline: none;
+  }
+  & option {
+    background-color: $secondary;
+    color: #ffffff;
+  }
 }
 
-.dropdown select::-ms-expand {
-  display: none;
-}
-
-.dropdown select option {
-  background-color: rgba(0, 0, 0, 0.3);
-  color: #ffffff;
-}
-
-.dropdown select:focus {
-  outline: none;
-}
 .orders {
   display: flex;
   flex-direction: column;

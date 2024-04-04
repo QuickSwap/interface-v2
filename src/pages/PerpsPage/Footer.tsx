@@ -352,7 +352,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
         className='flex items-center flex-wrap justify-between border-bottom'
         gridGap={12}
       >
-        <Box flex={1}>
+        <Box flex={1} maxWidth='100%'>
           <CustomTabSwitch
             items={footerTabs}
             value={selectedItem}
