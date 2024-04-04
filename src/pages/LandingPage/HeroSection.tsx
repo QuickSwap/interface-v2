@@ -29,8 +29,9 @@ const HeroSection: React.FC = () => {
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
   const v3 = config['v3'];
+  const lairAvailable = config['lair']['newLair'];
 
-  const lairInfo = useNewLairInfo();
+  const lairInfo = useNewLairInfo(!lairAvailable);
   const quickToken = DLQUICK[chainIdToUse];
   const {
     loading: loadingQuickPrice,
@@ -56,10 +57,9 @@ const HeroSection: React.FC = () => {
   }, [lairInfo, quickPrice]);
 
   const loading =
-    (v2 ? loadingV2GlobalData : false) ||
-    (v3 ? loadingV3GlobalData : false) ||
-    loadingQuickPrice ||
-    lairInfo?.loading;
+    ((v2 ? loadingV2GlobalData : false) ||
+      (v3 ? loadingV3GlobalData : false)) &&
+    (loadingQuickPrice || lairInfo?.loading);
 
   return (
     <Box className='heroSection'>
