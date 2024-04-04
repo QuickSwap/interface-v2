@@ -40,7 +40,7 @@ export function useAllTokens(): { [address: string]: Token } {
 export function useInActiveTokens(): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React();
   const userAddedTokens = useUserAddedTokens();
-  const allInactiveTokens = useInactiveTokenList();
+  const allInactiveTokens = useInactiveTokenList(chainId);
 
   return useMemo(() => {
     if (!chainId) return {};
