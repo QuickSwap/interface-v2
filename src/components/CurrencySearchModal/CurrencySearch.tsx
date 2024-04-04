@@ -99,8 +99,14 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
         searchQuery,
       );
     }
+    const inactiveAddresses = filteredInactiveResult.map(
+      (token) => token.address,
+    );
+    const filteredDefaultTokens = filteredResult.filter(
+      (token) => !inactiveAddresses.includes(token.address),
+    );
     // return filterTokens(Object.values(allTokens), searchQuery);
-    return [...filteredResult, ...filteredInactiveResult];
+    return [...filteredDefaultTokens, ...filteredInactiveResult];
   }, [isAddressSearch, searchToken, allTokens, inactiveTokens, searchQuery]);
 
   const filteredSortedTokens: Token[] = useMemo(() => {

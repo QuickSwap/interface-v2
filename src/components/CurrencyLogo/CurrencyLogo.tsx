@@ -9,6 +9,7 @@ import { Logo } from 'components';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import 'components/styles/CurrencyLogo.scss';
 import { useActiveWeb3React } from 'hooks';
+import { useInActiveTokens } from 'hooks/Tokens';
 
 interface CurrencyLogoProps {
   currency?: Currency;
@@ -34,6 +35,8 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       : undefined,
   );
 
+  const inactiveTokenList = useInActiveTokens();
+
   const srcs: string[] = useMemo(() => {
     if (
       currency &&
@@ -47,12 +50,15 @@ const CurrencyLogo: React.FC<CurrencyLogoProps> = ({
       currency instanceof V3WrappedTokenInfo
     ) {
       return [
-        ...getTokenLogoURL(currency.address ?? currency.tokenInfo.address),
+        ...getTokenLogoURL(
+          currency.address ?? currency.tokenInfo.address,
+          inactiveTokenList,
+        ),
         ...uriLocations,
       ];
     }
     if (currency instanceof Token || currency instanceof V3Token) {
-      return getTokenLogoURL(currency.address);
+      return getTokenLogoURL(currency.address, inactiveTokenList);
     }
 
     return [];
