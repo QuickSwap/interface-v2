@@ -8,6 +8,7 @@ import {
   useDeposit,
   useOrderEntry,
   usePositionStream,
+  useMarginRatio,
 } from '@orderly.network/hooks';
 import AssetModal from '../../components/AssetModal';
 import {
@@ -82,6 +83,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   );
 
   const { account, state } = useAccount();
+  const { marginRatio, currentLeverage } = useMarginRatio();
   const token = useMemo(() => {
     return chainData ? chainData.token_infos[0] : undefined;
   }, [chainData]);
@@ -254,13 +256,13 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
             <Box>
               <p className='span text-secondary'>{t('accountLeverage')}</p>
               <p className='span'>
-                {isNaN(state.leverage) ? '0.00' : state.leverage}x{' '}
+                {formatNumber(currentLeverage)}x{' '}
                 {estLeverage ? `/ ${formatNumber(estLeverage)}x` : ''}
               </p>
             </Box>
             <Box textAlign='right'>
               <p className='span text-secondary'>{t('marginRatio')}</p>
-              <p className='span'>{formatNumber(data.totalUnrealizedROI)}%</p>
+              <p className='span'>{formatNumber(marginRatio)}%</p>
             </Box>
           </Box>
         </Box>
