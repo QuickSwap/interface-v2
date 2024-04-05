@@ -1,5 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
+  addListenerOptions,
   addMulticallListeners,
   errorFetchingMulticallResults,
   fetchingMulticallResults,
@@ -29,10 +30,21 @@ export interface MulticallState {
       };
     };
   };
+
+  listenerOptions: {
+    [chainId: number]: {
+      blocksPerFetch: number;
+    };
+  };
 }
 
 const initialState: MulticallState = {
   callResults: {},
+  listenerOptions: {
+    [137]: {
+      blocksPerFetch: 7,
+    },
+  },
 };
 
 export default createReducer(initialState, (builder) =>
@@ -47,12 +59,24 @@ export default createReducer(initialState, (builder) =>
           ? state.callListeners
           : (state.callListeners = {});
         listeners[chainId] = listeners[chainId] ?? {};
+        const localBlocksPerFetch =
+          state.listenerOptions[chainId].blocksPerFetch ?? 7;
         calls.forEach((call) => {
           const callKey = toCallKey(call);
           listeners[chainId][callKey] = listeners[chainId][callKey] ?? {};
-          listeners[chainId][callKey][blocksPerFetch] =
-            (listeners[chainId][callKey][blocksPerFetch] ?? 0) + 1;
+          listeners[chainId][callKey][localBlocksPerFetch] =
+            (listeners[chainId][callKey][localBlocksPerFetch] ?? 0) + 1;
         });
+      },
+    )
+    .addCase(
+      addListenerOptions,
+      (state, { payload: { chainId, blocksPerFetch = 4 } }) => {
+        const options: MulticallState['listenerOptions'] = state.listenerOptions
+          ? state.listenerOptions
+          : (state.listenerOptions = {});
+        options[chainId] = options[chainId] ?? {};
+        options[chainId].blocksPerFetch = blocksPerFetch;
       },
     )
     .addCase(

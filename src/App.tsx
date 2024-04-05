@@ -55,9 +55,6 @@ import ListsUpdater from 'state/lists/updater';
 import UserUpdater from 'state/user/updater';
 import MulticallUpdater from 'state/multicall/updater';
 import MultiCallV3Updater from 'state/multicall/v3/updater';
-import FarmUpdater from 'state/farms/updater';
-import DualFarmUpdater from 'state/dualfarms/updater';
-import CNTFarmUpdater from 'state/cnt/updater';
 import SyrupUpdater from 'state/syrups/updater';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -94,9 +91,6 @@ function Updaters() {
       <MulticallUpdater />
       <MultiCallV3Updater />
       <UserUpdater />
-      <FarmUpdater />
-      <CNTFarmUpdater />
-      <DualFarmUpdater />
       <SyrupUpdater />
     </>
   );

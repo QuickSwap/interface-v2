@@ -29,7 +29,11 @@ const NetworkSelectionDropdown: React.FC = () => {
 
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
-    return config && config.isMainnet === (networkType === 'mainnet');
+    return (
+      config &&
+      config.visible &&
+      config.isMainnet === (networkType === 'mainnet')
+    );
   });
   const isSupportedNetwork = useIsSupportedNetwork();
 
