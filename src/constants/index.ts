@@ -926,18 +926,6 @@ export const GammaPairs: {
         withdrawOnly: true,
       },
     ],
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
-      {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
-        address: '0x2ef46196d7d25b5111ca1fcba206b248fee32d8d',
-        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-        token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
-        ableToFarm: true,
-        pid: 57,
-        withdrawOnly: true,
-      },
-    ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x0e9b89007eee9c958c0eda24ef70723c2c93dd58': [
       {
         type: Presets.GAMMA_DYNAMIC,
@@ -1468,6 +1456,15 @@ export const GammaPairs: {
         address: '0x0566e8e9bae925894d80d9e0a4fd9a72aea1a2f2',
         token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
         token1Address: '0xdCb72AE4d5dc6Ae274461d57E65dB8D50d0a33AD',
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x785A9F42a4568914773bE52008A10C4d62e5c63a',
+        token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        token1Address: '0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7',
       },
     ],
   },
