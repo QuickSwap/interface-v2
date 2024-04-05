@@ -90,13 +90,23 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
 
   const filteredTokens: Token[] = useMemo(() => {
     if (isAddressSearch) return searchToken ? [searchToken] : [];
-    let filteredResult = filterTokens(Object.values(allTokens), searchQuery);
-    // if token is not exist in default token list, then search in inactive token list.
-    if (filteredResult.length === 0) {
-      filteredResult = filterTokens(Object.values(inactiveTokens), searchQuery);
+    const filteredResult = filterTokens(Object.values(allTokens), searchQuery);
+    let filteredInactiveResult: Token[] = [];
+    // search in inactive token list.
+    if (searchQuery) {
+      filteredInactiveResult = filterTokens(
+        Object.values(inactiveTokens),
+        searchQuery,
+      );
     }
+    const inactiveAddresses = filteredInactiveResult.map(
+      (token) => token.address,
+    );
+    const filteredDefaultTokens = filteredResult.filter(
+      (token) => !inactiveAddresses.includes(token.address),
+    );
     // return filterTokens(Object.values(allTokens), searchQuery);
-    return filteredResult;
+    return [...filteredDefaultTokens, ...filteredInactiveResult];
   }, [isAddressSearch, searchToken, allTokens, inactiveTokens, searchQuery]);
 
   const filteredSortedTokens: Token[] = useMemo(() => {
