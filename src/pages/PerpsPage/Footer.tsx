@@ -41,7 +41,7 @@ type Order = {
 };
 export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
-  const [selectedSide, setSelectedSide] = useState<string>('');
+  const [selectedSide, setSelectedSide] = useState<string>('all');
   const [showAllInstrument, setShowAllInstrument] = useState(false);
   const [{ rows }, _, { refresh }] = usePositionStream(
     showAllInstrument ? undefined : token,
@@ -100,7 +100,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const filteredOrders = useMemo(() => {
     if (!orders) return [];
     return orders.filter((order) =>
-      selectedSide === '' || selectedSide === 'all'
+      selectedSide === 'all'
         ? true
         : order.side.toLowerCase() === selectedSide.toLowerCase(),
     );

@@ -120,7 +120,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOrderPrice, selectedOrderQuantity]);
 
-  const { onSubmit, helper, maxQty, markPrice } = useOrderEntry(
+  const { onSubmit, helper, maxQty, markPrice, estLeverage } = useOrderEntry(
     {
       symbol: perpToken,
       side: order.side,
@@ -254,7 +254,8 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
             <Box>
               <p className='span text-secondary'>{t('accountLeverage')}</p>
               <p className='span'>
-                {isNaN(state.leverage) ? 0 : state.leverage}
+                {isNaN(state.leverage) ? '0.00' : state.leverage}x{' '}
+                {estLeverage ? `/ ${formatNumber(estLeverage)}x` : ''}
               </p>
             </Box>
             <Box textAlign='right'>

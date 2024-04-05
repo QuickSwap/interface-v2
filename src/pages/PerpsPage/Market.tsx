@@ -10,7 +10,14 @@ dayjs.extend(utc);
 export const Market: FC<{ token?: string }> = ({ token }) => {
   const { data, isLoading } = useMarketTradeStream(token || 'PERP_ETH_USDC');
   if (isLoading)
-    return <div className='flex justify-center items-center'>Loading...</div>;
+    return (
+      <div
+        className='flex justify-center items-center'
+        style={{ height: '100%' }}
+      >
+        Loading...
+      </div>
+    );
 
   return (
     <Box className='orderbookTradeTable'>
