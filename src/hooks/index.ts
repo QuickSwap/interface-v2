@@ -21,6 +21,7 @@ import {
   walletConnectConnection,
   unstoppableDomainsConnection,
   binanceWalletConnection,
+  passportWalletConnection,
 } from 'connectors';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
 import {
@@ -118,6 +119,8 @@ export function useGetConnection() {
           return unstoppableDomainsConnection;
         case ConnectionType.BINANCEWALLET:
           return binanceWalletConnection;
+        case ConnectionType.PASSPORTWALLET:
+          return passportWalletConnection;
         default:
           throw Error('unsupported connector');
       }

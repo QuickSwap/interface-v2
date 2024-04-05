@@ -95,10 +95,5 @@ function TWAPBase({ limit }: { limit?: boolean }) {
     </>
   );
 }
-export const TWAP = () => {
-  return <TWAPBase />;
-};
 
-export const Limit = () => {
-  return <TWAPBase limit />;
-};
+export default TWAPBase;

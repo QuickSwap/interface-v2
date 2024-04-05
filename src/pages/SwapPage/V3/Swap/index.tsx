@@ -206,6 +206,7 @@ const SwapV3Page: React.FC = () => {
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
+      console.log('USER OUTPUT SAMEEP');
       onUserInput(Field.OUTPUT, value);
     },
     [onUserInput],

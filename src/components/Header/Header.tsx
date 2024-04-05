@@ -10,7 +10,7 @@ import {
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
 import { shortenAddress } from 'utils';
-import useENSName from 'hooks/useENSName';
+//import useENSName from 'hooks/useENSName';
 import { WalletModal } from 'components';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
@@ -46,9 +46,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { account, chainId, connector } = useActiveWeb3React();
-  const { ENSName } = useENSName(account ?? undefined);
+  //const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
-  const [openDetailMenu, setOpenDetailMenu] = useState(false);
+  //const [openDetailMenu, setOpenDetailMenu] = useState(false);
   const [showNewsletter, setShowNewsletter] = useState(false);
 
   const theme = useTheme();
@@ -379,7 +379,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       )}
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
         <WalletModal
-          ENSName={ENSName ?? undefined}
+          ENSName={undefined}
           pendingTransactions={pending}
           confirmedTransactions={confirmed}
         />
