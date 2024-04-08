@@ -23,7 +23,7 @@ export const PortfolioStatus: React.FC<{ token?: string }> = ({ token }) => {
         <p className='span text-secondary'>Unreal. PnL</p>
         <p className='small'>
           {formatNumber(data?.aggregated?.unrealPnL)} (
-          {formatNumber(Number(data?.aggregated?.unrealPnL ?? 0) * 100)}%)
+          {formatNumber(Number(data?.aggregated?.unrealPnlROI ?? 0) * 100)}%)
         </p>
       </Box>
       <Box>
