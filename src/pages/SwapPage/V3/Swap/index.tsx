@@ -80,38 +80,38 @@ const SwapV3Page: React.FC = () => {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const history = useHistory();
-  const loadedUrlParams = useDefaultsFromURLSearch();
-  const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
-  const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
-  const paramInputCurrency = useCurrency(inputCurrencyId);
-  const paramOutputCurrency = useCurrency(outputCurrencyId);
+  // const loadedUrlParams = useDefaultsFromURLSearch();
+  // const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
+  // const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
+  // const paramInputCurrency = useCurrency(inputCurrencyId);
+  // const paramOutputCurrency = useCurrency(outputCurrencyId);
   // token warning stuff
-  const [loadedInputCurrency, loadedOutputCurrency] = [
-    paramInputCurrency,
-    paramOutputCurrency,
-  ];
+  // const [loadedInputCurrency, loadedOutputCurrency] = [
+  //   paramInputCurrency,
+  //   paramOutputCurrency,
+  // ];
 
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
-  const urlLoadedTokens: Token[] = useMemo(
-    () =>
-      [loadedInputCurrency, loadedOutputCurrency]?.filter(
-        (c): c is Token => c?.isToken ?? false,
-      ) ?? [],
-    [loadedInputCurrency, loadedOutputCurrency],
-  );
+  // const urlLoadedTokens: Token[] = useMemo(
+  //   () =>
+  //     [loadedInputCurrency, loadedOutputCurrency]?.filter(
+  //       (c): c is Token => c?.isToken ?? false,
+  //     ) ?? [],
+  //   [loadedInputCurrency, loadedOutputCurrency],
+  // );
   const handleConfirmTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
   }, []);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
-  const importTokensNotInDefault =
-    urlLoadedTokens &&
-    urlLoadedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
+  // const importTokensNotInDefault =
+  //   urlLoadedTokens &&
+  //   urlLoadedTokens.filter((token: Token) => {
+  //     return !Boolean(token.address in defaultTokens);
+  //   });
 
   // toggle wallet when disconnected
   const toggleWalletModal = useWalletModalToggle();
@@ -378,6 +378,27 @@ const SwapV3Page: React.FC = () => {
     allowedSlippage,
   );
 
+  const [selectedInputCurrency, selectedOutputCurrency] = [
+    useCurrency(
+      currencies[Field.INPUT]?.isNative
+        ? currencies[Field.INPUT]?.wrapped.address
+        : currencies[Field.INPUT]?.address,
+    ),
+    useCurrency(currencies[Field.OUTPUT]?.wrapped.address),
+  ];
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [selectedInputCurrency, selectedOutputCurrency]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [selectedInputCurrency, selectedOutputCurrency],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
+
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
 
   const handleSwap = useCallback(() => {
@@ -567,10 +588,13 @@ const SwapV3Page: React.FC = () => {
       ) {
         redirectWithSwitch();
       } else {
+        if (!Boolean(inputCurrency.address in defaultTokens)) {
+          setDismissTokenWarning(false);
+        }
         redirectWithCurrency(inputCurrency, true, false);
       }
     },
-    [redirectWithCurrency, currencies, redirectWithSwitch],
+    [redirectWithCurrency, currencies, redirectWithSwitch, defaultTokens],
   );
 
   const chainInfo = CHAIN_INFO[chainIdToUse];
@@ -639,10 +663,13 @@ const SwapV3Page: React.FC = () => {
       ) {
         redirectWithSwitch();
       } else {
+        if (!Boolean(outputCurrency.address in defaultTokens)) {
+          setDismissTokenWarning(false);
+        }
         redirectWithCurrency(outputCurrency, false, false);
       }
     },
-    [redirectWithCurrency, currencies, redirectWithSwitch],
+    [redirectWithCurrency, currencies, redirectWithSwitch, defaultTokens],
   );
 
   const parsedCurrency1 = useCurrency(
@@ -674,8 +701,8 @@ const SwapV3Page: React.FC = () => {
         />
       </Helmet>
       <TokenWarningModal
-        isOpen={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
-        tokens={importTokensNotInDefault}
+        isOpen={selectedTokensNotInDefault.length > 0 && !dismissTokenWarning}
+        tokens={selectedTokensNotInDefault}
         onConfirm={handleConfirmTokenWarning}
         onDismiss={handleDismissTokenWarning}
       />
