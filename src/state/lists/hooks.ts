@@ -1,10 +1,20 @@
 import { ChainId, Token } from '@uniswap/sdk';
 import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists';
 import { GlobalConst } from 'constants/index';
+import { useToken } from 'hooks/Tokens';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'state';
-const { DEFAULT_TOKEN_LIST_URL } = GlobalConst.utils;
+
+const {
+  DEFAULT_TOKEN_LIST_URL,
+  COINGECKO_POLYGON_TOKEN_LIST_URL,
+  COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL,
+  COINGECKO_MANTA_TOKEN_LIST_URL,
+  COINGECKO_IMMUTABLE_TOKEN_LIST_URL,
+  COINGECKO_DOGE_TOKEN_LIST_URL,
+  COINGECKO_KAVA_TOKEN_LIST_URL,
+} = GlobalConst.utils;
 
 type TagDetails = Tags[keyof Tags];
 export interface TagInfo extends TagDetails {
@@ -133,6 +143,33 @@ export function useSelectedTokenList(): TokenAddressMap {
   // return useTokenList(useSelectedListUrl());
   //TODO: Add support for selected list when @latest doesn't store the redirected url
   return useTokenList(DEFAULT_TOKEN_LIST_URL);
+}
+
+export function useInactiveTokenList(chainId: number): TokenAddressMap {
+  let inactiveUrl = '';
+  switch (chainId) {
+    case ChainId.MATIC:
+      inactiveUrl = COINGECKO_POLYGON_TOKEN_LIST_URL;
+      break;
+    case ChainId.ZKEVM:
+      inactiveUrl = COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL;
+      break;
+    case ChainId.MANTA:
+      inactiveUrl = COINGECKO_MANTA_TOKEN_LIST_URL;
+      break;
+    case ChainId.IMX:
+      inactiveUrl = COINGECKO_IMMUTABLE_TOKEN_LIST_URL;
+      break;
+    case ChainId.DOGECHAIN:
+      inactiveUrl = COINGECKO_DOGE_TOKEN_LIST_URL;
+      break;
+    case ChainId.KAVA:
+      inactiveUrl = COINGECKO_KAVA_TOKEN_LIST_URL;
+      break;
+    default:
+      break;
+  }
+  return useTokenList(inactiveUrl);
 }
 
 export function useSelectedListInfo(): {

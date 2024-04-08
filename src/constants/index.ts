@@ -247,6 +247,18 @@ export const GlobalConst = {
     // we add '' to remove the possibility of nulls
     DEFAULT_ADS_LIST_URL: process.env.REACT_APP_ADS_LIST_DEFAULT_URL + '',
     DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
+    COINGECKO_POLYGON_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_POLYGON_URL + '',
+    COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL:
+      process.env.REACT_APP_POLYGON_ZKEVM_URL + '',
+    COINGECKO_MANTA_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_MANTA_URL + '',
+    COINGECKO_IMMUTABLE_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_IMMUTABLE_URL + '',
+    COINGECKO_DOGE_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_DOGE_URL + '',
+    COINGECKO_KAVA_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_KAVA_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
@@ -320,6 +332,16 @@ export const GlobalConst = {
     PASSPORTWALLET: 'Passport Wallet',
   },
 };
+
+export const DEFAULT_LIST_OF_LISTS: string[] = [
+  GlobalConst.utils.DEFAULT_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_POLYGON_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_MANTA_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_IMMUTABLE_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_DOGE_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_KAVA_TOKEN_LIST_URL,
+];
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
