@@ -6,6 +6,7 @@
   position: fixed;
   width: 100%;
   z-index: 12;
+  backdrop-filter: blur(30px);
 }
 
 .network-name {
@@ -103,11 +104,12 @@
 }
 .mainMenu {
   position: absolute;
-  left: 50%;
+  left: 30%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   height: 100%;
+  
   & .menuItem {
     cursor: pointer;
     position: relative;
@@ -118,7 +120,7 @@
     margin-right: 6px;
     overflow: hidden;
     border-radius: 10px;
-    color: $textSecondary;
+    color: white;
     & small {
       white-space: nowrap;
     }

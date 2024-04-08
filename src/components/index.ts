@@ -1,4 +1,5 @@
 export { default as Header } from './Header';
+export { default as HeaderHomepage } from './HeaderHomepage';
 export { default as Footer } from './Footer';
 export { default as ListLogo } from './ListLogo';
 export { default as AddressInput } from './AddressInput';
