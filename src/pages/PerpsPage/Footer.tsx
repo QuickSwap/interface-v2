@@ -410,7 +410,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
           </Select>
         </Box>
       ) : (
-        <PortfolioStatus token={token} />
+        <PortfolioStatus token={showAllInstrument ? undefined : token} />
       )}
       {isMobile ? (
         selectedItem === 'Portfolio' ? (

@@ -8,6 +8,7 @@ import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { PerpsNotification } from './PerpsNotification';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
@@ -77,6 +78,7 @@ export const Layout = () => {
           <Leverage perpToken={token} orderItem={orderItem} />
         </Grid>
       )}
+      <PerpsNotification />
     </Grid>
   );
 };

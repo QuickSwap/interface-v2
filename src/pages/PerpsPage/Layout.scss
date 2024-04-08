@@ -314,3 +314,21 @@
     justify-content: center;
   }
 }
+
+.perpsNotification {
+  .MuiSnackbar-root {
+    top: 100px;
+    & .MuiSnackbarContent-message {
+      width: 100%;
+    }
+    & > div {
+      background-color: $bgPalette;
+      backdrop-filter: blur(30px);
+      border: 1px solid $grey34;
+      border-radius: 16px;
+      & p {
+        color: $textPrimary;
+      }
+    }
+  }
+}
