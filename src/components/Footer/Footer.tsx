@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
       ],
     },
     {
-      title: `${' '}`,
+      title: '',
       items: [
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('gamingHub'), link: '/' },
@@ -76,7 +76,15 @@ const Footer: React.FC = () => {
           <Grid item container xs={12} sm={12} md={8} spacing={2}>
             {socialMenuItems.map((item) => (
               <Grid key={item.title} item xs={12} sm={6} md={3}>
-                <small className='footer-title'>{item.title}</small>
+                <small
+                  className={
+                    item.title == ''
+                      ? 'footer-text margin-extra'
+                      : 'footer-title'
+                  }
+                >
+                  {item.title}
+                </small>
                 <Box mt={3}>
                   {item.items.map((socialItem) => (
                     <Box

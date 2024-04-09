@@ -1,5 +1,9 @@
 @use 'styles/variables' as *;
 
+.margin-extra{
+  background-color: pink !important;
+}
+
 .footer {
   margin-top: 128px;
   border-top: 1px solid $divider;
@@ -18,7 +22,6 @@
 
 .footer-text {
   color: #6880a3 !important;
-  // width: 85px !important;
   height: 17px !important;
 }
 

@@ -109,7 +109,7 @@ const HeaderHomepage: React.FC<{
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
   const showFarm = config['farm']['available'];
-  // const showPartners = config['partners']['available'];
+  const showBridge = config['bridge']['available'];
   const showLair = config['lair']['available'];
   const showConvert = config['convert']['available'];
   const showAnalytics = config['analytics']['available'];
@@ -117,11 +117,14 @@ const HeaderHomepage: React.FC<{
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
   const showSafe = config['safe']['available'];
-  const showPerps = config['perps']['available'];
+  const showPerpsV1 = config['perps']['available'];
   const showBOS = config['bos']['available'];
   const showBonds = config['bonds']['available'];
   const showDappOS = config['dappos']['available'];
+  const showPerpsFalkor = config['perpsFalkor']['available'];
+  const showPerps = showPerpsV1 && showPerpsFalkor;
   const showEarn = showFarm && showBonds;
+  const showPartners = showDappOS && showBridge;
   const menuItems: Array<HeaderMenuItem> = [];
 
   const swapCurrencyStr = useMemo(() => {
@@ -139,38 +142,128 @@ const HeaderHomepage: React.FC<{
       id: 'swap-page-link',
     });
   }
+  const perpsTab: HeaderMenuItem = {
+    text: 'Perps',
+    id: 'perps-tab',
+    link: '/',
+    items: [],
+  };
   if (showPerps) {
-    menuItems.push({
-      link: '/perps',
-      text: 'Perps',
-      id: 'perps-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-      onClick: async () => {
-        if (chainId !== ChainId.ZKEVM) {
-          const zkEVMconfig = getConfig(ChainId.ZKEVM);
-          const chainParam = {
-            chainId: ChainId.ZKEVM,
-            chainName: `${zkEVMconfig['networkName']} Network`,
-            rpcUrls: [zkEVMconfig['rpc']],
-            nativeCurrency: zkEVMconfig['nativeCurrency'],
-            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-          };
-          if (
-            connector === walletConnectConnection.connector ||
-            connector === networkConnection.connector
-          ) {
-            await connector.activate(ChainId.ZKEVM);
-          } else {
-            await connector.activate(chainParam);
-          }
-        }
-        if (process.env.REACT_APP_PERPS_URL) {
-          window.open(process.env.REACT_APP_PERPS_URL, '_self');
-        }
-      },
-    });
+    menuItems.push(perpsTab);
   }
+  if (showPerpsV1) {
+    if (showPerps) {
+      perpsTab.items?.push({
+        link: '/perps',
+        text: 'Perps V1',
+        id: 'perps-page-link',
+        isExternal: true,
+        externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+        onClick: async () => {
+          if (chainId !== ChainId.ZKEVM) {
+            const zkEVMconfig = getConfig(ChainId.ZKEVM);
+            const chainParam = {
+              chainId: ChainId.ZKEVM,
+              chainName: `${zkEVMconfig['networkName']} Network`,
+              rpcUrls: [zkEVMconfig['rpc']],
+              nativeCurrency: zkEVMconfig['nativeCurrency'],
+              blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+            };
+            if (
+              connector === walletConnectConnection.connector ||
+              connector === networkConnection.connector
+            ) {
+              await connector.activate(ChainId.ZKEVM);
+            } else {
+              await connector.activate(chainParam);
+            }
+          }
+          if (process.env.REACT_APP_PERPS_URL) {
+            window.open(process.env.REACT_APP_PERPS_URL, '_self');
+          }
+        },
+      });
+    } else {
+      menuItems.push({
+        link: '/perps',
+        text: 'Perps',
+        id: 'perps-page-link',
+        isExternal: true,
+        externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+        onClick: async () => {
+          if (chainId !== ChainId.ZKEVM) {
+            const zkEVMconfig = getConfig(ChainId.ZKEVM);
+            const chainParam = {
+              chainId: ChainId.ZKEVM,
+              chainName: `${zkEVMconfig['networkName']} Network`,
+              rpcUrls: [zkEVMconfig['rpc']],
+              nativeCurrency: zkEVMconfig['nativeCurrency'],
+              blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+            };
+            if (
+              connector === walletConnectConnection.connector ||
+              connector === networkConnection.connector
+            ) {
+              await connector.activate(ChainId.ZKEVM);
+            } else {
+              await connector.activate(chainParam);
+            }
+          }
+          if (process.env.REACT_APP_PERPS_URL) {
+            window.open(process.env.REACT_APP_PERPS_URL, '_self');
+          }
+        },
+      });
+    }
+  }
+  if (showPerpsFalkor) {
+    if (showPerps) {
+      perpsTab.items?.push({
+        link: `/perps-falkor`,
+        text: 'Perps: Falkor',
+        id: 'perpsFalkor-page-link',
+        isNew: true,
+      });
+    } else {
+      menuItems.push({
+        link: `/perps-falkor`,
+        text: 'Perps: Falkor',
+        id: 'perpsFalkor-page-link',
+      });
+    }
+  }
+  // if (showPerpsV1) {
+  //   menuItems.push({
+  //     link: '/perps',
+  //     text: 'Perps',
+  //     id: 'perps-page-link',
+  //     isExternal: true,
+  //     externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+  //     onClick: async () => {
+  //       if (chainId !== ChainId.ZKEVM) {
+  //         const zkEVMconfig = getConfig(ChainId.ZKEVM);
+  //         const chainParam = {
+  //           chainId: ChainId.ZKEVM,
+  //           chainName: `${zkEVMconfig['networkName']} Network`,
+  //           rpcUrls: [zkEVMconfig['rpc']],
+  //           nativeCurrency: zkEVMconfig['nativeCurrency'],
+  //           blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+  //         };
+  //         if (
+  //           connector === walletConnectConnection.connector ||
+  //           connector === networkConnection.connector
+  //         ) {
+  //           await connector.activate(ChainId.ZKEVM);
+  //         } else {
+  //           await connector.activate(chainParam);
+  //         }
+  //       }
+  //       if (process.env.REACT_APP_PERPS_URL) {
+  //         window.open(process.env.REACT_APP_PERPS_URL, '_self');
+  //       }
+  //     },
+  //   });
+  // }
   if (showPool) {
     menuItems.push({
       link: `/pools`,
@@ -183,7 +276,6 @@ const HeaderHomepage: React.FC<{
     id: 'earn-tab',
     link: '/',
     items: [],
-    isNew: true,
   };
   if (showEarn) {
     menuItems.push(earnTab);
@@ -229,6 +321,51 @@ const HeaderHomepage: React.FC<{
       isNew: true,
     });
   }
+  const partnersTab: HeaderMenuItem = {
+    text: t('partners'),
+    id: 'partners-tab',
+    link: '/',
+    items: [],
+  };
+  if (showPartners) {
+    menuItems.push(partnersTab);
+  }
+  if (showDappOS) {
+    if (showPartners) {
+      partnersTab.items?.push({
+        link: `/dappos`,
+        text: 'dappOS',
+        id: 'dappos-page-link',
+        isExternal: true,
+        target: '_blank',
+        externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+      });
+    } else {
+      menuItems.push({
+        link: `/dappos`,
+        text: 'dappOS',
+        id: 'dappos-page-link',
+        isExternal: true,
+        target: '_blank',
+        externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+      });
+    }
+  }
+  if (showBridge) {
+    if (showEarn) {
+      partnersTab.items?.push({
+        link: `/bridge`,
+        text: 'Bridge',
+        id: 'bridge-page-link',
+      });
+    } else {
+      menuItems.push({
+        link: `/bridge`,
+        text: 'Bridge',
+        id: 'bridge-page-link',
+      });
+    }
+  }
   if (showLair) {
     menuItems.push({
       link: '/dragons',
@@ -272,17 +409,17 @@ const HeaderHomepage: React.FC<{
       id: 'convert-quick',
     });
   }
-  if (showDappOS) {
-    menuItems.push({
-      link: '/dappos',
-      text: 'DappOS',
-      id: 'dappos-page-link',
-      isExternal: true,
-      target: '_blank',
-      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-      isNew: true,
-    });
-  }
+  // if (showDappOS) {
+  //   menuItems.push({
+  //     link: '/dappos',
+  //     text: 'DappOS',
+  //     id: 'dappos-page-link',
+  //     isExternal: true,
+  //     target: '_blank',
+  //     externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  //     isNew: true,
+  //   });
+  // }
   if (showLending) {
     menuItems.push({
       link: '/lend',
@@ -391,7 +528,13 @@ const HeaderHomepage: React.FC<{
         <Box>
           {!parsedChain && <NetworkSelection />}
 
-          {account ? (
+          <Box className='launchApp'>
+            <a href='/#/swap'>
+              <button>{t('launchApp')}</button>
+            </a>
+          </Box>
+
+          {/* {account ? (
             <Box
               id='web3-status-connected'
               className='accountDetails'
@@ -407,7 +550,7 @@ const HeaderHomepage: React.FC<{
             >
               {t('launchApp')}
             </Box>
-          )}
+          )} */}
         </Box>
       </Box>
     </Box>

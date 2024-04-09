@@ -15,40 +15,45 @@
 
 .newsletterBar {
   position: relative;
-  background: linear-gradient(
-    90deg,
-    $black2 -11.2%,
-    $purple4 41.95%,
-    $primary 100%
-  );
+  background: linear-gradient(90deg,
+      $black2 -11.2%,
+      $purple4 41.95%,
+      $primary 100%);
   z-index: 5;
   display: flex;
   min-height: 40px;
   justify-content: center;
   align-items: center;
+
   & button {
     margin-left: 19px;
     height: 26px;
     background-color: $black3;
+
     &:hover {
       background-color: $black3;
     }
+
     & span {
       font-size: 11px;
     }
   }
+
   & div {
     position: absolute;
     color: white;
     right: 12px;
     display: flex;
   }
+
   @include media('screen', '<tablet') {
     padding: 6px 28px;
     flex-direction: column;
+
     & button {
       margin: 6px 0 0;
     }
+
     & small {
       text-align: center;
     }
@@ -62,46 +67,56 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+
   & a {
     display: flex;
   }
-  & > div {
+
+  &>div {
     display: flex;
     align-items: center;
     z-index: 2;
+
     &:last-child {
       & button {
         height: 40px;
         border-radius: 20px;
+
         &:first-child {
           padding: 0 16px;
           margin-right: 16px;
+
           & svg {
             width: 20px;
             height: 20px;
             margin-right: 8px;
           }
         }
+
         &:last-child {
           padding: 0 32px;
         }
+
         & p {
           font-size: 16px;
         }
       }
     }
   }
+
   @include media('screen', '<tablet') {
     align-items: center;
     position: relative;
     min-height: 64px;
   }
+
   @include media('screen', '<phone') {
     padding: 0 16px;
     position: relative;
     min-height: 64px;
   }
 }
+
 .mainMenu {
   position: absolute;
   left: 30%;
@@ -109,7 +124,7 @@
   display: flex;
   align-items: center;
   height: 100%;
-  
+
   & .menuItem {
     cursor: pointer;
     position: relative;
@@ -121,91 +136,115 @@
     overflow: hidden;
     border-radius: 10px;
     color: white;
+
     & small {
       white-space: nowrap;
     }
+
     &.subMenuItem {
       padding: 0;
       overflow: visible;
     }
+
     .menuItemSparkle {
       position: absolute;
       transition: all 0.5s;
     }
+
     .menuItemSparkleTop {
       top: -20px;
       margin-left: -10px;
     }
+
     .menuItemSparkleBottom {
       bottom: -20px;
       margin-left: -12px;
     }
+
     .menuItemSparkleLeft {
       left: -20px;
     }
+
     .menuItemSparkleRight {
       right: -20px;
     }
+
     &.active {
       color: $textPrimary;
       background: $secondary1;
+
       .menuItemSparkleTop {
         top: 0px;
       }
+
       .menuItemSparkleBottom {
         bottom: 0px;
       }
+
       .menuItemSparkleLeft {
         left: 4px;
       }
+
       .menuItemSparkleRight {
         right: 4px;
       }
     }
+
     & .subMenu {
       display: none;
       background-color: $secondary2;
       border-radius: 10px;
       margin-top: 12px;
+
       & .subMenuItem {
         color: $textSecondary;
         padding: 10px 24px;
         white-space: unset;
+
         &:hover {
           color: $textPrimary;
         }
+
         &.active {
           color: $textPrimary;
         }
       }
     }
+
     &:hover {
       color: $textPrimary;
       background: $secondary1;
+
       .menuItemSparkleTop {
         top: 0px;
       }
+
       .menuItemSparkleBottom {
         bottom: 0px;
       }
+
       .menuItemSparkleLeft {
         left: 4px;
       }
+
       .menuItemSparkleRight {
         right: 4px;
       }
+
       & .subMenu {
         display: block;
       }
     }
   }
 }
+
 .subMenuWrapper {
   position: absolute;
   width: 209px;
   left: 0;
   border-radius: 10px;
   top: 32px;
+
   @include media('screen', '<tablet') {
     width: 100%;
     left: unset;
@@ -217,6 +256,7 @@
     border: 1px solid $divider;
   }
 }
+
 .accountDetails {
   border: solid 1px $grey2;
   padding: 0 16px;
@@ -226,48 +266,63 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   & p {
     font-size: 14px;
     font-weight: 600;
   }
+
   & img {
     width: 20px;
     margin-left: 8px;
   }
 }
-.connectButton {
-  width: 152px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  position: relative;
-  &:hover .wrongNetworkContent {
-    display: block;
+
+.launchApp {
+
+  a {
+    text-decoration: none;
   }
+  
+    a > button {
+      width: 152px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px !important;
+      border: none !important;
+      font-size: 14px;
+      // font-weight: 600;
+      background-color: #448aff;
+      color: white;
+      cursor: pointer;
+      // position: relative;
+
+  }
+
 }
+
 .wrongNetworkWrapper {
   position: absolute;
   top: 36px;
   width: 272px;
   right: 0;
 }
+
 .wrongNetworkContent {
   background: $bgColor;
   margin-top: 18px;
   border-radius: 10px;
   padding: 24px;
   display: none;
+
   & small {
     color: $grey19;
     font-size: 14px;
     line-height: 1.57;
   }
+
   & div {
     width: 100%;
     height: 36px;
@@ -281,6 +336,7 @@
     font-weight: 600;
   }
 }
+
 .mobileMenuContainer {
   background: #121319;
   position: fixed;
@@ -303,6 +359,7 @@
   background: #121319;
   color: #c7cad9;
   cursor: pointer;
+
   &.active {
     color: #448aff;
   }
@@ -310,6 +367,7 @@
 
 .mobile-btn-text {
   color: #c7cad9;
+
   &.active {
     color: #448aff;
   }
@@ -323,6 +381,7 @@
 .mobileMenuItem {
   color: #c7cad9;
   cursor: pointer;
+
   &.active {
     color: #448aff;
   }
@@ -334,6 +393,7 @@
   justify-content: space-between;
   max-width: 375px;
   width: 100%;
+
   & .menuItem,
   & .subMenuItem {
     margin-left: 0px;
@@ -342,10 +402,12 @@
     color: #c7cad9;
     font-weight: bold;
     cursor: pointer;
+
     &.active {
       color: #448aff;
     }
   }
+
   & .closeBtn {
     margin: 0;
     border-top: 1px solid #242938;
@@ -383,6 +445,7 @@
 
 .networkSelectionWrapper {
   position: relative;
+
   @include media('screen', '<tablet') {
     position: unset;
   }
@@ -397,10 +460,12 @@
   border-radius: 10px;
   padding: 0 8px 0 12px;
   cursor: pointer;
+
   img {
     width: 18px;
     border-radius: 18px;
   }
+
   svg {
     width: 18px;
     height: 18px;
@@ -412,6 +477,7 @@
   position: relative;
   display: flex;
   margin-right: 8px;
+
   & .networkActiveDot {
     position: absolute;
     top: -4px;

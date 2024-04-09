@@ -1,7 +1,9 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-
+a {
+  text-decoration: none;
+}
 
 .hero {
   margin-top: 192px;
