@@ -11,7 +11,7 @@ export const ClosePositionButton: React.FC<{
   position: API.PositionExt;
   quantity: number;
   price?: number;
-  afterClose: () => void;
+  afterClose?: () => void;
 }> = ({ position, quantity, price, afterClose }) => {
   const order = {
     order_quantity: quantity,
@@ -153,7 +153,9 @@ export const ClosePositionButton: React.FC<{
                     await onSubmit(order);
                     setLoading(false);
                     handleClose();
-                    afterClose();
+                    if (afterClose) {
+                      afterClose();
+                    }
                   } catch {
                     setLoading(false);
                   }
