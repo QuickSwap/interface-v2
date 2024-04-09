@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Select, MenuItem } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons';
 
@@ -18,6 +18,11 @@ export const FooterPagination: React.FC<Props> = ({
   dataCount,
 }) => {
   const countPerPageOptions = [5, 10, 15];
+
+  useEffect(() => {
+    setPageIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countPerPage]);
 
   return (
     <Box className='perpsFooterPagination' gridGap={8} my={2}>
