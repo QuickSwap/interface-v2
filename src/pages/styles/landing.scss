@@ -13,6 +13,14 @@ a {
   gap: 1rem;
   justify-content: center;
 
+  @media (max-width: 767px) {
+    align-items: center; 
+  }
+
+  @media (min-width: 768px) and (max-width: 1299px) {
+    margin-left: 80px;
+  }
+
   & h1 {
     font-size: 46px;
     font-weight: 600 !important;
@@ -20,6 +28,14 @@ a {
     font-weight: normal;
     width: 546px;
     padding-right: 100px;
+
+    @media (max-width: 767px) {
+      font-size: 30px;
+      margin: 0 20px;
+      width: 100%;
+      padding-right: 0;
+      text-align: center;
+    }
   }
 
   & p {
@@ -29,6 +45,13 @@ a {
     line-height: 30px;
     width: 546px;
     color: #ccd8e7;
+
+    @media (max-width: 767px) {
+      font-size: 15px;
+      margin: 0 15px;
+      width: 100%;
+      text-align: center;
+    }
   }
 
   & button {
@@ -43,6 +66,11 @@ a {
     font-weight: 500;
     background-color: #448aff;
     color: white;
+
+    @media (max-width: 767px) {
+      width: 100%;
+      text-align: center;
+    }
   }
 }
 
@@ -58,6 +86,7 @@ a {
   .chainsItems {
     display: flex;
     gap: 1rem;
+    overflow: hidden;
 
     .chainsAddress {
       display: flex;
@@ -102,6 +131,10 @@ a {
     color: #ccd8e7;
     text-align: center;
     width: 432px;
+
+    @media (max-width: 767px) {
+      width: 95%;
+    }
   }
 
   .statsCardBox {
@@ -109,12 +142,13 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     justify-content: space-around;
     margin-bottom: 1rem;
 
     .statsCard {
-      width: 204px;
+      width: calc(50% - 0.75rem);
       height: 107px;
       display: flex;
       flex-direction: column;
@@ -149,6 +183,7 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
     margin-bottom: 1rem;
 
     .sectionCard {
@@ -160,6 +195,12 @@ a {
       flex-direction: column;
       justify-content: space-between;
       margin: 40px 24px 0;
+
+      @media (max-width: 767px) {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+      }
 
       & img {
         width: 32px;
@@ -193,6 +234,16 @@ a {
   .btn {
     text-decoration: none;
     color: white;
+  }
+
+  @media only screen and (min-width: 600px) {
+    .statsCardBox {
+      flex-wrap: nowrap;
+      justify-content: space-around;
+      .statsCard {
+        width: 204px;
+      }
+    }
   }
 }
 
@@ -248,21 +299,23 @@ a {
 .communityContainer {
   margin-top: 128px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  width: 1344px;
-  height: 360px;
+  width: 100%;
+  height: auto;
   border-radius: 2px;
-  padding: 35px 73px 37px 72px;
-  justify-content: space-between;
+  padding: 35px 20px;
   background: rgba(78, 78, 78, 0.1);
   backdrop-filter: blur(60px);
   -webkit-backdrop-filter: blur(60px);
 
   .Subscribe {
-    width: 432px;
+    width: 100%;
+    max-width: 432px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 1rem;
 
     .sectionHeading {
@@ -277,20 +330,21 @@ a {
     }
   }
 
-  & .socialContent {
-    width: 35%;
+  .socialContent {
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
+    margin-top: 2rem;
 
-    &>div {
+    & > div {
       padding: 11px 24px;
       text-align: center;
 
       & a {
         text-decoration: none;
         color: white;
-
 
         p {
           font-size: 12px;
@@ -302,7 +356,6 @@ a {
         &:hover {
           color: white;
         }
-
 
         &.svgFill a:hover svg path {
           fill: white;
@@ -330,6 +383,24 @@ a {
           opacity: 1;
         }
       }
+    }
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 35px 73px 37px 72px;
+
+    .Subscribe {
+      width: 432px;
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .socialContent {
+      width: 45%;
+      margin-top: 0;
+      justify-content: flex-end;
     }
   }
 }
