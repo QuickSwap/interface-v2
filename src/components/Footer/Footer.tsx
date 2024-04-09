@@ -13,6 +13,7 @@ import 'components/styles/Footer.scss';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
+import { ReactComponent as ArrowAhead } from '../../assets/images/landingPage/arrow_ahead.svg';
 
 const Footer: React.FC = () => {
   const history = useHistory();
@@ -32,6 +33,11 @@ const Footer: React.FC = () => {
         { title: t('pool'), link: '/pools' },
         { title: t('farm'), link: '/farm' },
         { title: t('bonds'), link: '/onds' },
+      ],
+    },
+    {
+      title: '',
+      items: [
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('gamingHub'), link: '/' },
         { title: t('leaderboard'), link: '/' },
@@ -66,10 +72,10 @@ const Footer: React.FC = () => {
   return (
     <Box className='footer'>
       <Box className='footerContainer'>
-        <Grid container spacing={4} className='socialMenuWrapper'>
-          <Grid item container xs={12} sm={12} md={8} spacing={4}>
+        <Grid container spacing={2} className='socialMenuWrapper'>
+          <Grid item container xs={12} sm={12} md={8} spacing={2}>
             {socialMenuItems.map((item) => (
-              <Grid key={item.title} item xs={12} sm={6} md={4}>
+              <Grid key={item.title} item xs={12} sm={6} md={3}>
                 <small className='footer-title'>{item.title}</small>
                 <Box mt={3}>
                   {item.items.map((socialItem) => (
@@ -97,11 +103,11 @@ const Footer: React.FC = () => {
               <source height={40} srcSet={QUICKLogoWebP} type='image/webp' />
               <img src={QUICKLogo} alt='QUICK' height={40} />
             </picture>
-            <Box mt={2} maxWidth='240px'>
+            <Box mt={2} maxWidth='318px'>
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>
             <Box mt={2} id='footerNewsletterSignup'>
-              <small className='text-secondary'>{t('signupnewsletter')}</small>
+              <small className='text-grey'>{t('signupnewsletter')}</small>
               <Box className='newsletterInput'>
                 <input
                   placeholder={t('enterEmail')}
@@ -114,7 +120,7 @@ const Footer: React.FC = () => {
                       style={{ color: 'white', marginRight: 5 }}
                     />
                   )}
-                  {t('signup')}
+                  <ArrowAhead />
                 </Button>
               </Box>
               {data && (
@@ -137,15 +143,17 @@ const Footer: React.FC = () => {
             tabletWindowSize ? 'copyright-mobile' : ''
           }`}
         >
-          <small className='text-secondary'>© {copyrightYear} QuickSwap</small>
+          <small className='text-secondary'>
+            © {copyrightYear} QuickSwap. All rights reserved.
+          </small>
           <small className='text-secondary'>
             <Link className='footer-link' to='/tos'>
               {t('termsofuse')}
             </Link>
           </small>
-          {!tabletWindowSize && pathname === '/' && (
+          {/* {!tabletWindowSize && pathname === '/' && (
             <Box className='fake-community-container'>&nbsp;</Box>
-          )}
+          )} */}
         </Box>
       </Box>
     </Box>
