@@ -124,7 +124,10 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   {selectedTab === 'deposit' && (
                     <span
                       className='text-primary cursor-pointer'
-                      onClick={() => setDepositAmount(deposit.balance)}
+                      onClick={() => {
+                        setDepositAmount(deposit.balance);
+                        deposit.setQuantity(deposit.balance);
+                      }}
                     >
                       {t('max')}
                     </span>
@@ -149,6 +152,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
                     selectedTab === 'deposit'
                       ? setDepositAmount(value)
                       : setWithdrawAmount(value);
+                    if (selectedTab === 'deposit') {
+                      deposit.setQuantity(value);
+                    }
                   }}
                   placeholder='$0.00'
                   fontSize={14}
@@ -230,15 +236,17 @@ const AssetModal: React.FC<AssetModalProps> = ({
           </Box>
         )}
         <Box margin='8px 0 16px'>
-          <span className='text-secondary'>{t('fee')} = $0</span>
+          <span className='text-secondary'>
+            {t('fee')} = ${selectedTab === 'deposit' ? '0' : '1'}
+          </span>
         </Box>
 
         {selectedTab === 'deposit' ? (
           <Button
             className='assetModalButton'
-            disabled={loading || depositAmount == null}
+            disabled={loading || !depositAmount || !Number(depositAmount)}
             onClick={async () => {
-              if (depositAmount == null) return;
+              if (!depositAmount) return;
               if (Number(deposit.allowance) < Number(depositAmount)) {
                 try {
                   setLoading(true);
@@ -248,7 +256,6 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   setLoading(false);
                 }
               } else {
-                deposit.setQuantity(depositAmount.toString());
                 try {
                   setLoading(true);
                   await deposit.deposit();
@@ -271,9 +278,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
         ) : (
           <Button
             className='assetModalButton'
-            disabled={loading || withdrawAmount == null}
+            disabled={loading || !withdrawAmount || !Number(withdrawAmount)}
             onClick={async () => {
-              if (withdrawAmount == null) return;
+              if (!withdrawAmount) return;
               try {
                 setLoading(true);
                 await withdraw({
