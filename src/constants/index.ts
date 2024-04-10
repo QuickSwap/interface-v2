@@ -2153,6 +2153,88 @@ export const GammaPairs: {
       },
     ],
   },
+  [ChainId.ASTARZKEVM]: {
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-100': [
+      {
+        address: '0x4476433bc06210ba265d95736ebc630544d397d9',
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0x7eccd6d077e4ad7120150578e936a22f058fbcce',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x5d8cff95d7a57c0bf50b30b43c7cc0d52825d4a9-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-100': [
+      {
+        address: '0xbc7d3b581cd4c4f34fc2942491fa803761c574e2',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x5D8cfF95D7A57c0BF50B30b43c7CC0D52825D4a9',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0xe8a6565e7f395f551fe3f98bd674a922cb552524',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1-500': [
+      {
+        address: '0x012f34c8bd206f2ff403e2388ac66c2fa5777391',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        token1Address: '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xdf41220c7e322bfef933d85d01821ad277f90172-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0xf66da0f517c6f5431c77f4d0525ebc4b3bb40578',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xdf41220c7e322bfef933d85d01821ad277f90172-500': [
+      {
+        address: '0x8f249cda053070fdb135d87e25a89dfbc8785f1d',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        token1Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x7746ef546d562b443ae4b4145541a3b1a3d75717-0xdf41220c7e322bfef933d85d01821ad277f90172-100': [
+      {
+        address: '0x216d3df2df6dec7c95d3b51f018ee4b11e416ebb',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x7746ef546d562b443AE4B4145541a3b1a3D75717',
+        token1Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+  },
 };
 
 export const UnipilotVaults: {
