@@ -48,9 +48,10 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
+        photo: './images/production.png'
         message: |
-          Repository: ${{ github.repository }}
-          Branch: ${{ github.ref_name }}
-          Author: ${{ github.actor }}
-          Commit message: ${{ github.event.commits[0].message }}
-          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}      
+          *bold \*Repository:* ${{ github.repository }}
+          *bold \*Branch:* ${{ github.ref_name }}
+          *bold \*Author:* ${{ github.actor }}
+          *bold \*Commit message:* ${{ github.event.commits[0].message }}
+          *bold \*See changes:* https://github.com/${{ github.repository }}/commit/${{github.sha}}      
