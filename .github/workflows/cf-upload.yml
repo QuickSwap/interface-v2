@@ -36,7 +36,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
   telegram_message:
     name: Send telegram message on push to master and dev branches
-    if: ${{ github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'dev2' || github.ref_name == 'feat/telegram-action')}}
+    if: ${{ github.event_name == 'push' && (github.ref_name == 'master' || github.ref_name == 'dev2')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -48,10 +48,9 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        format: markdown
         message: |
-          *bold \*Repository:* ${{ github.repository }}
-          *bold \*Branch:* ${{ github.ref_name }}
-          *bold \*Author:* ${{ github.actor }}
-          *bold \*Commit message:* ${{ github.event.commits[0].message }}
-          *bold \*See changes:* https://github.com/${{ github.repository }}/commit/${{github.sha}}      
+          Repository: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Author: ${{ github.actor }}
+          Commit message: ${{ github.event.commits[0].message }}
+          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}      
