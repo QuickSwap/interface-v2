@@ -48,7 +48,8 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        photo: './images/production.png'
+        format: markdown
+        photo: images/production.png
         message: |
           *bold \*Repository:* ${{ github.repository }}
           *bold \*Branch:* ${{ github.ref_name }}
