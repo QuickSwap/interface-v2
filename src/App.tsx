@@ -76,9 +76,9 @@ const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
 const metadata = {
   name: 'QuickSwap',
-  description: 'QuickSwap',
+  description: 'Largest DEX on Polygon',
   url: 'https://quickswap.exchange',
-  icons: ['./logo_circle.png'],
+  icons: ['https://quickswap.exchange/logo_circle.png'],
 };
 
 const ethersConfig = defaultConfig({

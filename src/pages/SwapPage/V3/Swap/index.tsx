@@ -74,6 +74,7 @@ import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
+import { useWalletInfo } from '@web3modal/ethers5/react';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -377,6 +378,8 @@ const SwapV3Page: React.FC = () => {
 
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
 
+  const { walletInfo } = useWalletInfo();
+
   const handleSwap = useCallback(() => {
     onV3TradeAnalytics(formattedAmounts);
     if (!swapCallback) {
@@ -432,10 +435,9 @@ const SwapV3Page: React.FC = () => {
           if (
             account &&
             currencies[Field.INPUT] &&
-            // selectedWallet &&
+            walletInfo &&
             chainId === ChainId.MATIC
           ) {
-            // const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -445,7 +447,7 @@ const SwapV3Page: React.FC = () => {
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: currencies[Field.INPUT].symbol ?? '',
               additionalEventData: {
-                // wallet: connection.name,
+                wallet: walletInfo.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -472,22 +474,23 @@ const SwapV3Page: React.FC = () => {
         });
       });
   }, [
+    onV3TradeAnalytics,
+    formattedAmounts,
     swapCallback,
-    account,
-    currencies,
-    chainId,
     tradeToConfirm,
     showConfirm,
-    fireEvent,
-    config,
-    formattedAmounts,
-    fromTokenUSDPrice,
     finalizedTransaction,
     recipient,
     recipientAddress,
+    account,
     trade,
+    currencies,
+    walletInfo,
+    chainId,
+    fireEvent,
+    config,
     isUni,
-    onV3TradeAnalytics,
+    fromTokenUSDPrice,
   ]);
 
   // errors

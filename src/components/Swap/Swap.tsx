@@ -66,6 +66,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
+import { useWalletInfo } from '@web3modal/ethers5/react';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -503,6 +504,8 @@ const Swap: React.FC<{
     allowedSlippage,
   );
 
+  const { walletInfo } = useWalletInfo();
+
   const handleSwap = useCallback(() => {
     onV2TradeAnalytics(trade);
     if (
@@ -562,10 +565,9 @@ const Swap: React.FC<{
           if (
             account &&
             fromTokenWrapped &&
-            // selectedWallet &&
+            walletInfo &&
             chainId === ChainId.MATIC
           ) {
-            // const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -573,7 +575,7 @@ const Swap: React.FC<{
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: fromTokenWrapped.symbol ?? '',
               additionalEventData: {
-                // wallet: connection.name,
+                wallet: walletInfo.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -600,6 +602,8 @@ const Swap: React.FC<{
         });
       });
   }, [
+    onV2TradeAnalytics,
+    trade,
     priceImpactWithoutFee,
     t,
     swapCallback,
@@ -609,14 +613,13 @@ const Swap: React.FC<{
     recipient,
     recipientAddress,
     account,
-    trade,
     fromTokenWrapped,
+    walletInfo,
     chainId,
     fireEvent,
     config,
     formattedAmounts,
     fromTokenUSDPrice,
-    onV2TradeAnalytics,
   ]);
 
   const fetchingBestRoute =
