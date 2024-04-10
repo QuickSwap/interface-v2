@@ -53,7 +53,6 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
-import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
 import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';

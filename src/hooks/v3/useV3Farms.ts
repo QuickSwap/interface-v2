@@ -338,7 +338,7 @@ export const useGetMerklFarms = () => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['fetchMerklFarms', chainId, account],
     queryFn: fetchMerklFarms,
-    refetchInterval: 300000,
+    refetchInterval: 60000,
   });
   useEffect(() => {
     setTimeout(() => {
