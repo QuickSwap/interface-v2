@@ -195,6 +195,7 @@ a {
       flex-direction: column;
       justify-content: space-between;
       margin: 40px 24px 0;
+      border: 1px solid transparent;
 
       @media (max-width: 767px) {
         width: 100%;
@@ -209,7 +210,7 @@ a {
 
       div>& h5 {
         margin-top: 20px;
-        color: #448aff;
+        // color: #448aff;
         font-size: 18px;
       }
 
@@ -227,6 +228,18 @@ a {
         & img {
           width: 15px;
         }
+      }
+
+      &:hover {
+        border-color: #448aff;
+        border-width: 1px;
+
+        div>& h5 {
+          margin-top: 20px;
+          color: #448aff;
+          font-size: 18px;
+        }
+        
       }
     }
   }
@@ -450,4 +463,47 @@ a {
   padding-top: 18px;
   padding-bottom: 27px;
   font-size: 0.8rem;
+}
+
+
+// Responsive styles for mobile device
+@media (max-width: 420px) {
+  
+  .networkSelection{
+    display: none;
+  }
+  
+  .mobileMenuContainer{
+    display: none !important;
+  }
+
+  .menuBar > div:last-child button:first-child{
+    margin-right: 0px;
+    padding:0px 24px;
+  }
+  .launchApp a > button{
+    width: 125px;
+  }
+  .heroBkg img{
+    min-width: unset;
+  }
+  .heroBkg{
+    scale: 1.2;
+    top:120px;
+    left: -30px;
+  }
+}
+
+// for max-width 300px
+@media (max-width: 300px) {
+  .heroBkg{
+    left: -22px;
+  }
+  .menuBar > div:last-child button:first-child{
+    padding:0px 16px;
+  }
+  .launchApp a > button{
+    width: 100px;
+    font-size: 12px;
+  }
 }

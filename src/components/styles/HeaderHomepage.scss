@@ -489,6 +489,8 @@
 @media (max-width: 959px) {
   .header {
     background-color: #121319;
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
   }
 
   .networkSelection {

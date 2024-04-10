@@ -101,3 +101,11 @@ a.footer-link {
     font-weight: 500;
   }
 }
+
+
+// gap b/w newsletter and links in mobile
+@media (max-width: 420px) {
+.socialMenuWrapper{
+  gap: 20px
+}
+}
