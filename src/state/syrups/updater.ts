@@ -27,7 +27,7 @@ export default function Updater(): null {
   }, [fetchSyrupList, isWindowVisible, syrups]);
 
   // fetch all lists every 10 minutes, but only after we initialize library
-  useInterval(fetchAllListsCallback, library ? 1000 * 60 * 10 : null);
+  useInterval(fetchAllListsCallback, library ? 100000 * 60 * 10 : null);
 
   // whenever a list is not loaded and not loading, try again to load it
   useEffect(() => {

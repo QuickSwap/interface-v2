@@ -8,7 +8,6 @@ import {
   PopupContent,
   removePopup,
   setOpenModal,
-  updateEthPrice,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -112,28 +111,6 @@ export function useRemovePopup(): (key: string) => void {
 export function useActivePopups(): AppState['application']['popupList'] {
   const list = useSelector((state: AppState) => state.application.popupList);
   return useMemo(() => list.filter((item) => item.show), [list]);
-}
-
-export function useEthPrice(): {
-  ethPrice: ETHPrice;
-  updateEthPrice: ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => void;
-} {
-  const ethPrice = useSelector((state: AppState) => state.application.ethPrice);
-
-  const dispatch = useDispatch();
-  const _updateETHPrice = useCallback(
-    ({ price, oneDayPrice, ethPriceChange }: ETHPrice) => {
-      dispatch(
-        updateEthPrice({
-          price: price ?? 0,
-          oneDayPrice: oneDayPrice ?? 0,
-          ethPriceChange: ethPriceChange ?? 0,
-        }),
-      );
-    },
-    [dispatch],
-  );
-  return { ethPrice, updateEthPrice: _updateETHPrice };
 }
 
 export function useMaticPrice(): {

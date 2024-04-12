@@ -27,7 +27,7 @@
   },
   "farm": {
     "quickswap": false,
-    "merkl": false,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -87,5 +87,7 @@
   },
   "ichi": {
     "available": false
-  }
+  },
+  "maxChunks": 70,
+  "blocksPerFetch": 25
 }

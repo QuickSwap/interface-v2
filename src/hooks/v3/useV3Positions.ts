@@ -346,7 +346,7 @@ export function useGammaPositionsCount(
   chainId: ChainId | undefined,
 ) {
   const allGammaPairsToFarm = getAllGammaPairs(chainId);
-  const masterChefContracts = useMasterChefContracts();
+  /**const masterChefContracts = useMasterChefContracts();
   const stakedAmountData = useMultipleContractMultipleData(
     account ? masterChefContracts : [],
     'userInfo',
@@ -393,7 +393,7 @@ export function useGammaPositionsCount(
           )
         : undefined;
     return { ...item, stakedAmount: sItem ? Number(sItem.amount) : 0 };
-  });
+  });*/
 
   const gammaPairAddresses = allGammaPairsToFarm.map((pair) => pair.address);
   const lpBalancesData = useMultipleContractSingleData(
@@ -416,20 +416,22 @@ export function useGammaPositionsCount(
   );
 
   const pairWithBalances = gammaPairAddresses.map((address) => {
-    const stakedAmount =
+    /**const stakedAmount =
       stakedLPs.find((lp) => lp.address.toLowerCase() === address.toLowerCase())
-        ?.stakedAmount ?? 0;
+        ?.stakedAmount ?? 0;*/
     const lpBalance =
       lpBalances.find(
         (lp) => lp.address.toLowerCase() === address.toLowerCase(),
       )?.amount ?? 0;
-    return stakedAmount + lpBalance;
+    //return stakedAmount + lpBalance;
+    return lpBalance;
   });
   const count = useMemo(() => {
     return pairWithBalances.filter((balance) => balance > 0).length;
   }, [pairWithBalances]);
 
-  return { loading: lpBalancesLoading || stakedLoading, count };
+  //return { loading: lpBalancesLoading || stakedLoading, count };
+  return { loading: lpBalancesLoading, count };
 }
 
 export function useUnipilotPositionsCount(

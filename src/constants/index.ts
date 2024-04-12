@@ -247,6 +247,18 @@ export const GlobalConst = {
     // we add '' to remove the possibility of nulls
     DEFAULT_ADS_LIST_URL: process.env.REACT_APP_ADS_LIST_DEFAULT_URL + '',
     DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
+    COINGECKO_POLYGON_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_POLYGON_URL + '',
+    COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL:
+      process.env.REACT_APP_POLYGON_ZKEVM_URL + '',
+    COINGECKO_MANTA_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_MANTA_URL + '',
+    COINGECKO_IMMUTABLE_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_IMMUTABLE_URL + '',
+    COINGECKO_DOGE_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_DOGE_URL + '',
+    COINGECKO_KAVA_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_KAVA_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
@@ -320,6 +332,16 @@ export const GlobalConst = {
     PASSPORTWALLET: 'Passport Wallet',
   },
 };
+
+export const DEFAULT_LIST_OF_LISTS: string[] = [
+  GlobalConst.utils.DEFAULT_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_POLYGON_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_MANTA_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_IMMUTABLE_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_DOGE_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_KAVA_TOKEN_LIST_URL,
+];
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
@@ -926,18 +948,6 @@ export const GammaPairs: {
         withdrawOnly: true,
       },
     ],
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
-      {
-        type: Presets.GAMMA_WIDE,
-        title: 'Wide',
-        address: '0x2ef46196d7d25b5111ca1fcba206b248fee32d8d',
-        token0Address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-        token1Address: '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7',
-        ableToFarm: true,
-        pid: 57,
-        withdrawOnly: true,
-      },
-    ],
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x0e9b89007eee9c958c0eda24ef70723c2c93dd58': [
       {
         type: Presets.GAMMA_DYNAMIC,
@@ -1468,6 +1478,15 @@ export const GammaPairs: {
         address: '0x0566e8e9bae925894d80d9e0a4fd9a72aea1a2f2',
         token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
         token1Address: '0xdCb72AE4d5dc6Ae274461d57E65dB8D50d0a33AD',
+      },
+    ],
+    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
+      {
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        address: '0x785A9F42a4568914773bE52008A10C4d62e5c63a',
+        token0Address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        token1Address: '0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7',
       },
     ],
   },
@@ -2131,6 +2150,88 @@ export const GammaPairs: {
         token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
         token1Address: '0x52A6c53869Ce09a731CD772f245b97A4401d3348',
         fee: FeeAmount.MEDIUM,
+      },
+    ],
+  },
+  [ChainId.ASTARZKEVM]: {
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-100': [
+      {
+        address: '0x4476433bc06210ba265d95736ebc630544d397d9',
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0x7eccd6d077e4ad7120150578e936a22f058fbcce',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x5d8cff95d7a57c0bf50b30b43c7cc0d52825d4a9-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-100': [
+      {
+        address: '0xbc7d3b581cd4c4f34fc2942491fa803761c574e2',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x5D8cfF95D7A57c0BF50B30b43c7CC0D52825D4a9',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0xe8a6565e7f395f551fe3f98bd674a922cb552524',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1-500': [
+      {
+        address: '0x012f34c8bd206f2ff403e2388ac66c2fa5777391',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        token1Address: '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xdf41220c7e322bfef933d85d01821ad277f90172-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0xf66da0f517c6f5431c77f4d0525ebc4b3bb40578',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xdf41220c7e322bfef933d85d01821ad277f90172-500': [
+      {
+        address: '0x8f249cda053070fdb135d87e25a89dfbc8785f1d',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        token1Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x7746ef546d562b443ae4b4145541a3b1a3d75717-0xdf41220c7e322bfef933d85d01821ad277f90172-100': [
+      {
+        address: '0x216d3df2df6dec7c95d3b51f018ee4b11e416ebb',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x7746ef546d562b443AE4B4145541a3b1a3D75717',
+        token1Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        fee: FeeAmount.LOWEST,
       },
     ],
   },

@@ -27,8 +27,8 @@
   },
   "farm": {
     "quickswap": false,
-    "merkl": false,
-    "available": false
+    "merkl": true,
+    "available": true
   },
   "lair": {
     "available": false,
@@ -68,7 +68,7 @@
     "available": false
   },
   "gamma": {
-    "available": false
+    "available": true
   },
   "unipilot": {
     "available": false
@@ -77,7 +77,7 @@
     "available": false
   },
   "steer": {
-    "available": false
+    "available": true
   },
   "dappos": {
     "available": false
@@ -87,5 +87,7 @@
   },
   "defiedge": {
     "available": false
-  }
+  },
+  "maxChunks": 20,
+  "blocksPerFetch": 25
 }

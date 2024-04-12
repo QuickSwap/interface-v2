@@ -61,6 +61,7 @@ export const NEVER_RELOAD: ListenerOptions = {
 function useCallsData(
   calls: (Call | undefined)[],
   options?: ListenerOptions,
+  ignore?: boolean,
 ): CallResult[] {
   const { chainId } = useActiveWeb3React();
   const callResults = useSelector<
@@ -85,23 +86,25 @@ function useCallsData(
     const callKeys: string[] = JSON.parse(serializedCallKeys);
     if (!chainId || callKeys.length === 0) return undefined;
     const calls = callKeys.map((key) => parseCallKey(key));
-    dispatch(
-      addMulticallListeners({
-        chainId,
-        calls,
-        options,
-      }),
-    );
-
-    return () => {
+    if (!ignore) {
       dispatch(
-        removeMulticallListeners({
+        addMulticallListeners({
           chainId,
           calls,
           options,
         }),
       );
-    };
+
+      return () => {
+        dispatch(
+          removeMulticallListeners({
+            chainId,
+            calls,
+            options,
+          }),
+        );
+      };
+    }
   }, [chainId, dispatch, options, serializedCallKeys]);
 
   return useMemo(
@@ -153,7 +156,9 @@ function toCallState(
   contractInterface: Interface | undefined,
   fragment: FunctionFragment | undefined,
   latestBlockNumber: number | undefined,
+  ignore?: boolean,
 ): CallState {
+  if (ignore) return INVALID_CALL_STATE;
   if (!callResult) return INVALID_CALL_STATE;
   const { valid, data, blockNumber } = callResult;
   if (!valid) return INVALID_CALL_STATE;
@@ -329,6 +334,7 @@ export function useSingleCallResult(
   methodName: string,
   inputs?: OptionalMethodInputs,
   options?: ListenerOptions,
+  ignore?: boolean,
 ): CallState {
   const fragment = useMemo(() => contract?.interface?.getFunction(methodName), [
     contract,
@@ -346,7 +352,7 @@ export function useSingleCallResult(
       : [];
   }, [contract, fragment, inputs]);
 
-  const result = useCallsData(calls, options)[0];
+  const result = useCallsData(calls, options, ignore)[0];
   const latestBlockNumber = useBlockNumber();
 
   return useMemo(() => {

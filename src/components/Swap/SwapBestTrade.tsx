@@ -89,23 +89,23 @@ const SwapBestTrade: React.FC<{
   const { walletInfo } = useWalletInfo();
 
   // token warning stuff
-  const [loadedInputCurrency, loadedOutputCurrency] = [
-    useCurrency(loadedUrlParams?.inputCurrencyId),
-    useCurrency(loadedUrlParams?.outputCurrencyId),
-  ];
+  // const [loadedInputCurrency, loadedOutputCurrency] = [
+  //   useCurrency(loadedUrlParams?.inputCurrencyId),
+  //   useCurrency(loadedUrlParams?.outputCurrencyId),
+  // ];
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
   const [bonusRouteLoading, setBonusRouteLoading] = useState(false);
   const [bonusRouteFound, setBonusRouteFound] = useState(false);
 
-  const urlLoadedTokens: Token[] = useMemo(
-    () =>
-      [loadedInputCurrency, loadedOutputCurrency]?.filter(
-        (c): c is Token => c instanceof Token,
-      ) ?? [],
-    [loadedInputCurrency, loadedOutputCurrency],
-  );
+  // const urlLoadedTokens: Token[] = useMemo(
+  //   () =>
+  //     [loadedInputCurrency, loadedOutputCurrency]?.filter(
+  //       (c): c is Token => c instanceof Token,
+  //     ) ?? [],
+  //   [loadedInputCurrency, loadedOutputCurrency],
+  // );
   const handleConfirmTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
   }, []);
@@ -118,11 +118,11 @@ const SwapBestTrade: React.FC<{
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
-  const importTokensNotInDefault =
-    urlLoadedTokens &&
-    urlLoadedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
+  // const importTokensNotInDefault =
+  //   urlLoadedTokens &&
+  //   urlLoadedTokens.filter((token: Token) => {
+  //     return !Boolean(token.address in defaultTokens);
+  //   });
 
   const { t } = useTranslation();
   const { account, chainId, library } = useActiveWeb3React();
@@ -201,6 +201,23 @@ const SwapBestTrade: React.FC<{
     typedValue,
   );
 
+  const [selectedInputCurrency, selectedOutputCurrency] = [
+    useCurrency(wrappedCurrency(currencies[Field.INPUT], chainId)?.address),
+    useCurrency(wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address),
+  ];
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [selectedInputCurrency, selectedOutputCurrency]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [selectedInputCurrency, selectedOutputCurrency],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
+
   const showNativeConvert = convertType !== ConvertType.NOT_APPLICABLE;
 
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -233,6 +250,9 @@ const SwapBestTrade: React.FC<{
         redirectWithSwitch();
         setSwapType(swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY);
       } else {
+        if (!Boolean(inputCurrency.address in defaultTokens)) {
+          setDismissTokenWarning(false);
+        }
         redirectWithCurrency(inputCurrency, true);
       }
     },
@@ -242,6 +262,7 @@ const SwapBestTrade: React.FC<{
       redirectWithSwitch,
       swapType,
       redirectWithCurrency,
+      defaultTokens,
     ],
   );
 
@@ -271,6 +292,9 @@ const SwapBestTrade: React.FC<{
         redirectWithSwitch();
         setSwapType(swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY);
       } else {
+        if (!Boolean(outputCurrency.address in defaultTokens)) {
+          setDismissTokenWarning(false);
+        }
         redirectWithCurrency(outputCurrency, false);
       }
     },
@@ -280,6 +304,7 @@ const SwapBestTrade: React.FC<{
       redirectWithSwitch,
       swapType,
       redirectWithCurrency,
+      defaultTokens,
     ],
   );
 
@@ -1068,8 +1093,8 @@ const SwapBestTrade: React.FC<{
   return (
     <Box>
       <TokenWarningModal
-        isOpen={importTokensNotInDefault.length > 0 && !dismissTokenWarning}
-        tokens={importTokensNotInDefault}
+        isOpen={selectedTokensNotInDefault.length > 0 && !dismissTokenWarning}
+        tokens={selectedTokensNotInDefault}
         onConfirm={handleConfirmTokenWarning}
         onDismiss={handleDismissTokenWarning}
       />

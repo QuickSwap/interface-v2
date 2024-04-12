@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber, updateSoulZap } from './actions';
-import { useEthPrice, useMaticPrice } from './hooks';
+import { useMaticPrice } from './hooks';
 import { getEthPrice } from 'utils';
 import { getMaticPrice } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
@@ -22,7 +22,6 @@ export default function Updater(): null {
   } = useActiveWeb3React();
 
   const dispatch = useDispatch();
-  const { updateEthPrice } = useEthPrice();
   const { updateMaticPrice } = useMaticPrice();
 
   const windowVisible = useIsWindowVisible();
@@ -81,16 +80,7 @@ export default function Updater(): null {
         console.log(e);
       }
     };
-    const fetchETHPrice = async () => {
-      try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(chainId);
-        updateEthPrice({ price, oneDayPrice, ethPriceChange });
-      } catch (e) {
-        console.log(e);
-      }
-    };
     fetchMaticPrice();
-    fetchETHPrice();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime, chainId, state.chainId]);
 

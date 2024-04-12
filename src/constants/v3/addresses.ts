@@ -338,11 +338,13 @@ export const LENDING_QS_POOLS: { [chainId: number]: string[] } = {
 export const STEER_PERIPHERY: AddressMap = {
   [ChainId.MATIC]: '0x29E1888F7DD0757f2873E494463Ec389dab38D27',
   [ChainId.MANTA]: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921',
+  [ChainId.ASTARZKEVM]: '0x37Cff062D52Dd6E9E39Df619CCd30c037a36bB83',
 };
 
 export const STEER_VAULT_REGISTRY: AddressMap = {
   [ChainId.MATIC]: '0x24825B3C44742600D3995d1D3760cceE999A7f0b',
   [ChainId.MANTA]: '0x38a07152ee64C7067fEeBA904D72ABc9a9DA0C77',
+  [ChainId.ASTARZKEVM]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
 };
 
 export const MERKL_DISTRIBUTOR = '0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae';
@@ -1321,21 +1323,21 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId.ZKEVM]: [
     WMATIC_EXTENDED[ChainId.ZKEVM],
     toV3Token(USDT[ChainId.ZKEVM]),
-    toV3Token(USDC[ChainId.ZKEVM]),
-    toV3Token(MATIC[ChainId.ZKEVM]),
-    toV3Token(DAI[ChainId.ZKEVM]),
-    toV3Token(WBTC[ChainId.ZKEVM]),
-    toV3Token(NEW_QUICK[ChainId.ZKEVM]),
-    toV3Token(DAIE[ChainId.ZKEVM]),
+    //toV3Token(USDC[ChainId.ZKEVM]),
+    //toV3Token(MATIC[ChainId.ZKEVM]),
+    //toV3Token(DAI[ChainId.ZKEVM]),
+    //toV3Token(WBTC[ChainId.ZKEVM]),
+    //toV3Token(NEW_QUICK[ChainId.ZKEVM]),
+    //toV3Token(DAIE[ChainId.ZKEVM]),
     toV3Token(USDCE[ChainId.ZKEVM]),
   ],
   [ChainId.MANTA]: [
     WMATIC_EXTENDED[ChainId.MANTA],
-    toV3Token(USDT[ChainId.MANTA]),
+    //toV3Token(USDT[ChainId.MANTA]),
     toV3Token(USDC[ChainId.MANTA]),
-    toV3Token(WBTC[ChainId.MANTA]),
-    toV3Token(MATIC[ChainId.MANTA]),
-    toV3Token(NEW_QUICK[ChainId.MANTA]),
+    //toV3Token(WBTC[ChainId.MANTA]),
+    //toV3Token(MATIC[ChainId.MANTA]),
+    //toV3Token(NEW_QUICK[ChainId.MANTA]),
     toV3Token(STONE[ChainId.MANTA]),
     toV3Token(MANTA[ChainId.MANTA]),
   ],
@@ -1358,10 +1360,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId.ASTARZKEVM]: [
     WMATIC_EXTENDED[ChainId.ASTARZKEVM],
     toV3Token(USDC[ChainId.ASTARZKEVM]),
-    toV3Token(USDT[ChainId.ASTARZKEVM]),
     toV3Token(ASTR[ChainId.ASTARZKEVM]),
-    toV3Token(WBTC[ChainId.ASTARZKEVM]),
-    toV3Token(MATIC[ChainId.ASTARZKEVM]),
   ],
 };
 
@@ -1431,13 +1430,13 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
 } = {
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
-    DAI[ChainId.MATIC],
-    USDC[ChainId.MATIC],
-    USDT[ChainId.MATIC],
-    OLD_QUICK[ChainId.MATIC],
-    NEW_QUICK[ChainId.MATIC],
+    //DAI[ChainId.MATIC],
+    //USDC[ChainId.MATIC],
+    //USDT[ChainId.MATIC],
+    //OLD_QUICK[ChainId.MATIC],
+    //NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
-    WBTC[ChainId.MATIC],
+    //WBTC[ChainId.MATIC],
     USDCE[ChainId.MATIC],
   ],
   [ChainId.DOGECHAIN]: [
@@ -1457,7 +1456,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(DAI[ChainId.MATIC]),
     toV3Token(USDC[ChainId.MATIC]),
     toV3Token(USDT[ChainId.MATIC]),
-    toV3Token(OLD_QUICK[ChainId.MATIC]),
+    //toV3Token(OLD_QUICK[ChainId.MATIC]),
     toV3Token(NEW_QUICK[ChainId.MATIC]),
     toV3Token(ETHER[ChainId.MATIC]),
     toV3Token(WBTC[ChainId.MATIC]),
@@ -1480,16 +1479,18 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(USDT[ChainId.ZKEVM]),
     toV3Token(USDC[ChainId.ZKEVM]),
     toV3Token(MATIC[ChainId.ZKEVM]),
-    toV3Token(DAI[ChainId.ZKEVM]),
-    toV3Token(WBTC[ChainId.ZKEVM]),
+    //toV3Token(DAI[ChainId.ZKEVM]),
+    //toV3Token(WBTC[ChainId.ZKEVM]),
   ],
   [ChainId.MANTA]: [
     WMATIC_EXTENDED[ChainId.MANTA],
-    toV3Token(USDT[ChainId.MANTA]),
+    //toV3Token(USDT[ChainId.MANTA]),
     toV3Token(USDC[ChainId.MANTA]),
-    toV3Token(DAI[ChainId.MANTA]),
-    toV3Token(WBTC[ChainId.MANTA]),
-    toV3Token(MATIC[ChainId.MANTA]),
+    //toV3Token(WBTC[ChainId.MANTA]),
+    //toV3Token(MATIC[ChainId.MANTA]),
+    //toV3Token(NEW_QUICK[ChainId.MANTA]),
+    toV3Token(STONE[ChainId.MANTA]),
+    toV3Token(MANTA[ChainId.MANTA]),
   ],
   [ChainId.ZKATANA]: [
     WMATIC_EXTENDED[ChainId.ZKATANA],
@@ -1505,7 +1506,12 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(USDC[ChainId.IMX]),
     toV3Token(USDT[ChainId.IMX]),
     toV3Token(ETHER[ChainId.IMX]),
-    toV3Token(WBTC[ChainId.IMX]),
+    //toV3Token(WBTC[ChainId.IMX]),
+  ],
+  [ChainId.ASTARZKEVM]: [
+    WMATIC_EXTENDED[ChainId.ASTARZKEVM],
+    toV3Token(USDC[ChainId.ASTARZKEVM]),
+    toV3Token(ASTR[ChainId.ASTARZKEVM]),
   ],
 };
 

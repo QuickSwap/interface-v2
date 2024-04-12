@@ -1263,8 +1263,8 @@ export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
 };
 
 export const getSteerDexName = (chainId?: ChainId) => {
-  if (chainId === ChainId.MANTA) return 'quickswapv3';
-  return 'quickswap';
+  if (chainId === ChainId.MATIC) return 'quickswap';
+  return 'quickswapv3';
 };
 
 export const searchForBillId = (
