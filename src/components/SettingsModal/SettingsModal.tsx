@@ -22,6 +22,7 @@ import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
 import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -178,6 +179,22 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         </Box>
         <Box mb={2.5}>
           <Box className='flex items-center'>
+            <Box
+              className={`slippageButton${
+                userSlippageTolerance === SLIPPAGE_AUTO
+                  ? ' activeSlippageButton'
+                  : ''
+              }`}
+              onClick={() => {
+                setSlippageInput('');
+                setUserslippageTolerance(SLIPPAGE_AUTO);
+                if (userSlippageTolerance !== SLIPPAGE_AUTO) {
+                  setSlippageManuallySet(true);
+                }
+              }}
+            >
+              <small>AUTO</small>
+            </Box>
             <Box
               className={`slippageButton${
                 userSlippageTolerance === 10 ? ' activeSlippageButton' : ''

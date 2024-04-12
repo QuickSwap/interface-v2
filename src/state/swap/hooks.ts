@@ -39,6 +39,8 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import useAutoSlippageTolerance from 'hooks/useAutoSlippageTolerance';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -259,10 +261,16 @@ export function useDerivedSwapInfo(): {
   ] = useUserSlippageTolerance();
   const [slippageManuallySet] = useSlippageManuallySet();
 
+  const autoSlippageAmount = useAutoSlippageTolerance(
+    v2Trade ? v2Trade : undefined,
+  );
+  const autoSlippage =
+    allowedSlippage === SLIPPAGE_AUTO ? autoSlippageAmount : allowedSlippage;
+
   const slippageAdjustedAmounts =
     v2Trade &&
-    allowedSlippage &&
-    computeSlippageAdjustedAmounts(v2Trade, allowedSlippage);
+    autoSlippage &&
+    computeSlippageAdjustedAmounts(v2Trade, autoSlippage);
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
