@@ -5,21 +5,24 @@ import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsLpLock, useIsV2 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { HypeLabAds } from 'components';
+import LockLiquidity from './lpLock/LockLiquidity';
 import { useParams } from 'react-router-dom';
 import { SingleTokenSupplyLiquidity } from './SingleToken/SupplyLiquidity';
 
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
+const MyLiquidityLocks = lazy(() => import('./lpLock/MyLiquidityLocks'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
+  const { isLpLock } = useIsLpLock();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainIdToUse);
@@ -68,6 +71,8 @@ const PoolsPage: React.FC = () => {
           <Box className='wrapper'>
             {version === 'singleToken' ? (
               <SingleTokenSupplyLiquidity />
+            ) : isLpLock ? (
+              <LockLiquidity />
             ) : !isV2 ? (
               <SupplyLiquidityV3 />
             ) : (
@@ -77,7 +82,13 @@ const PoolsPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={7}>
           <Box className='wrapper'>
-            {!isV2 ? <MyLiquidityPoolsV3 /> : <YourLiquidityPools />}
+            {isLpLock ? (
+              <MyLiquidityLocks />
+            ) : !isV2 ? (
+              <MyLiquidityPoolsV3 />
+            ) : (
+              <YourLiquidityPools />
+            )}
           </Box>
         </Grid>
       </Grid>
