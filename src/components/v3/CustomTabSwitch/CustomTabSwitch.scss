@@ -18,6 +18,12 @@
       max-width: none;
       padding: 6px 0;
       margin: 0 12px;
+      &:first-child {
+        margin: 0 12px 0 0;
+      }
+      &:last-child {
+        margin: 0 0 0 12px;
+      }
       &.Mui-selected {
         span {
           color: $textPrimary;

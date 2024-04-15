@@ -178,6 +178,9 @@
     margin-left: -8px;
     margin-right: -4px;
     margin-top: 4px;
+    & .MuiSlider-rail {
+      background-color: transparent;
+    }
     & .MuiSlider-track {
       background-color: $textSecondary;
     }
@@ -330,5 +333,46 @@
         color: $textPrimary;
       }
     }
+  }
+}
+
+.accountManageModalWrapper {
+  max-width: 1120px;
+}
+
+.accountPanelWrapper {
+  padding: 16px;
+  border-radius: 10px;
+  background: $secondary1;
+
+  & .leverageSquareWrapper {
+    background-color: $grey12;
+  }
+  & .leverageSquare {
+    border: 2px solid $grey12;
+    background-color: $secondary1;
+  }
+
+  & .accountPanelRow {
+    display: flex;
+    & > span:first-child {
+      min-width: 150px;
+      color: $textSecondary;
+    }
+  }
+}
+
+.accountPanelButton {
+  border: 1px solid $primary;
+  border-radius: 5px;
+  background-color: transparent;
+  padding: 2px 8px;
+  min-width: unset;
+  &:hover {
+    background-color: transparent;
+  }
+  & span {
+    color: $primary;
+    font-size: 12px;
   }
 }

@@ -1,0 +1,291 @@
+import React, { useState } from 'react';
+import { CopyHelper } from 'components';
+import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { Refresh, Visibility, VisibilityOff } from '@material-ui/icons';
+import './Layout.scss';
+import {
+  useAccountInfo,
+  useAccountInstance,
+  useLeverage,
+} from '@orderly.network/hooks';
+import AccountTierImage from 'assets/images/AccountManageTier.webp';
+import { AccountLeverageSlider } from './AccountLeverageSlider';
+import { shortenAddress, shortenTx } from 'utils';
+
+const AccountManageModalMyAccount: React.FC = () => {
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const { data: accountInfo } = useAccountInfo();
+  const account = useAccountInstance();
+
+  const [maxLeverage, { update }] = useLeverage();
+  const [leverage, setLeverage] = useState<number | undefined>(undefined);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [hideValue, setHideValue] = useState(false);
+
+  const updateLeverage = async () => {
+    setLoadingUpdate(true);
+    try {
+      await update({ leverage });
+      setLoadingUpdate(false);
+    } catch (e) {
+      setLoadingUpdate(false);
+    }
+  };
+
+  return (
+    <>
+      <Box className='accountPanelWrapper'>
+        <Grid container>
+          <Grid item xs={12} sm={12} md={6}>
+            <Box
+              p={2}
+              className={`${
+                isMobile ? 'border-bottom' : 'border-right'
+              } flex flex-col`}
+              gridGap={28}
+            >
+              <Box className='flex items-center justify-between'>
+                <small className='text-secondary'>24 Hour Volume</small>
+                <small>
+                  0.00 <small className='text-secondary'>USDC</small>
+                </small>
+              </Box>
+              <Box className='flex items-center justify-between'>
+                <small className='text-secondary'>30 Day Volume</small>
+                <small>
+                  0.00 <small className='text-secondary'>USDC</small>
+                </small>
+              </Box>
+              <Box className='flex items-center justify-between'>
+                <small className='text-secondary'>YTD Volume</small>
+                <small>
+                  0.00 <small className='text-secondary'>USDC</small>
+                </small>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <Box
+              position='relative'
+              height='100%'
+              className='flex flex-col items-center justify-end'
+              py={2}
+              gridGap={8}
+              minHeight={150}
+            >
+              <img src={AccountTierImage} width={64} />
+              <small className='text-secondary'>
+                Current Tier: <small className='text-primaryText'>1</small>
+              </small>
+              <small className='text-primary cursor-pointer'>View more</small>
+              <Box position='absolute' right={0} top={8}>
+                <small className='span text-secondary'>
+                  Updated daily by 2:00 UTC
+                </small>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box mt={2}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={6}>
+            <Box className='accountPanelWrapper'>
+              <small>Max Account Leverage</small>
+              <Box className='border-top' pt={2} mt={2}>
+                <p className='span'>
+                  All eligible assets are counted as collateral for futures
+                  position. You may adjust the maximum leverage below.
+                </p>
+              </Box>
+              <Box mt={2}>
+                <Box mt={-1} mb={2} className='flex justify-end'>
+                  <Button
+                    className='accountPanelButton'
+                    disabled={
+                      !leverage ||
+                      Number(maxLeverage) === leverage ||
+                      loadingUpdate
+                    }
+                    onClick={updateLeverage}
+                  >
+                    {loadingUpdate ? 'Updating' : 'Update'}
+                  </Button>
+                </Box>
+                <AccountLeverageSlider
+                  leverage={leverage}
+                  setLeverage={setLeverage}
+                />
+              </Box>
+            </Box>
+            <Box className='accountPanelWrapper' mt={2}>
+              <Box className='flex justify-between'>
+                <small>Balance</small>
+                <Box className='flex items-center' gridGap={8}>
+                  <Button className='accountPanelButton'>Deposit</Button>
+                  <Button className='accountPanelButton'>Withdraw</Button>
+                </Box>
+              </Box>
+              <Box className='border-top flex justify-between' pt={2} mt={2}>
+                <Grid container spacing={1}>
+                  <Grid item xs={12} sm={4}>
+                    <Box className='flex flex-col' gridGap={8}>
+                      <span className='text-secondary'>
+                        Total estimate value
+                      </span>
+                      <small>
+                        0 <span className='text-secondary'>USDC</span>
+                      </small>
+                      <Box
+                        className='flex items-center text-primary cursor-pointer'
+                        gridGap={4}
+                        onClick={() => {
+                          setHideValue(!hideValue);
+                        }}
+                      >
+                        {hideValue ? (
+                          <Visibility fontSize='small' />
+                        ) : (
+                          <VisibilityOff fontSize='small' />
+                        )}
+                        <span>{hideValue ? 'Show' : 'Hide'} Value</span>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Box className='flex flex-col' gridGap={8}>
+                      <span className='text-secondary'>Unreal. PnL (USDC)</span>
+                      <small>
+                        0 <span className='text-secondary'>(0.00%)</span>
+                      </small>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Box className='flex flex-col' gridGap={8}>
+                      <span className='text-secondary'>
+                        Unsettled PnL (USDC)
+                      </span>
+                      <small>
+                        0 <span className='text-secondary'>(0.00%)</span>
+                      </small>
+                      <Box
+                        className='flex items-center text-primary cursor-pointer'
+                        gridGap={4}
+                        onClick={() => {
+                          account.settle();
+                        }}
+                      >
+                        <Refresh fontSize='small' />
+                        <span>Settle PnL</span>
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Box>
+            <Box className='accountPanelWrapper' mt={2}>
+              <small>Account Info</small>
+              <Box
+                className='border-top flex justify-between items-start'
+                pt={2}
+                mt={2}
+              >
+                <Box className='flex flex-col' gridGap={16}>
+                  <Box className='accountPanelRow'>
+                    <span>Email</span>
+                    <span className='text-secondary'>
+                      Bind email for notification
+                    </span>
+                  </Box>
+                  <Box className='accountPanelRow'>
+                    <span>Web3 Wallet</span>
+                    <span>{shortenAddress(account.address ?? '')}</span>
+                  </Box>
+                  <Box className='accountPanelRow'>
+                    <span>UID</span>
+                    <span>270800</span>
+                  </Box>
+                </Box>
+                <Button className='accountPanelButton'>Bind</Button>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <Box className='accountPanelWrapper'>
+              <small>Futures Margin Ratio</small>
+              <Box
+                className='border-top flex flex-col'
+                gridGap={16}
+                pt={2}
+                mt={2}
+              >
+                <p className='span'>
+                  Futures Margin Ratio represents your amount of collateral
+                  posted relative to the value of your positions outstanding.
+                </p>
+                <h5 className='text-primary weight-500'>1000%</h5>
+                <p className='span'>
+                  Futures margin ratio = Total collateral / Total position
+                  notional
+                </p>
+              </Box>
+            </Box>
+            <Box className='accountPanelWrapper' mt={2}>
+              <small>Futures Trading Fee</small>
+              <Box className='border-top' pt={2} mt={2}>
+                <Box className='accountPanelRow'>
+                  <span>Maker Fee</span>
+                  <span>0.03%</span>
+                </Box>
+                <Box className='accountPanelRow' mt={2}>
+                  <span>Taker Fee</span>
+                  <span>0.06%</span>
+                </Box>
+              </Box>
+            </Box>
+            <Box className='accountPanelWrapper' mt={2}>
+              <Box className='flex justify-between'>
+                <small>API Trading</small>
+                <Box className='flex items-center justify-between' gridGap={8}>
+                  <Button className='accountPanelButton'>Reveal Keys</Button>
+                  <a
+                    href='https://orderly.network/docs/build-on-evm/evm-api/introduction'
+                    target='_blank'
+                    rel='noreferrer'
+                    className='text-primaryText span text-underline'
+                  >
+                    API Documents
+                  </a>
+                </Box>
+              </Box>
+              <Box className='border-top' pt={2} mt={2}>
+                <Box className='accountPanelRow'>
+                  <span>Account</span>
+                  <Box
+                    className='flex items-center text-primaryText'
+                    gridGap={6}
+                  >
+                    <span>{shortenTx(account.accountId ?? '')}</span>
+                    <CopyHelper toCopy={account.accountId ?? ''} />
+                  </Box>
+                </Box>
+                <Box className='accountPanelRow' mt={2}>
+                  <span>Orderly API Key</span>
+                  <Box
+                    className='flex items-center text-primaryText'
+                    gridGap={6}
+                  >
+                    <span>{shortenTx(account.accountId ?? '')}</span>
+                    <CopyHelper toCopy={account.accountId ?? ''} />
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
+  );
+};
+export default AccountManageModalMyAccount;
