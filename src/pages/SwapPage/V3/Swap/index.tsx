@@ -40,7 +40,6 @@ import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
 import {
   useDefaultsFromURLSearch,
@@ -74,7 +73,7 @@ import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
-import { useWalletInfo } from '@web3modal/ethers5/react';
+import { useWalletInfo, useWeb3Modal } from '@web3modal/ethers5/react';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -115,7 +114,7 @@ const SwapV3Page: React.FC = () => {
   //   });
 
   // toggle wallet when disconnected
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager();
@@ -848,7 +847,7 @@ const SwapV3Page: React.FC = () => {
 
         <Box className='swapButtonWrapper'>
           {!account ? (
-            <Button fullWidth onClick={toggleWalletModal}>
+            <Button fullWidth onClick={() => open()}>
               {t('connectWallet')}
             </Button>
           ) : showNativeConvert ? (

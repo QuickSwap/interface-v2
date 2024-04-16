@@ -3,7 +3,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import { TransactionDetails } from 'state/transactions/reducer';
 import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';

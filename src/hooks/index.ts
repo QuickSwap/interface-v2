@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
   useWeb3ModalProvider,
   useWeb3ModalAccount,
+  useWeb3Modal,
 } from '@web3modal/ethers5/react';
 import { ChainId, Pair } from '@uniswap/sdk';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
@@ -20,10 +21,7 @@ import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 import { Currency } from '@uniswap/sdk-core';
 import { BigNumber, providers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
-import {
-  useOpenNetworkSelection,
-  useWalletModalToggle,
-} from 'state/application/hooks';
+import { useOpenNetworkSelection } from 'state/application/hooks';
 
 export function useActiveWeb3React() {
   const context = useWeb3ModalAccount();
@@ -159,14 +157,14 @@ export const useTokenPriceUsd = (
 };
 
 export const useConnectWallet = (isSupportedNetwork: boolean) => {
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
   const { setOpenNetworkSelection } = useOpenNetworkSelection();
 
   const connectWallet = () => {
     if (!isSupportedNetwork) {
       setOpenNetworkSelection(true);
     } else {
-      toggleWalletModal();
+      open();
     }
   };
 
