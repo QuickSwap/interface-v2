@@ -488,6 +488,13 @@ export const USDC: { [chainId: number]: Token } = {
     'USDC',
     'USD Coin',
   ),
+  [ChainId.LAYERX]: new Token(
+    ChainId.LAYERX,
+    '0x74b7F16337b8972027F6196A17a631aC6dE26d22',
+    6,
+    'USDC',
+    'USDC',
+  ),
 };
 
 export const USDCE: { [chainId: number]: Token } = {
@@ -562,6 +569,13 @@ export const USDT: { [chainId: number]: Token } = {
   ),
   [ChainId.ASTARZKEVM]: new Token(
     ChainId.ASTARZKEVM,
+    '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+    6,
+    'USDT',
+    'Tether USD',
+  ),
+  [ChainId.LAYERX]: new Token(
+    ChainId.LAYERX,
     '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
     6,
     'USDT',
@@ -666,6 +680,13 @@ export const WBTC: { [chainId: number]: Token } = {
     'WBTC',
     'Wrapped BTC',
   ),
+  [ChainId.LAYERX]: new Token(
+    ChainId.LAYERX,
+    '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
+    8,
+    'WBTC',
+    'Wrapped BTC',
+  ),
 };
 
 export const DAI: { [chainId: number]: Token } = {
@@ -699,6 +720,13 @@ export const DAI: { [chainId: number]: Token } = {
   ),
   [ChainId.ASTARZKEVM]: new Token(
     ChainId.ASTARZKEVM,
+    '0xC5015b9d9161Dca7e18e32f6f25C4aD850731Fd4',
+    18,
+    'DAI',
+    'Dai Stablecoin',
+  ),
+  [ChainId.LAYERX]: new Token(
+    ChainId.LAYERX,
     '0xC5015b9d9161Dca7e18e32f6f25C4aD850731Fd4',
     18,
     'DAI',
@@ -1432,6 +1460,12 @@ export const SUGGESTED_BASES: {
     WBTC[ChainId.ASTARZKEVM],
     ASTR[ChainId.ASTARZKEVM],
   ],
+  [ChainId.LAYERX]: [
+    WETH[ChainId.LAYERX],
+    WBTC[ChainId.LAYERX],
+    USDC[ChainId.LAYERX],
+    USDT[ChainId.LAYERX],
+  ],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1521,6 +1555,11 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     WMATIC_EXTENDED[ChainId.ASTARZKEVM],
     toV3Token(USDC[ChainId.ASTARZKEVM]),
     toV3Token(ASTR[ChainId.ASTARZKEVM]),
+  ],
+  [ChainId.LAYERX]: [
+    WMATIC_EXTENDED[ChainId.LAYERX],
+    toV3Token(USDC[ChainId.LAYERX]),
+    toV3Token(USDT[ChainId.LAYERX]),
   ],
 };
 

@@ -2559,7 +2559,11 @@ export const GlobalData = {
       USDT[ChainId.ASTARZKEVM],
       DAI[ChainId.ASTARZKEVM],
     ],
-    [ChainId.LAYERX]: [],
+    [ChainId.LAYERX]: [
+      USDC[ChainId.LAYERX],
+      USDT[ChainId.LAYERX],
+      DAI[ChainId.LAYERX],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2618,7 +2622,13 @@ export const GlobalData = {
       DAI[ChainId.ASTARZKEVM],
       MATIC[ChainId.ASTARZKEVM],
     ],
-    [ChainId.LAYERX]: [WETH[ChainId.LAYERX]],
+    [ChainId.LAYERX]: [
+      WETH[ChainId.LAYERX],
+      USDC[ChainId.LAYERX],
+      USDT[ChainId.LAYERX],
+      DAI[ChainId.LAYERX],
+      WBTC[ChainId.LAYERX],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
