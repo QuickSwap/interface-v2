@@ -24,27 +24,31 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useOpenNetworkSelection } from 'state/application/hooks';
 
 export function useActiveWeb3React() {
-  const context = useWeb3ModalAccount();
+  const {
+    chainId: web3ModalChainId,
+    address,
+    isConnected,
+  } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
   const chainId: ChainId | undefined = useMemo(() => {
-    if (!context.chainId || !SUPPORTED_CHAINIDS.includes(context.chainId)) {
+    if (!web3ModalChainId || !SUPPORTED_CHAINIDS.includes(web3ModalChainId)) {
       return ChainId.MATIC;
     }
-    return context.chainId;
-  }, [context.chainId]);
+    return web3ModalChainId;
+  }, [web3ModalChainId]);
+
+  const provider = walletProvider
+    ? new providers.Web3Provider(walletProvider)
+    : undefined;
 
   return {
-    account: context.address,
+    account: address,
     chainId,
-    currentChainId: context.chainId,
-    provider: walletProvider
-      ? new providers.Web3Provider(walletProvider)
-      : undefined,
-    library: walletProvider
-      ? new providers.Web3Provider(walletProvider)
-      : undefined,
-    isActive: context.isConnected,
+    currentChainId: web3ModalChainId,
+    provider,
+    library: provider,
+    isActive: isConnected,
   };
 }
 
