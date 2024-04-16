@@ -17,7 +17,6 @@ import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
 import QuickLogoWebP from 'assets/images/quickLogo.webp';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
-// import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import WalletIcon from 'assets/images/WalletIcon.png';
 import 'components/styles/HeaderHomepage.scss';
 import { useTranslation } from 'react-i18next';
@@ -232,38 +231,6 @@ const HeaderHomepage: React.FC<{
       });
     }
   }
-  // if (showPerpsV1) {
-  //   menuItems.push({
-  //     link: '/perps',
-  //     text: 'Perps',
-  //     id: 'perps-page-link',
-  //     isExternal: true,
-  //     externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-  //     onClick: async () => {
-  //       if (chainId !== ChainId.ZKEVM) {
-  //         const zkEVMconfig = getConfig(ChainId.ZKEVM);
-  //         const chainParam = {
-  //           chainId: ChainId.ZKEVM,
-  //           chainName: `${zkEVMconfig['networkName']} Network`,
-  //           rpcUrls: [zkEVMconfig['rpc']],
-  //           nativeCurrency: zkEVMconfig['nativeCurrency'],
-  //           blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-  //         };
-  //         if (
-  //           connector === walletConnectConnection.connector ||
-  //           connector === networkConnection.connector
-  //         ) {
-  //           await connector.activate(ChainId.ZKEVM);
-  //         } else {
-  //           await connector.activate(chainParam);
-  //         }
-  //       }
-  //       if (process.env.REACT_APP_PERPS_URL) {
-  //         window.open(process.env.REACT_APP_PERPS_URL, '_self');
-  //       }
-  //     },
-  //   });
-  // }
   if (showPool) {
     menuItems.push({
       link: `/pools`,
@@ -489,18 +456,8 @@ const HeaderHomepage: React.FC<{
           pendingTransactions={pending}
           confirmedTransactions={confirmed}
         />
-        <Link to='/'>
+        <Link to='/' className='header_logo'>
           <img src={QuickIcon} alt='QuickLogo' height={40} />
-          {/* {mobileWindowSize && (
-            <img src={QuickIcon} alt='QuickLogo' height={40} />
-          )}
-          {!mobileWindowSize && (
-            <picture>
-              <source height={60} srcSet={QuickLogoWebP} type='image/webp' />
-              <img src={QuickIcon} alt='QuickLogo' height={60} />
-            </picture>
-            // <img src={QuickIcon} alt='QuickLogo' height={40} />
-          )} */}
         </Link>
         {!tabletWindowSize && (
           <Box className='mainMenu'>
@@ -533,24 +490,6 @@ const HeaderHomepage: React.FC<{
               <button>{t('launchApp')}</button>
             </a>
           </Box>
-
-          {/* {account ? (
-            <Box
-              id='web3-status-connected'
-              className='accountDetails'
-              onClick={toggleWalletModal}
-            >
-              <p>{udDomain ?? shortenAddress(account)}</p>
-              <img src={WalletIcon} alt='Wallet' />
-            </Box>
-          ) : (
-            <Box
-              className='connectButton bg-primary'
-              onClick={toggleWalletModal}
-            >
-              {t('launchApp')}
-            </Box>
-          )} */}
         </Box>
       </Box>
     </Box>

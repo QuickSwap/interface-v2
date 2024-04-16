@@ -30,9 +30,11 @@ wcm-modal {
     0% {
       content: '.';
     }
+
     33% {
       content: '..';
     }
+
     66% {
       content: '...';
     }
@@ -43,6 +45,7 @@ wcm-modal {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -75,6 +78,7 @@ wcm-modal {
   padding: 24px;
   background: $bgPalette;
   border-radius: 20px;
+
   @include media('screen', '<phone') {
     padding: 16px 12px;
   }
@@ -85,10 +89,12 @@ wcm-modal {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
-  & > div {
+
+  &>div {
     display: flex;
     align-items: center;
-    & > small {
+
+    &>small {
       margin-right: 10px;
     }
   }
@@ -100,14 +106,17 @@ wcm-modal {
   max-width: 1048px;
   margin: auto;
   width: 100%;
-  & > div {
+
+  &>div {
     width: 100%;
   }
+
   & .MuiButtonGroup-root {
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin-bottom: 50px;
+
     & button {
       max-width: 180px;
       width: 50%;
@@ -118,21 +127,25 @@ wcm-modal {
       background: transparent;
       border: 1px solid $primaryDark;
       color: $textSecondary;
+
       &.active {
         background: $grey7;
         border: 1px solid transparent;
         color: $bgColor;
       }
+
       &:first-child {
         border-top-left-radius: 24px;
         border-bottom-left-radius: 24px;
       }
+
       &:last-child {
         border-top-right-radius: 24px;
         border-bottom-right-radius: 24px;
       }
     }
   }
+
   @include media('screen', '<phone') {
     & .MuiGrid-item {
       width: 100%;
@@ -143,9 +156,10 @@ wcm-modal {
 }
 
 .page {
-  background-color: $bgColor;
+  background-color: $bgPage;
   width: 100%;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .pageWrapper {
@@ -157,13 +171,19 @@ wcm-modal {
   flex-direction: column;
   margin: 0 auto;
   padding: 0;
+
   @include media('screen', '<tablet') {
     padding: 190px 12px 0;
+  }
+
+  @media (min-width: 1800px) {
+    max-width: 1500px;
   }
 }
 
 .pageProModeWrapper {
   padding-top: 0px;
+
   @include media('screen', '<tablet') {
     padding-top: 0;
   }
@@ -177,6 +197,7 @@ wcm-modal {
   flex-direction: column;
   margin: 24px auto;
   padding: 128px 32px 0;
+
   @include media('screen', '<tablet') {
     padding: 172px 12px 0;
   }
@@ -190,6 +211,7 @@ wcm-modal {
 
 .pageWrapper-proMode {
   padding: 128px 0 0;
+
   @include media('screen', '<tablet') {
     padding: 190px 0 0;
   }
@@ -209,11 +231,21 @@ wcm-modal {
   z-index: 1;
   width: 100%;
   overflow: hidden;
+
   & img {
     width: 100%;
+  }
+
+  @media (min-width: 1500px) {
     min-width: 1200px;
   }
+
+  @media (max-width: 960px) {
+    max-height: 100%;
+  }
 }
+
+
 
 .hidden {
   display: none;
@@ -226,6 +258,7 @@ wcm-modal {
   border: 1px solid $secondary2;
   border-radius: 10px;
   cursor: pointer;
+
   & p {
     color: $textHint;
   }
@@ -309,6 +342,7 @@ wcm-modal {
 
 .devPassModal {
   padding: 12px;
+
   & input {
     width: 100%;
     margin: 8px 0;
@@ -326,6 +360,7 @@ wcm-modal {
   padding: 10px 12px 10px 10px;
   border-radius: 22px;
   background-color: #282d3d;
+
   & p {
     margin-left: 4px;
   }
@@ -394,15 +429,18 @@ wcm-modal {
   align-items: center;
   justify-content: center;
   margin-right: 12px;
+
   & p {
     font-size: 8px;
   }
+
   & p,
   & span {
     color: $secondary1;
     font-weight: 600;
   }
 }
+
 .fullHeight {
   height: 100%;
 }
@@ -485,6 +523,7 @@ wcm-modal {
   backdrop-filter: blur(3px);
   background-color: $bgPalette1;
   z-index: 12;
+
   & p {
     color: $textSecondary;
     font-size: 13px;
@@ -493,15 +532,18 @@ wcm-modal {
     letter-spacing: 1.8px;
     text-transform: uppercase;
   }
+
   & h4 {
     font-size: 23px;
     line-height: 23px;
     margin: 8px 0;
   }
+
   & small {
     color: $grey35;
     line-height: 14px;
   }
+
   & input {
     width: 100%;
     margin: 8px 0;
@@ -514,27 +556,32 @@ wcm-modal {
     outline: none;
     color: white;
   }
+
   & button {
     width: 100%;
     border-radius: 10px;
     background: linear-gradient(0deg, $blue11 0.6%, $purple6 100.1%);
     box-shadow: 0 0 7px 0 $purple7;
     height: 33px;
+
     & span {
       font-size: 12.11px;
       font-weight: 600;
     }
   }
+
   & .newsletterSignupClose {
     position: absolute;
     top: 12px;
     right: 12px;
     color: $textSecondary;
   }
+
   & span {
     font-size: 13px;
     line-height: 14px;
   }
+
   @include media('screen', '<tablet') {
     top: 180px;
   }
@@ -542,6 +589,7 @@ wcm-modal {
 
 #tosPage ol {
   padding-left: 16px;
+
   li {
     margin-bottom: 16px;
   }

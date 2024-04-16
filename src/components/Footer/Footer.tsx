@@ -14,6 +14,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import { ReactComponent as ArrowAhead } from '../../assets/images/landingPage/arrow_ahead.svg';
+import BGSHINE from '../../assets/images/shine.webp';
 
 const Footer: React.FC = () => {
   const history = useHistory();
@@ -36,7 +37,7 @@ const Footer: React.FC = () => {
       ],
     },
     {
-      title: t('\u00A0'),
+      title: '',
       items: [
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('gamingHub'), link: '/' },
@@ -106,7 +107,10 @@ const Footer: React.FC = () => {
               </Grid>
             ))}
           </Grid>
-          <Grid item xs={12} sm={12} md={4}>
+          <Grid item xs={12} sm={12} md={4} className='email_input'>
+            {/* shiny img */}
+            <img src={BGSHINE} className='bg_shine' alt='' />
+
             <picture>
               <source height={40} srcSet={QUICKLogoWebP} type='image/webp' />
               <img src={QUICKLogo} alt='QUICK' height={40} />
@@ -154,6 +158,7 @@ const Footer: React.FC = () => {
           <small className='text-secondary'>
             © {copyrightYear} QuickSwap. All rights reserved.
           </small>
+          {tabletWindowSize && <hr className='divider-mobile'></hr>}
           <small className='text-secondary'>
             <Link className='footer-link' to='/tos'>
               {t('termsofuse')}

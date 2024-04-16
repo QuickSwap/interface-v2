@@ -1,6 +1,6 @@
 @use 'styles/variables' as *;
 
-.margin-extra{
+.margin-extra {
   background-color: pink !important;
 }
 
@@ -34,6 +34,29 @@
 
 .socialMenuWrapper {
   padding: 40px 0;
+  backdrop-filter: blur(24px);
+
+  & .email_input {
+    position: relative;
+    z-index: 10;
+
+    & .bg_shine {
+      position: absolute;
+      z-index: 5;
+      top: 50%;
+      left: 0%;
+      transform: translateX(-30%) translateY(-50%) !important;
+      width: 880px;
+      height: 636px;
+      background-size: cover;
+      display: none;
+      opacity: 0.6;
+
+      @media (max-width: 960px) {
+        display: block;
+      }
+    }
+  }
 }
 
 .copyrightWrapper {
@@ -47,7 +70,16 @@
 .copyright-mobile {
   justify-content: space-between;
   margin-bottom: 64px;
-  border-bottom: 1px solid $divider;
+  // border-bottom: 1px solid $divider;
+  flex-direction: column;
+  align-items: flex-start;
+  border-top: 0px;
+
+  & .divider-mobile {
+    margin: 16px 0;
+    border: 1px solid #192338;
+    width: 100%;
+  }
 }
 
 .fake-community-container {
@@ -102,10 +134,8 @@ a.footer-link {
   }
 }
 
-
-// gap b/w newsletter and links in mobile
 @media (max-width: 420px) {
-.socialMenuWrapper{
-  gap: 20px
-}
+  .socialMenuWrapper {
+    gap: 20px
+  }
 }

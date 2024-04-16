@@ -67,6 +67,16 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  backdrop-filter: blur(30px);
+  background-color: transparent !important;
+
+  & .header_logo img {
+    @media (max-width: 420px) {
+      width: 32px;
+      height: 32px;
+    }
+
+  }
 
   & a {
     display: flex;
@@ -100,6 +110,10 @@
         & p {
           font-size: 16px;
         }
+
+        @media (max-width: 450px) {
+          height: 36px;
+        }
       }
     }
   }
@@ -111,7 +125,7 @@
   }
 
   @include media('screen', '<phone') {
-    padding: 0 16px;
+    padding: 14px 16px;
     position: relative;
     min-height: 64px;
   }
@@ -125,6 +139,8 @@
   align-items: center;
   height: 100%;
 
+
+
   & .menuItem {
     cursor: pointer;
     position: relative;
@@ -136,6 +152,7 @@
     overflow: hidden;
     border-radius: 10px;
     color: white;
+    z-index: 15;
 
     & small {
       white-space: nowrap;
@@ -190,6 +207,10 @@
       }
     }
 
+    & .dropdown {
+      display: none !important;
+    }
+
     & .subMenu {
       display: none;
       background-color: $secondary2;
@@ -232,6 +253,10 @@
       }
 
       & .subMenu {
+        display: block;
+      }
+
+      & .dropdown {
         display: block;
       }
     }
@@ -283,21 +308,21 @@
   a {
     text-decoration: none;
   }
-  
-    a > button {
-      width: 152px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px !important;
-      border: none !important;
-      font-size: 14px;
-      // font-weight: 600;
-      background-color: #448aff;
-      color: white;
-      cursor: pointer;
-      // position: relative;
+
+  a>button {
+    width: 152px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px !important;
+    border: none !important;
+    font-size: 14px;
+    // font-weight: 600;
+    background-color: #448aff;
+    color: white;
+    cursor: pointer;
+    // position: relative;
 
   }
 
@@ -488,9 +513,7 @@
 
 @media (max-width: 959px) {
   .header {
-    background-color: #121319;
-    -webkit-backdrop-filter: blur(30px);
-    backdrop-filter: blur(30px);
+    background-color: transparent;
   }
 
   .networkSelection {
@@ -517,6 +540,33 @@
 
   &.active {
     color: #448aff;
-    // background-color: #252833;
+  }
+}
+
+.dropdown-wrapper {
+  position: absolute;
+
+}
+
+.dropdown {
+  border-radius: 6px;
+  margin-top: 8px;
+  min-width: 180px;
+  background-color: #232734;
+  box-shadow: 0 0 0 0 rgb(255, 255, 255), 0 0 0 1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.navMenu {
+
+  & .dropdown {
+    display: none !important;
+  }
+
+  &:hover {
+
+    & .dropdown {
+      display: block !important;
+    }
   }
 }

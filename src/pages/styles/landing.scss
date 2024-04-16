@@ -14,10 +14,12 @@ a {
   justify-content: center;
 
   @media (max-width: 767px) {
-    align-items: center; 
+    align-items: center;
+    margin-top: 140px;
+
   }
 
-  @media (min-width: 768px) and (max-width: 1299px) {
+  @media (min-width: 768px) and (max-width: 1440px) {
     margin-left: 80px;
   }
 
@@ -56,8 +58,7 @@ a {
 
   & button {
     margin-top: 20px;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding: 13px 32px 15px;
     border-radius: 0.5rem;
     border-color: transparent;
     width: 156px;
@@ -76,6 +77,7 @@ a {
 
 .chainsContainer {
   margin-top: 154px;
+  margin-left: 48px;
   width: 90%;
   display: flex;
   align-items: center;
@@ -83,10 +85,27 @@ a {
   font-size: 0.75rem;
   gap: 1rem;
 
+
+  & .font-14 {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1024px) {
+    margin-left: 18px;
+  }
+
+  @media (max-width: 420px) {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    margin-left: 8px;
+  }
+
   .chainsItems {
     display: flex;
     gap: 1rem;
     overflow: hidden;
+    width: 100%;
 
     .chainsAddress {
       display: flex;
@@ -103,6 +122,7 @@ a {
       .font-14 {
         font-size: 14px;
         line-height: 27px;
+        white-space: nowrap;
       }
 
       .networkDivider {
@@ -124,18 +144,22 @@ a {
 
   .sectionHeading {
     color: #448aff;
-    font-size: xx-large;
+    font-size: 24px;
+    font-weight: 600;
   }
 
   .sectionDesc {
     color: #ccd8e7;
     text-align: center;
     width: 432px;
+    font-size: 16px;
+    font-weight: normal;
 
     @media (max-width: 767px) {
       width: 95%;
     }
   }
+
 
   .statsCardBox {
     width: 100%;
@@ -164,6 +188,7 @@ a {
         color: #1fb85f;
       }
     }
+
   }
 
   .statsContainer {
@@ -195,7 +220,8 @@ a {
       flex-direction: column;
       justify-content: space-between;
       margin: 40px 24px 0;
-      border: 1px solid transparent;
+      backdrop-filter: blur(24px);
+      background-color: transparent;
 
       @media (max-width: 767px) {
         width: 100%;
@@ -210,7 +236,7 @@ a {
 
       div>& h5 {
         margin-top: 20px;
-        // color: #448aff;
+        color: #448aff;
         font-size: 18px;
       }
 
@@ -229,18 +255,6 @@ a {
           width: 15px;
         }
       }
-
-      &:hover {
-        border-color: #448aff;
-        border-width: 1px;
-
-        div>& h5 {
-          margin-top: 20px;
-          color: #448aff;
-          font-size: 18px;
-        }
-        
-      }
     }
   }
 
@@ -253,10 +267,16 @@ a {
     .statsCardBox {
       flex-wrap: nowrap;
       justify-content: space-around;
+
       .statsCard {
         width: 204px;
       }
     }
+  }
+
+  @media (max-width: 767px) {
+    align-items: flex-start;
+    gap: 16px;
   }
 }
 
@@ -316,10 +336,15 @@ a {
   align-items: center;
   width: 100%;
   height: auto;
-  border-radius: 2px;
+  border-radius: 16px;
   padding: 35px 20px;
-  background: rgba(78, 78, 78, 0.1);
-  backdrop-filter: blur(60px);
+  // background: rgba(78, 78, 78, 0.1);
+  // backdrop-filter: blur(60px);
+
+  // need to change it after bg is sorted
+  backdrop-filter: blur(24px);
+  background-color: rgba(25, 35, 56, 0.08);
+  border: solid 2px rgba(112, 112, 112, 0.08);
   -webkit-backdrop-filter: blur(60px);
 
   .Subscribe {
@@ -349,19 +374,28 @@ a {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 24px;
     margin-top: 2rem;
+    position: relative;
+    z-index: 10;
 
-    & > div {
+
+    &>div {
       padding: 11px 24px;
       text-align: center;
 
       & a {
         text-decoration: none;
         color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
+        gap: 6px;
+        width: 100%;
 
         p {
           font-size: 12px;
-          width: 54px;
           color: #ccd8e7 !important;
           text-align: center;
         }
@@ -396,10 +430,36 @@ a {
           opacity: 1;
         }
       }
+
+      @media (min-width: 1150px) {
+        width: 96px;
+      }
+
+      @media (max-width: 1150px) {
+        width: 82px;
+      }
+
+      @media (max-width: 1024px) {
+        width: 82px;
+      }
     }
+
+
+    @media (max-width: 1024px) {
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      width: 80%;
+    }
+
+    @media (max-width: 752px) {
+      width: 100%;
+    }
+
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 900px) {
     flex-direction: row;
     justify-content: space-between;
     padding: 35px 73px 37px 72px;
@@ -465,44 +525,40 @@ a {
   font-size: 0.8rem;
 }
 
-
-// Responsive styles for mobile device
 @media (max-width: 420px) {
-  
-  .networkSelection{
+
+  .networkSelection {
     display: none;
   }
-  
-  .mobileMenuContainer{
+
+  .mobileMenuContainer {
     display: none !important;
   }
 
-  .menuBar > div:last-child button:first-child{
+  .menuBar>div:last-child button:first-child {
     margin-right: 0px;
-    padding:0px 24px;
+    padding: 9px 11px;
   }
-  .launchApp a > button{
-    width: 125px;
+
+  .launchApp a>button {
+    width: 112px;
   }
-  .heroBkg img{
+
+  .heroBkg img {
     min-width: unset;
-  }
-  .heroBkg{
-    scale: 1.2;
-    top:120px;
-    left: -30px;
   }
 }
 
-// for max-width 300px
 @media (max-width: 300px) {
-  .heroBkg{
+  .heroBkg {
     left: -22px;
   }
-  .menuBar > div:last-child button:first-child{
-    padding:0px 16px;
+
+  .menuBar>div:last-child button:first-child {
+    padding: 0px 16px;
   }
-  .launchApp a > button{
+
+  .launchApp a>button {
     width: 100px;
     font-size: 12px;
   }
