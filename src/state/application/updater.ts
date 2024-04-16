@@ -86,9 +86,8 @@ export default function Updater(): null {
 
   // attach/detach listeners
   useEffect(() => {
-    if (!library || !chainId || !windowVisible) return undefined;
-
-    setState({ chainId, blockNumber: null });
+    setState({ chainId: currentChainId, blockNumber: null });
+    if (!library || !windowVisible) return undefined;
 
     library
       .getBlockNumber()
@@ -125,7 +124,7 @@ export default function Updater(): null {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, chainId, blockNumberCallback, windowVisible]);
+  }, [currentChainId, chainId, windowVisible]);
 
   const debouncedState = useDebounce(state, 100);
 
