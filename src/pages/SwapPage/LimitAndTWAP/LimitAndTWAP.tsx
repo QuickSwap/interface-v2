@@ -3,13 +3,13 @@ import {
   TWAP as QuickSwapTWAP,
   Orders as QuickSwapOrders,
 } from '@orbs-network/twap-ui-quickswap';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 import { CurrencySearchModal } from 'components';
 import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
 import { useIsProMode, useActiveWeb3React } from 'hooks';
 import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { FC, useCallback } from 'react';
-import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useSwapActionHandlers,
@@ -31,7 +31,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
   const outputCurrency = useCurrency(outputCurrencyId);
 
   const allTokens = useAllTokens();
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
   const onCurrencySelection = useSwapActionHandlers().onCurrencySelection;
   const { isProMode } = useIsProMode();
   const { redirectWithCurrency } = useSwapRedirects();
@@ -78,7 +78,9 @@ function TWAPBase({ limit }: { limit?: boolean }) {
       <QuickSwapTWAP
         limit={limit}
         isProMode={isProMode}
-        connect={toggleWalletModal}
+        connect={() => {
+          open();
+        }}
         connectedChainId={chainId}
         provider={library?.provider}
         account={account}

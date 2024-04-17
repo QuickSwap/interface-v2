@@ -110,6 +110,7 @@ createWeb3Modal({
   chainImages,
   projectId,
   enableAnalytics: true,
+  allowUnsupportedChain: true,
 });
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {

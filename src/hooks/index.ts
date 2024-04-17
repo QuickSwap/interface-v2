@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
   useWeb3ModalProvider,
   useWeb3ModalAccount,
+  useWeb3Modal,
 } from '@web3modal/ethers5/react';
 import { ChainId, Pair } from '@uniswap/sdk';
 import { useSingleCallResult, NEVER_RELOAD } from 'state/multicall/hooks';
@@ -20,33 +21,34 @@ import { useMasaAnalyticsReact } from '@masa-finance/analytics-react';
 import { Currency } from '@uniswap/sdk-core';
 import { BigNumber, providers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
-import {
-  useOpenNetworkSelection,
-  useWalletModalToggle,
-} from 'state/application/hooks';
+import { useOpenNetworkSelection } from 'state/application/hooks';
 
 export function useActiveWeb3React() {
-  const context = useWeb3ModalAccount();
+  const {
+    chainId: web3ModalChainId,
+    address,
+    isConnected,
+  } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
   const chainId: ChainId | undefined = useMemo(() => {
-    if (!context.chainId || !SUPPORTED_CHAINIDS.includes(context.chainId)) {
+    if (!web3ModalChainId || !SUPPORTED_CHAINIDS.includes(web3ModalChainId)) {
       return ChainId.MATIC;
     }
-    return context.chainId;
-  }, [context.chainId]);
+    return web3ModalChainId;
+  }, [web3ModalChainId]);
+
+  const provider = walletProvider
+    ? new providers.Web3Provider(walletProvider)
+    : undefined;
 
   return {
-    account: context.address,
+    account: address,
     chainId,
-    currentChainId: context.chainId,
-    provider: walletProvider
-      ? new providers.Web3Provider(walletProvider)
-      : undefined,
-    library: walletProvider
-      ? new providers.Web3Provider(walletProvider)
-      : undefined,
-    isActive: context.isConnected,
+    currentChainId: web3ModalChainId,
+    provider,
+    library: provider,
+    isActive: isConnected,
   };
 }
 
@@ -159,14 +161,14 @@ export const useTokenPriceUsd = (
 };
 
 export const useConnectWallet = (isSupportedNetwork: boolean) => {
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
   const { setOpenNetworkSelection } = useOpenNetworkSelection();
 
   const connectWallet = () => {
     if (!isSupportedNetwork) {
       setOpenNetworkSelection(true);
     } else {
-      toggleWalletModal();
+      open();
     }
   };
 
