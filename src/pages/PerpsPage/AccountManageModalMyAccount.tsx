@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CopyHelper } from 'components';
 import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { Refresh, Visibility, VisibilityOff } from '@material-ui/icons';
@@ -6,22 +6,39 @@ import './Layout.scss';
 import {
   useAccountInfo,
   useAccountInstance,
+  useCollateral,
   useLeverage,
+  usePositionStream,
 } from '@orderly.network/hooks';
 import AccountTierImage from 'assets/images/AccountManageTier.webp';
 import { AccountLeverageSlider } from './AccountLeverageSlider';
-import { shortenAddress, shortenTx } from 'utils';
+import { formatNumber, shortenAddress, shortenTx } from 'utils';
+import AssetModal from 'components/AssetModal';
 
 const AccountManageModalMyAccount: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const { data: accountInfo } = useAccountInfo();
   const account = useAccountInstance();
+  const { data: accountInfo } = useAccountInfo();
+  const [data] = usePositionStream();
+
+  const { totalValue } = useCollateral();
+
+  const unsettledPnLPercent = useMemo(() => {
+    if (totalValue !== 0 || Number(data?.aggregated?.unsettledPnL ?? 0) !== 0) {
+      const unsettledPnL = Number(data?.aggregated?.unsettledPnL ?? 0);
+      return totalValue - unsettledPnL > 0
+        ? (unsettledPnL / (totalValue - unsettledPnL)) * 100
+        : 0;
+    }
+    return 0;
+  }, [data?.aggregated?.unsettledPnL, totalValue]);
 
   const [maxLeverage, { update }] = useLeverage();
   const [leverage, setLeverage] = useState<number | undefined>(undefined);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [hideValue, setHideValue] = useState(false);
+  const [settlingPNL, setSettlingPNL] = useState(false);
 
   const updateLeverage = async () => {
     setLoadingUpdate(true);
@@ -32,6 +49,9 @@ const AccountManageModalMyAccount: React.FC = () => {
       setLoadingUpdate(false);
     }
   };
+
+  const [assetModalOpen, setAssetModalOpen] = useState(false);
+  const [assetModalType, setAssetModalType] = useState('deposit');
 
   return (
     <>
@@ -123,8 +143,24 @@ const AccountManageModalMyAccount: React.FC = () => {
               <Box className='flex justify-between'>
                 <small>Balance</small>
                 <Box className='flex items-center' gridGap={8}>
-                  <Button className='accountPanelButton'>Deposit</Button>
-                  <Button className='accountPanelButton'>Withdraw</Button>
+                  <Button
+                    className='accountPanelButton'
+                    onClick={() => {
+                      setAssetModalOpen(true);
+                      setAssetModalType('deposit');
+                    }}
+                  >
+                    Deposit
+                  </Button>
+                  <Button
+                    className='accountPanelButton'
+                    onClick={() => {
+                      setAssetModalOpen(true);
+                      setAssetModalType('withdraw');
+                    }}
+                  >
+                    Withdraw
+                  </Button>
                 </Box>
               </Box>
               <Box className='border-top flex justify-between' pt={2} mt={2}>
@@ -135,7 +171,8 @@ const AccountManageModalMyAccount: React.FC = () => {
                         Total estimate value
                       </span>
                       <small>
-                        0 <span className='text-secondary'>USDC</span>
+                        {hideValue ? '***' : 0}{' '}
+                        <span className='text-secondary'>USDC</span>
                       </small>
                       <Box
                         className='flex items-center text-primary cursor-pointer'
@@ -157,7 +194,19 @@ const AccountManageModalMyAccount: React.FC = () => {
                     <Box className='flex flex-col' gridGap={8}>
                       <span className='text-secondary'>Unreal. PnL (USDC)</span>
                       <small>
-                        0 <span className='text-secondary'>(0.00%)</span>
+                        {hideValue
+                          ? '***'
+                          : formatNumber(data?.aggregated?.unrealPnL)}{' '}
+                        <span className='text-secondary'>
+                          (
+                          {hideValue
+                            ? '***'
+                            : formatNumber(
+                                Number(data?.aggregated?.unrealPnlROI ?? 0) *
+                                  100,
+                              )}
+                          %)
+                        </span>
                       </small>
                     </Box>
                   </Grid>
@@ -167,18 +216,41 @@ const AccountManageModalMyAccount: React.FC = () => {
                         Unsettled PnL (USDC)
                       </span>
                       <small>
-                        0 <span className='text-secondary'>(0.00%)</span>
+                        {hideValue
+                          ? '***'
+                          : formatNumber(data?.aggregated?.unsettledPnL)}{' '}
+                        <span className='text-secondary'>
+                          (
+                          {hideValue
+                            ? '***'
+                            : formatNumber(unsettledPnLPercent)}
+                          %)
+                        </span>
                       </small>
-                      <Box
-                        className='flex items-center text-primary cursor-pointer'
-                        gridGap={4}
-                        onClick={() => {
-                          account.settle();
-                        }}
-                      >
-                        <Refresh fontSize='small' />
-                        <span>Settle PnL</span>
-                      </Box>
+                      {Number(data?.aggregated?.unsettledPnL ?? 0) !== 0 && (
+                        <Box
+                          className={`flex items-center text-primary${
+                            settlingPNL
+                              ? ' opacity-disabled'
+                              : ' cursor-pointer'
+                          }`}
+                          gridGap={4}
+                          onClick={async () => {
+                            if (!settlingPNL) {
+                              setSettlingPNL(true);
+                              try {
+                                await account.settle();
+                                setSettlingPNL(false);
+                              } catch {
+                                setSettlingPNL(false);
+                              }
+                            }
+                          }}
+                        >
+                          <Refresh fontSize='small' />
+                          <span>{settlingPNL ? 'Settling' : 'Settle'} PnL</span>
+                        </Box>
+                      )}
                     </Box>
                   </Grid>
                 </Grid>
@@ -285,6 +357,13 @@ const AccountManageModalMyAccount: React.FC = () => {
           </Grid>
         </Grid>
       </Box>
+      {assetModalOpen && (
+        <AssetModal
+          open={assetModalOpen}
+          onClose={() => setAssetModalOpen(false)}
+          modalType={assetModalType}
+        />
+      )}
     </>
   );
 };
