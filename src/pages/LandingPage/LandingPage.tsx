@@ -83,7 +83,7 @@ const LandingPage: React.FC = () => {
     },
     {
       icon: X1Network,
-      name: 'X1 Network',
+      name: 'X Layer',
     },
     {
       icon: DogeChain,
