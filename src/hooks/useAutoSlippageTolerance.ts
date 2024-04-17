@@ -1,45 +1,122 @@
-import { Trade } from '@uniswap/sdk';
+import { JSBI, Trade as V2Trade, WETH } from '@uniswap/sdk';
+import { Currency, Percent, TradeType } from '@uniswap/sdk-core';
+import { useActiveWeb3React } from 'hooks';
+import { Trade as V3Trade } from 'lib/src/trade';
 import { useMemo } from 'react';
-import { computeTradePriceBreakdown } from 'utils/prices';
-import useUSDCPrice from 'utils/useUSDCPrice';
-import { formatTokenAmount } from 'utils';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import useGasPrice from './useGasPrice';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { formatUnits } from 'ethers/lib/utils';
+import { OptimalRate } from '@paraswap/sdk';
+import { Percent as V2Percent } from '@uniswap/sdk';
 
-const DEFAULT_AUTO_SLIPPAGE = 0.5; // 0.5%
+const DEFAULT_AUTO_SLIPPAGE = new Percent(5, 1000);
 const MIN_AUTO_SLIPPAGE_TOLERANCE = DEFAULT_AUTO_SLIPPAGE;
-// assuming normal gas speeds, most swaps complete within 3 blocks and
-// there's rarely price movement >5% in that time period
-const MAX_AUTO_SLIPPAGE_TOLERANCE = 5; // 5%
+const MAX_AUTO_SLIPPAGE_TOLERANCE = new Percent(5, 100);
 
-export default function useAutoSlippageTolerance(
-  trade?: Trade | undefined,
-): any {
-  const usdPrice = Number(
-    useUSDCPrice(trade?.outputAmount.currency)?.toSignificant() ?? 0,
-  );
-  const amount = trade?.outputAmount.toExact();
+const DEFAULT_AUTO_SLIPPAGE_V2 = new V2Percent('5', '1000');
+const MIN_AUTO_SLIPPAGE_TOLERANCE_V2 = DEFAULT_AUTO_SLIPPAGE_V2;
+const MAX_AUTO_SLIPPAGE_TOLERANCE_V2 = new V2Percent('5', '100');
 
-  const amountOutValueDollar = usdPrice * Number(amount);
+// Base costs regardless of how many hops in the route
+const V3_SWAP_BASE_GAS_ESTIMATE = 100_000;
+const V2_SWAP_BASE_GAS_ESTIMATE = 135_000;
 
-  const { realizedLPFee } = computeTradePriceBreakdown(trade);
-  const usdInputPrice = Number(
-    useUSDCPrice(trade?.inputAmount.currency)?.toSignificant() ?? 0,
-  );
-  const transactionFeeDollar =
-    usdInputPrice * Number(formatTokenAmount(realizedLPFee));
+// Extra cost per hop in the route
+const V3_SWAP_HOP_GAS_ESTIMATE = 70_000;
+const V2_SWAP_HOP_GAS_ESTIMATE = 50_000;
+
+function guesstimateGas(
+  trade: V2Trade | V3Trade<Currency, Currency, TradeType> | undefined,
+): number | undefined {
+  if (trade) {
+    let gas = 0;
+    if (trade instanceof V3Trade) {
+      for (const { route } of trade.swaps) {
+        gas +=
+          V3_SWAP_BASE_GAS_ESTIMATE +
+          route.pools.length * V3_SWAP_HOP_GAS_ESTIMATE;
+      }
+    } else {
+      gas +=
+        V2_SWAP_BASE_GAS_ESTIMATE +
+        trade.route.pairs.length * V2_SWAP_HOP_GAS_ESTIMATE;
+    }
+    return gas;
+  }
+
+  return undefined;
+}
+
+export function useAutoSlippageTolerance(
+  trade?: V2Trade | V3Trade<Currency, Currency, TradeType>,
+): Percent {
+  const { chainId } = useActiveWeb3React();
+  const outputToken =
+    trade instanceof V2Trade
+      ? wrappedCurrency(trade?.outputAmount.currency, chainId)
+      : trade?.outputAmount.currency.wrapped;
+  const outputTokenUSDPrice = useUSDCPriceFromAddress(outputToken?.address);
+  const outputUSD =
+    Number(trade?.outputAmount.toExact()) * outputTokenUSDPrice.price;
+
+  const nativeGasPrice = useGasPrice();
+  const gasEstimate = guesstimateGas(trade);
+  const nativeGasCost =
+    nativeGasPrice && gasEstimate
+      ? JSBI.multiply(nativeGasPrice, JSBI.BigInt(gasEstimate))
+      : undefined;
+  const nativeUSDPrice = useUSDCPriceFromAddress(WETH[chainId].address);
+  const gasCostUSD = nativeGasCost
+    ? Number(formatUnits(nativeGasCost.toString(), WETH[chainId].decimals)) *
+      nativeUSDPrice.price
+    : undefined;
 
   return useMemo(() => {
-    const recommendedSlippage =
-      (transactionFeeDollar / amountOutValueDollar) * 100;
+    if (!trade) return DEFAULT_AUTO_SLIPPAGE;
 
-    if (
-      recommendedSlippage >= MIN_AUTO_SLIPPAGE_TOLERANCE &&
-      recommendedSlippage <= MAX_AUTO_SLIPPAGE_TOLERANCE
-    ) {
-      return (recommendedSlippage * 100).toFixed(0);
-    } else if (recommendedSlippage < MIN_AUTO_SLIPPAGE_TOLERANCE) {
-      return DEFAULT_AUTO_SLIPPAGE;
-    } else if (recommendedSlippage > MAX_AUTO_SLIPPAGE_TOLERANCE) {
-      return MAX_AUTO_SLIPPAGE_TOLERANCE;
+    if (outputUSD && gasCostUSD) {
+      const result = new Percent(
+        ((gasCostUSD / outputUSD) * 10000).toFixed(0),
+        10000,
+      );
+      if (result.greaterThan(MAX_AUTO_SLIPPAGE_TOLERANCE)) {
+        return MAX_AUTO_SLIPPAGE_TOLERANCE;
+      }
+
+      if (result.lessThan(MIN_AUTO_SLIPPAGE_TOLERANCE)) {
+        return MIN_AUTO_SLIPPAGE_TOLERANCE;
+      }
+
+      return result;
     }
-  }, [amountOutValueDollar, transactionFeeDollar]);
+
+    return DEFAULT_AUTO_SLIPPAGE;
+  }, [trade, outputUSD, gasCostUSD]);
+}
+
+export function useAutoSlippageToleranceBestTrade(
+  trade?: OptimalRate,
+): V2Percent {
+  return useMemo(() => {
+    if (!trade) return DEFAULT_AUTO_SLIPPAGE_V2;
+
+    if (trade && Number(trade.destUSD) > 0) {
+      const result = new V2Percent(
+        ((Number(trade.gasCostUSD) / Number(trade.destUSD)) * 10000).toFixed(0),
+        JSBI.BigInt(10000),
+      );
+      if (result.greaterThan(MAX_AUTO_SLIPPAGE_TOLERANCE_V2)) {
+        return MAX_AUTO_SLIPPAGE_TOLERANCE_V2;
+      }
+
+      if (result.lessThan(MIN_AUTO_SLIPPAGE_TOLERANCE_V2)) {
+        return MIN_AUTO_SLIPPAGE_TOLERANCE_V2;
+      }
+
+      return result;
+    }
+
+    return DEFAULT_AUTO_SLIPPAGE_V2;
+  }, [trade]);
 }

@@ -68,6 +68,7 @@ import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -121,6 +122,7 @@ const Swap: React.FC<{
     parsedAmount,
     currencies,
     inputError: swapInputError,
+    autoSlippage,
   } = useDerivedSwapInfo();
   const toggledVersion = useToggledVersion();
   const finalizedTransaction = useTransactionFinalizer();
@@ -164,7 +166,9 @@ const Swap: React.FC<{
     onChangeRecipient,
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
-  const [allowedSlippage] = useUserSlippageTolerance();
+  let [allowedSlippage] = useUserSlippageTolerance();
+  allowedSlippage =
+    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
   const [approving, setApproving] = useState(false);
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     trade,

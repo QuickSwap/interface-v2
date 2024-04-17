@@ -71,6 +71,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const slippageError = useMemo(() => {
     if (slippageInput !== '' && !slippageInputIsValid) {
       return SlippageError.InvalidInput;
+    } else if (userSlippageTolerance === SLIPPAGE_AUTO) {
+      return undefined;
     } else if (slippageInputIsValid && userSlippageTolerance < 50) {
       return SlippageError.RiskyLow;
     } else if (slippageInputIsValid && userSlippageTolerance > 500) {
