@@ -36,6 +36,7 @@ import GoAhead from '../../assets/images/landingPage/GoAhead.svg';
 import { HypeLabAds } from 'components';
 import { useIsSupportedNetwork } from 'utils';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { BuyFiatButton } from 'components';
 
 import Polygon from '../../assets/images/landingPage/chains/aMATIC.svg';
 import PolygonZK from '../../assets/images/landingPage/chains/PolygonZK.png';
@@ -45,6 +46,7 @@ import AstarZK from '../../assets/images/landingPage/chains/Astar.png';
 import X1Network from '../../assets/images/landingPage/chains/x1.png';
 import DogeChain from '../../assets/images/landingPage/chains/dogechain.png';
 import Kava from '../../assets/images/landingPage/chains/KAVA.svg';
+import BGSHINE from '../../assets/images/shine.webp';
 
 const GlobalSection = lazy(() => import('./GlobalSection'));
 // const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
@@ -311,8 +313,10 @@ const LandingPage: React.FC = () => {
           {features.map((val, index) => (
             <Box className='sectionCard' key={index}>
               <div>
-                <img src={val.img} alt={val.title} />
-                <h5>{val.title}</h5>
+                <div className='card_title'>
+                  <img src={val.img} alt={val.title} />
+                  <h5>{val.title}</h5>
+                </div>
                 <p>{val.desc}</p>
               </div>
               <a href={val.link}>
@@ -331,8 +335,10 @@ const LandingPage: React.FC = () => {
           {earnContent.map((val, index) => (
             <Box className='sectionCard' key={index}>
               <div>
-                <img src={val.img} alt={val.title} />
-                <h5>{val.title}</h5>
+                <div className='card_title'>
+                  <img src={val.img} alt={val.title} />
+                  <h5>{val.title}</h5>
+                </div>
                 <p>{val.desc}</p>
               </div>
               <a href={val.link}>
@@ -352,6 +358,9 @@ const LandingPage: React.FC = () => {
         </Box>
 
         <Box className='socialContent'>
+
+          <img src={BGSHINE} className='bg_shine' alt='' />
+
           {socialicons.map((val, ind) => (
             <Box
               key={ind}
@@ -362,7 +371,7 @@ const LandingPage: React.FC = () => {
               }
             >
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
-                {/* <img src={val.icon} alt="icons" /> */}
+
                 {val.icon}
                 <p>{val.title}</p>
               </a>

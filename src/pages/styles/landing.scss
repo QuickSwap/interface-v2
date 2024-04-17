@@ -15,8 +15,12 @@ a {
 
   @media (max-width: 767px) {
     align-items: center;
-    margin-top: 140px;
+    margin-top: 180px;
+  }
 
+  @media (max-width: 367px) {
+    align-items: center;
+    margin-top: 140px;
   }
 
   @media (min-width: 768px) and (max-width: 1440px) {
@@ -88,6 +92,8 @@ a {
 
   & .font-14 {
     white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
   }
 
   @media (max-width: 1024px) {
@@ -96,22 +102,46 @@ a {
 
   @media (max-width: 420px) {
     flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-    margin-left: 8px;
+    gap: 24px;
+    align-items: center;
+    width: 100%;
+    margin-left: 0px;
   }
 
   .chainsItems {
     display: flex;
     gap: 1rem;
-    overflow: hidden;
+    overflow-x: hidden;
     width: 100%;
+
+    @media (max-width:420px) {
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0px;
+    }
+
+    @media (min-width:420px) {
+      overflow-x: scroll;
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      scrollbar-width: none;
+
+    }
 
     .chainsAddress {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 0.35rem;
+
+      @media (max-width:420px) {
+        padding-left: 10px;
+        margin-top: 16px;
+      }
 
       .networkIcon {
         width: 16px;
@@ -123,6 +153,10 @@ a {
         font-size: 14px;
         line-height: 27px;
         white-space: nowrap;
+
+        @media (max-width:420px) {
+          font-size: 12px;
+        }
       }
 
       .networkDivider {
@@ -157,6 +191,7 @@ a {
 
     @media (max-width: 767px) {
       width: 95%;
+      text-align: start;
     }
   }
 
@@ -171,6 +206,10 @@ a {
     justify-content: space-around;
     margin-bottom: 1rem;
 
+    @media (min-width: 1124px) {
+      flex-wrap: nowrap;
+    }
+
     .statsCard {
       width: calc(50% - 0.75rem);
       height: 107px;
@@ -178,11 +217,29 @@ a {
       flex-direction: column;
       justify-content: center;
       gap: 1rem;
+      max-width: 204px;
+
+
+      @media (min-width: 1110px) {
+        width: calc(100%/6 - 0.75rem);
+        max-width: 204px;
+      }
+
+      @media (min-width: 720px) {
+        width: calc(100%/3 - 0.75rem);
+        max-width: 284px;
+      }
 
       & h5 {
         color: #6880a3;
         font-size: 11px;
+
+        @media (max-width: 767px) {
+          font-size: 10px;
+        }
       }
+
+
 
       .text-green {
         color: #1fb85f;
@@ -210,6 +267,7 @@ a {
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 1rem;
+    gap: 24px;
 
     .sectionCard {
       padding-top: 1.5rem;
@@ -219,9 +277,24 @@ a {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      margin: 40px 24px 0;
+      margin: 40px 0px 0;
       backdrop-filter: blur(24px);
       background-color: transparent;
+      align-items: start;
+
+      & .card_title {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: start;
+        gap: 24px;
+
+        @media (min-width: 767px) {
+          flex-direction: column;
+          align-items: start;
+          justify-content: start;
+        }
+      }
 
       @media (max-width: 767px) {
         width: 100%;
@@ -235,7 +308,6 @@ a {
       }
 
       div>& h5 {
-        margin-top: 20px;
         color: #448aff;
         font-size: 18px;
       }
@@ -263,16 +335,6 @@ a {
     color: white;
   }
 
-  @media only screen and (min-width: 600px) {
-    .statsCardBox {
-      flex-wrap: nowrap;
-      justify-content: space-around;
-
-      .statsCard {
-        width: 204px;
-      }
-    }
-  }
 
   @media (max-width: 767px) {
     align-items: flex-start;
@@ -338,10 +400,7 @@ a {
   height: auto;
   border-radius: 16px;
   padding: 35px 20px;
-  // background: rgba(78, 78, 78, 0.1);
-  // backdrop-filter: blur(60px);
 
-  // need to change it after bg is sorted
   backdrop-filter: blur(24px);
   background-color: rgba(25, 35, 56, 0.08);
   border: solid 2px rgba(112, 112, 112, 0.08);
@@ -379,6 +438,28 @@ a {
     position: relative;
     z-index: 10;
 
+
+    & .bg_shine {
+      position: absolute;
+      z-index: 5;
+      top: 50%;
+      left: 0%;
+      transform: translateX(-30%) translateY(-50%) !important;
+      width: 880px;
+      height: 636px;
+      background-size: cover;
+      display: none;
+      opacity: 1;
+      filter: blur(25px);
+
+      @media (max-width: 1000px) {
+        display: block;
+      }
+
+      @media (min-width: 600px) {
+        left: 50%;
+      }
+    }
 
     &>div {
       padding: 11px 24px;
@@ -479,7 +560,7 @@ a {
 }
 
 .newsletterInput {
-  // margin-top: 0px;
+
   display: flex;
   justify-content: space-between;
   width: 272px;
@@ -525,14 +606,12 @@ a {
   font-size: 0.8rem;
 }
 
+
+
 @media (max-width: 420px) {
 
   .networkSelection {
     display: none;
-  }
-
-  .mobileMenuContainer {
-    display: none !important;
   }
 
   .menuBar>div:last-child button:first-child {
@@ -548,6 +627,7 @@ a {
     min-width: unset;
   }
 }
+
 
 @media (max-width: 300px) {
   .heroBkg {

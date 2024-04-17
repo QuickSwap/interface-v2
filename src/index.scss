@@ -230,10 +230,34 @@ wcm-modal {
   left: 0;
   z-index: 1;
   width: 100%;
-  overflow: hidden;
 
   & img {
     width: 100%;
+  }
+
+  & .dekstopBg {
+    display: none;
+
+    @media (min-width: 600px) {
+      display: block;
+      max-height: 3540px;
+    }
+  }
+
+  & .mobileBg {
+    display: none;
+
+    @media (max-width: 600px) {
+      display: block;
+    }
+
+    @media (min-width:420px) and (max-width: 630px) {
+      max-height: 4000px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    height: 3745px;
   }
 
   @media (min-width: 1500px) {

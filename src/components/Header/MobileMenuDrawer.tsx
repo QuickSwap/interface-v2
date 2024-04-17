@@ -26,7 +26,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
       </Box>
       <Box
         className='cursor-pointer'
-        style={{ marginTop: '4px', paddingLeft: '24px' }}
+        // style={{ marginTop: '4px', paddingLeft: '24px' }}
         onClick={() => setOpen(true)}
       >
         <ThreeDashIcon />
@@ -38,6 +38,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
             <List>
               {menuItems.map((item, index) => (
                 <HeaderListItem
+                  menuDropdownOpen={open}
                   key={'item' + index}
                   item={item}
                   onClick={() => setOpen(false)}

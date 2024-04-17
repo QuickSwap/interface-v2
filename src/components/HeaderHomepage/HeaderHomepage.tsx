@@ -376,17 +376,6 @@ const HeaderHomepage: React.FC<{
       id: 'convert-quick',
     });
   }
-  // if (showDappOS) {
-  //   menuItems.push({
-  //     link: '/dappos',
-  //     text: 'DappOS',
-  //     id: 'dappos-page-link',
-  //     isExternal: true,
-  //     target: '_blank',
-  //     externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-  //     isNew: true,
-  //   });
-  // }
   if (showLending) {
     menuItems.push({
       link: '/lend',
@@ -431,7 +420,6 @@ const HeaderHomepage: React.FC<{
         }
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, parsedChain]);
 
   return (

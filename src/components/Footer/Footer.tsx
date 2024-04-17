@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import { ReactComponent as ArrowAhead } from '../../assets/images/landingPage/arrow_ahead.svg';
 import BGSHINE from '../../assets/images/shine.webp';
+import NewTag from 'assets/images/NewTag.png';
 
 const Footer: React.FC = () => {
   const history = useHistory();
@@ -30,7 +31,7 @@ const Footer: React.FC = () => {
       items: [
         { title: t('swap'), link: '/swap' },
         { title: t('perpsV1'), link: '/' },
-        { title: t('perpsFalkor'), link: '/' },
+        { title: t('perpsFalkor'), link: '/', isNew: true },
         { title: t('pool'), link: '/pools' },
         { title: t('farm'), link: '/farm' },
         { title: t('bonds'), link: '/onds' },
@@ -86,7 +87,7 @@ const Footer: React.FC = () => {
                 >
                   {item.title}
                 </small>
-                <Box mt={3}>
+                <Box mt={3} className='footer_links'>
                   {item.items.map((socialItem) => (
                     <Box
                       key={socialItem.title}
@@ -100,7 +101,23 @@ const Footer: React.FC = () => {
                         }
                       }}
                     >
-                      <small className='footer-text'>{socialItem.title}</small>
+                      {socialItem.isNew ? (
+                        <div className='mobile-new-tag'>
+                          <small className='footer-text'>
+                            {socialItem.title}
+                          </small>
+                          <img
+                            src={NewTag}
+                            alt='new menu'
+                            className='new-tag'
+                            width={46}
+                          />
+                        </div>
+                      ) : (
+                        <small className='footer-text'>
+                          {socialItem.title}
+                        </small>
+                      )}
                     </Box>
                   ))}
                 </Box>
@@ -164,9 +181,6 @@ const Footer: React.FC = () => {
               {t('termsofuse')}
             </Link>
           </small>
-          {/* {!tabletWindowSize && pathname === '/' && (
-            <Box className='fake-community-container'>&nbsp;</Box>
-          )} */}
         </Box>
       </Box>
     </Box>

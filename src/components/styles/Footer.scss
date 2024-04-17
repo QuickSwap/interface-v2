@@ -12,6 +12,7 @@
   justify-content: center;
   z-index: 10;
   flex-wrap: nowrap;
+  backdrop-filter: blur(24px);
 }
 
 .footer-title {
@@ -34,7 +35,6 @@
 
 .socialMenuWrapper {
   padding: 40px 0;
-  backdrop-filter: blur(24px);
 
   & .email_input {
     position: relative;
@@ -43,17 +43,23 @@
     & .bg_shine {
       position: absolute;
       z-index: 5;
-      top: 50%;
-      left: 0%;
+      top: 90%;
+      left: 41%;
       transform: translateX(-30%) translateY(-50%) !important;
       width: 880px;
       height: 636px;
       background-size: cover;
       display: none;
-      opacity: 0.6;
+      opacity: 1;
+      mix-blend-mode: color-burn;
+      filter: blur(40px);
 
       @media (max-width: 960px) {
         display: block;
+      }
+
+      @media (min-width: 500px) {
+        left: 20%;
       }
     }
   }
@@ -70,7 +76,6 @@
 .copyright-mobile {
   justify-content: space-between;
   margin-bottom: 64px;
-  // border-bottom: 1px solid $divider;
   flex-direction: column;
   align-items: flex-start;
   border-top: 0px;
@@ -137,5 +142,25 @@ a.footer-link {
 @media (max-width: 420px) {
   .socialMenuWrapper {
     gap: 20px
+  }
+}
+
+.footer_links {
+  & .mobile-new-tag {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 4px;
+    margin-left: 0px !important;
+
+    & small {
+      @media (max-width: 420px) {
+        font-size: 11px;
+      }
+    }
+
+    & img {
+      margin-top: 4px;
+    }
   }
 }

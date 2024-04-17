@@ -16,19 +16,16 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
 
   return (
     <Box className='heroBkg'>
-      {tabletWindowSize ? (
-        <img
-          className={showDefaultBG ? 'hidden' : ''}
-          src={bgMobileDragon}
-          alt='Hero Background'
-        />
-      ) : (
-        <img
-          className={showDefaultBG ? 'hidden' : ''}
-          src={HeroBkg}
-          alt='Hero Background'
-        />
-      )}
+      <img
+        className={showDefaultBG ? 'hidden' : 'mobileBg'}
+        src={bgMobileDragon}
+        alt='Hero Background'
+      />
+      <img
+        className={showDefaultBG ? 'hidden' : 'dekstopBg'}
+        src={HeroBkg}
+        alt='Hero Background'
+      />
 
       <img
         className={showDefaultBG ? '' : 'hidden'}

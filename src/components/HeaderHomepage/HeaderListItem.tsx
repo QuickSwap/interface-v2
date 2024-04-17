@@ -24,11 +24,13 @@ export interface HeaderMenuItem {
 export const HeaderListItem: React.FC<{
   item: HeaderMenuItem;
   onClick?: () => void;
+  menuDropdownOpen?: boolean;
 }> = ({
   item,
   onClick = () => {
     return false;
   },
+  menuDropdownOpen,
 }) => {
   const { pathname } = useLocation();
   const history = useHistory();
@@ -94,7 +96,13 @@ export const HeaderListItem: React.FC<{
           in={open}
           timeout='auto'
           unmountOnExit
-          className='ml-1 bl-1 pl-1'
+          className='ml-1 bl-1 pl-1 dropdownMobile'
+          style={{
+            position: menuDropdownOpen ? 'static' : 'absolute',
+            bottom: '120%',
+            background: '#192338',
+            borderRadius: '16px',
+          }}
         >
           <List component='div'>
             {item.items?.map((d, i) => (

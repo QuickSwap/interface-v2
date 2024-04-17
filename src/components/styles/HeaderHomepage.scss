@@ -62,7 +62,7 @@
 
 .menuBar {
   padding: 0 24px;
-  min-height: 88px;
+  min-height: 72px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -116,17 +116,22 @@
         }
       }
     }
+
+  }
+
+  @media (max-width: 450px) {
+    height: 64px;
   }
 
   @include media('screen', '<tablet') {
     align-items: center;
-    position: relative;
+    position: static !important;
     min-height: 64px;
   }
 
   @include media('screen', '<phone') {
     padding: 14px 16px;
-    position: relative;
+    position: static !important;
     min-height: 64px;
   }
 }
@@ -363,15 +368,19 @@
 }
 
 .mobileMenuContainer {
-  background: #121319;
+  background: rgba(25, 35, 56, 1);
   position: fixed;
   left: 0;
-  bottom: 0;
+  top: 90vh;
   height: 64px;
   width: 100%;
-  padding: 0 16px;
+  padding: 0 20px;
   justify-content: center;
   z-index: 3;
+  // margin: 18px 8px 0;
+  border-radius: 32px;
+  backdrop-filter: blur(30px);
+  border: solid 1px rgba(55, 71, 105, 0.32);
 }
 
 .mobileMenuClosedContainer {
@@ -400,7 +409,9 @@
 
 .mobile-new-tag {
   margin-left: 4px;
-  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mobileMenuItem {
@@ -540,8 +551,10 @@
 
   &.active {
     color: #448aff;
+
   }
 }
+
 
 .dropdown-wrapper {
   position: absolute;
@@ -569,4 +582,12 @@
       display: block !important;
     }
   }
+
+}
+
+.dropdownMobile {
+  position: absolute;
+  bottom: 120%;
+  background: #192338;
+  border-radius: 16px;
 }
