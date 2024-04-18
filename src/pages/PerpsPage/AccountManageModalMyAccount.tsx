@@ -6,7 +6,6 @@ import './Layout.scss';
 import {
   useAccount,
   useAccountInfo,
-  useAccountInstance,
   useCollateral,
   useLeverage,
   usePositionStream,
@@ -16,13 +15,13 @@ import AccountTierImage from 'assets/images/AccountManageTier.webp';
 import { AccountLeverageSlider } from './AccountLeverageSlider';
 import { formatNumber, shortenAddress, shortenTx } from 'utils';
 import AssetModal from 'components/AssetModal';
+import { useOrderlyAPIKey } from 'hooks/useOrderlyData';
 
 const AccountManageModalMyAccount: React.FC = () => {
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const account = useAccountInstance();
   const { data: accountInfo } = useAccountInfo();
-  const { state: accountState } = useAccount();
+  const { account, state: accountState } = useAccount();
   const [data] = usePositionStream();
 
   const { totalCollateral, totalValue } = useCollateral();
@@ -67,6 +66,8 @@ const AccountManageModalMyAccount: React.FC = () => {
   const [assetModalType, setAssetModalType] = useState('deposit');
 
   const { data: userStats } = usePrivateQuery('/v1/client/statistics');
+
+  const { data: orderlyAPIKey } = useOrderlyAPIKey();
 
   return (
     <>
@@ -289,7 +290,7 @@ const AccountManageModalMyAccount: React.FC = () => {
                   <Box className='accountPanelRow'>
                     <span>Email</span>
                     <span className='text-secondary'>
-                      Bind email for notification
+                      {accountInfo?.email ?? 'Bind email for notification'}
                     </span>
                   </Box>
                   <Box className='accountPanelRow'>
@@ -301,7 +302,7 @@ const AccountManageModalMyAccount: React.FC = () => {
                     <span>{accountState.userId}</span>
                   </Box>
                 </Box>
-                <Button className='accountPanelButton'>Bind</Button>
+                {/* <Button className='accountPanelButton'>Bind</Button> */}
               </Box>
             </Box>
           </Grid>
@@ -376,7 +377,7 @@ const AccountManageModalMyAccount: React.FC = () => {
                     className='flex items-center text-primaryText'
                     gridGap={6}
                   >
-                    <span>{shortenTx(account.accountId ?? '')}</span>
+                    <span>{shortenTx(orderlyAPIKey?.key ?? '')}</span>
                     <CopyHelper toCopy={account.accountId ?? ''} />
                   </Box>
                 </Box>

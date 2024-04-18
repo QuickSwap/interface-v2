@@ -402,3 +402,37 @@
     }
   }
 }
+
+.perpsAPIKeyTableWrapper {
+  border-top: 1px solid $divider;
+  padding-top: 16px;
+  margin-top: 12px;
+  overflow-x: auto;
+  & table {
+    width: 100%;
+    min-width: 560px;
+    & th {
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      color: $textSecondary;
+    }
+    & th,
+    & td {
+      padding: 6px 0;
+      & button {
+        height: 24px;
+        &.MuiButton-outlined {
+          background-color: transparent;
+          border: 1px solid $primary;
+          & span {
+            color: $primary;
+          }
+        }
+        & span {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

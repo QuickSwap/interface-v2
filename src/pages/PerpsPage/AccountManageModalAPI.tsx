@@ -4,21 +4,23 @@ import { Button, Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import './Layout.scss';
 import {
   useAccount,
-  useAccountInstance,
   useCollateral,
   usePrivateQuery,
 } from '@orderly.network/hooks';
 import { formatNumber, shortenAddress, shortenTx } from 'utils';
+import { useOrderlyAPIKey } from 'hooks/useOrderlyData';
+import { Edit } from '@material-ui/icons';
 
 const AccountManageModalAPI: React.FC = () => {
-  const account = useAccountInstance();
-  const { state: accountState } = useAccount();
+  const { account, state: accountState } = useAccount();
   const { availableBalance } = useCollateral();
   const { breakpoints } = useTheme();
   const isSM = useMediaQuery(breakpoints.down('sm'));
 
   const { data, isLoading } = usePrivateQuery('/v1/client/key_info');
   const orderlyKeys = (data ?? []) as any[];
+
+  const { data: orderlyAPIKey } = useOrderlyAPIKey();
 
   console.log('aaa', orderlyKeys);
 
@@ -78,23 +80,13 @@ const AccountManageModalAPI: React.FC = () => {
             API Documents
           </a>
         </Box>
-        <Box
-          className='border-top flex justify-between items-start'
-          pt={2}
-          mt={1.5}
-        >
-          <table width='100%'>
+        <Box className='perpsAPIKeyTableWrapper'>
+          <table>
             <thead>
               <tr>
-                <th align='left' className='small text-secondary weight-500'>
-                  Orderly Key
-                </th>
-                <th align='left' className='small text-secondary weight-500'>
-                  Orderly Secret
-                </th>
-                <th align='left' className='small text-secondary weight-500'>
-                  Restricted IP
-                </th>
+                <th>Orderly Key</th>
+                <th>Orderly Secret</th>
+                <th>Restricted IP</th>
                 <th></th>
               </tr>
             </thead>
@@ -104,19 +96,47 @@ const AccountManageModalAPI: React.FC = () => {
                   <tr key={item.orderly_key}>
                     <td>
                       <Box className='flex items-center' gridGap={4}>
-                        {shortenTx(item.orderly_key)}
+                        <small>{shortenTx(item.orderly_key)}</small>
                         <CopyHelper toCopy={item.orderly_key} />
                       </Box>
                     </td>
-                    <td></td>
-                    <td></td>
+                    <td>
+                      {orderlyAPIKey?.key === item.orderly_key && (
+                        <Box className='flex items-center' gridGap={4}>
+                          <small>
+                            {shortenTx(orderlyAPIKey?.secret ?? '')}
+                          </small>
+                          <CopyHelper toCopy={orderlyAPIKey?.secret ?? ''} />
+                        </Box>
+                      )}
+                    </td>
+                    <td>
+                      <Box
+                        className='flex items-center cursor-pointer'
+                        gridGap={5}
+                      >
+                        <small>
+                          {item.ip_restriction_list.length > 0
+                            ? item.ip_restriction_list.join(', ')
+                            : '~'}
+                        </small>
+                        <Box className='flex items-center' gridGap={4}>
+                          <Edit fontSize='small' className='text-primary' />
+                          <small className='text-primary'>Edit</small>
+                        </Box>
+                      </Box>
+                    </td>
                     <td>
                       <Box
                         className='flex items-center justify-end'
                         gridGap={8}
                       >
-                        <Button>Delete</Button>
-                        <Button>Restrict IP</Button>
+                        <Button
+                          disabled={orderlyAPIKey?.key === item.orderly_key}
+                        >
+                          Delete
+                        </Button>
+                        <Button variant='outlined'>Restrict IP</Button>
                       </Box>
                     </td>
                   </tr>
