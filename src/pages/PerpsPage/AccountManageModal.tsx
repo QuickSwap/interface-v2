@@ -5,6 +5,9 @@ import { Close } from '@material-ui/icons';
 import './Layout.scss';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import AccountManageModalMyAccount from './AccountManageModalMyAccount';
+import AccountManageModalAPI from './AccountManageModalAPI';
+import AccountManageModalSettings from './AccountManageSettings';
+import AccountManageModalLiquidations from './AccountManageModalLiquidations';
 
 interface AccountManageModalProps {
   open: boolean;
@@ -54,6 +57,9 @@ const AccountManageModal: React.FC<AccountManageModalProps> = ({
           />
         </Box>
         {tab === 'myAccount' && <AccountManageModalMyAccount />}
+        {tab === 'liquidations' && <AccountManageModalLiquidations />}
+        {tab === 'api' && <AccountManageModalAPI />}
+        {tab === 'settings' && <AccountManageModalSettings />}
       </Box>
     </CustomModal>
   );

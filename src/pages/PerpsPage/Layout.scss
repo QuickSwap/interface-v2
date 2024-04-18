@@ -376,3 +376,29 @@
     font-size: 12px;
   }
 }
+
+.accountManageLiquidations {
+  background: $secondary1;
+  border-radius: 10px;
+  overflow-x: scroll;
+  & table {
+    width: 100%;
+    min-width: 700px;
+    & th {
+      padding: 16px;
+      color: $textSecondary;
+      border-bottom: 1px solid $divider;
+    }
+    & td {
+      padding: 6px 16px;
+    }
+    & th,
+    & td {
+      text-align: left;
+      font-weight: 500;
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
+}

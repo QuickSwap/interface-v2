@@ -4,11 +4,13 @@ import { Box, Button, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { Refresh, Visibility, VisibilityOff } from '@material-ui/icons';
 import './Layout.scss';
 import {
+  useAccount,
   useAccountInfo,
   useAccountInstance,
   useCollateral,
   useLeverage,
   usePositionStream,
+  usePrivateQuery,
 } from '@orderly.network/hooks';
 import AccountTierImage from 'assets/images/AccountManageTier.webp';
 import { AccountLeverageSlider } from './AccountLeverageSlider';
@@ -20,9 +22,20 @@ const AccountManageModalMyAccount: React.FC = () => {
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const account = useAccountInstance();
   const { data: accountInfo } = useAccountInfo();
+  const { state: accountState } = useAccount();
   const [data] = usePositionStream();
 
-  const { totalValue } = useCollateral();
+  const { totalCollateral, totalValue } = useCollateral();
+
+  const futureMarginRatio = useMemo(() => {
+    if (
+      totalCollateral !== 0 &&
+      Number(data?.aggregated?.notional ?? 0) !== 0
+    ) {
+      return (totalCollateral / Number(data?.aggregated?.notional ?? 0)) * 100;
+    }
+    return 1000;
+  }, [data?.aggregated?.notional, totalCollateral]);
 
   const unsettledPnLPercent = useMemo(() => {
     if (totalValue !== 0 || Number(data?.aggregated?.unsettledPnL ?? 0) !== 0) {
@@ -53,6 +66,8 @@ const AccountManageModalMyAccount: React.FC = () => {
   const [assetModalOpen, setAssetModalOpen] = useState(false);
   const [assetModalType, setAssetModalType] = useState('deposit');
 
+  const { data: userStats } = usePrivateQuery('/v1/client/statistics');
+
   return (
     <>
       <Box className='accountPanelWrapper'>
@@ -68,19 +83,26 @@ const AccountManageModalMyAccount: React.FC = () => {
               <Box className='flex items-center justify-between'>
                 <small className='text-secondary'>24 Hour Volume</small>
                 <small>
-                  0.00 <small className='text-secondary'>USDC</small>
+                  {formatNumber(
+                    (userStats as any)?.perp_trading_volume_last_24_hours,
+                  )}{' '}
+                  <small className='text-secondary'>USDC</small>
                 </small>
               </Box>
               <Box className='flex items-center justify-between'>
                 <small className='text-secondary'>30 Day Volume</small>
                 <small>
-                  0.00 <small className='text-secondary'>USDC</small>
+                  {formatNumber(
+                    (userStats as any)?.perp_trading_volume_last_30_days,
+                  )}{' '}
+                  <small className='text-secondary'>USDC</small>
                 </small>
               </Box>
               <Box className='flex items-center justify-between'>
                 <small className='text-secondary'>YTD Volume</small>
                 <small>
-                  0.00 <small className='text-secondary'>USDC</small>
+                  {formatNumber((userStats as any)?.perp_trading_volume_ytd)}{' '}
+                  <small className='text-secondary'>USDC</small>
                 </small>
               </Box>
             </Box>
@@ -171,7 +193,7 @@ const AccountManageModalMyAccount: React.FC = () => {
                         Total estimate value
                       </span>
                       <small>
-                        {hideValue ? '***' : 0}{' '}
+                        {hideValue ? '***' : formatNumber(totalValue)}{' '}
                         <span className='text-secondary'>USDC</span>
                       </small>
                       <Box
@@ -276,7 +298,7 @@ const AccountManageModalMyAccount: React.FC = () => {
                   </Box>
                   <Box className='accountPanelRow'>
                     <span>UID</span>
-                    <span>270800</span>
+                    <span>{accountState.userId}</span>
                   </Box>
                 </Box>
                 <Button className='accountPanelButton'>Bind</Button>
@@ -296,7 +318,9 @@ const AccountManageModalMyAccount: React.FC = () => {
                   Futures Margin Ratio represents your amount of collateral
                   posted relative to the value of your positions outstanding.
                 </p>
-                <h5 className='text-primary weight-500'>1000%</h5>
+                <h5 className='text-primary weight-500'>
+                  {formatNumber(futureMarginRatio)}%
+                </h5>
                 <p className='span'>
                   Futures margin ratio = Total collateral / Total position
                   notional
@@ -308,11 +332,15 @@ const AccountManageModalMyAccount: React.FC = () => {
               <Box className='border-top' pt={2} mt={2}>
                 <Box className='accountPanelRow'>
                   <span>Maker Fee</span>
-                  <span>0.03%</span>
+                  <span>
+                    {Number(accountInfo?.futures_maker_fee_rate ?? 0) / 100}%
+                  </span>
                 </Box>
                 <Box className='accountPanelRow' mt={2}>
                   <span>Taker Fee</span>
-                  <span>0.06%</span>
+                  <span>
+                    {Number(accountInfo?.futures_taker_fee_rate ?? 0) / 100}%
+                  </span>
                 </Box>
               </Box>
             </Box>
