@@ -918,7 +918,7 @@
   "reduceOnly": "Reduce Only",
   "maxBuy": "Max buy",
   "maxSell": "Max sell",
-  "accountLeverage": "Account Leverage",
+  "currentLeverage": "Current Leverage",
   "marginRatio": "Margin Ratio",
   "long": "Long",
   "sell": "Sell",

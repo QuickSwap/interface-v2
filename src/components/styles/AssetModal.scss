@@ -3,9 +3,6 @@
 
 .assetModalWrapper {
   max-width: 450px;
-  @include media('screen', '<phone') {
-    padding: 16px;
-  }
 }
 
 .assetTabsWrapper {

@@ -97,13 +97,12 @@
 }
 
 .leverageManageButton {
-  background-color: transparent;
-  border: 1px solid $primary;
+  background-color: $primaryLight;
   color: $primary;
   height: 26px;
   border-radius: 6px;
   &:hover {
-    background-color: transparent;
+    background-color: $primaryLight;
   }
   & span {
     font-size: 12px;
@@ -175,9 +174,13 @@
     }
   }
   & .coloredSlider {
-    width: calc(100% + 8px);
+    width: calc(100% + 12px);
     margin-left: -8px;
+    margin-right: -4px;
     margin-top: 4px;
+    & .MuiSlider-rail {
+      background-color: transparent;
+    }
     & .MuiSlider-track {
       background-color: $textSecondary;
     }
@@ -328,6 +331,107 @@
       border-radius: 16px;
       & p {
         color: $textPrimary;
+      }
+    }
+  }
+}
+
+.accountManageModalWrapper {
+  max-width: 1120px;
+}
+
+.accountPanelWrapper {
+  padding: 16px;
+  border-radius: 10px;
+  background: $secondary1;
+
+  & .leverageSquareWrapper {
+    background-color: $grey12;
+  }
+  & .leverageSquare {
+    border: 2px solid $grey12;
+    background-color: $secondary1;
+  }
+
+  & .accountPanelRow {
+    display: flex;
+    & > span:first-child {
+      min-width: 150px;
+      color: $textSecondary;
+    }
+  }
+}
+
+.accountPanelButton {
+  border: 1px solid $primary;
+  border-radius: 5px;
+  background-color: transparent;
+  padding: 2px 8px;
+  min-width: unset;
+  &:hover {
+    background-color: transparent;
+  }
+  & span {
+    color: $primary;
+    font-size: 12px;
+  }
+}
+
+.accountManageLiquidations {
+  background: $secondary1;
+  border-radius: 10px;
+  overflow-x: scroll;
+  & table {
+    width: 100%;
+    min-width: 700px;
+    & th {
+      padding: 16px;
+      color: $textSecondary;
+      border-bottom: 1px solid $divider;
+    }
+    & td {
+      padding: 6px 16px;
+    }
+    & th,
+    & td {
+      text-align: left;
+      font-weight: 500;
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
+}
+
+.perpsAPIKeyTableWrapper {
+  border-top: 1px solid $divider;
+  padding-top: 16px;
+  margin-top: 12px;
+  overflow-x: auto;
+  & table {
+    width: 100%;
+    min-width: 560px;
+    & th {
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      color: $textSecondary;
+    }
+    & th,
+    & td {
+      padding: 6px 0;
+      & button {
+        height: 24px;
+        &.MuiButton-outlined {
+          background-color: transparent;
+          border: 1px solid $primary;
+          & span {
+            color: $primary;
+          }
+        }
+        & span {
+          font-size: 12px;
+        }
       }
     }
   }

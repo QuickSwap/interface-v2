@@ -5,10 +5,12 @@ import AssetModal from '../../components/AssetModal';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { formatNumber } from 'utils';
+import AccountManageModal from './AccountManageModal';
 
 export const LeverageManage: React.FC = () => {
   const { t } = useTranslation();
 
+  const [openAccountManage, setOpenAccountManage] = useState(false);
   const { account: quickSwapAccount, chainId } = useActiveWeb3React();
   const [chains] = useChains('mainnet');
   const chainData = chains.find(
@@ -30,7 +32,23 @@ export const LeverageManage: React.FC = () => {
 
   return (
     <>
-      <Box className='flex items-center justify-between' gridGap={8}>
+      <Box
+        pb={2}
+        mb={2}
+        className='flex items-center justify-between border-bottom'
+      >
+        <p className='span'>My Account</p>
+        <Button
+          className='leverageManageButton'
+          disabled={!quickSwapAccount}
+          onClick={() => {
+            setOpenAccountManage(true);
+          }}
+        >
+          {t('manage')}
+        </Button>
+      </Box>
+      <Box className='flex items-center justify-between flex-wrap' gridGap={8}>
         <Box>
           <p className='span text-secondary'>{t('totalWalletBalance')}</p>
           <p className='span'>
@@ -45,23 +63,32 @@ export const LeverageManage: React.FC = () => {
             </p>
           </Box>
         </Box>
-        <Box className='flex items-center' gridGap={8}>
-          <Button
-            className='leverageManageButton'
-            disabled={!quickSwapAccount}
+        {quickSwapAccount && (
+          <p
+            className='span text-primary weight-500 cursor-pointer'
             onClick={() => {
-              setModalOpen(true);
+              if (quickSwapAccount) {
+                setModalOpen(true);
+              }
             }}
           >
-            {t('deposit')}
-          </Button>
-        </Box>
+            {t('deposit')} / {t('withdraw')}
+          </p>
+        )}
       </Box>
-      <AssetModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        modalType={'deposit'}
-      />
+      {modalOpen && (
+        <AssetModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          modalType={'deposit'}
+        />
+      )}
+      {openAccountManage && (
+        <AccountManageModal
+          open={openAccountManage}
+          onClose={() => setOpenAccountManage(false)}
+        />
+      )}
     </>
   );
 };

@@ -4,13 +4,9 @@ import { useActiveWeb3React } from 'hooks';
 import {
   useAccount,
   useChains,
-  useCollateral,
-  useDeposit,
   useOrderEntry,
-  usePositionStream,
   useMarginRatio,
 } from '@orderly.network/hooks';
-import AssetModal from '../../components/AssetModal';
 import {
   AccountStatusEnum,
   OrderEntity,
@@ -26,6 +22,8 @@ import { formatNumber } from 'utils';
 import { formatDecimalInput } from 'utils/numbers';
 import OrderConfirmModal from './OrderConfirmModal';
 import { useQuery } from '@tanstack/react-query';
+import { AccountLeverageUpdate } from './AccountLeverageUpdate';
+import { LeverageManage } from './LeverageManage';
 
 type Inputs = {
   side: OrderSide;
@@ -57,7 +55,6 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   orderItem,
 }) => {
   const { t } = useTranslation();
-  const [data] = usePositionStream(perpToken);
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -89,17 +86,8 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   }, [chainData]);
   const quoteToken = perpToken.split('_')[1] ?? 'ETH';
 
-  const deposit = useDeposit({
-    address: token?.address,
-    decimals: token?.decimals,
-    srcToken: token?.symbol,
-    srcChainId: Number(chainId),
-  });
-
   const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
   const [accountModalOpen, setAccountModalOpen] = useState(false);
-  const collateral = useCollateral();
   const [order, setOrder] = useState<Inputs>({
     order_price: '0',
     order_quantity: '0',
@@ -216,45 +204,22 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   return (
     <>
       <Box padding='15px 10px'>
-        {!isMobile && (
-          <Box
-            className='flex items-center justify-between border-bottom'
-            gridGap={8}
-            mb={2}
-            pb={2}
-          >
-            <Box>
-              <p className='span text-secondary'>{t('totalWalletBalance')} </p>
-              <p className='span'>
-                {formatNumber(deposit?.balance)}{' '}
-                <span className='text-secondary'>{token?.symbol}</span>
-              </p>
-              <Box mt={1}>
-                <p className='span text-secondary'>
-                  {t('totalTradingBalance')}{' '}
-                </p>
-                <p className='span'>
-                  {formatNumber(collateral.availableBalance)}{' '}
-                  <span className='text-secondary'>{token?.symbol}</span>
-                </p>
-              </Box>
-            </Box>
-            <Button
-              className='leverageManageButton'
-              disabled={!quickSwapAccount}
-              onClick={() => {
-                setModalOpen(true);
-              }}
-            >
-              {t('deposit')}
-            </Button>
-          </Box>
-        )}
-        <Box pb={2} mb={2} className='border-bottom flex flex-col' gridGap={12}>
+        {!isMobile && <LeverageManage />}
+        <Box
+          pb={2}
+          mb={2}
+          pt={isMobile ? 0 : 2}
+          mt={isMobile ? 0 : 2}
+          className={`${
+            isMobile ? '' : 'border-top'
+          } border-bottom flex flex-col`}
+          gridGap={12}
+        >
+          <AccountLeverageUpdate />
           <Box className='leverageGradient' />
           <Box className='flex justify-between' gridGap={8}>
             <Box>
-              <p className='span text-secondary'>{t('accountLeverage')}</p>
+              <p className='span text-secondary'>{t('currentLeverage')}</p>
               <p className='span'>
                 {formatNumber(currentLeverage)}x{' '}
                 {estLeverage ? `/ ${formatNumber(estLeverage)}x` : ''}
@@ -635,11 +600,6 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
           {buttonText}
         </Button>
       </Box>
-      <AssetModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        modalType={'deposit'}
-      />
       <AccountModal
         open={accountModalOpen}
         onClose={() => setAccountModalOpen(false)}
