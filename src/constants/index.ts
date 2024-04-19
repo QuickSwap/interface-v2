@@ -2155,6 +2155,26 @@ export const GammaPairs: {
         fee: FeeAmount.MEDIUM,
       },
     ],
+    '0x3a0c2ba54d6cbd3121f01b96dfd20e99d1696c9d-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-3000': [
+      {
+        address: '0x216D3DF2DF6DeC7c95D3b51F018eE4b11E416eBb',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.MEDIUM,
+      },
+    ],
+    '0x52a6c53869ce09a731cd772f245b97a4401d3348-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-500': [
+      {
+        address: '0xc46ac687D23d8a631d0eF702520ca2ff55353523',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x52A6c53869Ce09a731CD772f245b97A4401d3348',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.LOW,
+      },
+    ],
   },
   [ChainId.ASTARZKEVM]: {
     '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-100': [
