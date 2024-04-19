@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CopyHelper } from 'components';
 import { Button, Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import './Layout.scss';
@@ -10,6 +10,7 @@ import {
 import { formatNumber, shortenAddress, shortenTx } from 'utils';
 import { useOrderlyAPIKey } from 'hooks/useOrderlyData';
 import { Edit } from '@material-ui/icons';
+import OrderlyKeyRestrictIPModal from './OrderlyKeyRestrictIPModal';
 
 const AccountManageModalAPI: React.FC = () => {
   const { account, state: accountState } = useAccount();
@@ -22,7 +23,7 @@ const AccountManageModalAPI: React.FC = () => {
 
   const { data: orderlyAPIKey } = useOrderlyAPIKey();
 
-  console.log('aaa', orderlyKeys);
+  const [selectedKey, setSelectedKey] = useState<string>();
 
   return (
     <>
@@ -120,7 +121,11 @@ const AccountManageModalAPI: React.FC = () => {
                             ? item.ip_restriction_list.join(', ')
                             : '~'}
                         </small>
-                        <Box className='flex items-center' gridGap={4}>
+                        <Box
+                          className='flex items-center'
+                          gridGap={4}
+                          onClick={() => setSelectedKey(item.orderly_key)}
+                        >
                           <Edit fontSize='small' className='text-primary' />
                           <small className='text-primary'>Edit</small>
                         </Box>
@@ -131,12 +136,17 @@ const AccountManageModalAPI: React.FC = () => {
                         className='flex items-center justify-end'
                         gridGap={8}
                       >
-                        <Button
+                        {/* <Button
                           disabled={orderlyAPIKey?.key === item.orderly_key}
                         >
                           Delete
+                        </Button> */}
+                        <Button
+                          variant='outlined'
+                          onClick={() => setSelectedKey(item.orderly_key)}
+                        >
+                          Restrict IP
                         </Button>
-                        <Button variant='outlined'>Restrict IP</Button>
                       </Box>
                     </td>
                   </tr>
@@ -154,6 +164,15 @@ const AccountManageModalAPI: React.FC = () => {
           </table>
         </Box>
       </Box>
+      {selectedKey && (
+        <OrderlyKeyRestrictIPModal
+          orderly_key={selectedKey}
+          open={!!selectedKey}
+          onClose={() => {
+            setSelectedKey(undefined);
+          }}
+        />
+      )}
     </>
   );
 };

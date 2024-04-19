@@ -436,3 +436,33 @@
     }
   }
 }
+
+.orderlyIPRestrictionInput {
+  & input {
+    border: none;
+    outline: none;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+    background-color: $secondary1;
+    font-size: 16px;
+  }
+}
+
+.orderlyAPIKeyModalWrapper {
+  max-width: 420px;
+  & small {
+    word-break: break-all;
+  }
+}
+
+.orderbookTradeTable {
+  padding: 7px 16px;
+  & table {
+    width: 100%;
+    & tr th,
+    & tr td {
+      padding: 3px 0;
+    }
+  }
+}

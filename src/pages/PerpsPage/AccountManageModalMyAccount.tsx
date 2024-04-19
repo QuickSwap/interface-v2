@@ -16,6 +16,7 @@ import { AccountLeverageSlider } from './AccountLeverageSlider';
 import { formatNumber, shortenAddress, shortenTx } from 'utils';
 import AssetModal from 'components/AssetModal';
 import { useOrderlyAPIKey } from 'hooks/useOrderlyData';
+import OrderlyAPITradingKeysModal from './OrderlyAPITradingKeysModal';
 
 const AccountManageModalMyAccount: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -68,6 +69,8 @@ const AccountManageModalMyAccount: React.FC = () => {
   const { data: userStats } = usePrivateQuery('/v1/client/statistics');
 
   const { data: orderlyAPIKey } = useOrderlyAPIKey();
+
+  const [openKeyModal, setOpenKeyModal] = useState(false);
 
   return (
     <>
@@ -349,7 +352,12 @@ const AccountManageModalMyAccount: React.FC = () => {
               <Box className='flex justify-between'>
                 <small>API Trading</small>
                 <Box className='flex items-center justify-between' gridGap={8}>
-                  <Button className='accountPanelButton'>Reveal Keys</Button>
+                  <Button
+                    className='accountPanelButton'
+                    onClick={() => setOpenKeyModal(true)}
+                  >
+                    Reveal Keys
+                  </Button>
                   <a
                     href='https://orderly.network/docs/build-on-evm/evm-api/introduction'
                     target='_blank'
@@ -391,6 +399,12 @@ const AccountManageModalMyAccount: React.FC = () => {
           open={assetModalOpen}
           onClose={() => setAssetModalOpen(false)}
           modalType={assetModalType}
+        />
+      )}
+      {openKeyModal && (
+        <OrderlyAPITradingKeysModal
+          open={openKeyModal}
+          onClose={() => setOpenKeyModal(false)}
         />
       )}
     </>

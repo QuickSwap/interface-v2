@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMarketTradeStream } from '@orderly.network/hooks';
 import { FC } from 'react';
-import './Orderbook.scss';
+import './Layout.scss';
 import { Box } from '@material-ui/core';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
