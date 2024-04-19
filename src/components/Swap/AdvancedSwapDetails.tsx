@@ -129,11 +129,11 @@ export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({
     <>
       {trade && (
         <TradeSummary
-        trade={trade}
-        allowedSlippage={
-          allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage
-        }
-      />
+          trade={trade}
+          allowedSlippage={
+            allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage
+          }
+        />
       )}
     </>
   );

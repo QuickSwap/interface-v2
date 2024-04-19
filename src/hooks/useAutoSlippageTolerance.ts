@@ -27,7 +27,7 @@ const V3_SWAP_HOP_GAS_ESTIMATE = 70_000;
 const V2_SWAP_HOP_GAS_ESTIMATE = 50_000;
 
 function guesstimateGas(
-  trade: V2Trade | V3Trade<Currency, Currency, TradeType> | undefined,
+  trade: V2Trade | V3Trade<Currency, Currency, TradeType> | null | undefined,
 ): number | undefined {
   if (trade) {
     let gas = 0;
@@ -49,7 +49,7 @@ function guesstimateGas(
 }
 
 export function useAutoSlippageTolerance(
-  trade?: V2Trade | V3Trade<Currency, Currency, TradeType>,
+  trade?: V2Trade | V3Trade<Currency, Currency, TradeType> | null,
 ): Percent {
   const { chainId } = useActiveWeb3React();
   const outputToken =
