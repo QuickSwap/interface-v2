@@ -124,7 +124,7 @@ const AccountManageModalMyAccount: React.FC = () => {
               <small className='text-secondary'>
                 Current Tier: <small className='text-primaryText'>1</small>
               </small>
-              <small className='text-primary cursor-pointer'>View more</small>
+              {/* <small className='text-primary cursor-pointer'>View more</small> */}
               <Box position='absolute' right={0} top={8}>
                 <small className='span text-secondary'>
                   Updated daily by 2:00 UTC
