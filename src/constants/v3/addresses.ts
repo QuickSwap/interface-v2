@@ -758,6 +758,13 @@ export const ETHER: { [chainId: number]: Token } = {
     'ETH',
     'Ether',
   ),
+  [ChainId.LAYERX]: new Token(
+    ChainId.LAYERX,
+    '0x5A77f1443D16ee5761d310e38b62f77f726bC71c',
+    18,
+    'ETH',
+    'Ether',
+  ),
 };
 
 export const MATIC: { [chainId: number]: Token } = {
@@ -1399,6 +1406,11 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(USDC[ChainId.ASTARZKEVM]),
     toV3Token(ASTR[ChainId.ASTARZKEVM]),
   ],
+  [ChainId.LAYERX]: [
+    WMATIC_EXTENDED[ChainId.LAYERX],
+    toV3Token(USDT[ChainId.LAYERX]),
+    toV3Token(ETHER[ChainId.LAYERX]),
+  ],
 };
 
 export const SUGGESTED_BASES: {
@@ -1461,6 +1473,7 @@ export const SUGGESTED_BASES: {
     ASTR[ChainId.ASTARZKEVM],
   ],
   [ChainId.LAYERX]: [
+    ETHER[ChainId.LAYERX],
     WETH[ChainId.LAYERX],
     WBTC[ChainId.LAYERX],
     USDC[ChainId.LAYERX],
@@ -1560,6 +1573,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     WMATIC_EXTENDED[ChainId.LAYERX],
     toV3Token(USDC[ChainId.LAYERX]),
     toV3Token(USDT[ChainId.LAYERX]),
+    toV3Token(ETHER[ChainId.LAYERX]),
   ],
 };
 
