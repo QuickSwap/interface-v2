@@ -14,6 +14,8 @@ import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
 import { basisPointsToPercent } from 'utils';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
+import { useAutoSlippageToleranceBestTrade } from 'hooks/useAutoSlippageTolerance';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 interface TradeSummaryProps {
   optimalRate: OptimalRate;
@@ -30,17 +32,20 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
 }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { t } = useTranslation();
+  const [userSlippage] = useUserSlippageTolerance();
 
   const priceImpactWithoutFee = computePriceImpact(optimalRate);
   const isExactIn = optimalRate.side === SwapSide.SELL;
   const currency = isExactIn ? outputCurrency : inputCurrency;
+  const autoSlippage = useAutoSlippageToleranceBestTrade(optimalRate);
   const tradeAmount = isExactIn
     ? new Fraction(ONE)
-        .add(allowedSlippage)
+        .add(userSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage)
         .invert()
         .multiply(optimalRate.destAmount).quotient
-    : new Fraction(ONE).add(allowedSlippage).multiply(optimalRate.srcAmount)
-        .quotient;
+    : new Fraction(ONE)
+        .add(userSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage)
+        .multiply(optimalRate.srcAmount).quotient;
 
   return (
     <Box mt={1.5}>
@@ -59,7 +64,12 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           onClick={() => setOpenSettingsModal(true)}
           className='swapSlippage'
         >
-          <small>{Number(allowedSlippage.toSignificant())}%</small>
+          <small>
+            {userSlippage === SLIPPAGE_AUTO
+              ? Number(autoSlippage.toSignificant())
+              : Number(allowedSlippage.toSignificant())}
+            %
+          </small>
           <EditIcon />
         </Box>
       </Box>

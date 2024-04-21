@@ -39,6 +39,9 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
+import { formatAdvancedPercent } from 'utils/numbers';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -181,6 +184,7 @@ export function useDerivedSwapInfo(): {
   v2Trade: Trade | undefined;
   inputError?: string;
   v1Trade: Trade | undefined;
+  autoSlippage: number;
 } {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
@@ -259,10 +263,22 @@ export function useDerivedSwapInfo(): {
   ] = useUserSlippageTolerance();
   const [slippageManuallySet] = useSlippageManuallySet();
 
+  const autoSlippageAmount = useAutoSlippageTolerance(
+    v2Trade ? v2Trade : undefined,
+  );
+  const autoSlippage =
+    allowedSlippage === SLIPPAGE_AUTO
+      ? Math.ceil(
+          Number(
+            parseFloat(formatAdvancedPercent(autoSlippageAmount)).toFixed(2),
+          ) * 100,
+        )
+      : allowedSlippage;
+
   const slippageAdjustedAmounts =
     v2Trade &&
-    allowedSlippage &&
-    computeSlippageAdjustedAmounts(v2Trade, allowedSlippage);
+    autoSlippage &&
+    computeSlippageAdjustedAmounts(v2Trade, autoSlippage);
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
@@ -313,6 +329,7 @@ export function useDerivedSwapInfo(): {
     v2Trade: v2Trade ?? undefined,
     inputError,
     v1Trade: undefined,
+    autoSlippage,
   };
 }
 
