@@ -7,6 +7,8 @@ import {
   POOL_INIT_CODE_HASH,
   UNI_POOL_INIT_CODE_HASH,
 } from './v3constants';
+import { getConfig } from '../../config/index';
+import { ChainId } from '@uniswap/sdk';
 
 /**
  * Computes a pool address
@@ -32,7 +34,8 @@ export function computePoolAddress({
   const [token0, token1] = tokenA.sortsBefore(tokenB)
     ? [tokenA, tokenB]
     : [tokenB, tokenA]; // does safety checks
-
+  const config = getConfig(tokenA.chainId);
+  const poolInitCodeHash = config['poolInitCodeHash'];
   return getCreate2Address(
     poolDeployer,
     keccak256(
@@ -51,6 +54,8 @@ export function computePoolAddress({
     ),
     initCodeHashManualOverride ?? fee
       ? UNI_POOL_INIT_CODE_HASH
+      : poolInitCodeHash
+      ? poolInitCodeHash
       : POOL_INIT_CODE_HASH,
   );
 }
