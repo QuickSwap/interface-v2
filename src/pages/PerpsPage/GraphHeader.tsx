@@ -43,9 +43,16 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
 
   const filteredData = useMemo(() => {
     if (!data) return [];
-    return data.filter((item) =>
-      item.symbol.toLowerCase().includes(search.toLowerCase()),
-    );
+    return data
+      .filter((item) =>
+        item.symbol.toLowerCase().includes(search.toLowerCase()),
+      )
+      .sort((item1: any, item2: any) => {
+        return (
+          Number(item2?.['24h_volume'] ?? 0) -
+          Number(item1?.['24h_volume'] ?? 0)
+        );
+      });
   }, [data, search]);
 
   return (
@@ -112,7 +119,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                           <small>{item.symbol.replace('PERP_', '')}</small>
                         </td>
                         <td align='right'>
-                          <small>{item?.index_price}</small>
+                          <small>{formatNumber(item?.index_price)}</small>
                         </td>
                         <td align='right'>
                           <small
@@ -126,7 +133,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                           </small>
                         </td>
                         <td align='right'>
-                          <small>{item?.['24h_volume']}</small>
+                          <small>{formatNumber(item?.['24h_volume'])}</small>
                         </td>
                       </tr>
                     ))

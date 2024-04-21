@@ -70,7 +70,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   const [otherOrderType, setOtherOrderType] = useState<OrderType | undefined>(
     undefined,
   );
-  const [orderConfirm, setOrderConfirm] = useState(false);
+  const [orderConfirm, setOrderConfirm] = useState(true);
   const [orderHidden, setOrderHidden] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const { account: quickSwapAccount, library, chainId } = useActiveWeb3React();
