@@ -89,5 +89,6 @@
     "available": false
   },
   "maxChunks": 5,
-  "blocksPerFetch": 50
+  "blocksPerFetch": 50,
+  "poolInitCodeHash": "0xbce37a54eab2fcd71913a0d40723e04238970e7fc1159bfd58ad5b79531697e7"
 }
