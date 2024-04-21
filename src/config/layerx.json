@@ -88,6 +88,6 @@
   "ichi": {
     "available": false
   },
-  "maxChunks": 70,
-  "blocksPerFetch": 25
+  "maxChunks": 5,
+  "blocksPerFetch": 50
 }
