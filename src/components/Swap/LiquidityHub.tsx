@@ -13,11 +13,11 @@ import { Box, Divider } from '@material-ui/core';
 import OrbsLogo from 'assets/images/orbs-logo.svg';
 import {
   setWeb3Instance,
-  signEIP712,
   maxUint256,
   permit2Address,
   hasWeb3Instance,
   zeroAddress,
+  web3,
 } from '@defi.org/web3-candies';
 import { useTranslation } from 'react-i18next';
 import {
@@ -35,9 +35,9 @@ import { Field } from 'state/swap/actions';
 import { Currency as CoreCurrency, Percent } from '@uniswap/sdk-core';
 import { ZERO_ADDRESS } from 'constants/v3/misc';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits, _TypedDataEncoder } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
-const ANALYTICS_VERSION = 0.3;
+const ANALYTICS_VERSION = 0.5;
 const WEBSITE = 'https://www.orbs.com';
 const BI_ENDPOINT = `https://bi.orbs.network/putes/liquidity-hub-ui-${ANALYTICS_VERSION}`;
 const DEX_PRICE_BETTER_ERROR = 'Dex trade is better than Clob trade';
@@ -70,7 +70,6 @@ export const useLiquidityHubCallback = (
   const quote = useQuote();
   const wrap = useWrap();
   const isSupported = useIsLiquidityHubSupported();
-
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
 
@@ -158,6 +157,7 @@ export const useLiquidityHubCallback = (
       liquidityHubAnalytics.onNotClobTrade(error.message);
       return;
     }
+    liquidityHubAnalytics.onWallet(library);
 
     onSetLiquidityHubState({
       isLoading: true,
@@ -538,22 +538,7 @@ const initialData: Partial<LiquidityHubAnalyticsData> = {
   _id: crypto.randomUUID(),
   partner: PARTNER,
   isClobTrade: false,
-  isNotClobTradeReason: 'null',
-  firstFailureSessionId: 'null',
-  clobDexPriceDiffPercent: 'null',
   quoteIndex: 0,
-  'quote-1-state': 'null',
-  approvalState: 'null',
-  'quote-2-state': 'null',
-  signatureState: 'null',
-  swapState: 'null',
-  wrapState: 'null',
-  onChainClobSwapState: 'null',
-  onChainDexSwapState: 'null',
-  dexSwapState: 'null',
-  dexSwapError: 'null',
-  dexSwapTxHash: 'null',
-  userWasApprovedBeforeTheTrade: 'null',
   isForceClob: false,
   isDexTrade: false,
   version: ANALYTICS_VERSION,
@@ -734,6 +719,29 @@ class LiquidityHubAnalytics {
       signatureState: 'success',
     });
   }
+
+  onWallet = (library: any) => {
+    try {
+      const walletConnectName = (library as any)?.provider?.session?.peer
+        .metadata.name;
+
+      if (library.provider.isRabby) {
+        this.updateAndSend({ walletConnectName, isRabby: true });
+      } else if (library.provider.isWalletConnect) {
+        this.updateAndSend({ walletConnectName, isWalletConnect: true });
+      } else if (library.provider.isCoinbaseWallet) {
+        this.updateAndSend({ walletConnectName, isCoinbaseWallet: true });
+      } else if (library.provider.isOkxWallet) {
+        this.updateAndSend({ walletConnectName, isOkxWallet: true });
+      } else if (library.provider.isTrustWallet) {
+        this.updateAndSend({ walletConnectName, isTrustWallet: true });
+      } else if (library.provider.isMetaMask) {
+        this.updateAndSend({ walletConnectName, isMetaMask: true });
+      }
+    } catch (error) {
+      console.log('Error on wallet', error);
+    }
+  };
 
   onSignatureFailed(error: string, time: number) {
     this.updateAndSend({
@@ -1076,6 +1084,13 @@ interface LiquidityHubAnalyticsData {
   isDexTrade: boolean;
   onChainDexSwapState: actionState;
   dexOutAmountWS?: string;
+  walletConnectName?: string;
+  isRabby?: boolean;
+  isMetaMask?: boolean;
+  isCoinbaseWallet?: boolean;
+  isWalletConnect?: boolean;
+  isTrustWallet?: boolean;
+  isOkxWallet?: boolean;
 }
 
 interface QuoteResponse {
@@ -1206,3 +1221,48 @@ export const useV2TradeTypeAnalyticsCallback = (
     [account, inToken, outToken, outTokenUSD, allowedSlippage, chainId],
   );
 };
+
+async function signEIP712(signer: string, data: any) {
+  const typedDataMessage = _TypedDataEncoder.getPayload(
+    data.domain,
+    data.types,
+    data.values,
+  );
+
+  try {
+    return await signAsync('eth_signTypedData_v4', signer, typedDataMessage);
+  } catch (e) {
+    try {
+      return await signAsync('eth_signTypedData', signer, typedDataMessage);
+    } catch (e) {
+      throw e;
+    }
+  }
+}
+
+async function signAsync(
+  method: 'eth_signTypedData_v4' | 'eth_signTypedData',
+  signer: string,
+  payload: any,
+) {
+  const provider: any = (web3().currentProvider as any).send
+    ? web3().currentProvider
+    : (web3() as any)._provider;
+  return await new Promise<string>((resolve, reject) => {
+    provider.send(
+      {
+        id: 1,
+        method,
+        params: [
+          signer,
+          typeof payload === 'string' ? payload : JSON.stringify(payload),
+        ],
+        from: signer,
+      },
+      (e: any, r: any) => {
+        if (e || !r?.result) return reject(e);
+        return resolve(r.result);
+      },
+    );
+  });
+}

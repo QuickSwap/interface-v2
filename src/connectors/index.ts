@@ -514,6 +514,7 @@ export const passportWalletConnection: Connection = {
   iconName: PassportWalletIcon,
   color: '#315CF5',
   description: 'Use Passport Wallet',
+  mobile: true,
 };
 
 export const binanceWalletConnection: Connection = {

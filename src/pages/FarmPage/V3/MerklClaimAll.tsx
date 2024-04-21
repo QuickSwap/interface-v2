@@ -73,7 +73,7 @@ export const MerklClaimAll: React.FC = () => {
         <p>{t('myrewards')}</p>
         {loadingRewardTokenPrices || loadingFarms ? (
           <Skeleton variant='rect' width={100} height={27} />
-        ) : (
+        ) : rewards.length > 0 ? (
           <CustomTooltip
             placement='bottom-start'
             title={
@@ -96,6 +96,8 @@ export const MerklClaimAll: React.FC = () => {
           >
             <h6>${formatNumber(rewardsUSD)}</h6>
           </CustomTooltip>
+        ) : (
+          <h6>${formatNumber(rewardsUSD)}</h6>
         )}
       </Box>
       <Button disabled={claiming} onClick={claimReward}>

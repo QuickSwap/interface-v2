@@ -22,8 +22,8 @@ const NetworkSelectionDropdown: React.FC = () => {
   const arcxSdk = useArcxAnalytics();
   const { chainId, connector, account } = useActiveWeb3React();
   const networkTypes = [
-    { id: 'mainnet', text: t('mainnet') },
-    { id: 'testnet', text: t('testnet') },
+    { id: 'mainnet', text: t('mainnets') },
+    { id: 'testnet', text: t('testnets') },
   ];
   const [networkType, setNetworkType] = useState('mainnet');
 

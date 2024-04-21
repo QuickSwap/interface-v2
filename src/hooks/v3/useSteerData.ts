@@ -140,8 +140,8 @@ export const useSteerVaults = (chainId: ChainId) => {
   const uniV3PoolInterface = new Interface(UniV3PoolABI);
   const slot0Calls = useMultipleContractSingleData(
     poolAddresses,
-    chainId === ChainId.MANTA ? uniV3PoolInterface : poolInterface,
-    chainId === ChainId.MANTA ? 'slot0' : 'globalState',
+    chainId === ChainId.MATIC ? poolInterface : uniV3PoolInterface,
+    chainId === ChainId.MATIC ? 'globalState' : 'slot0',
     [],
   );
   const slot0Items = slot0Calls.map((call, ind) => {
@@ -189,9 +189,9 @@ export const useSteerVaults = (chainId: ChainId) => {
 
   const vaultDetailCalls = useSingleContractMultipleData(
     peripheryContract,
-    chainId === ChainId.MANTA
-      ? 'vaultDetailsByAddress'
-      : 'algebraVaultDetailsByAddress',
+    chainId === ChainId.MATIC
+      ? 'algebraVaultDetailsByAddress'
+      : 'vaultDetailsByAddress',
     vaultAddresses.map((address) => [address]),
   );
   const vaultDetails: SteerVault[] = vaultDetailCalls.map((call, index) => {
@@ -264,10 +264,10 @@ export const useSteerVaults = (chainId: ChainId) => {
     const token0 = token0V2 ? toV3Token(token0V2) : undefined;
     const token1 = token1V2 ? toV3Token(token1V2) : undefined;
     const feeTier =
-      chainId === ChainId.MANTA
-        ? vaultData && vaultData.length > 12
-          ? vaultData[12]
-          : undefined
+      chainId === ChainId.MATIC
+        ? undefined
+        : vaultData && vaultData.length > 12
+        ? vaultData[12]
         : undefined;
     const totalLPIndex = chainId === ChainId.MANTA ? 13 : 12;
     const totalLPTokensIssued =

@@ -109,6 +109,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.X1]: 'x1',
   [ChainId.IMX]: 'IMX',
   [ChainId.ASTARZKEVM]: 'astar_zkevm',
+  [ChainId.LAYERX]: 'layerX',
 };
 
 export enum ZapType {
@@ -205,6 +206,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
 };
 
 export const GlobalConst = {
@@ -247,6 +249,18 @@ export const GlobalConst = {
     // we add '' to remove the possibility of nulls
     DEFAULT_ADS_LIST_URL: process.env.REACT_APP_ADS_LIST_DEFAULT_URL + '',
     DEFAULT_TOKEN_LIST_URL: process.env.REACT_APP_TOKEN_LIST_DEFAULT_URL + '',
+    COINGECKO_POLYGON_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_POLYGON_URL + '',
+    COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL:
+      process.env.REACT_APP_POLYGON_ZKEVM_URL + '',
+    COINGECKO_MANTA_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_MANTA_URL + '',
+    COINGECKO_IMMUTABLE_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_IMMUTABLE_URL + '',
+    COINGECKO_DOGE_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_DOGE_URL + '',
+    COINGECKO_KAVA_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_KAVA_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
@@ -321,6 +335,16 @@ export const GlobalConst = {
   },
 };
 
+export const DEFAULT_LIST_OF_LISTS: string[] = [
+  GlobalConst.utils.DEFAULT_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_POLYGON_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_POLYGON_ZKEVM_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_MANTA_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_IMMUTABLE_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_DOGE_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_KAVA_TOKEN_LIST_URL,
+];
+
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
   ChainId.ZKEVM,
@@ -328,6 +352,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.IMX,
   ChainId.DOGECHAIN,
   ChainId.ASTARZKEVM,
+  ChainId.LAYERX,
   ChainId.ZKATANA,
   ChainId.X1,
   ChainId.TIMX,
@@ -2130,6 +2155,108 @@ export const GammaPairs: {
         fee: FeeAmount.MEDIUM,
       },
     ],
+    '0x3a0c2ba54d6cbd3121f01b96dfd20e99d1696c9d-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-3000': [
+      {
+        address: '0x216D3DF2DF6DeC7c95D3b51F018eE4b11E416eBb',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.MEDIUM,
+      },
+    ],
+    '0x52a6c53869ce09a731cd772f245b97a4401d3348-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-500': [
+      {
+        address: '0xc46ac687D23d8a631d0eF702520ca2ff55353523',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x52A6c53869Ce09a731CD772f245b97A4401d3348',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.LOW,
+      },
+    ],
+  },
+  [ChainId.ASTARZKEVM]: {
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-100': [
+      {
+        address: '0x4476433bc06210ba265d95736ebc630544d397d9',
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0x7eccd6d077e4ad7120150578e936a22f058fbcce',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x5d8cff95d7a57c0bf50b30b43c7cc0d52825d4a9-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-100': [
+      {
+        address: '0xbc7d3b581cd4c4f34fc2942491fa803761c574e2',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x5D8cfF95D7A57c0BF50B30b43c7CC0D52825D4a9',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0xe8a6565e7f395f551fe3f98bd674a922cb552524',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x1E4a5963aBFD975d8c9021ce480b42188849D41d',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1-500': [
+      {
+        address: '0x012f34c8bd206f2ff403e2388ac66c2fa5777391',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        token1Address: '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xdf41220c7e322bfef933d85d01821ad277f90172-0xe9cc37904875b459fa5d0fe37680d36f1ed55e38-500': [
+      {
+        address: '0xf66da0f517c6f5431c77f4d0525ebc4b3bb40578',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        token1Address: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-0xdf41220c7e322bfef933d85d01821ad277f90172-500': [
+      {
+        address: '0x8f249cda053070fdb135d87e25a89dfbc8785f1d',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        token1Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        fee: FeeAmount.LOW,
+      },
+    ],
+    '0x7746ef546d562b443ae4b4145541a3b1a3d75717-0xdf41220c7e322bfef933d85d01821ad277f90172-100': [
+      {
+        address: '0x216d3df2df6dec7c95d3b51f018ee4b11e416ebb',
+        type: Presets.GAMMA_DYNAMIC,
+        title: 'Pegged Price',
+        token0Address: '0x7746ef546d562b443AE4B4145541a3b1a3D75717',
+        token1Address: '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+        fee: FeeAmount.LOWEST,
+      },
+    ],
   },
 };
 
@@ -2365,6 +2492,7 @@ export const GlobalValue = {
       [ChainId.TIMX]: [],
       [ChainId.IMX]: [],
       [ChainId.ASTARZKEVM]: [],
+      [ChainId.LAYERX]: [],
     },
   },
   marketSDK: {
@@ -2451,6 +2579,11 @@ export const GlobalData = {
       USDT[ChainId.ASTARZKEVM],
       DAI[ChainId.ASTARZKEVM],
     ],
+    [ChainId.LAYERX]: [
+      USDC[ChainId.LAYERX],
+      USDT[ChainId.LAYERX],
+      DAI[ChainId.LAYERX],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2509,6 +2642,13 @@ export const GlobalData = {
       DAI[ChainId.ASTARZKEVM],
       MATIC[ChainId.ASTARZKEVM],
     ],
+    [ChainId.LAYERX]: [
+      WETH[ChainId.LAYERX],
+      USDC[ChainId.LAYERX],
+      USDT[ChainId.LAYERX],
+      DAI[ChainId.LAYERX],
+      WBTC[ChainId.LAYERX],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2543,6 +2683,7 @@ export const GlobalData = {
     [ChainId.ASTARZKEVM]: [
       [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
     ],
+    [ChainId.LAYERX]: [],
   },
 };
 
