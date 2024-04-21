@@ -79,13 +79,25 @@ const FooterOrdersTable: React.FC<{
     {
       id: 'side',
       label: 'Side',
-      html: (item: Order) => <small>{item.side}</small>,
+      html: (item: Order) => (
+        <small
+          className={
+            item.side === OrderSide.BUY ? 'text-success' : 'text-error'
+          }
+        >
+          {item.side}
+        </small>
+      ),
     },
     {
       id: 'quantity',
       label: 'Filled / Quantity',
       html: (item: Order) => (
-        <small>
+        <small
+          className={
+            item.side === OrderSide.BUY ? 'text-success' : 'text-error'
+          }
+        >
           {formatNumber(item.total_executed_quantity)} /
           {formatNumber(item.quantity)}
         </small>

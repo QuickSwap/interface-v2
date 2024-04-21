@@ -56,7 +56,17 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
       id: 'quantity',
       label: 'Quantity',
       html: (item: API.PositionExt) => (
-        <small>{formatNumber(item.position_qty)}</small>
+        <small
+          className={
+            Number(item.position_qty) > 0
+              ? 'text-success'
+              : Number(item.position_qty) < 0
+              ? 'text-error'
+              : ''
+          }
+        >
+          {formatNumber(item.position_qty)}
+        </small>
       ),
     },
     {
@@ -77,21 +87,36 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
       id: 'liqPrice',
       label: 'Liq. price',
       html: (item: API.PositionExt) => (
-        <small>{formatNumber(item.est_liq_price ?? 0)}</small>
+        <small className={item.est_liq_price ? 'text-yellow' : ''}>
+          {item.est_liq_price ? formatNumber(item.est_liq_price) : '-'}
+        </small>
       ),
     },
     {
       id: 'unrealPNL',
       label: 'Unreal. PnL',
       html: (item: API.PositionExt) => (
-        <small>{formatNumber(item.unrealized_pnl)}</small>
+        <small
+          className={
+            Number(item.unrealized_pnl) > 0
+              ? 'text-success'
+              : Number(item.unrealized_pnl) < 0
+              ? 'text-error'
+              : ''
+          }
+        >
+          {formatNumber(item.unrealized_pnl)} (
+          {formatNumber(item.unrealized_pnl_ROI)}%)
+        </small>
       ),
     },
     {
       id: 'estTotal',
       label: 'Est. total',
       html: (item: API.PositionExt) => (
-        <small>{formatNumber(item.mark_price * item.position_qty)}</small>
+        <small>
+          {formatNumber(Math.abs(item.mark_price * item.position_qty))}
+        </small>
       ),
     },
     {
