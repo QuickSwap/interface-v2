@@ -15,7 +15,7 @@ import {
 } from '@orderly.network/types';
 import AccountModal from '../../components/AccountModal';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { ColoredSlider, ToggleSwitch } from 'components';
+import { ColoredSlider, CustomMenu, ToggleSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
 import { useWalletModalToggle } from 'state/application/hooks';
 import { formatNumber } from 'utils';
@@ -28,9 +28,10 @@ import { LeverageManage } from './LeverageManage';
 type Inputs = {
   side: OrderSide;
   order_type: OrderType;
-  order_price: string;
+  order_price?: string;
   order_quantity: string;
   order_symbol: string;
+  trigger_price?: string;
 };
 
 function getInput(
@@ -47,6 +48,7 @@ function getInput(
     order_quantity: data.order_quantity,
     reduce_only,
     visible_quantity: orderHidden ? 0 : undefined,
+    trigger_price: data.trigger_price,
   };
 }
 
@@ -119,6 +121,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
       order_quantity: order.order_quantity,
       reduce_only: reducedOnly,
       visible_quantity: orderHidden ? 0 : undefined,
+      trigger_price: order.trigger_price,
     },
     { watchOrderbook: true },
   );
@@ -261,31 +264,85 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
             </span>
           </Box>
         </Box>
-        <Box className='flex' gridGap={16} mt={2}>
-          <p
-            className={`span cursor-pointer ${
-              orderType === 'LIMIT' ? '' : 'text-secondary'
-            }`}
-            onClick={() => {
-              setOrderType(OrderType.LIMIT);
-              setOrder({ ...order, order_type: OrderType.LIMIT });
-            }}
-          >
-            {t('limit')}
-          </p>
-          <p
-            className={`span cursor-pointer ${
-              orderType === OrderType.MARKET ? '' : 'text-secondary'
-            }`}
-            onClick={() => {
-              setOrderType(OrderType.MARKET);
-              setOrder({ ...order, order_type: OrderType.MARKET });
-            }}
-          >
-            {t('market')}
-          </p>
+        <Box className='orderTypeMenu' mt={2}>
+          <CustomMenu
+            title=''
+            selectedValue={t('limit')}
+            menuItems={[
+              {
+                text: t('limit'),
+                onClick: () => {
+                  setOrderType(OrderType.LIMIT);
+                  setOrder({
+                    ...order,
+                    trigger_price: undefined,
+                    order_type: OrderType.LIMIT,
+                  });
+                },
+              },
+              {
+                text: t('market'),
+                onClick: () => {
+                  setOrderType(OrderType.MARKET);
+                  setOrder({
+                    ...order,
+                    trigger_price: undefined,
+                    order_price: undefined,
+                    order_type: OrderType.MARKET,
+                  });
+                },
+              },
+              {
+                text: t('stopLimit'),
+                onClick: () => {
+                  setOrderType(OrderType.STOP_LIMIT);
+                  setOrder({ ...order, order_type: OrderType.STOP_LIMIT });
+                },
+              },
+              {
+                text: t('stopMarket'),
+                onClick: () => {
+                  setOrderType(OrderType.STOP_MARKET);
+                  setOrder({
+                    ...order,
+                    order_price: undefined,
+                    order_type: OrderType.STOP_MARKET,
+                  });
+                },
+              },
+            ]}
+          />
         </Box>
-        {orderType === 'LIMIT' && (
+        {(orderType === OrderType.STOP_MARKET ||
+          orderType === OrderType.STOP_LIMIT) && (
+          <Box className='leverageInputWrapper' mt={2}>
+            <span className='text-secondary'>{t('trigger')}</span>
+            <Box gridGap={5}>
+              <input
+                placeholder='0'
+                disabled={state.status !== AccountStatusEnum.EnableTrading}
+                value={order.trigger_price}
+                onChange={(e) => {
+                  const value = formatDecimalInput(
+                    e.target.value,
+                    orderFilter && orderFilter.quote_tick > 0
+                      ? Math.log10(1 / Number(orderFilter.quote_tick))
+                      : undefined,
+                  );
+                  if (value !== null) {
+                    setOrder({
+                      ...order,
+                      trigger_price: value,
+                    });
+                  }
+                }}
+              />
+              <span className='text-secondary'>{token?.symbol}</span>
+            </Box>
+          </Box>
+        )}
+        {(orderType === OrderType.LIMIT ||
+          orderType === OrderType.STOP_LIMIT) && (
           <Box className='leverageInputWrapper' mt={2}>
             <span className='text-secondary'>{t('price')}</span>
             <Box gridGap={5}>

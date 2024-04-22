@@ -6,6 +6,7 @@ import 'components/styles/AssetModal.scss';
 import { useSelectedWallet } from '../../state/user/hooks';
 import NotifyModal from '../NotifyModal';
 import {
+  useAccount,
   useChains,
   useCollateral,
   useDeposit,
@@ -58,6 +59,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const { withdraw } = useWithdraw();
   const config = getConfig(chainId);
   const currency = useCurrency(token?.address);
+  const { account } = useAccount();
 
   return (
     <CustomModal
@@ -283,6 +285,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
               if (!withdrawAmount) return;
               try {
                 setLoading(true);
+                await account.settle();
                 await withdraw({
                   chainId: Number(chainId),
                   amount: withdrawAmount,

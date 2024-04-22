@@ -3,13 +3,13 @@ import { Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
 export const CancelOrderButton: React.FC<{
-  order_id: number;
+  order_id?: number;
   symbol?: string;
   cancelOrder: (order_id: number, symbol?: string) => Promise<any>;
 }> = ({ order_id, symbol, cancelOrder }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  return (
+  return order_id ? (
     <Button
       disabled={loading}
       className='orderTableActionButton'
@@ -25,5 +25,7 @@ export const CancelOrderButton: React.FC<{
     >
       {loading ? t('canceling') : t('cancel')}
     </Button>
+  ) : (
+    <></>
   );
 };

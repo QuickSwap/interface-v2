@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
-import { OrderEntity, OrderSide } from '@orderly.network/types';
+import { OrderEntity, OrderSide, OrderType } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import './Layout.scss';
@@ -59,11 +59,24 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
                   {formatNumber(order.order_quantity)}
                 </p>
               </Box>
+              {order.trigger_price && (
+                <Box className='flex items-center justify-between' mb={1}>
+                  <p className='text-secondary'>Trigger</p>
+                  <p>
+                    {formatNumber(order.trigger_price)}{' '}
+                    <span className='p text-secondary'>{tokenSymbol}</span>
+                  </p>
+                </Box>
+              )}
               <Box className='flex items-center justify-between' mb={1}>
                 <p className='text-secondary'>Price</p>
                 <p>
-                  {formatNumber(order.order_price)}{' '}
-                  <span className='p text-secondary'>{tokenSymbol}</span>
+                  {order.order_price
+                    ? formatNumber(order.order_price)
+                    : 'Market'}{' '}
+                  {order.order_price && (
+                    <span className='p text-secondary'>{tokenSymbol}</span>
+                  )}
                 </p>
               </Box>
               <Box className='flex items-center justify-between' mb={1}>

@@ -920,5 +920,8 @@
   "cancel": "Cancel",
   "canceling": "Canceling",
   "mainnets": "Mainnets",
-  "testnets": "Testnets"
+  "testnets": "Testnets",
+  "stopLimit": "Stop Limit",
+  "stopMarket": "Stop Market",
+  "trigger": "Trigger"
 }

@@ -42,6 +42,9 @@ const CustomMenu: React.FC<CustomMenuProps> = ({
           {menuItems.map((item, index) => (
             <Box
               key={index}
+              className={
+                item.text === menuItem?.text ? 'customMenuSelectedItem' : ''
+              }
               onClick={() => {
                 item.onClick();
                 setOpenMenu(false);

@@ -13,15 +13,22 @@ type Order = {
   price: number;
   quantity: number;
   created_time: string;
-  order_id: number;
+  order_id?: number;
+  algo_order_id?: number;
   side: OrderSide;
   type: OrderType;
-  status: OrderStatus;
+  status?: OrderStatus;
+  algo_status?: OrderStatus;
+  algo_type?: string;
   total_executed_quantity: number;
   average_executed_price: number;
   total_fee: number;
   reduce_only?: boolean;
   visible_quantity?: number;
+  trigger_price?: number;
+  trigger_price_type?: string;
+  root_algo_order_id?: number;
+  root_algo_status?: string;
 };
 
 const FooterOrdersTable: React.FC<{
@@ -45,7 +52,7 @@ const FooterOrdersTable: React.FC<{
     return;
   }, [selectedItem]);
 
-  const [o, { cancelOrder, isLoading }] = useOrderStream({
+  const [o, { cancelOrder, cancelAlgoOrder, isLoading }] = useOrderStream({
     symbol: token,
     status: orderStatus,
   });
@@ -61,6 +68,10 @@ const FooterOrdersTable: React.FC<{
     );
   }, [orders, selectedSide]);
 
+  const showTriggerPriceCol = !!filteredOrders.find(
+    (order) => !!order.algo_order_id,
+  );
+
   useEffect(() => {
     setPageIndex(0);
   }, [selectedItem, selectedSide]);
@@ -74,7 +85,12 @@ const FooterOrdersTable: React.FC<{
     {
       id: 'type',
       label: 'Type',
-      html: (item: Order) => <small>{item.type}</small>,
+      html: (item: Order) => (
+        <small>
+          {item.algo_order_id ? 'STOP ' : ''}
+          {item.type}
+        </small>
+      ),
     },
     {
       id: 'side',
@@ -108,6 +124,19 @@ const FooterOrdersTable: React.FC<{
       label: 'Order Price',
       html: (item: Order) => <small>{formatNumber(item.price)}</small>,
     },
+    ...(showTriggerPriceCol
+      ? [
+          {
+            id: 'triggerPrice',
+            label: 'Trigger',
+            html: (item: Order) => (
+              <small>
+                {item.trigger_price ? formatNumber(item.trigger_price) : '-'}
+              </small>
+            ),
+          },
+        ]
+      : []),
     {
       id: 'avgPrice',
       label: 'Avg. Price',
@@ -123,7 +152,7 @@ const FooterOrdersTable: React.FC<{
     {
       id: 'status',
       label: 'Status',
-      html: (item: Order) => <small>{item.status}</small>,
+      html: (item: Order) => <small>{item.status ?? item.algo_status}</small>,
     },
     {
       id: 'reduce',
@@ -159,9 +188,11 @@ const FooterOrdersTable: React.FC<{
                 <></>
               ) : (
                 <CancelOrderButton
-                  order_id={item.order_id}
+                  order_id={item.order_id ?? item.algo_order_id}
                   symbol={item.symbol}
-                  cancelOrder={cancelOrder}
+                  cancelOrder={
+                    item.algo_order_id ? cancelAlgoOrder : cancelOrder
+                  }
                 />
               ),
           },
