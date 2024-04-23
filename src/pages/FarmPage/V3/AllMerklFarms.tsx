@@ -65,19 +65,25 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     {
       text: t('pool'),
       index: GlobalConst.utils.v3FarmSortBy.pool,
-      width: 0.3,
+      width: 0.25,
       justify: 'flex-start',
     },
     {
       text: t('tvl'),
       index: GlobalConst.utils.v3FarmSortBy.tvl,
-      width: 0.2,
+      width: 0.15,
       justify: 'flex-start',
     },
     {
-      text: t('apr'),
+      text: t('currentApr'),
       index: GlobalConst.utils.v3FarmSortBy.apr,
-      width: 0.2,
+      width: 0.15,
+      justify: 'flex-start',
+    },
+    {
+      text: t('7dayApr'),
+      index: GlobalConst.utils.v3FarmSortBy.sevendayApr,
+      width: 0.15,
       justify: 'flex-start',
     },
     {
@@ -217,6 +223,9 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
         return farm1.tvl > farm2.tvl ? sortMultiplier : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
+        return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
+      }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.sevendayApr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
       if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {

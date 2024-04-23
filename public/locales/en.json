@@ -901,5 +901,7 @@
   "last24hours": "Last 24 hours",
   "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch.",
   "mainnets": "Mainnets",
-  "testnets": "Testnets"
+  "testnets": "Testnets",
+  "currentApr": "Current APR",
+  "7dayApr": "7 Day APR"
 }
