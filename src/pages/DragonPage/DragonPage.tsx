@@ -8,7 +8,7 @@ import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import { HypeLabAds } from 'components';
+import { HypeLabAds, CurrencyLogo } from 'components';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
@@ -16,6 +16,7 @@ import { useHistory } from 'react-router-dom';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import ConvertQUICK from 'pages/ConvertQUICKPage';
+import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -51,63 +52,55 @@ const DragonPage: React.FC = () => {
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>
-      <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={4}>
-          <Box className='dragonWrapper-container'>
-            <Box className='dragonBg'>
-              <img src={DragonBg2} alt='Dragon Lair' />
-            </Box>
-            <img
-              src={DragonLairMask}
-              alt='Dragon Mask'
-              className='dragonMask'
-            />
-            <Box className='dragonWrapper-heading'>
-              <h5>{t('newDragonLair')}</h5>
-              <small>
-                {t('dragonLairTitle', {
-                  symbol: quickToken?.symbol,
-                  symbol1: dQuickToken?.symbol,
-                })}
-              </small>
-            </Box>
-            {showNew && showOld && (
-              <Box className='dragonWrapper-tab-container'>
-                <TabContext value={tabValue}>
-                  <TabList onChange={handleTabChange} variant='fullWidth'>
-                    {showNew && <Tab label='QUICK (NEW)' value='1'></Tab>}
-                    {showOld && <Tab label='QUICK (OLD)' value='2'></Tab>}
-                  </TabList>
-
-                  <TabPanel value='1'>
-                    <DragonsLair isNew={true} />
-                  </TabPanel>
-                  <TabPanel value='2'>
-                    <DragonsLair isNew={false} />
-                  </TabPanel>
-                </TabContext>
-              </Box>
-            )}
-            <Box mt='48px' p='24px'>
-              {showNew && !showOld && <DragonsLair isNew={true} />}
-              {!showNew && showOld && <DragonsLair isNew={false} />}
-            </Box>
+      <Grid container className='dragonHeader'>
+        <Grid item xs={12}>
+          <Box className='dragonWrapper-title'>
+            <h5>{t('dragonLair')}</h5>
+            <small>
+              {t('dragonLairTitle', {
+                symbol: quickToken?.symbol,
+                symbol1: dQuickToken?.symbol,
+              })}
+            </small>
           </Box>
-          <Box className='dragonWrapper-container' mt={2}>
-            <ConvertQUICK isWidget={true} />
+          <Box className='dragonWrapper-overview'>
+            <Box className='total-supply'>
+              <CurrencyLogo currency={quickToken} size='40px' />
+              <Box>
+                <small>{t('totalSupply')}</small>
+                <h5 className='text-dragon-white'>1 Billion</h5>
+              </Box>
+            </Box>
+            <Box>
+              <small>{t('staked')}</small>
+              <h5 className='text-dragon-white'>280.03M</h5>
+              <small>$13.91M</small>
+            </Box>
+            <Box>
+              <small>{t('stakingApy')}</small>
+              <h5 className='text-success'>105.34%</h5>
+            </Box>
+            <Box>
+              <small>{t('quickBurned')}</small>
+              <h5 className='text-dragon-white'>245.34k</h5>
+              <small>$1.45M</small>
+            </Box>
+            <Box>
+              <small>{t('burnApy')}</small>
+              <h5 className='text-success'>2.34%</h5>
+            </Box>
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={8}>
-          <Box className='dragonWrapper'>
-            <Box className='dragonBg'>
-              <img src={isMobile ? DragonBg2 : DragonBg1} alt='Dragon Syrup' />
-            </Box>
-            <Box className='dragonTitle'>
-              <h5>{t('dragonSyrup')}</h5>
-              <small>{t('dragonSyrupTitle')}</small>
-            </Box>
-            <DragonsSyrup />
-          </Box>
+      </Grid>
+      <Grid container spacing={4} style={{ marginTop: '24px' }}>
+        <Grid item xs={12} sm={12} md={7}>
+          <DragonsLair />
+        </Grid>
+        <Grid item xs={12} sm={12} md={5}>
+          <DragonsInfo />
+        </Grid>
+        <Grid item xs={12}>
+          <DragonsSyrup />
         </Grid>
       </Grid>
     </Box>

@@ -17,9 +17,16 @@ interface BadgeProps {
   icon?: React.ReactNode;
   text?: string;
   tooltip?: string;
+  textColor?: string;
 }
 
-export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
+export default function Badge({
+  variant,
+  icon,
+  text,
+  tooltip,
+  textColor,
+}: BadgeProps) {
   const BadgeComponent = () => (
     <Box
       className={`v3-badge ${
@@ -37,7 +44,7 @@ export default function Badge({ variant, icon, text, tooltip }: BadgeProps) {
           {icon}
         </Box>
       )}
-      <span>{text}</span>
+      <span className={`${textColor ? textColor : ''}`}>{text}</span>
     </Box>
   );
   return (
