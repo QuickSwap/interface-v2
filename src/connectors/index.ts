@@ -176,6 +176,7 @@ export const metamaskConnection: Connection = {
   iconName: MetamaskIcon,
   color: '#E8831D',
   description: 'Easy-to-use browser extension.',
+  mobile: true,
 };
 
 const [web3BlockWallet, web3BlockWalletHooks] = initializeConnector<
@@ -337,6 +338,7 @@ export const trustWalletConnection: Connection = {
   iconName: TrustIcon,
   color: '#E8831D',
   description: 'TrustWallet extension.',
+  mobile: true,
 };
 
 const [web3WalletConnect, web3WalletConnectHooks] = initializeConnector<
