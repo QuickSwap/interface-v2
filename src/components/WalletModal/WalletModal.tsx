@@ -264,6 +264,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
           />
         );
       } else if (
+        !isMobile &&
         option.name === GlobalConst.walletName.TRUST_WALLET &&
         !isTrustWallet
       ) {
@@ -280,6 +281,7 @@ const WalletModal: React.FC<WalletModalProps> = ({
           />
         );
       } else if (
+        !isMobile &&
         option.name === GlobalConst.walletName.METAMASK &&
         !isMetamask
       ) {
