@@ -8,6 +8,7 @@ import { ClosePositionButton } from './ClosePositionButton';
 import { formatDecimalInput } from 'utils/numbers';
 import { useQuery } from '@tanstack/react-query';
 import { FooterPagination } from './FooterPagination';
+import { TPSLButton } from './TPSLButton';
 
 const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
   const [{ rows }] = usePositionStream(token);
@@ -180,15 +181,21 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
       id: 'action',
       label: '',
       html: (item: API.PositionExt, ind: number) => (
-        <ClosePositionButton
-          position={item}
-          quantity={Number(positionQtyInputs[ind] ?? '0')}
-          price={
-            !positionPriceInputs[ind] || positionPriceInputs[ind] === ''
-              ? undefined
-              : Number(positionPriceInputs[ind])
-          }
-        />
+        <Box className='flex items-center' gridGap={6}>
+          <ClosePositionButton
+            position={item}
+            quantity={Number(positionQtyInputs[ind] ?? '0')}
+            price={
+              !positionPriceInputs[ind] || positionPriceInputs[ind] === ''
+                ? undefined
+                : Number(positionPriceInputs[ind])
+            }
+          />
+          <TPSLButton
+            position={item}
+            maxQuantity={Number(positionQtyInputs[ind] ?? '0')}
+          />
+        </Box>
       ),
     },
   ];

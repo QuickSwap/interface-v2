@@ -91,7 +91,7 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
         </Box>
         <Box className='flex items-center' gridGap={12}>
           <Button
-            className='orderConfirmButton'
+            className='perpsConfirmButton'
             disabled={loading}
             onClick={async () => {
               try {
@@ -106,7 +106,7 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
           >
             {loading ? t('creatingOrder') : t('confirm')}
           </Button>
-          <Button className='orderConfirmCancelButton' onClick={onClose}>
+          <Button className='perpsCancelButton' onClick={onClose}>
             {t('cancel')}
           </Button>
         </Box>
