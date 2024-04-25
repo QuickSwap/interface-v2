@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
-import { OrderEntity, OrderSide, OrderType } from '@orderly.network/types';
+import { OrderEntity, OrderSide } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import './Layout.scss';

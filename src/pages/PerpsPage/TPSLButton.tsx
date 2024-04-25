@@ -8,6 +8,7 @@ import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import { formatDecimalInput } from 'utils/numbers';
 import { positions } from '@orderly.network/perp';
+import TPSLOrderConfirmModal from './TPSLOrderConfirmModal';
 
 export const TPSLButton: React.FC<{
   position: API.PositionExt;
@@ -16,6 +17,7 @@ export const TPSLButton: React.FC<{
   const [quantity, setQuantity] = useState('');
   const [tpPrice, setTPPrice] = useState('');
   const [slPrice, setSLPrice] = useState('');
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const tpOrder: OrderParams = {
     order_type: OrderType.STOP_MARKET,
@@ -35,7 +37,6 @@ export const TPSLButton: React.FC<{
     trigger_price: slPrice,
   };
 
-  const [loading, setLoading] = useState(false);
   const { onSubmit: onTPSubmit, helper: tpHelper } = useOrderEntry(tpOrder, {
     watchOrderbook: true,
   });
@@ -143,37 +144,13 @@ export const TPSLButton: React.FC<{
   const [slValueFocused, setSLValueFocused] = useState(false);
 
   const disabledConfirm = useMemo(() => {
-    if (loading) return true;
     if (Number(quantity) === 0 || Number(quantity) > maxQuantity) {
       return true;
     }
     if (!Number(tpPrice) && !Number(slPrice)) return true;
     if (slOrderError || tpOrderError) return true;
     return false;
-  }, [
-    loading,
-    maxQuantity,
-    quantity,
-    slOrderError,
-    slPrice,
-    tpOrderError,
-    tpPrice,
-  ]);
-
-  const handleConfirm = async () => {
-    setLoading(true);
-    try {
-      if (Number(tpPrice) > 0) {
-        await onTPSubmit(tpOrder);
-      }
-      if (Number(slPrice) > 0) {
-        await onSLSubmit(slOrder);
-      }
-      setLoading(false);
-    } catch {
-      setLoading(false);
-    }
-  };
+  }, [maxQuantity, quantity, slOrderError, slPrice, tpOrderError, tpPrice]);
 
   const getEstPnL = (quantity: string, trigger_price: string) => {
     if (!quantity || !trigger_price) return;
@@ -400,21 +377,24 @@ export const TPSLButton: React.FC<{
                     onFocus={() => setTPValueFocused(true)}
                     onBlur={() => setTPValueFocused(false)}
                     onChange={(e) => {
-                      setTPValue(e.target.value);
-                      const price = getOrderPrice(
-                        quantity,
-                        Number(e.target.value),
-                        selectedOption,
-                        true,
-                      );
-                      if (price) {
-                        setTPPrice(
-                          price.toFixed(
-                            orderFilter && orderFilter.quote_tick > 0
-                              ? Math.log10(1 / Number(orderFilter.quote_tick))
-                              : undefined,
-                          ),
+                      const val = formatDecimalInput(e.target.value);
+                      if (val !== null) {
+                        setTPValue(val);
+                        const price = getOrderPrice(
+                          quantity,
+                          Number(val),
+                          selectedOption,
+                          true,
                         );
+                        if (price !== undefined) {
+                          setTPPrice(
+                            price.toFixed(
+                              orderFilter && orderFilter.quote_tick > 0
+                                ? Math.log10(1 / Number(orderFilter.quote_tick))
+                                : undefined,
+                            ),
+                          );
+                        }
                       }
                     }}
                   />
@@ -539,20 +519,27 @@ export const TPSLButton: React.FC<{
                     onFocus={() => setSLValueFocused(true)}
                     onBlur={() => setSLValueFocused(false)}
                     onChange={(e) => {
-                      setSLValue(e.target.value);
-                      const price = getOrderPrice(
-                        quantity,
-                        Number(e.target.value),
-                        selectedOption,
-                      );
-                      if (price) {
-                        setSLPrice(
-                          price.toFixed(
-                            orderFilter && orderFilter.quote_tick > 0
-                              ? Math.log10(1 / Number(orderFilter.quote_tick))
-                              : undefined,
-                          ),
+                      const val = formatDecimalInput(e.target.value);
+                      if (val !== null) {
+                        const valNumber =
+                          selectedOption === 'PnL'
+                            ? Number(val) * -1
+                            : Number(val);
+                        setSLValue(valNumber.toString());
+                        const price = getOrderPrice(
+                          quantity,
+                          valNumber,
+                          selectedOption,
                         );
+                        if (price !== undefined) {
+                          setSLPrice(
+                            price.toFixed(
+                              orderFilter && orderFilter.quote_tick > 0
+                                ? Math.log10(1 / Number(orderFilter.quote_tick))
+                                : undefined,
+                            ),
+                          );
+                        }
                       }
                     }}
                   />
@@ -612,13 +599,24 @@ export const TPSLButton: React.FC<{
             <Button
               className='perpsConfirmButton'
               disabled={disabledConfirm}
-              onClick={handleConfirm}
+              onClick={() => setOpenConfirm(true)}
             >
-              {loading ? 'Confirming...' : 'Confirm'}
+              Confirm
             </Button>
           </Box>
         </Box>
       </Popover>
+      {openConfirm && (
+        <TPSLOrderConfirmModal
+          open={openConfirm}
+          onClose={() => setOpenConfirm(false)}
+          position={position}
+          tpOrder={Number(tpPrice) ? tpOrder : undefined}
+          slOrder={Number(slPrice) ? slOrder : undefined}
+          onTPSubmit={onTPSubmit}
+          onSLSubmit={onSLSubmit}
+        />
+      )}
     </>
   );
 };
