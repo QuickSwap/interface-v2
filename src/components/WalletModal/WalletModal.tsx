@@ -264,7 +264,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
           />
         );
       } else if (
-        !isMobile &&
         option.name === GlobalConst.walletName.TRUST_WALLET &&
         !isTrustWallet
       ) {
@@ -281,7 +280,6 @@ const WalletModal: React.FC<WalletModalProps> = ({
           />
         );
       } else if (
-        !isMobile &&
         option.name === GlobalConst.walletName.METAMASK &&
         !isMetamask
       ) {
@@ -359,8 +357,11 @@ const WalletModal: React.FC<WalletModalProps> = ({
           ethereum &&
           (option.mobile ||
             (isCypherD && option.connector === cypherDConnection.connector) ||
+            (isMetamask && option.connector === metamaskConnection.connector) ||
             // (isPhantomWallet &&
             //   option.connector === phantomConnection.connector) ||
+            (isTrustWallet &&
+              option.connector === trustWalletConnection.connector) ||
             (isCoinbaseWallet &&
               option.connector === coinbaseWalletConnection.connector))
         ) {
