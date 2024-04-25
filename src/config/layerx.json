@@ -80,7 +80,7 @@
     "available": false
   },
   "steer": {
-    "available": true
+    "available": false
   },
   "dappos": {
     "available": false
