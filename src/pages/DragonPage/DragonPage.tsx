@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { Box, Grid, useMediaQuery, Tab, Tabs } from '@material-ui/core';
-import DragonBg1 from 'assets/images/DragonBg1.svg';
-import DragonBg2 from 'assets/images/DragonBg2.svg';
-import DragonLairMask from 'assets/images/DragonLairMask.svg';
+import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
 import 'pages/styles/dragon.scss';
@@ -14,9 +11,8 @@ import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useHistory } from 'react-router-dom';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import ConvertQUICK from 'pages/ConvertQUICKPage';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
+import APRHover from 'assets/images/aprHover.png';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -78,7 +74,10 @@ const DragonPage: React.FC = () => {
             </Box>
             <Box>
               <small>{t('stakingApy')}</small>
-              <h5 className='text-success'>105.34%</h5>
+              <Box display='flex' alignItems='center'>
+                <h5 className='text-success'>105.34%</h5>
+                <img src={APRHover} width={18} />
+              </Box>
             </Box>
             <Box>
               <small>{t('quickBurned')}</small>

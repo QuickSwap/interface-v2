@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
-import { Box, Tab } from '@material-ui/core';
+import React, { useMemo, useState } from 'react';
+import { TransactionResponse } from '@ethersproject/providers';
+import { Box, Button, Tab, CircularProgress } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import { useOldLairInfo, useNewLairInfo } from 'state/stake/hooks';
-import { CurrencyLogo } from 'components';
+import {
+  useOldLairInfo,
+  useNewLairInfo,
+  useDerivedLairInfo,
+} from 'state/stake/hooks';
+import {
+  CurrencyLogo,
+  NumericalInput,
+  TransactionErrorContent,
+  TransactionConfirmationModal,
+  ConfirmationModalContent,
+} from 'components';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/matic.svg';
 import QUICKIcon from 'assets/images/quickIcon.svg';
 import QUICKIconOld from 'assets/images/quickIconOld.svg';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
-import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
+import APRHover from 'assets/images/aprHover.png';
+import { formatTokenAmount, useLairDQUICKAPY, calculateGasMargin } from 'utils';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
@@ -22,9 +34,21 @@ import 'pages/styles/dragon.scss';
 import Badge, { BadgeVariant } from 'components/v3/Badge';
 import { GlobalConst } from 'constants/index';
 import { useTokenBalance } from 'state/wallet/hooks';
+import { tryParseAmount } from 'state/swap/hooks';
+import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
+import {
+  useNewLairContract,
+  useQUICKConversionContract,
+} from 'hooks/useContract';
+import {
+  useTransactionAdder,
+  useTransactionFinalizer,
+} from 'state/transactions/hooks';
+import Web3 from 'web3';
 
 const DragonsLair = () => {
-  const { account, chainId } = useActiveWeb3React();
+  const { t } = useTranslation();
+  const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const isNew = true;
 
@@ -35,6 +59,24 @@ const DragonsLair = () => {
   const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [tabValue, setTabValue] = useState('stake');
+  const [stakeAmount, setStakeAmount] = useState('');
+  const [stakedAmount, setStakedAmount] = useState('');
+  const [unstakeAmount, setUnstakeAmount] = useState('');
+  const [unstakedAmount, setUnstakedAmount] = useState('');
+  const [quickAmount, setQUICKAmount] = useState('');
+  const [quickV2Amount, setQUICKV2Amount] = useState('');
+  const [approving, setApproving] = useState(false);
+  const [attemptStaking, setAttemptStaking] = useState(false);
+  const [attemptUnstaking, setAttemptUnstaking] = useState(false);
+  const [attemptConverting, setAttemptConverting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [txPending, setTxPending] = useState(false);
+  const [txHash, setTxHash] = useState('');
+  const [txError, setTxError] = useState('');
+
+  // Stake
+  const lairContract = useNewLairContract();
+  const lairContractToUse = lairContract;
   const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
@@ -45,14 +87,228 @@ const DragonsLair = () => {
   const QUICKtodQUICK = lairInfoToUse?.QUICKtodQUICK?.toFixed(4, {
     groupSeparator: ',',
   });
-  const { t } = useTranslation();
+
+  const userLiquidityUnstaked = useTokenBalance(
+    account ?? undefined,
+    quickToken,
+  );
+
+  const { parsedAmount: parsedStakingAmount, error } = useDerivedLairInfo(
+    stakeAmount,
+    quickToken,
+    userLiquidityUnstaked,
+  );
+
+  const isInsufficientStakeAmount =
+    Number(stakeAmount) > Number(lairInfoToUse?.QUICKBalance.toExact() ?? 0);
+
+  const isInsufficientUnstakeAmount =
+    Number(unstakeAmount) > Number(lairInfoToUse?.dQUICKBalance.toExact() ?? 0);
+
+  const [stakingApproval, approveStakingCallback] = useApproveCallback(
+    parsedStakingAmount,
+    lairContractToUse?.address,
+  );
+
+  const stakingButtonText = useMemo(() => {
+    if (!stakeAmount || !Number(stakeAmount)) {
+      return t('enterAmount');
+    } else if (stakingApproval !== ApprovalState.APPROVED) {
+      return t('approve');
+    } else if (isInsufficientStakeAmount) {
+      return t('insufficientBalance');
+    } else {
+      return t('confirm');
+    }
+  }, [isInsufficientStakeAmount, stakeAmount, t, stakingApproval]);
+
+  // Unstake
+  const unstakingButtonText = useMemo(() => {
+    if (!unstakeAmount || !Number(unstakeAmount)) {
+      return t('enterAmount');
+    } else if (isInsufficientUnstakeAmount) {
+      return t('insufficientBalance');
+    } else {
+      return t('confirm');
+    }
+  }, [isInsufficientUnstakeAmount, unstakeAmount, t]);
+
+  // Convert
+  const quickConvertContract = useQUICKConversionContract();
+  const parsedAmount = tryParseAmount(chainIdToUse, quickAmount, oldQuickToken);
+  const [approval, approveCallback] = useApproveCallback(
+    parsedAmount,
+    quickConvertContract?.address,
+  );
+
+  const quickConvertingText = t('convertingQUICKtoQUICKV2', {
+    quickAmount,
+    quickV2Amount,
+  });
+  const quickConvertedText = t('convertedQUICKtoQUICKV2', {
+    quickAmount,
+    quickV2Amount,
+  });
+  const txSubmittedQuickConvertText = t('submittedTxQUICKConvert', {
+    quickAmount,
+    quickV2Amount,
+  });
+  const successQuickConvertedText = t('successConvertedQUICKtoQUICKV2', {
+    quickAmount,
+    quickV2Amount,
+  });
+
+  const isInsufficientQUICK =
+    Number(quickAmount) > Number(oldQuickBalance?.toExact() ?? 0);
+
+  const buttonText = useMemo(() => {
+    if (!quickAmount || !Number(quickAmount)) {
+      return t('enterAmount');
+    } else if (approval !== ApprovalState.APPROVED) {
+      return t('approve');
+    } else if (isInsufficientQUICK) {
+      return t('insufficientBalance');
+    } else {
+      return t('convert');
+    }
+  }, [isInsufficientQUICK, quickAmount, t, approval]);
+  const addTransaction = useTransactionAdder();
+  const finalizedTransaction = useTransactionFinalizer();
 
   const handleTabChange = (event: any, newValue: string) => {
     setTabValue(newValue);
   };
 
-  const handleStake = (value: string) => {
-    console.log(value);
+  const handleDismissConfirmation = () => {
+    setShowConfirm(false);
+  };
+
+  // for stake
+  const attemptToStakeApprove = async () => {
+    setApproving(true);
+    try {
+      await onAttemptToApprove();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
+  };
+
+  const onAttemptToApprove = async () => {
+    if (!lairContractToUse) throw new Error(t('missingdependencies'));
+    const liquidityAmount = parsedStakingAmount;
+    if (!liquidityAmount) throw new Error(t('missingliquidity'));
+    return approveStakingCallback();
+  };
+
+  const onStake = async () => {
+    setAttemptStaking(true);
+    if (lairContractToUse && parsedStakingAmount) {
+      if (stakingApproval === ApprovalState.APPROVED) {
+        try {
+          const estimatedGas = await lairContractToUse.estimateGas.enter(
+            `0x${parsedStakingAmount.raw.toString(16)}`,
+          );
+          const response: TransactionResponse = await lairContractToUse.enter(
+            `0x${parsedStakingAmount.raw.toString(16)}`,
+            {
+              gasLimit: calculateGasMargin(estimatedGas),
+            },
+          );
+          addTransaction(response, {
+            summary: `${t('stake')} ${quickToken?.symbol}`,
+          });
+          const receipt = await response.wait();
+          finalizedTransaction(receipt, {
+            summary: `${t('stake')} ${quickToken?.symbol}`,
+          });
+          setAttemptStaking(false);
+          setStakeAmount('0');
+        } catch (err) {
+          setAttemptStaking(false);
+        }
+      } else {
+        setAttemptStaking(false);
+        throw new Error(t('stakewithoutapproval'));
+      }
+    }
+  };
+
+  // for unstake
+  const web3 = new Web3();
+  const onWithdraw = async () => {
+    if (lairContractToUse && lairInfoToUse?.dQUICKBalance) {
+      setAttemptUnstaking(true);
+      const balance = web3.utils.toWei(unstakeAmount, 'ether');
+      try {
+        const estimatedGas = await lairContractToUse.estimateGas.leave(
+          balance.toString(),
+        );
+        const response: TransactionResponse = await lairContractToUse.leave(
+          balance.toString(),
+          { gasLimit: calculateGasMargin(estimatedGas) },
+        );
+        addTransaction(response, {
+          summary: `${t('unstake')} ${dQuickToken?.symbol}`,
+        });
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary: `${t('unstake')} ${dQuickToken?.symbol}`,
+        });
+        setAttemptUnstaking(false);
+      } catch (error) {
+        setAttemptUnstaking(false);
+        console.log(error);
+      }
+    }
+  };
+
+  // for convert
+  const attemptToApprove = async () => {
+    setApproving(true);
+    try {
+      await approveCallback();
+      setApproving(false);
+    } catch (e) {
+      setApproving(false);
+    }
+  };
+
+  const convertQUICK = async () => {
+    if (quickConvertContract && library && parsedAmount) {
+      setAttemptConverting(true);
+      setShowConfirm(true);
+      await quickConvertContract
+        .quickToQuickX(parsedAmount.raw.toString(), {
+          gasLimit: 300000,
+        })
+        .then(async (response: TransactionResponse) => {
+          setAttemptConverting(false);
+          setTxPending(true);
+          setTxError('');
+          setTxHash('');
+          addTransaction(response, {
+            summary: quickConvertingText,
+          });
+          try {
+            const tx = await response.wait();
+            finalizedTransaction(tx, {
+              summary: quickConvertedText,
+            });
+            setTxPending(false);
+            setTxHash(tx.transactionHash);
+          } catch (err) {
+            setTxPending(false);
+            setTxError(t('errorInTx'));
+          }
+        })
+        .catch(() => {
+          setAttemptConverting(false);
+          setTxPending(false);
+          setTxHash('');
+          setTxError(t('txRejected'));
+        });
+    }
   };
 
   return (
@@ -62,8 +318,10 @@ const DragonsLair = () => {
           <h5>Manage QUICK</h5>
           <Badge
             variant={BadgeVariant.POSITIVE}
-            text={`${APY}% APY`}
+            text={`${APY ? APY : '-'}% APY`}
             textColor='text-success'
+            icon={<img src={APRHover} width={12} />}
+            iconReverse={true}
           />
         </Box>
         {tabValue !== 'convert' && (
@@ -123,16 +381,66 @@ const DragonsLair = () => {
                     {formatTokenAmount(lairInfoToUse?.QUICKBalance)}
                   </p>
                 </Box>
-                <Box className='input-wrapper'>
-                  <p>100</p>
+                <Box
+                  className={
+                    'input-wrapper ' +
+                    `currencyInput${
+                      isInsufficientStakeAmount ? ' errorInput' : ''
+                    }`
+                  }
+                >
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={stakeAmount}
+                    fontSize={18}
+                    onUserInput={(value) => {
+                      const digits =
+                        value.indexOf('.') > -1
+                          ? value.split('.')[1].length
+                          : 0;
+                      let fixedVal = value;
+                      if (digits > quickToken.decimals) {
+                        fixedVal = Number(value).toFixed(quickToken.decimals);
+                      }
+                      setStakeAmount(fixedVal);
+                      setStakedAmount(
+                        (
+                          Number(fixedVal) * Number(dQUICKtoQUICK)
+                        ).toLocaleString('fullwide', {
+                          useGrouping: false,
+                          maximumFractionDigits: quickToken.decimals,
+                        }),
+                      );
+                    }}
+                  />
                   <Box display='flex' alignItems='center'>
-                    <button className='max-button'>MAX</button>
+                    <button
+                      className='max-button'
+                      onClick={() => {
+                        if (lairInfoToUse?.QUICKBalance) {
+                          setStakeAmount(lairInfoToUse?.QUICKBalance.toExact());
+                          setStakedAmount(
+                            (
+                              Number(lairInfoToUse?.QUICKBalance.toExact()) *
+                              Number(dQUICKtoQUICK)
+                            ).toString(),
+                          );
+                        }
+                      }}
+                    >
+                      {t('max')}
+                    </button>
                     <Box display='flex' alignItems='center'>
                       <CurrencyLogo currency={quickToken} />
                       <p className='token-name'>{quickToken?.symbol}</p>
                     </Box>
                   </Box>
                 </Box>
+                {isInsufficientStakeAmount && (
+                  <small className='text-error'>
+                    {t('insufficientBalance', { symbol: 'QUICK' })}
+                  </small>
+                )}
               </Box>
               <Box className='input-item'>
                 <Box className='input-header'>
@@ -143,7 +451,21 @@ const DragonsLair = () => {
                   </p>
                 </Box>
                 <Box className='input-wrapper'>
-                  <p>100</p>
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={stakedAmount}
+                    fontSize={18}
+                    onUserInput={(value) => {
+                      setStakedAmount(value);
+                      const stakeAmount = (
+                        Number(value) / Number(dQUICKtoQUICK)
+                      ).toLocaleString('fullwide', {
+                        useGrouping: false,
+                        maximumFractionDigits: dQuickToken.decimals,
+                      });
+                      setStakeAmount(stakeAmount);
+                    }}
+                  />
                   <Box display='flex' alignItems='center'>
                     <Box display='flex' alignItems='center'>
                       <CurrencyLogo currency={dQuickToken} />
@@ -164,16 +486,68 @@ const DragonsLair = () => {
                     {formatTokenAmount(lairInfoToUse?.dQUICKBalance)}
                   </p>
                 </Box>
-                <Box className='input-wrapper'>
-                  <p>100</p>
+                <Box
+                  className={
+                    'input-wrapper ' +
+                    `currencyInput${
+                      isInsufficientUnstakeAmount ? ' errorInput' : ''
+                    }`
+                  }
+                >
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={unstakeAmount}
+                    fontSize={18}
+                    onUserInput={(value) => {
+                      const digits =
+                        value.indexOf('.') > -1
+                          ? value.split('.')[1].length
+                          : 0;
+                      let fixedVal = value;
+                      if (digits > dQuickToken.decimals) {
+                        fixedVal = Number(value).toFixed(dQuickToken.decimals);
+                      }
+                      setUnstakeAmount(fixedVal);
+                      setUnstakedAmount(
+                        (
+                          Number(fixedVal) * Number(QUICKtodQUICK)
+                        ).toLocaleString('fullwide', {
+                          useGrouping: false,
+                          maximumFractionDigits: dQuickToken.decimals,
+                        }),
+                      );
+                    }}
+                  />
                   <Box display='flex' alignItems='center'>
-                    <button className='max-button'>MAX</button>
+                    <button
+                      className='max-button'
+                      onClick={() => {
+                        if (lairInfoToUse?.dQUICKBalance) {
+                          setUnstakeAmount(
+                            lairInfoToUse?.dQUICKBalance.toExact(),
+                          );
+                          setUnstakedAmount(
+                            (
+                              Number(lairInfoToUse?.dQUICKBalance.toExact()) *
+                              Number(QUICKtodQUICK)
+                            ).toString(),
+                          );
+                        }
+                      }}
+                    >
+                      {t('max')}
+                    </button>
                     <Box display='flex' alignItems='center'>
                       <CurrencyLogo currency={dQuickToken} />
                       <p className='token-name'>{dQuickToken?.symbol}</p>
                     </Box>
                   </Box>
                 </Box>
+                {isInsufficientUnstakeAmount && (
+                  <small className='text-error'>
+                    {t('insufficientBalance', { symbol: 'dQUICK' })}
+                  </small>
+                )}
               </Box>
               <Box className='input-item'>
                 <Box className='input-header'>
@@ -184,7 +558,21 @@ const DragonsLair = () => {
                   </p>
                 </Box>
                 <Box className='input-wrapper'>
-                  <p>100</p>
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={unstakedAmount}
+                    fontSize={18}
+                    onUserInput={(value) => {
+                      setUnstakedAmount(value);
+                      const unstakeAmount = (
+                        Number(value) / Number(QUICKtodQUICK)
+                      ).toLocaleString('fullwide', {
+                        useGrouping: false,
+                        maximumFractionDigits: quickToken.decimals,
+                      });
+                      setUnstakeAmount(unstakeAmount);
+                    }}
+                  />
                   <Box display='flex' alignItems='center'>
                     <Box display='flex' alignItems='center'>
                       <CurrencyLogo currency={quickToken} />
@@ -204,10 +592,56 @@ const DragonsLair = () => {
                     {t('available')}: {formatTokenAmount(oldQuickBalance)}
                   </p>
                 </Box>
-                <Box className='input-wrapper'>
-                  <p>0.45</p>
+                <Box
+                  className={
+                    'input-wrapper ' +
+                    `currencyInput${isInsufficientQUICK ? ' errorInput' : ''}`
+                  }
+                >
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={quickAmount}
+                    fontSize={18}
+                    onUserInput={(value) => {
+                      const digits =
+                        value.indexOf('.') > -1
+                          ? value.split('.')[1].length
+                          : 0;
+                      let fixedVal = value;
+                      if (digits > oldQuickToken.decimals) {
+                        fixedVal = Number(value).toFixed(
+                          oldQuickToken.decimals,
+                        );
+                      }
+                      setQUICKAmount(fixedVal);
+                      setQUICKV2Amount(
+                        (
+                          Number(fixedVal) *
+                          GlobalConst.utils.QUICK_CONVERSION_RATE
+                        ).toLocaleString('fullwide', {
+                          useGrouping: false,
+                          maximumFractionDigits: oldQuickToken.decimals,
+                        }),
+                      );
+                    }}
+                  />
                   <Box display='flex' alignItems='center'>
-                    <button className='max-button'>MAX</button>
+                    <button
+                      className='max-button'
+                      onClick={() => {
+                        if (oldQuickBalance) {
+                          setQUICKAmount(oldQuickBalance.toExact());
+                          setQUICKV2Amount(
+                            (
+                              Number(oldQuickBalance.toExact()) *
+                              GlobalConst.utils.QUICK_CONVERSION_RATE
+                            ).toString(),
+                          );
+                        }
+                      }}
+                    >
+                      {t('max')}
+                    </button>
                     <Box display='flex' alignItems='center'>
                       <img
                         src={QUICKIconOld}
@@ -219,6 +653,11 @@ const DragonsLair = () => {
                     </Box>
                   </Box>
                 </Box>
+                {isInsufficientQUICK && (
+                  <small className='text-error'>
+                    {t('insufficientBalance', { symbol: 'QUICK (OLD)' })}
+                  </small>
+                )}
               </Box>
               <Box className='input-item'>
                 <Box className='input-header'>
@@ -229,7 +668,21 @@ const DragonsLair = () => {
                   </p>
                 </Box>
                 <Box className='input-wrapper'>
-                  <p>450</p>
+                  <NumericalInput
+                    placeholder='0.00'
+                    value={quickV2Amount}
+                    fontSize={18}
+                    onUserInput={(value) => {
+                      setQUICKV2Amount(value);
+                      const quickAmount = (
+                        Number(value) / GlobalConst.utils.QUICK_CONVERSION_RATE
+                      ).toLocaleString('fullwide', {
+                        useGrouping: false,
+                        maximumFractionDigits: oldQuickToken.decimals,
+                      });
+                      setQUICKAmount(quickAmount);
+                    }}
+                  />
                   <Box display='flex' alignItems='center'>
                     <Box display='flex' alignItems='center'>
                       <img
@@ -248,9 +701,102 @@ const DragonsLair = () => {
         </TabContext>
       </Box>
 
-      <Box className='stakeButton' onClick={() => handleStake(tabValue)}>
-        <small>{t('confirm')}</small>
+      <Box className='stakeButton'>
+        {tabValue === 'stake' && (
+          <Button
+            disabled={
+              approving ||
+              attemptStaking ||
+              isInsufficientStakeAmount ||
+              !lairInfoToUse?.QUICKBalance ||
+              !Number(lairInfoToUse?.QUICKBalance)
+            }
+            className='stakeButton'
+            onClick={() => {
+              if (stakingApproval === ApprovalState.APPROVED) {
+                onStake();
+              } else {
+                attemptToStakeApprove();
+              }
+            }}
+          >
+            {stakingButtonText}
+          </Button>
+        )}
+        {tabValue === 'unstake' && (
+          <Button
+            disabled={
+              approving ||
+              attemptUnstaking ||
+              isInsufficientUnstakeAmount ||
+              !lairInfoToUse?.dQUICKBalance ||
+              !Number(lairInfoToUse?.dQUICKBalance)
+            }
+            className='unstakeButton'
+            onClick={() => {
+              onWithdraw();
+            }}
+          >
+            {unstakingButtonText}
+          </Button>
+        )}
+        {tabValue === 'convert' && (
+          <Button
+            disabled={
+              approving ||
+              attemptConverting ||
+              isInsufficientQUICK ||
+              !quickAmount ||
+              !Number(quickAmount)
+            }
+            className='convertButton'
+            onClick={() => {
+              if (approval === ApprovalState.APPROVED) {
+                convertQUICK();
+              } else {
+                attemptToApprove();
+              }
+            }}
+          >
+            {buttonText}
+          </Button>
+        )}
       </Box>
+
+      {showConfirm && (
+        <TransactionConfirmationModal
+          isOpen={showConfirm}
+          onDismiss={handleDismissConfirmation}
+          attemptingTxn={attemptConverting}
+          txPending={txPending}
+          hash={txHash}
+          content={() =>
+            txError ? (
+              <TransactionErrorContent
+                onDismiss={handleDismissConfirmation}
+                message={txError}
+              />
+            ) : (
+              <ConfirmationModalContent
+                title={t('convertingQUICK')}
+                onDismiss={handleDismissConfirmation}
+                content={() => (
+                  <Box textAlign='center'>
+                    <Box mt={6} mb={5}>
+                      <CircularProgress size={80} />
+                    </Box>
+                    <p>{quickConvertingText}</p>
+                  </Box>
+                )}
+              />
+            )
+          }
+          pendingText={quickConvertingText}
+          modalContent={
+            txPending ? txSubmittedQuickConvertText : successQuickConvertedText
+          }
+        />
+      )}
     </Box>
   );
 };
