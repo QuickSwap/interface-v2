@@ -1,75 +1,53 @@
-import { SquidWidget } from '@0xsquid/widget';
-import { ConfigTheme } from '@0xsquid/widget/widget/core/types/config';
-import { Box, Grid } from '@material-ui/core';
-import React, { useEffect } from 'react';
+//@ts-nocheck
+import React, { useState, useEffect, useRef } from 'react';
 import { useIsDarkMode } from 'state/user/hooks';
+import styled from 'styled-components';
 
-const QUICKSWAP = 'Quickswap';
-const QUICKSWAP_V3 = 'Quickswap_v3';
-
-const SwapCrossChain: React.FC = () => {
+const FrameWrapper = styled.iframe`
+  min-height: 500px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: center;
+  border: none;
+  border-radius: 11px;
+  // box-shadow: 3px 3px 10px 4px rgba(0, 0, 0, 0.05);
+  margin: auto;
+`;
+export default function SwapCrossChain() {
   const darkMode = useIsDarkMode();
-  const darkModeStyle: ConfigTheme = {
-    baseContent: '#f3ecec',
-    neutralContent: '#696c80',
-    base100: '#0f0e0e',
-    base200: '#232531',
-    base300: '#0f1720',
-    error: '#ED6A5E',
-    warning: '#FFB155',
-    success: '#62C555',
-    primary: '#558AC5',
-    secondary: '#457cbb',
-    secondaryContent: '#2e2d30',
-    neutral: '#121319',
-    roundedBtn: '26px',
-    roundedBox: '1rem',
-    roundedDropDown: '20rem',
+  const [reload, setReload] = useState(darkMode);
+  const baseUrl = 'https://app.routernitro.com/swap';
+  const configuration = {
+    isWidget: true,
+    widgetId: 75,
+    fromChain: '137',
+    toChain: '42161',
+    fromToken: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+    toToken: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    ctaColor: '#448aff',
+    textColor: '#FFFFFF',
+    backgroundColor: '#12131a',
+    logoURI:
+      'https://altcoinsbox.com/wp-content/uploads/2023/04/quickswap-logo.png',
+    slippageTolerance: '1',
+    display: 'vertical',
+    isFromSelLocked: '0',
+    isToSelLocked: '0',
   };
-  const lightModeStyle: ConfigTheme = {
-    baseContent: '#070002',
-    neutralContent: '#070002',
-    base100: '#FFFFFF',
-    base200: '#e7e7e7',
-    base300: '#FBF5FF',
-    error: '#ED6A5E',
-    warning: '#FFB155',
-    success: '#62C555',
-    primary: '#558AC5',
-    secondary: '#457cbb',
-    secondaryContent: '#F7F6FB',
-    neutral: '#FFFFFF',
-    roundedBtn: '26px',
-    roundedBox: '1rem',
-    roundedDropDown: '20rem',
-  };
+
+  const paramString = new URLSearchParams(configuration).toString();
+  const srcWidget = useRef(`${baseUrl}?${paramString}`);
+  console.log('srcWidget', srcWidget.current);
   useEffect(() => {
-    // console.log('SwapCrossChain #init');
-  }, []);
-
+    if (reload !== darkMode) {
+      window.location.reload();
+      setReload(darkMode);
+    }
+  }, [darkMode, reload]);
   return (
-    <Grid style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <Box
-        style={{
-          width: '100%',
-          maxWidth: '420px',
-        }}
-      >
-        <SquidWidget
-          config={{
-            integratorId: 'quickswap-swap-widget',
-            companyName: 'Quickswap',
-            apiUrl: 'https://api.0xsquid.com',
-            style: darkMode ? darkModeStyle : lightModeStyle,
-            initialFromChainId: 137,
-            initialToChainId: 43114,
-            loadPreviousStateFromLocalStorage: true,
-            preferDex: [QUICKSWAP, QUICKSWAP_V3],
-          }}
-        />
-      </Box>
-    </Grid>
+    <>
+      <FrameWrapper src={`${srcWidget.current}`}></FrameWrapper>
+    </>
   );
-};
-
-export default SwapCrossChain;
+}
