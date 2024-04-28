@@ -119,4 +119,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.LAYERX]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://www.oklink.com/xlayer',
+    infoLink: 'https://algebra.finance',
+    label: 'layerX',
+    nativeCurrencySymbol: 'OKB',
+    nativeCurrencyName: 'OKB',
+    nativeCurrencyDecimals: 18,
+  },
 };

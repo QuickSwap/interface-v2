@@ -1,0 +1,94 @@
+{
+  "v3": true,
+  "v2": false,
+  "rpc": "https://rpc.xlayer.tech",
+  "blockExplorer": "https://www.oklink.com/xlayer",
+  "networkName": "X Layer",
+  "aprAPINetwork": "layerx",
+  "chainId": 196,
+  "isMainnet": true,
+  "visible": true,
+  "nativeCurrencyImage": "/OKB.png",
+  "nativeCurrency": {
+    "name": "OKB",
+    "symbol": "OKB",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": false,
+    "limitOrder": false,
+    "liquidityHub": false,
+    "crossChain": false
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "quickswap": false,
+    "merkl": false,
+    "available": false
+  },
+  "lair": {
+    "available": false,
+    "oldLair": false,
+    "newLair": false,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "liquidityHub": false,
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "maxChunks": 20,
+  "blocksPerFetch": 25,
+  "poolInitCodeHash": "0xbce37a54eab2fcd71913a0d40723e04238970e7fc1159bfd58ad5b79531697e7"
+}

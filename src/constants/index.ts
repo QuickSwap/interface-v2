@@ -109,6 +109,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.X1]: 'x1',
   [ChainId.IMX]: 'IMX',
   [ChainId.ASTARZKEVM]: 'astar_zkevm',
+  [ChainId.LAYERX]: 'layerX',
 };
 
 export enum ZapType {
@@ -205,6 +206,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.TIMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
 };
 
 export const GlobalConst = {
@@ -350,6 +352,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.IMX,
   ChainId.DOGECHAIN,
   ChainId.ASTARZKEVM,
+  ChainId.LAYERX,
   ChainId.ZKATANA,
   ChainId.X1,
   ChainId.TIMX,
@@ -2152,6 +2155,26 @@ export const GammaPairs: {
         fee: FeeAmount.MEDIUM,
       },
     ],
+    '0x3a0c2ba54d6cbd3121f01b96dfd20e99d1696c9d-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-3000': [
+      {
+        address: '0x216D3DF2DF6DeC7c95D3b51F018eE4b11E416eBb',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.MEDIUM,
+      },
+    ],
+    '0x52a6c53869ce09a731cd772f245b97a4401d3348-0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2-500': [
+      {
+        address: '0xc46ac687D23d8a631d0eF702520ca2ff55353523',
+        type: Presets.GAMMA_NARROW,
+        title: 'Narrow',
+        token0Address: '0x52A6c53869Ce09a731CD772f245b97A4401d3348',
+        token1Address: '0x6de8aCC0D406837030CE4dd28e7c08C5a96a30d2',
+        fee: FeeAmount.LOW,
+      },
+    ],
   },
   [ChainId.ASTARZKEVM]: {
     '0x1e4a5963abfd975d8c9021ce480b42188849d41d-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035-100': [
@@ -2363,6 +2386,30 @@ export const DefiedgeStrategies: {
       token1: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
       pool: '0xAE81FAc689A1b4b1e06e7ef4a2ab4CD8aC0A087D',
     },
+    {
+      id: '0x442706e08dd6c8fb606c4414881b293e60fdd33b',
+      token0: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      token1: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      pool: '0x6669B4706cC152F359e947BCa68E263A87c52634',
+    },
+    {
+      id: '0xd9884071d6ba94d205f4bd6d13fd0256a1688c15',
+      token0: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+      token1: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      pool: '0xdb975b96828352880409e86d5aE93c23c924f812',
+    },
+    {
+      id: '0x42688eedFE34EAcf64D5e9dEC7575B9C32F8fFE6',
+      token0: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      token1: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      pool: '0xa6AeDF7c4Ed6e821E67a6BfD56FD1702aD9a9719',
+    },
+    {
+      id: '0xfEfa244712513407Ac6fd45203Cdc35Df2Cf7B72',
+      token0: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      token1: '0xB5C064F955D8e7F38fE0460C556a72987494eE17',
+      pool: '0x14Ef96A0f7d738Db906bdD5260E46AA47B1e6E45',
+    },
   ],
 };
 
@@ -2469,6 +2516,7 @@ export const GlobalValue = {
       [ChainId.TIMX]: [],
       [ChainId.IMX]: [],
       [ChainId.ASTARZKEVM]: [],
+      [ChainId.LAYERX]: [],
     },
   },
   marketSDK: {
@@ -2555,6 +2603,11 @@ export const GlobalData = {
       USDT[ChainId.ASTARZKEVM],
       DAI[ChainId.ASTARZKEVM],
     ],
+    [ChainId.LAYERX]: [
+      USDC[ChainId.LAYERX],
+      USDT[ChainId.LAYERX],
+      DAI[ChainId.LAYERX],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2613,6 +2666,13 @@ export const GlobalData = {
       DAI[ChainId.ASTARZKEVM],
       MATIC[ChainId.ASTARZKEVM],
     ],
+    [ChainId.LAYERX]: [
+      WETH[ChainId.LAYERX],
+      USDC[ChainId.LAYERX],
+      USDT[ChainId.LAYERX],
+      DAI[ChainId.LAYERX],
+      WBTC[ChainId.LAYERX],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2647,6 +2707,7 @@ export const GlobalData = {
     [ChainId.ASTARZKEVM]: [
       [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
     ],
+    [ChainId.LAYERX]: [],
   },
 };
 

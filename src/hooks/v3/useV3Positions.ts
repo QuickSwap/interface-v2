@@ -1,6 +1,7 @@
 import {
   useMultipleContractMultipleData,
   useMultipleContractSingleData,
+  useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { useEffect, useMemo } from 'react';
@@ -8,7 +9,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
   useUNIV3NFTPositionManagerContract,
-  useMasterChefContracts,
   useV3NFTPositionManagerContract,
   useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
@@ -126,150 +126,64 @@ export function useV3Positions(
   hideClosePosition?: boolean,
   hideFarmingPosition?: boolean,
 ): UseV3PositionsResults {
-  const { chainId } = useActiveWeb3React();
   const positionManager = useV3NFTPositionManagerContract();
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
-  async function fetchUserPositions(isUni?: boolean) {
-    if (!account) return null;
-    try {
-      const res = await fetch(
-        `${
-          process.env.REACT_APP_LEADERBOARD_APP_URL
-        }/utils/user-positions?chainId=${chainId}&address=${account}${
-          isUni ? `&isUni=true` : ''
-        }`,
-      );
-      if (!res.ok) {
-        return null;
-      }
-      const data = await res.json();
-      const positions = data?.data?.data ?? null;
+  const algebraBalanceResult = useSingleCallResult(
+    positionManager,
+    'balanceOf',
+    [account ?? undefined],
+  );
 
-      return positions;
-    } catch (err) {
-      return null;
-    }
-  }
+  const algebraBalance = Number(algebraBalanceResult.result ?? '0');
 
-  async function fetchUserPositionIDsContract(isUni?: boolean) {
-    const contract = isUni ? uniV3PositionManager : positionManager;
-    if (!account || !contract) return null;
-    try {
-      const res = await contract.balanceOf(account);
-      const accountBalance = Number(res);
-      const positionIDs = [];
-      for (let i = 0; i < accountBalance; i++) {
-        const tokenId = await contract.tokenOfOwnerByIndex(account, i);
-        positionIDs.push(tokenId);
-      }
-      return positionIDs;
-    } catch (err) {
-      return null;
-    }
-  }
+  const algebraTokenResults = useSingleContractMultipleData(
+    positionManager,
+    'tokenOfOwnerByIndex',
+    Array.from({ length: algebraBalance }, (_, i) => i).map((v) => [
+      account ?? undefined,
+      v,
+    ]),
+  );
 
-  const {
-    data: algebraPositionIDs,
-    isLoading: algebraIDsLoading,
-    refetch: refetchAlgebraIDs,
-  } = useQuery({
-    queryKey: [
-      'user-algebra-v3-positions',
-      account,
-      chainId,
-      !!positionManager,
-      subgraphNotReadyChains.join('_'),
-    ],
-    queryFn: async () => {
-      let positionIDs: BigNumber[] = [];
-      if (positionManager) {
-        if (subgraphNotReadyChains.includes(chainId)) {
-          const ids = await fetchUserPositionIDsContract();
-          if (ids) {
-            positionIDs = ids;
-          }
-        } else {
-          const positionsFromSubgraph = await fetchUserPositions();
-          if (!positionsFromSubgraph || !positionsFromSubgraph.length) {
-            const ids = await fetchUserPositionIDsContract();
-            if (ids) {
-              positionIDs = ids;
-            }
-          } else {
-            positionIDs = positionsFromSubgraph
-              .map((item: any) =>
-                item?.id ? BigNumber.from(item?.id) : undefined,
-              )
-              .filter((id: any) => !!id);
-          }
-        }
-      }
-      return positionIDs ?? [];
-    },
-    refetchInterval: 1000 * 60 * 5,
-  });
+  const algebraIDsLoading = algebraTokenResults.some((call) => call.loading);
 
-  const {
-    data: univ3PositionIDs,
-    isLoading: univ3IDsLoading,
-    refetch: refetchUniV3IDs,
-  } = useQuery({
-    queryKey: [
-      'user-uni-v3-positions',
-      account,
-      chainId,
-      !!uniV3PositionManager,
-      subgraphNotReadyChains.join('_'),
-    ],
-    queryFn: async () => {
-      let positionIDs: BigNumber[] = [];
-      if (uniV3PositionManager) {
-        if (subgraphNotReadyChains.includes(chainId)) {
-          const ids = await fetchUserPositionIDsContract(true);
-          if (ids) {
-            positionIDs = ids;
-          }
-        } else {
-          const uniV3PositionsFromSubgraph = await fetchUserPositions(true);
-          if (!uniV3PositionsFromSubgraph) {
-            const ids = await fetchUserPositionIDsContract(true);
-            if (ids) {
-              positionIDs = ids;
-            }
-          } else {
-            positionIDs = uniV3PositionsFromSubgraph
-              .map((item: any) =>
-                item?.id ? BigNumber.from(item?.id) : undefined,
-              )
-              .filter((id: any) => !!id);
-          }
-        }
-      }
-      return positionIDs ?? [];
-    },
-    refetchInterval: 1000 * 60 * 5,
-  });
+  const algebraTokenIds = algebraTokenResults
+    .filter((call) => !!call.result)
+    .map((call) => BigNumber.from(call.result?.toString() ?? '0'));
 
-  const lastTx = useLastTransactionHash();
+  const uniV3BalanceResult = useSingleCallResult(
+    uniV3PositionManager,
+    'balanceOf',
+    [account ?? undefined],
+  );
 
-  useEffect(() => {
-    setTimeout(() => {
-      refetchAlgebraIDs();
-      refetchUniV3IDs();
-    }, 30000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastTx]);
+  const uniV3Balance = Number(uniV3BalanceResult.result ?? '0');
+
+  const uniV3TokenResults = useSingleContractMultipleData(
+    uniV3PositionManager,
+    'tokenOfOwnerByIndex',
+    Array.from({ length: uniV3Balance }, (_, i) => i).map((v) => [
+      account ?? undefined,
+      v,
+    ]),
+  );
+
+  const univ3IDsLoading = uniV3TokenResults.some((call) => call.loading);
+
+  const uniV3TokenIds = uniV3TokenResults
+    .filter((call) => !!call.result)
+    .map((call) => BigNumber.from(call.result?.toString() ?? '0'));
 
   const {
     positions: algebraPositions,
     loading: algebraPositionsLoading,
-  } = useV3PositionsFromTokenIds(algebraPositionIDs);
+  } = useV3PositionsFromTokenIds(algebraIDsLoading ? [] : algebraTokenIds);
 
   const {
     positions: uniV3Positions,
     loading: uniV3PositionsLoading,
-  } = useV3PositionsFromTokenIds(univ3PositionIDs, true);
+  } = useV3PositionsFromTokenIds(univ3IDsLoading ? [] : uniV3TokenIds, true);
 
   const { data: positionsOnFarmer } = usePositionsOnFarmer(account);
 
