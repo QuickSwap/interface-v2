@@ -26,16 +26,13 @@ const SteerLPItem: React.FC<{ position: SteerVault }> = ({ position }) => {
     minTick,
     maxTick,
   );
-  const strategy =
-    position &&
-    position.strategy &&
-    position.strategy.strategyConfigData &&
-    position.strategy.strategyConfigData.name &&
-    position.strategy.strategyConfigData.name.toLowerCase().includes('stable')
-      ? 'Stable'
-      : percentageToMultiplier(positionWidthPercent) > 1.2
-      ? 'Wide'
-      : 'Narrow';
+  const strategy = (position.strategyName ?? '')
+    .toLowerCase()
+    .includes('stable')
+    ? 'Stable'
+    : percentageToMultiplier(positionWidthPercent) > 1.2
+    ? 'Wide'
+    : 'Narrow';
 
   const { data: steerFarms } = useSteerStakedPools(chainId, account);
   const farm = useMemo(() => {

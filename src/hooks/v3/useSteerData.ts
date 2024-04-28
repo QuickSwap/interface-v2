@@ -36,7 +36,7 @@ import { useActiveWeb3React } from 'hooks';
 export interface SteerVault {
   address: string;
   state?: number;
-  strategy: any;
+  strategyName?: string;
   vaultType?: string;
   token0?: Token;
   token1?: Token;
@@ -99,17 +99,10 @@ export const useSteerVaults = (chainId: ChainId) => {
                   (item: any) => item.vaultAddress === vault.vaultAddress,
                 ),
             );
-            let strategyData;
-            try {
-              const strategyRes = await fetch(
-                `https://ipfs.io/ipfs/${vault.strategyIpfsHash}`,
-              );
-              strategyData = await strategyRes.json();
-            } catch {}
             vaults.push({
               address: vault.vaultAddress,
               poolAddress,
-              strategy: strategyData,
+              strategyName: vault.strategyName,
               apr: vaultAPRs.find(
                 (item: any) =>
                   item.vaultAddress.toLowerCase() ===
@@ -304,7 +297,7 @@ export const useSteerVaults = (chainId: ChainId) => {
         vaultRegistryData && vaultRegistryData.length > 0
           ? Number(vaultRegistryData[0])
           : undefined,
-      strategy: vaultItem?.strategy,
+      strategyName: vaultItem?.strategyName,
       apr: vaultItem?.apr,
       vaultType,
       token0,
@@ -566,12 +559,8 @@ export function useSteerFilteredFarms(
       );
       const pairType =
         vaultInfo &&
-        vaultInfo.strategy &&
-        vaultInfo.strategy.strategyConfigData &&
-        vaultInfo.strategy.strategyConfigData.name &&
-        vaultInfo.strategy.strategyConfigData.name
-          .toLowerCase()
-          .includes('stable')
+        vaultInfo.strategyName &&
+        vaultInfo.strategyName.toLowerCase().includes('stable')
           ? Presets.STEER_STABLE
           : percentageToMultiplier(positionWidthPercent) > 1.2
           ? Presets.STEER_WIDE

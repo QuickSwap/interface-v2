@@ -477,7 +477,7 @@ export const useMerklFarms = () => {
               minTick,
               maxTick,
             );
-            title = (steerVault?.strategy?.strategyConfigData?.name ?? '')
+            title = (steerVault?.strategyName ?? '')
               .toLowerCase()
               .includes('stable')
               ? 'Stable'
