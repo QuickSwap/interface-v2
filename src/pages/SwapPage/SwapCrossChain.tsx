@@ -1,20 +1,24 @@
 //@ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { useIsDarkMode } from 'state/user/hooks';
-import styled from 'styled-components';
+import { makeStyles } from '@material-ui/core/styles';
 
-const FrameWrapper = styled.iframe`
-  min-height: 500px;
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  justify-content: center;
-  border: none;
-  border-radius: 11px;
-  // box-shadow: 3px 3px 10px 4px rgba(0, 0, 0, 0.05);
-  margin: auto;
-`;
+const useStyles = makeStyles((theme) => ({
+  iframeContainer: {
+    minHeight: '500px',
+    width: '100%',
+    maxWidth: '420px',
+    display: 'flex',
+    justifyContent: 'center',
+    border: 'none',
+    borderRadius: '11px',
+    margin: 'auto',
+    textDecoration: 'none',
+  },
+}));
+
 export default function SwapCrossChain() {
+  const classes = useStyles();
   const darkMode = useIsDarkMode();
   const [reload, setReload] = useState(darkMode);
   const baseUrl = 'https://app.routernitro.com/swap';
@@ -38,16 +42,19 @@ export default function SwapCrossChain() {
 
   const paramString = new URLSearchParams(configuration).toString();
   const srcWidget = useRef(`${baseUrl}?${paramString}`);
-  console.log('srcWidget', srcWidget.current);
+
   useEffect(() => {
     if (reload !== darkMode) {
       window.location.reload();
       setReload(darkMode);
     }
   }, [darkMode, reload]);
+
   return (
-    <>
-      <FrameWrapper src={`${srcWidget.current}`}></FrameWrapper>
-    </>
+    <iframe
+      title='Nitro Widget'
+      src={srcWidget.current}
+      className={classes.iframeContainer}
+    />
   );
 }
