@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { List } from '@material-ui/core';
 import { useLocation, useHistory } from 'react-router-dom';
 import Collapse from '@mui/material/Collapse';
-import NewTag from 'assets/images/NewTag.png';
+import NewTag from 'assets/images/NewTagNew.png';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 
@@ -96,13 +96,7 @@ export const HeaderListItem: React.FC<{
           in={open}
           timeout='auto'
           unmountOnExit
-          className='ml-1 bl-1 pl-1 dropdownMobile'
-          style={{
-            position: menuDropdownOpen ? 'static' : 'absolute',
-            bottom: '120%',
-            background: '#192338',
-            borderRadius: '16px',
-          }}
+          className='ml-1 bl-1 pl-1'
         >
           <List component='div'>
             {item.items?.map((d, i) => (

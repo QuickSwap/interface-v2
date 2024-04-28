@@ -149,7 +149,7 @@ const LandingPage: React.FC = () => {
       title: t('buyWithFiat'),
       desc: t('featureBuyFiatDesc'),
       button: t('BuyNow'),
-      link: '/#/swap',
+      link: '',
     },
   ];
 
@@ -274,13 +274,21 @@ const LandingPage: React.FC = () => {
         </Box> */}
         {/*  */}
         <Box className='chainsItems'>
-          {availableChains.map((val, index) => (
+          {availableChains.slice(0, -1).map((val, index) => (
             <Box key={index} className='chainsAddress'>
               <img className='networkIcon' src={val.icon} alt={val.name} />
               <p className='font-14'>{val.name}</p>
               <p className='networkDivider'></p>
             </Box>
           ))}
+          <Box className='chainsAddress'>
+            <img
+              className='networkIcon'
+              src={availableChains[7].icon}
+              alt={availableChains[7].name}
+            />
+            <p className='font-14'>{availableChains[7].name}</p>
+          </Box>
         </Box>
         {/*  */}
       </Box>
@@ -310,7 +318,7 @@ const LandingPage: React.FC = () => {
         <h3 className='sectionHeading'>{t('TradeLiquidity')}</h3>
         <p className='sectionDesc'>{t('TradeLiquidityDesc')}</p>
         <Box className='cardBox'>
-          {features.map((val, index) => (
+          {features.slice(0, -1).map((val, index) => (
             <Box className='sectionCard' key={index}>
               <div>
                 <div className='card_title'>
@@ -325,6 +333,20 @@ const LandingPage: React.FC = () => {
               </a>
             </Box>
           ))}
+          <Box className='sectionCard'>
+            <div>
+              <div className='card_title'>
+                <img src={features[3].img} alt={features[3].title} />
+                <h5>{features[3].title}</h5>
+              </div>
+              <p>{features[3].desc}</p>
+            </div>
+            <a>
+              {/* <p className='btn'>{features[3].button}</p> */}
+              <BuyFiatButton />
+              <img src={GoAhead} alt='goAhead' />
+            </a>
+          </Box>
         </Box>
       </Box>
 
@@ -358,7 +380,7 @@ const LandingPage: React.FC = () => {
         </Box>
 
         <Box className='socialContent'>
-
+          {/* shiny img */}
           <img src={BGSHINE} className='bg_shine' alt='' />
 
           {socialicons.map((val, ind) => (
@@ -371,7 +393,6 @@ const LandingPage: React.FC = () => {
               }
             >
               <a href={val.link} target='_blank' rel='noopener noreferrer'>
-
                 {val.icon}
                 <p>{val.title}</p>
               </a>

@@ -13,19 +13,35 @@ a {
   gap: 1rem;
   justify-content: center;
 
-  @media (max-width: 767px) {
-    align-items: center;
-    margin-top: 180px;
+  @media (min-width:300px) and (max-width: 350px) {
+    margin-top: 200px;
   }
 
-  @media (max-width: 367px) {
-    align-items: center;
-    margin-top: 140px;
+  @media (min-width: 351px) and (max-width: 399px) {
+    margin-top: 240px;
+  }
+
+  @media (min-width:400px) and (max-width: 768px) {
+    margin-top: 260px;
   }
 
   @media (min-width: 768px) and (max-width: 1440px) {
     margin-left: 80px;
   }
+
+  @media (max-width: 768px) {
+    gap: 0.1rem;
+    align-items: center;
+
+    &p {
+      font-size: 10px;
+      margin: 0 15px;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+
 
   & h1 {
     font-size: 46px;
@@ -37,7 +53,7 @@ a {
 
     @media (max-width: 767px) {
       font-size: 30px;
-      margin: 0 20px;
+      // margin: 0 0 24px;
       width: 100%;
       padding-right: 0;
       text-align: center;
@@ -45,16 +61,16 @@ a {
   }
 
   & p {
-    margin-top: 14px;
     font-size: 18px;
+    margin-top: 14px;
+    width: 546px;
     font-weight: normal !important;
     line-height: 30px;
-    width: 546px;
     color: #ccd8e7;
 
     @media (max-width: 767px) {
-      font-size: 15px;
-      margin: 0 15px;
+      font-size: 14px;
+      // margin: 24px 24px 0;
       width: 100%;
       text-align: center;
     }
@@ -100,7 +116,8 @@ a {
     margin-left: 18px;
   }
 
-  @media (max-width: 420px) {
+  @media (max-width: 450px) {
+    margin-top: 100px;
     flex-direction: column;
     gap: 24px;
     align-items: center;
@@ -114,14 +131,14 @@ a {
     overflow-x: hidden;
     width: 100%;
 
-    @media (max-width:420px) {
+    @media (max-width:450px) {
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
       gap: 0px;
     }
 
-    @media (min-width:420px) {
+    @media (min-width:450px) {
       overflow-x: scroll;
 
       ::-webkit-scrollbar {
@@ -138,7 +155,7 @@ a {
       align-items: center;
       gap: 0.35rem;
 
-      @media (max-width:420px) {
+      @media (max-width:450px) {
         padding-left: 10px;
         margin-top: 16px;
       }
@@ -147,6 +164,11 @@ a {
         width: 16px;
         height: 16px;
         border-radius: 12px;
+
+        @media (max-width:420px) {
+          width: 12px;
+          height: 12px;
+        }
       }
 
       .font-14 {
@@ -154,15 +176,23 @@ a {
         line-height: 27px;
         white-space: nowrap;
 
-        @media (max-width:420px) {
+        @media (min-width: 401px) and (max-width:450px) {
           font-size: 12px;
+        }
+
+        @media (max-width:320px) {
+          font-size: 8px;
+        }
+
+        @media (min-width: 321px) and (max-width:450px) {
+          font-size: 10px;
         }
       }
 
       .networkDivider {
         border-left: 1px dotted rgb(81, 76, 76);
         height: 16px;
-        // margin-left: 10px;
+        margin-left: 0.35rem;
       }
     }
   }
@@ -175,6 +205,10 @@ a {
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
+
+  @media (max-width: 450px) {
+    margin-top: 100px;
+  }
 
   .sectionHeading {
     color: #448aff;
@@ -205,6 +239,10 @@ a {
     gap: 0.5rem;
     justify-content: space-around;
     margin-bottom: 1rem;
+
+    @media (min-width: 1124px) {
+      flex-wrap: nowrap;
+    }
 
     @media (min-width: 1124px) {
       flex-wrap: nowrap;
@@ -282,11 +320,25 @@ a {
       background-color: transparent;
       align-items: start;
 
+      @media (max-width: 450px) {
+        margin: 0;
+      }
+
+      &:hover {
+        border-color: #448aff;
+        // border-width: 1px;
+
+        div>& h5 {
+          color: #448aff;
+        }
+
+      }
+
       & .card_title {
         display: flex;
-        width: 100%;
         align-items: center;
         justify-content: start;
+        width: 100%;
         gap: 24px;
 
         @media (min-width: 767px) {
@@ -308,7 +360,7 @@ a {
       }
 
       div>& h5 {
-        color: #448aff;
+        color: #6880a3;
         font-size: 18px;
       }
 
@@ -335,6 +387,15 @@ a {
     color: white;
   }
 
+  // @media only screen and (min-width: 600px) {
+  //   .statsCardBox {
+  //     flex-wrap: nowrap;
+  //     justify-content: space-around;
+  //     // .statsCard {
+  //     //   width: 204px;
+  //     // }
+  //   }
+  // }
 
   @media (max-width: 767px) {
     align-items: flex-start;
@@ -375,7 +436,7 @@ a {
 }
 
 .analytics {
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
@@ -389,6 +450,10 @@ a {
       width: 15px;
     }
   }
+
+  @media (min-width: 450px) {
+    display: flex;
+  }
 }
 
 .communityContainer {
@@ -401,10 +466,20 @@ a {
   border-radius: 16px;
   padding: 35px 20px;
 
-  backdrop-filter: blur(24px);
-  background-color: rgba(25, 35, 56, 0.08);
-  border: solid 2px rgba(112, 112, 112, 0.08);
+  // backdrop-filter: blur(24px);
+  // background-color: rgba(25, 35, 56, 0.08);
+  // border: solid 2px rgba(112, 112, 112, 0.08);
+  // -webkit-backdrop-filter: blur(60px);
+
+  background: rgba(39, 39, 39, 0.1);
+  backdrop-filter: blur(60px);
   -webkit-backdrop-filter: blur(60px);
+  border: solid 2px rgba(112, 112, 112, 0.08);
+
+  @media (max-width: 450px) {
+    margin-top: 80px;
+    margin-bottom: -110px;
+  }
 
   .Subscribe {
     width: 100%;
@@ -419,6 +494,10 @@ a {
       color: #448aff;
       font-size: 32px;
       font-weight: 600;
+
+      @media (max-width: 450px) {
+        font-size: 22px;
+      }
     }
 
     .sectionDesc {
@@ -437,6 +516,29 @@ a {
     margin-top: 2rem;
     position: relative;
     z-index: 10;
+
+
+    & .bg_shine {
+      position: absolute;
+      z-index: 5;
+      top: 50%;
+      left: 0%;
+      transform: translateX(-30%) translateY(-50%) !important;
+      width: 880px;
+      height: 636px;
+      background-size: cover;
+      display: none;
+      opacity: 1;
+      filter: blur(25px);
+
+      @media (max-width: 1000px) {
+        display: block;
+      }
+
+      @media (min-width: 600px) {
+        left: 50%;
+      }
+    }
 
 
     & .bg_shine {
@@ -554,13 +656,12 @@ a {
     .socialContent {
       width: 45%;
       margin-top: 0;
-      justify-content: flex-end;
+      justify-content: flex-start;
     }
   }
 }
 
 .newsletterInput {
-
   display: flex;
   justify-content: space-between;
   width: 272px;
@@ -606,9 +707,7 @@ a {
   font-size: 0.8rem;
 }
 
-
-
-@media (max-width: 420px) {
+@media (max-width: 450px) {
 
   .networkSelection {
     display: none;
@@ -628,12 +727,7 @@ a {
   }
 }
 
-
 @media (max-width: 300px) {
-  .heroBkg {
-    left: -22px;
-  }
-
   .menuBar>div:last-child button:first-child {
     padding: 0px 16px;
   }

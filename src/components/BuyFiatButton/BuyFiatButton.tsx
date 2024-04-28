@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { MeldModal } from 'components';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,14 +33,15 @@ const BuyFiatButton: React.FC<BuyFiatButtonProps> = ({
           <small>{t('payWithFiatArrow')}</small>
         </Box>
       ) : (
-        <Button
-          className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
+        <button
+          // className={`rounded ${fullWidth ? 'fullWidth' : ''} `}
+          className='transparentButton'
           onClick={() => {
             setShowMeldWidgetWidget(true);
           }}
         >
           <small>{t('buyNow')}</small>
-        </Button>
+        </button>
       )}
     </>
   );

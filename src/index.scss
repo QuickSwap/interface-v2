@@ -238,9 +238,9 @@ wcm-modal {
   & .dekstopBg {
     display: none;
 
-    @media (min-width: 600px) {
+    @media (min-width: 601px) {
       display: block;
-      max-height: 3540px;
+      max-height: 3240px;
     }
   }
 
@@ -249,10 +249,28 @@ wcm-modal {
 
     @media (max-width: 600px) {
       display: block;
+      height: 6000px;
+      object-fit: cover;
     }
 
-    @media (min-width:420px) and (max-width: 630px) {
-      max-height: 4000px;
+    @media (min-width:300px) and (max-width: 350px) {
+      max-height: 4600px;
+    }
+
+    @media (min-width:351px) and (max-width: 380px) {
+      max-height: 4800px;
+    }
+
+    @media (min-width:381px) and (max-width: 399px) {
+      max-height: 5600px;
+    }
+
+    @media (min-width:400px) and (max-width: 450px) {
+      max-height: 5300px;
+    }
+
+    @media (min-width:450px) and (max-width: 630px) {
+      max-height: 5100px;
     }
   }
 
@@ -617,4 +635,10 @@ wcm-modal {
   li {
     margin-bottom: 16px;
   }
+}
+
+.transparentButton {
+  background: transparent;
+  border: none;
+  color: white;
 }

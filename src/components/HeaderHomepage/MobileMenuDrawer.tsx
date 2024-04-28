@@ -16,7 +16,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
   return (
     <Box className='mobileMenuContainer'>
       <Box className='mobileMenuClosedContainer'>
-        {menuItems.slice(0, 3).map((item, i) => (
+        {menuItems.slice(0, 4).map((item, i) => (
           <HeaderListItem
             key={'item' + i}
             item={item}
@@ -24,11 +24,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
           />
         ))}
       </Box>
-      <Box
-        className='cursor-pointer'
-        style={{ marginTop: '4px', paddingLeft: '24px' }}
-        onClick={() => setOpen(true)}
-      >
+      <Box className='cursor-pointer' onClick={() => setOpen(true)}>
         <ThreeDashIcon />
       </Box>
 
@@ -38,6 +34,7 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
             <List>
               {menuItems.map((item, index) => (
                 <HeaderListItem
+                  menuDropdownOpen={open}
                   key={'item' + index}
                   item={item}
                   onClick={() => setOpen(false)}

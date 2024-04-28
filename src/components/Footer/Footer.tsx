@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import { ReactComponent as ArrowAhead } from '../../assets/images/landingPage/arrow_ahead.svg';
 import BGSHINE from '../../assets/images/shine.webp';
-import NewTag from 'assets/images/NewTag.png';
+import NewTag from 'assets/images/NewTagNew.png';
 
 const Footer: React.FC = () => {
   const history = useHistory();
@@ -30,21 +30,21 @@ const Footer: React.FC = () => {
       title: t('services'),
       items: [
         { title: t('swap'), link: '/swap' },
-        { title: t('perpsV1'), link: '/' },
+        { title: t('perpsV1'), link: '/perps' },
         { title: t('perpsFalkor'), link: '/', isNew: true },
         { title: t('pool'), link: '/pools' },
         { title: t('farm'), link: '/farm' },
-        { title: t('bonds'), link: '/onds' },
+        { title: t('bonds'), link: '/bonds' },
       ],
     },
     {
-      title: '',
+      title: '\u00A0',
       items: [
         { title: t('dragonslair'), link: '/dragons' },
-        { title: t('gamingHub'), link: '/' },
-        { title: t('leaderboard'), link: '/' },
+        { title: t('gamingHub'), link: '/gamehub' },
+        { title: t('leaderboard'), link: '/leader-board' },
         { title: t('convert'), link: '/convert' },
-        { title: t('dappos'), link: '/' },
+        { title: t('dappos'), link: '/dappos' },
         { title: t('analytics'), link: '/analytics' },
       ],
     },
