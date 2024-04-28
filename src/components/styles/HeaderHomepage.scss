@@ -218,11 +218,13 @@
       display: none;
       border-radius: 10px;
       margin-top: 12px;
-      background: linear-gradient(70deg, transparent, rgba( 248, 248, 248, 0.2 ));
       box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
       backdrop-filter: blur( 15px );
       -webkit-backdrop-filter: blur( 15px );
       border-radius: 10px;
+      
+      background: rgb(36,34,74);
+      background: linear-gradient(15deg, rgba(36,34,74,1) 0%, rgba(34,36,57,1) 99%);
 
       & .subMenuItem {
         color: $textSecondary;
