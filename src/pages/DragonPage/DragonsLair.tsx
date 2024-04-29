@@ -53,7 +53,9 @@ const DragonsLair = () => {
   const isNew = true;
 
   const quickToken = DLQUICK[chainIdToUse];
+  const quickBalance = useTokenBalance(account ?? undefined, quickToken);
   const dQuickToken = DLDQUICK[chainIdToUse];
+  const dQuickBalance = useTokenBalance(account ?? undefined, dQuickToken);
   const oldQuickToken = OLD_QUICK[chainIdToUse];
   const oldQuickBalance = useTokenBalance(account ?? undefined, oldQuickToken);
   const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
@@ -100,7 +102,7 @@ const DragonsLair = () => {
   );
 
   const isInsufficientStakeAmount =
-    Number(stakeAmount) > Number(lairInfoToUse?.QUICKBalance.toExact() ?? 0);
+    Number(stakeAmount) > Number(quickBalance?.toExact() ?? 0);
 
   const isInsufficientUnstakeAmount =
     Number(unstakeAmount) > Number(lairInfoToUse?.dQUICKBalance.toExact() ?? 0);
@@ -224,6 +226,7 @@ const DragonsLair = () => {
           });
           setAttemptStaking(false);
           setStakeAmount('0');
+          setStakedAmount('0');
         } catch (err) {
           setAttemptStaking(false);
         }
@@ -256,6 +259,8 @@ const DragonsLair = () => {
           summary: `${t('unstake')} ${dQuickToken?.symbol}`,
         });
         setAttemptUnstaking(false);
+        setUnstakeAmount('0');
+        setUnstakedAmount('0');
       } catch (error) {
         setAttemptUnstaking(false);
         console.log(error);
@@ -377,8 +382,7 @@ const DragonsLair = () => {
                 <Box className='input-header'>
                   <p>{t('stake')}:</p>
                   <p>
-                    {t('available')}:{' '}
-                    {formatTokenAmount(lairInfoToUse?.QUICKBalance)}
+                    {t('available')}: {formatTokenAmount(quickBalance)}
                   </p>
                 </Box>
                 <Box
@@ -405,7 +409,7 @@ const DragonsLair = () => {
                       setStakeAmount(fixedVal);
                       setStakedAmount(
                         (
-                          Number(fixedVal) * Number(dQUICKtoQUICK)
+                          Number(fixedVal) / Number(dQUICKtoQUICK)
                         ).toLocaleString('fullwide', {
                           useGrouping: false,
                           maximumFractionDigits: quickToken.decimals,
@@ -417,11 +421,11 @@ const DragonsLair = () => {
                     <button
                       className='max-button'
                       onClick={() => {
-                        if (lairInfoToUse?.QUICKBalance) {
-                          setStakeAmount(lairInfoToUse?.QUICKBalance.toExact());
+                        if (quickBalance) {
+                          setStakeAmount(quickBalance.toExact());
                           setStakedAmount(
                             (
-                              Number(lairInfoToUse?.QUICKBalance.toExact()) *
+                              Number(quickBalance.toExact()) /
                               Number(dQUICKtoQUICK)
                             ).toString(),
                           );
@@ -510,7 +514,7 @@ const DragonsLair = () => {
                       setUnstakeAmount(fixedVal);
                       setUnstakedAmount(
                         (
-                          Number(fixedVal) * Number(QUICKtodQUICK)
+                          Number(fixedVal) * Number(dQUICKtoQUICK)
                         ).toLocaleString('fullwide', {
                           useGrouping: false,
                           maximumFractionDigits: dQuickToken.decimals,
@@ -529,7 +533,7 @@ const DragonsLair = () => {
                           setUnstakedAmount(
                             (
                               Number(lairInfoToUse?.dQUICKBalance.toExact()) *
-                              Number(QUICKtodQUICK)
+                              Number(dQUICKtoQUICK)
                             ).toString(),
                           );
                         }
@@ -553,8 +557,7 @@ const DragonsLair = () => {
                 <Box className='input-header'>
                   <p>{t('receive')}:</p>
                   <p>
-                    {t('available')}:{' '}
-                    {formatTokenAmount(lairInfoToUse?.QUICKBalance)}
+                    {t('available')}: {formatTokenAmount(quickBalance)}
                   </p>
                 </Box>
                 <Box className='input-wrapper'>
@@ -565,7 +568,7 @@ const DragonsLair = () => {
                     onUserInput={(value) => {
                       setUnstakedAmount(value);
                       const unstakeAmount = (
-                        Number(value) / Number(QUICKtodQUICK)
+                        Number(value) * Number(dQUICKtoQUICK)
                       ).toLocaleString('fullwide', {
                         useGrouping: false,
                         maximumFractionDigits: quickToken.decimals,
@@ -708,8 +711,7 @@ const DragonsLair = () => {
               approving ||
               attemptStaking ||
               isInsufficientStakeAmount ||
-              !lairInfoToUse?.QUICKBalance ||
-              !Number(lairInfoToUse?.QUICKBalance)
+              Number(stakeAmount) <= 0
             }
             className='stakeButton'
             onClick={() => {
@@ -729,8 +731,7 @@ const DragonsLair = () => {
               approving ||
               attemptUnstaking ||
               isInsufficientUnstakeAmount ||
-              !lairInfoToUse?.dQUICKBalance ||
-              !Number(lairInfoToUse?.dQUICKBalance)
+              Number(unstakeAmount) <= 0
             }
             className='unstakeButton'
             onClick={() => {
