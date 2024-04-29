@@ -236,7 +236,7 @@ export const GlobalConst = {
     BUNDLE_ID: '1',
     PROPOSAL_LENGTH_IN_DAYS: 7, // TODO this is only approximate, it's actually based on blocks
     NetworkContextName: 'NETWORK',
-    INITIAL_ALLOWED_SLIPPAGE: 50, // default allowed slippage, in bips
+    INITIAL_ALLOWED_SLIPPAGE: 0, // default allowed slippage, in bips
     DEFAULT_DEADLINE_FROM_NOW: 60 * 20, // 20 minutes, denominated in seconds
     BIG_INT_ZERO: JSBI.BigInt(0),
     ONE_BIPS: new Percent(JSBI.BigInt(1), JSBI.BigInt(10000)), // one basis point

@@ -26,6 +26,7 @@ import { ConnectionType } from 'connectors';
 
 const currentTimestamp = () => new Date().getTime();
 export const INITIAL_ZAP_SLIPPAGE = 100;
+export const SLIPPAGE_AUTO = 0;
 
 export interface UserState {
   // the timestamp of the last updateVersion action
