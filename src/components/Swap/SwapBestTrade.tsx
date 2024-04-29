@@ -79,6 +79,7 @@ import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
 import { useApproveCallback } from 'hooks/useApproveCallback';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -133,6 +134,7 @@ const SwapBestTrade: React.FC<{
     parsedAmount,
     currencies,
     inputError: swapInputError,
+    autoSlippage,
   } = useDerivedSwapInfo();
   const finalizedTransaction = useTransactionFinalizer();
   const [isExpertMode] = useExpertModeManager();
@@ -158,7 +160,9 @@ const SwapBestTrade: React.FC<{
     onSetSwapDelay,
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
-  const [allowedSlippage] = useUserSlippageTolerance();
+  let [allowedSlippage] = useUserSlippageTolerance();
+  allowedSlippage =
+    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
   const pct = basisPointsToPercent(allowedSlippage);
   const [approving, setApproving] = useState(false);
   const [nativeConvertApproving, setNativeConvertApproving] = useState(false);
