@@ -1,6 +1,15 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
+@mixin subMenu-style {
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 15px );
+  -webkit-backdrop-filter: blur( 15px );
+  border-radius: 10px;
+  background: rgb(36,34,74);
+  background: linear-gradient(15deg, rgba(36,34,74,1) 0%, rgba(34,36,57,1) 99%);
+}
+
 .header {
   top: 0px;
   position: fixed;
@@ -218,13 +227,7 @@
       display: none;
       border-radius: 10px;
       margin-top: 12px;
-      box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-      backdrop-filter: blur( 15px );
-      -webkit-backdrop-filter: blur( 15px );
-      border-radius: 10px;
-      
-      background: rgb(36,34,74);
-      background: linear-gradient(15deg, rgba(36,34,74,1) 0%, rgba(34,36,57,1) 99%);
+      @include subMenu-style;
 
       & .subMenuItem {
         color: $textSecondary;
@@ -614,12 +617,8 @@
   margin-top: 8px;
   min-width: 180px;
   transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-  backdrop-filter: blur( 15px );
-  -webkit-backdrop-filter: blur( 15px );
-  border-radius: 10px;
-  background: rgb(36,34,74);
-  background: linear-gradient(15deg, rgba(36,34,74,1) 0%, rgba(34,36,57,1) 99%);
+
+  @include subMenu-style;
 }
 
 .navMenu {

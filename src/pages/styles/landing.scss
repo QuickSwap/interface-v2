@@ -97,7 +97,7 @@ a {
 
 .chainsContainer {
   margin-top: 154px;
-  margin-left: 48px;
+  // margin-left: 48px;
   width: 90%;
   display: flex;
   align-items: center;
@@ -386,16 +386,6 @@ a {
     text-decoration: none;
     color: white;
   }
-
-  // @media only screen and (min-width: 600px) {
-  //   .statsCardBox {
-  //     flex-wrap: nowrap;
-  //     justify-content: space-around;
-  //     // .statsCard {
-  //     //   width: 204px;
-  //     // }
-  //   }
-  // }
 
   @media (max-width: 767px) {
     align-items: flex-start;
