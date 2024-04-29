@@ -271,7 +271,7 @@ export function useDerivedSwapInfo(): {
       ) {
         setUserSlippageTolerance(10);
       } else {
-        setUserSlippageTolerance(50);
+        setUserSlippageTolerance(SLIPPAGE_AUTO);
       }
     }
   }, [
