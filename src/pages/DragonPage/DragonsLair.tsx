@@ -120,6 +120,7 @@ const DragonsLair = () => {
     } else if (isInsufficientStakeAmount) {
       return t('insufficientBalance');
     } else {
+      setApproving(false);
       return t('confirm');
     }
   }, [isInsufficientStakeAmount, stakeAmount, t, stakingApproval]);
@@ -190,7 +191,7 @@ const DragonsLair = () => {
     setApproving(true);
     try {
       await onAttemptToApprove();
-      setApproving(false);
+      // setApproving(false);
     } catch (e) {
       setApproving(false);
     }
