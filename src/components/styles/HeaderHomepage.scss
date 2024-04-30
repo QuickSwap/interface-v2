@@ -348,7 +348,11 @@
     background-color: #448aff;
     color: white;
     cursor: pointer;
+    transition: opacity 0.1s;
 
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }
 

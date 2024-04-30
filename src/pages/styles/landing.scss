@@ -87,10 +87,15 @@ a {
     font-weight: 500;
     background-color: #448aff;
     color: white;
+    transition: opacity 0.1s;
 
     @media (max-width: 767px) {
       width: 100%;
       text-align: center;
+    }
+
+    &:hover {
+      opacity: 0.8;
     }
   }
 }

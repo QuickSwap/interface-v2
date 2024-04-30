@@ -142,7 +142,7 @@ const Footer: React.FC = () => {
                   placeholder={t('enterEmail')}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <Button disabled={isLoading} onClick={handleSignup}>
+                <button disabled={isLoading} onClick={handleSignup}>
                   {isLoading && (
                     <CircularProgress
                       size='20px'
@@ -150,7 +150,7 @@ const Footer: React.FC = () => {
                     />
                   )}
                   <ArrowAhead />
-                </Button>
+                </button>
               </Box>
               {data && (
                 <Box mt={1} textAlign='center'>
