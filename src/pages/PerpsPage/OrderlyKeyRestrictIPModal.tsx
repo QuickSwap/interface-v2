@@ -55,7 +55,7 @@ const OrderlyKeyRestrictIPModal: React.FC<OrderlyKeyRestrictIPModalProps> = ({
         </Box>
         <Box className='flex items-center' mt={2} gridGap={12}>
           <Button
-            className='orderConfirmButton'
+            className='perpsConfirmButton'
             disabled={isMutating}
             onClick={() => {
               restrictIP({
@@ -66,7 +66,7 @@ const OrderlyKeyRestrictIPModal: React.FC<OrderlyKeyRestrictIPModalProps> = ({
           >
             {isMutating ? 'Restricting IP...' : 'Confirm'}
           </Button>
-          <Button className='orderConfirmCancelButton' onClick={onClose}>
+          <Button className='perpsCancelButton' onClick={onClose}>
             Cancel
           </Button>
         </Box>

@@ -145,7 +145,7 @@ export const ClosePositionButton: React.FC<{
             )}
             <Box mt={2} className='flex' gridGap={12}>
               <Button
-                className='orderConfirmButton'
+                className='perpsConfirmButton'
                 disabled={loading}
                 onClick={async () => {
                   try {
@@ -163,10 +163,7 @@ export const ClosePositionButton: React.FC<{
               >
                 {loading ? 'Closing Position' : 'Confirm'}
               </Button>
-              <Button
-                className='orderConfirmCancelButton'
-                onClick={handleClose}
-              >
+              <Button className='perpsCancelButton' onClick={handleClose}>
                 Cancel
               </Button>
             </Box>

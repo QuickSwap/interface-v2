@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
-import { OrderEntity, OrderSide, OrderType } from '@orderly.network/types';
+import { OrderEntity, OrderSide } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import './Layout.scss';
@@ -91,7 +91,7 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
         </Box>
         <Box className='flex items-center' gridGap={12}>
           <Button
-            className='orderConfirmButton'
+            className='perpsConfirmButton'
             disabled={loading}
             onClick={async () => {
               try {
@@ -106,7 +106,7 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
           >
             {loading ? t('creatingOrder') : t('confirm')}
           </Button>
-          <Button className='orderConfirmCancelButton' onClick={onClose}>
+          <Button className='perpsCancelButton' onClick={onClose}>
             {t('cancel')}
           </Button>
         </Box>

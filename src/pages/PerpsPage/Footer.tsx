@@ -7,6 +7,7 @@ import { Check } from '@material-ui/icons';
 import FooterOrdersTable from './FooterOrdersTable';
 import FooterPositionsTable from './FooterPositionsTable';
 import { FooterAssetHistoryTable } from './FooterAssetHistoryTable';
+import FooterTPSLTable from './FooterTPSLTable';
 
 export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
@@ -21,6 +22,10 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
     {
       id: 'Pending',
       text: 'Pending',
+    },
+    {
+      id: 'tpSL',
+      text: 'TP/SL',
     },
     {
       id: 'Filled',
@@ -103,6 +108,8 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       )}
       {selectedItem === 'Portfolio' ? (
         <FooterPositionsTable token={showAllInstrument ? undefined : token} />
+      ) : selectedItem === 'tpSL' ? (
+        <FooterTPSLTable token={showAllInstrument ? undefined : token} />
       ) : selectedItem === 'DepositWithdraw' ? (
         <FooterAssetHistoryTable />
       ) : (
