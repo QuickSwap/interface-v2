@@ -5,10 +5,12 @@ import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
 import NewsletterSignupPanel from './NewsletterSignupPanel';
 const Header = lazy(() => import('components/Header'));
+const HeaderHomepage = lazy(() => import('components/HeaderHomepage'));
 const Footer = lazy(() => import('components/Footer'));
 const BetaWarningBanner = lazy(() => import('components/BetaWarningBanner'));
 const CustomModal = lazy(() => import('components/CustomModal'));
 const Background = lazy(() => import('./Background'));
+import { useLocation } from 'react-router-dom';
 
 export interface PageLayoutProps {
   children: any;
@@ -16,6 +18,9 @@ export interface PageLayoutProps {
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
+  const { pathname: currentPathname } = useLocation();
+  const showDefaultHeader = currentPathname !== '/';
+
   const headerRef = useRef(null);
   const [headerClass, setHeaderClass] = useState('');
   const { chainId, account } = useActiveWeb3React();
@@ -105,11 +110,24 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       {displayNewsletter && <NewsletterSignupPanel />}
-      <Header
+      {showDefaultHeader ? (
+        <Header
+          onUpdateNewsletter={(val) => {
+            setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');
+          }}
+        />
+      ) : (
+        <HeaderHomepage
+          onUpdateNewsletter={(val) => {
+            setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');
+          }}
+        />
+      )}
+      {/* <Header
         onUpdateNewsletter={(val) => {
           setHeaderClass(val ? '' : 'pageWrapper-no-max-no-news');
         }}
-      />
+      /> */}
       {!isProMode && <Background fallback={false} />}
       <Box
         className={`${pageWrapperClassName} ${headerClass}`}

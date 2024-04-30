@@ -1,440 +1,734 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.heroSection {
+a {
+  text-decoration: none;
+}
+
+.hero {
+  margin-top: 192px;
+  color: #f6f6f9;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  position: relative;
-  text-align: center;
-  z-index: 2;
-  & h3 {
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    padding-top: 9px;
+  gap: 1rem;
+  justify-content: center;
+
+  @media (min-width:300px) and (max-width: 350px) {
+    margin-top: 200px;
   }
-  & h1 {
-    font-size: 55px;
-    font-weight: 700;
+
+  @media (min-width: 351px) and (max-width: 399px) {
+    margin-top: 240px;
   }
-  & h5 {
-    font-size: 15px;
-    color: $textSecondary;
+
+  @media (min-width:400px) and (max-width: 768px) {
+    margin-top: 260px;
   }
-  & > button {
-    height: 56px;
-    width: 194px;
-    display: flex;
+
+  @media (min-width: 768px) and (max-width: 1440px) {
+    margin-left: 80px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 0.1rem;
     align-items: center;
-    justify-content: center;
+
+    &p {
+      font-size: 10px;
+      margin: 0 15px;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+
+
+  & h1 {
+    font-size: 46px;
+    font-weight: 600 !important;
+    line-height: 1.16;
+    font-weight: normal;
+    width: 546px;
+    padding-right: 100px;
+
+    @media (max-width: 767px) {
+      font-size: 30px;
+      // margin: 0 0 24px;
+      width: 100%;
+      padding-right: 0;
+      text-align: center;
+    }
+  }
+
+  & p {
+    font-size: 18px;
+    margin-top: 14px;
+    width: 546px;
+    font-weight: normal !important;
+    line-height: 30px;
+    color: #ccd8e7;
+
+    @media (max-width: 767px) {
+      font-size: 14px;
+      // margin: 24px 24px 0;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  & button {
+    margin-top: 20px;
+    padding: 13px 32px 15px;
+    border-radius: 0.5rem;
+    border-color: transparent;
+    width: 156px;
+    height: 48px;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: #448aff;
+    color: white;
+    transition: opacity 0.1s;
+
+    @media (max-width: 767px) {
+      width: 100%;
+      text-align: center;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }
 
-.tradingInfo {
-  width: 100%;
-  position: relative;
-  z-index: 2;
-  justify-content: center;
-  @include media('screen', '<desktop') {
-    flex-wrap: wrap;
+.chainsContainer {
+  margin-top: 154px;
+  margin-left: 48px;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  color: #f6f6f9;
+  font-size: 0.75rem;
+  gap: 1rem;
+
+
+  & .font-14 {
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 1024px) {
+    margin-left: 18px;
+  }
+
+  @media (max-width: 450px) {
+    margin-top: 100px;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    width: 100%;
+    margin-left: 0px;
+  }
+
+  .chainsItems {
+    display: flex;
+    gap: 1rem;
+    overflow-x: hidden;
+    width: 100%;
+
+    @media (max-width:450px) {
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0px;
+    }
+
+    @media (min-width:450px) {
+      overflow-x: scroll;
+
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      scrollbar-width: none;
+
+    }
+
+    .chainsAddress {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.35rem;
+
+      @media (max-width:450px) {
+        padding-left: 10px;
+        margin-top: 16px;
+      }
+
+      .networkIcon {
+        width: 16px;
+        height: 16px;
+        border-radius: 12px;
+
+        @media (max-width:420px) {
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      .font-14 {
+        font-size: 14px;
+        line-height: 27px;
+        white-space: nowrap;
+
+        @media (min-width: 401px) and (max-width:450px) {
+          font-size: 12px;
+        }
+
+        @media (max-width:320px) {
+          font-size: 8px;
+        }
+
+        @media (min-width: 321px) and (max-width:450px) {
+          font-size: 10px;
+        }
+      }
+
+      .networkDivider {
+        border-left: 1px dotted rgb(81, 76, 76);
+        height: 16px;
+        margin-left: 0.35rem;
+      }
+    }
   }
 }
-.quickInfo {
-  text-align: center;
-  margin: 0 auto 12px;
-  width: 100%;
-  max-width: 80%;
-  & h2 {
-    margin-bottom: 60px;
-  }
-}
-.rewardsContainer {
-  text-align: center;
-  margin-top: 90px;
+
+.sectionContainer {
+  margin-top: 112px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  @include media('screen', '<phone') {
-    margin: 32px 0 64px;
+  gap: 1.5rem;
+
+  @media (max-width: 450px) {
+    margin-top: 100px;
   }
-  .allRewardPairs {
-    width: 194px;
-    height: 48px;
+
+  .sectionHeading {
+    color: #448aff;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .sectionDesc {
+    color: #ccd8e7;
+    text-align: center;
+    width: 432px;
+    font-size: 16px;
+    font-weight: normal;
+
+    @media (max-width: 767px) {
+      width: 95%;
+      text-align: start;
+    }
+  }
+
+
+  .statsCardBox {
+    width: 100%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: 24px;
-    background-color: $secondary1;
-    cursor: pointer;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+
+    @media (min-width: 1124px) {
+      flex-wrap: nowrap;
+    }
+
+    @media (min-width: 1124px) {
+      flex-wrap: nowrap;
+    }
+
+    .statsCard {
+      width: calc(50% - 0.75rem);
+      height: 107px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+      max-width: 204px;
+
+
+      @media (min-width: 1110px) {
+        width: calc(100%/6 - 0.75rem);
+        max-width: 204px;
+      }
+
+      @media (min-width: 720px) {
+        width: calc(100%/3 - 0.75rem);
+        max-width: 284px;
+      }
+
+      & h5 {
+        color: #6880a3;
+        font-size: 11px;
+
+        @media (max-width: 767px) {
+          font-size: 10px;
+        }
+      }
+
+
+
+      .text-green {
+        color: #1fb85f;
+      }
+    }
+
   }
-}
-.featureHeading {
-  margin: auto;
-  text-align: center;
-  & h3 {
-    color: $grey7;
-    margin-bottom: 32px;
-  }
-}
-.featureDivider {
-  width: 32px;
-  height: 2px;
-  background: $successLight;
-  margin: auto;
-}
-.featureContainer {
-  & > div.MuiGrid-root {
-    margin-top: 32px;
-    & > div {
+
+  .statsContainer {
+    & a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
       & img {
-        width: 150px;
-        max-width: 240px;
+        width: 15px;
       }
-      & > div {
-        width: calc(100% - 270px);
+    }
+  }
+
+  .cardBox {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    gap: 24px;
+
+    .sectionCard {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+      width: 204px;
+      height: 318px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin: 40px 0px 0;
+      backdrop-filter: blur(24px);
+      background-color: transparent;
+      align-items: start;
+
+      @media (max-width: 450px) {
+        margin: 0;
       }
-      @include media('screen', '<phone') {
-        flex-direction: column;
-        & img,
-        & > div {
-          width: 100%;
-          text-align: center;
+
+      &:hover {
+        border-color: #448aff;
+        // border-width: 1px;
+
+        div>& h5 {
+          color: #448aff;
+        }
+
+      }
+
+      & .card_title {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        width: 100%;
+        gap: 24px;
+
+        @media (min-width: 767px) {
+          flex-direction: column;
+          align-items: start;
+          justify-content: start;
+        }
+      }
+
+      @media (max-width: 767px) {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+      }
+
+      & img {
+        width: 32px;
+        height: 32px;
+      }
+
+      div>& h5 {
+        color: #6880a3;
+        font-size: 18px;
+      }
+
+      div>p {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #ccd8e7;
+      }
+
+      & a {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        & img {
+          width: 15px;
         }
       }
     }
   }
-  & .featureText {
-    margin-left: 8px;
-    & h3 {
-      color: white;
-      margin-bottom: 8;
+
+  .btn {
+    text-decoration: none;
+    color: white;
+  }
+
+  @media (max-width: 767px) {
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+.cardBox,
+.statsCardBox {
+
+  .statsCard,
+  .sectionCard {
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background: rgba(39, 39, 39, 0.1);
+    backdrop-filter: blur(60px);
+    -webkit-backdrop-filter: blur(60px);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
+
+    & img {
+      width: 30%;
+      object-fit: contain;
+    }
+
+    & p {
+      color: #f6f6f9;
+    }
+
+    & a {
+      & .btn {
+        color: #ccd8e7;
+        font-size: 0.8rem;
+      }
     }
   }
 }
+
+.analytics {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  & a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & img {
+      width: 15px;
+    }
+  }
+
+  @media (min-width: 450px) {
+    display: flex;
+  }
+}
+
 .communityContainer {
-  margin: 100px 0;
-  & .socialContent {
+  margin-top: 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  padding: 35px 20px;
+
+  // backdrop-filter: blur(24px);
+  // background-color: rgba(25, 35, 56, 0.08);
+  // border: solid 2px rgba(112, 112, 112, 0.08);
+  // -webkit-backdrop-filter: blur(60px);
+
+  background: rgba(39, 39, 39, 0.1);
+  backdrop-filter: blur(60px);
+  -webkit-backdrop-filter: blur(60px);
+  border: solid 2px rgba(112, 112, 112, 0.08);
+
+  @media (max-width: 450px) {
+    margin-top: 80px;
+    margin-bottom: -110px;
+  }
+
+  .Subscribe {
+    width: 100%;
+    max-width: 432px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+
+    .sectionHeading {
+      color: #448aff;
+      font-size: 32px;
+      font-weight: 600;
+
+      @media (max-width: 450px) {
+        font-size: 22px;
+      }
+    }
+
+    .sectionDesc {
+      font-size: 16px;
+      color: #ccd8e7;
+    }
+  }
+
+  .socialContent {
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     justify-content: center;
-    margin-top: 48px;
-    & > div {
-      padding: 16px;
+    align-items: center;
+    gap: 24px;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 10;
+
+
+    & .bg_shine {
+      position: absolute;
+      z-index: 5;
+      top: 50%;
+      left: 0%;
+      transform: translateX(-30%) translateY(-50%) !important;
+      width: 880px;
+      height: 636px;
+      background-size: cover;
+      display: none;
+      opacity: 1;
+      filter: blur(25px);
+
+      @media (max-width: 1000px) {
+        display: block;
+      }
+
+      @media (min-width: 600px) {
+        left: 50%;
+      }
+    }
+
+
+    & .bg_shine {
+      position: absolute;
+      z-index: 5;
+      top: 50%;
+      left: 0%;
+      transform: translateX(-30%) translateY(-50%) !important;
+      width: 880px;
+      height: 636px;
+      background-size: cover;
+      display: none;
+      opacity: 1;
+      filter: blur(25px);
+
+      @media (max-width: 1000px) {
+        display: block;
+      }
+
+      @media (min-width: 600px) {
+        left: 50%;
+      }
+    }
+
+    &>div {
+      padding: 11px 24px;
       text-align: center;
-      width: 120px;
+
       & a {
         text-decoration: none;
-        color: $textPrimary;
+        color: white;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: start;
+        gap: 6px;
+        width: 100%;
+
+        p {
+          font-size: 12px;
+          color: #ccd8e7 !important;
+          text-align: center;
+        }
+
         &:hover {
           color: white;
         }
-      }
-      &.svgFill a:hover svg path {
-        fill: white;
-      }
-      & svg,
-      & img {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 8px;
-        filter: grayscale(1);
-      }
-      &.svgFill svg path {
-        fill: $textPrimary;
-      }
-      &.noFill svg,
-      & img {
-        opacity: 0.8;
-      }
-      &.noFill a:hover svg,
-      & a:hover img {
-        opacity: 1;
-      }
-    }
-  }
-}
-.smallCommunityContainer {
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  height: 56px;
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  border-top-left-radius: 24px;
-  background: $grey8;
-  backdrop-filter: blur(30px);
-  z-index: 11;
-  & a {
-    display: flex;
-  }
-  & .svgFill svg {
-    &:hover path {
-      fill: $textPrimary;
-    }
-    & path {
-      fill: $textSecondary;
-    }
-  }
-  & .noFill svg,
-  & img {
-    opacity: 0.5;
-    filter: grayscale(1);
-    &:hover {
-      opacity: 1;
-    }
-  }
-  & svg,
-  & img {
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-  }
-  @include media('screen', '<tablet') {
-    display: none;
-  }
-}
 
-.swapContainer {
-  text-align: center;
-  padding: 20px 0;
-  max-width: 1048px;
-  margin: auto;
-  width: 100%;
-  & > div {
-    width: 100%;
-  }
-  @include media('screen', '<phone') {
-    & .MuiGrid-item {
-      width: 100%;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-  }
-}
+        &.svgFill a:hover svg path {
+          fill: white;
+        }
 
-.swapInfo {
-  text-align: left;
-  margin-bottom: 60px;
-  @include media('screen', '<tablet') {
-    order: -1;
-  }
-  & h3 {
-    margin-bottom: 16px;
-  }
-}
-
-.tradingSection {
-  background: $bgColor;
-  width: calc(25% - 24px);
-  max-width: 288px;
-  min-width: 220px;
-  height: 133px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  margin: 12px;
-  & h6 {
-    padding-top: 2px;
-  }
-  & p {
-    font-size: 12px;
-    color: $textSecondary;
-    padding-top: 12px;
-  }
-  & h4 {
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 3px;
-    color: $primary;
-  }
-  @include media('screen', '<phone') {
-    height: unset;
-  }
-}
-
-.buyFiatContainer {
-  background: $bgPalette;
-  padding: 40px;
-  border-radius: 48px;
-  overflow: hidden;
-  position: relative;
-  @include media('screen', '<tablet') {
-    height: auto;
-  }
-  @include media('screen', '<phone') {
-    padding: 24px;
-    border-radius: 24px;
-  }
-  & > img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1248px;
-  }
-  & > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%;
-    position: relative;
-    z-index: 2;
-    & img {
-      width: 129px;
-      max-width: 320px;
-    }
-    @include media('screen', '<phone') {
-      flex-direction: column;
-      padding: 0;
-    }
-  }
-  & .buyFiatInfo {
-    position: relative;
-    margin-right: 20px;
-    & > h3 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
-    @include media('screen', '<phone') {
-      flex-direction: column;
-      margin-right: 0;
-      margin-bottom: 32px;
-      & img,
-      & > div {
-        width: 100%;
-      }
-      & img {
-        margin: -32px 0;
-      }
-      & div {
-        padding: 0 20px 20px;
-      }
-      & button {
-        width: 100%;
-      }
-    }
-    & button {
-      margin-top: 24px;
-      height: 40px;
-      border-radius: 20px;
-      padding: 0 20px;
-      & small {
-        font-size: 16px;
-      }
-    }
-  }
-  & .buyFiatWrapper {
-    width: 408px;
-    position: relative;
-    @include media('screen', '<tablet') {
-      width: calc(100% - 64px);
-      margin-bottom: 32px;
-    }
-    @include media('screen', '<phone') {
-      width: calc(100% - 40px);
-    }
-    & .buyContent {
-      background: $bgColor;
-      border-radius: 20px;
-      padding: 24px;
-      & > div {
-        padding: 0;
-        border: none;
-        background: transparent;
-        & > p {
+        & svg,
+        & img {
+          width: 48px;
+          height: 48px;
           margin-bottom: 8px;
+          filter: grayscale(1);
+        }
+
+        &.svgFill svg path {
+          fill: white;
+        }
+
+        &.noFill svg,
+        & img {
+          opacity: 0.8;
+        }
+
+        &.noFill a:hover svg,
+        & a:hover img {
+          opacity: 1;
         }
       }
-    }
-  }
-  .poweredBySection {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    height: auto;
-    font-size: 12px;
-    font-weight: 600;
-    color: $textSecondary;
-    & img {
-      height: 20px;
-      width: auto;
-      &.meldLogo {
-        height: 15px;
-        margin: 0 3px 0 6px;
+
+      @media (min-width: 1150px) {
+        width: 96px;
+      }
+
+      @media (max-width: 1150px) {
+        width: 82px;
+      }
+
+      @media (max-width: 1024px) {
+        width: 82px;
       }
     }
-  }
-}
 
-.newsletterSignupWrapper {
-  max-width: 1036px;
-  border-radius: 21px;
-  background-color: $bgPalette;
-  margin: 0 auto;
-  position: relative;
-  padding: 32px;
-  display: flex;
-  align-items: center;
-  & img {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    opacity: 0.4;
+
+    @media (max-width: 1024px) {
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      width: 80%;
+    }
+
+    @media (max-width: 752px) {
+      width: 100%;
+    }
+
   }
-  @include media('screen', '<tablet') {
-    flex-direction: column;
-    & > div:first-child {
-      text-align: center;
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 35px 73px 37px 72px;
+
+    .Subscribe {
+      width: 432px;
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .socialContent {
+      width: 45%;
+      margin-top: 0;
+      justify-content: flex-start;
     }
   }
-  @include media('screen', '<phone') {
-    padding: 24px;
-  }
 }
 
-.newsletterSignupFormWrapper {
-  margin: 0 60px 0 32px;
-}
-
-.newsletterSignupForm {
-  border: 1px solid $grey22;
-  background-color: $bgColor;
+.newsletterInput {
   display: flex;
-  padding: 6px;
-  border-radius: 11px;
-  position: relative;
-  z-index: 5;
-  & input {
+  justify-content: space-between;
+  width: 272px;
+  height: 40px;
+  padding: 3px 0 4px 16px;
+  border-radius: 8px;
+  background: rgba(32, 37, 53, 0.65);
+  backdrop-filter: blur(15.5px);
+  -webkit-backdrop-filter: blur(15.5px);
+  border-radius: 10px;
+
+  & button {
+    background: transparent;
+
+    & span {
+      font-size: 11px;
+    }
+  }
+
+  input {
     background-color: transparent;
     border: none;
-    outline: none;
-    box-shadow: none;
-    flex: 1;
     color: white;
-    width: 290px;
-    margin-right: 6px;
   }
-  & button {
-    background: linear-gradient(90deg, $blue9 0%, $purple3 100%);
-    width: 123px;
-    height: 40px;
-    & span {
-      font-size: 14px;
-      font-weight: 500;
-    }
+
+  input:focus {
+    outline: none;
   }
-  @include media('screen', '<tablet') {
-    margin: 16px 0 0;
-    width: 100%;
-    max-width: 430px;
-    & input {
-      width: auto;
-    }
+
+  input::placeholder {
+    color: #ccd8e7;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.copyrightWrapper {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  padding-top: 18px;
+  padding-bottom: 27px;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 450px) {
+
+  .networkSelection {
+    display: none;
+  }
+
+  .menuBar>div:last-child button:first-child {
+    margin-right: 0px;
+    padding: 9px 11px;
+  }
+
+  .launchApp a>button {
+    width: 112px;
+  }
+
+  .heroBkg img {
+    min-width: unset;
+  }
+}
+
+@media (max-width: 300px) {
+  .menuBar>div:last-child button:first-child {
+    padding: 0px 16px;
+  }
+
+  .launchApp a>button {
+    width: 100px;
+    font-size: 12px;
   }
 }

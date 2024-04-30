@@ -62,55 +62,62 @@ const HeroSection: React.FC = () => {
     (loadingQuickPrice || lairInfo?.loading);
 
   return (
-    <Box className='heroSection'>
-      <small className='text-bold'>{t('totalValueLocked')}</small>
-      {loading ? (
-        <Box my={1}>
-          <Skeleton variant='rect' width={400} height={72} />
-        </Box>
-      ) : (
-        <Box display='flex' pt='5px'>
-          <h3>$</h3>
-          <h1>
-            {(
-              (v2 && globalData && globalData.totalLiquidityUSD
-                ? Number(globalData.totalLiquidityUSD)
-                : 0) +
-              (v3 && v3GlobalData && v3GlobalData.totalLiquidityUSD
-                ? Number(v3GlobalData.totalLiquidityUSD)
-                : 0) +
-              dragonReward
-            ).toLocaleString('us', {
-              maximumFractionDigits: 0,
-            })}
-          </h1>
-        </Box>
-      )}
-      <h5>{t('topAssetExchange', { network: config['networkName'] })}</h5>
-      <Box mt={2} width={200} height={48}>
-        <Button
-          fullWidth
-          className='bg-blue1 p'
-          style={{
-            borderRadius: '30px',
-            height: '100%',
-          }}
-          onClick={() => {
-            !isSupportedNetwork
-              ? setOpenNetworkSelection(true)
-              : account
-              ? history.push('/swap')
-              : toggleWalletModal();
-          }}
-        >
-          {!isSupportedNetwork
-            ? t('switchNetwork')
-            : account
-            ? t('enterApp')
-            : t('connectWallet')}
-        </Button>
-      </Box>
+    <Box className='hero'>
+      <h1>{t('HeroTitle')}</h1>
+      <p>{t('HeroDesc1')}</p>
+      <p>{t('HeroDesc2')}</p>
+      <a href='/#/swap'>
+        <button>{t('LaunchApp')}</button>
+      </a>
     </Box>
+    // <Box className='heroSection'>
+    //   <small className='text-bold'>{t('totalValueLocked')}</small>
+    //   {loading ? (
+    //     <Box my={1}>
+    //       <Skeleton variant='rect' width={400} height={72} />
+    //     </Box>
+    //   ) : (
+    //     <Box display='flex' pt='5px'>
+    //       <h3>$</h3>
+    //       <h1>
+    //         {(
+    //           (v2 && globalData && globalData.totalLiquidityUSD
+    //             ? Number(globalData.totalLiquidityUSD)
+    //             : 0) +
+    //           (v3 && v3GlobalData && v3GlobalData.totalLiquidityUSD
+    //             ? Number(v3GlobalData.totalLiquidityUSD)
+    //             : 0) +
+    //           dragonReward
+    //         ).toLocaleString('us', {
+    //           maximumFractionDigits: 0,
+    //         })}
+    //       </h1>
+    //     </Box>
+    //   )}
+    //   <h5>{t('topAssetExchange', { network: config['networkName'] })}</h5>
+    //   <Box mt={2} width={200} height={48}>
+    //     <Button
+    //       fullWidth
+    //       className='bg-blue1 p'
+    //       style={{
+    //         borderRadius: '30px',
+    //         height: '100%',
+    //       }}
+    //       onClick={() => {
+    //         !isSupportedNetwork
+    //           ? setOpenNetworkSelection(true)
+    //           : account
+    //           ? history.push('/swap')
+    //           : toggleWalletModal();
+    //       }}
+    //     >
+    //       {!isSupportedNetwork
+    //         ? t('switchNetwork')
+    //         : account
+    //         ? t('enterApp')
+    //         : t('connectWallet')}
+    //     </Button>
+    // </Box>
   );
 };
 

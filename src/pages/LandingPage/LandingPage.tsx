@@ -1,44 +1,58 @@
-import React, { lazy, useEffect } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Typography,
   Box,
   Grid,
-  Typography,
 } from '@material-ui/core';
-import { ExpandMoreOutlined } from '@material-ui/icons';
 import { useTranslation, Trans } from 'react-i18next';
-import Motif from 'assets/images/Motif.svg';
-import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
-import Analytics from 'assets/images/featured/Analytics.svg';
-import DragonsLair from 'assets/images/featured/DragonsLair.svg';
-import ProvideLiquidity from 'assets/images/featured/ProvideLiquidity.svg';
-import Rewards from 'assets/images/featured/Rewards.svg';
-import FeaturedSwap from 'assets/images/featured/Swap.svg';
-import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
-import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
+import { ReactComponent as DiscordIcon } from 'assets/images/social/discord_new.svg';
+import { ReactComponent as BlogIcon } from 'assets/images/social/blog_new.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
-import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
+import { ReactComponent as Medium } from '../../assets/images/social/Medium.svg';
+import { ReactComponent as Announcements } from '../../assets/images/social/announcements.svg';
+import CoinMarketCap from '../../assets/images/social/coinMarketCap.png';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
-import InstagramIcon from 'assets/images/social/instagram.png';
 import XIcon from 'assets/images/social/X.png';
 import 'pages/styles/landing.scss';
 import { useIsV2 } from 'state/application/hooks';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
-import { HypeLabAds } from 'components';
 import NewsletterSignupForm from './NewsletterSignupForm';
+import Features1 from '../../assets/images/landingPage/features1.svg';
+import Features2 from '../../assets/images/landingPage/features2.svg';
+import Features3 from '../../assets/images/landingPage/features3.svg';
+import Features4 from '../../assets/images/landingPage/features4.svg';
+import Earn1 from '../../assets/images/landingPage/earn1.svg';
+import Earn2 from '../../assets/images/landingPage/earn2.svg';
+import Earn3 from '../../assets/images/landingPage/earn3.svg';
+import GoAhead from '../../assets/images/landingPage/GoAhead.svg';
+import { HypeLabAds } from 'components';
+import { useIsSupportedNetwork } from 'utils';
+import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { BuyFiatButton } from 'components';
 
-const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
+import Polygon from '../../assets/images/landingPage/chains/aMATIC.svg';
+import PolygonZK from '../../assets/images/landingPage/chains/PolygonZK.png';
+import MantaPacific from '../../assets/images/landingPage/chains/MantaPacific.png';
+import ImmutableZK from '../../assets/images/landingPage/chains/Immutable.png';
+import AstarZK from '../../assets/images/landingPage/chains/Astar.png';
+import X1Network from '../../assets/images/landingPage/chains/x1.png';
+import DogeChain from '../../assets/images/landingPage/chains/dogechain.png';
+import Kava from '../../assets/images/landingPage/chains/KAVA.svg';
+import BGSHINE from '../../assets/images/shine.webp';
+
 const GlobalSection = lazy(() => import('./GlobalSection'));
-const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
-const TopMovers = lazy(() => import('components/TopMovers'));
+// const BuyFiatSection = lazy(() => import('./BuyFiatSection'));
+// const BuySpritzSection = lazy(() => import('./BuySpritzSection'));
+// const TopMovers = lazy(() => import('components/TopMovers'));
+// const RewardSlider = lazy(() => import('components/RewardSlider'));
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -46,36 +60,120 @@ const LandingPage: React.FC = () => {
   const config = getConfig(chainId);
   const isFarmAvailable = config['farm']['available'];
 
+  const availableChains = [
+    {
+      icon: Polygon,
+      name: 'Polygon',
+    },
+    {
+      icon: PolygonZK,
+      name: 'Polygon zkEVM',
+    },
+    {
+      icon: MantaPacific,
+      name: 'Manta Pacific',
+    },
+    {
+      icon: ImmutableZK,
+      name: 'Immutable zkEVM',
+    },
+    {
+      icon: AstarZK,
+      name: 'Astar zkEVM',
+    },
+    {
+      icon: X1Network,
+      name: 'X Layer',
+    },
+    {
+      icon: DogeChain,
+      name: 'DogeChain',
+    },
+    {
+      icon: Kava,
+      name: 'Kava - Kinetix',
+    },
+  ];
+
+  const statistics = [
+    {
+      title: t('TotalValueLocked'),
+      numbers: '203.45M',
+    },
+    {
+      title: t('24hVol'),
+      numbers: '2.58B+',
+    },
+    {
+      title: t('TotalVol'),
+      numbers: '8,459,984',
+    },
+    {
+      title: t('24hRewards'),
+      numbers: '109,870',
+    },
+    {
+      title: t('DragonsLairTVL'),
+      numbers: '20,948,324',
+    },
+    {
+      title: t('DragonsLairAPY'),
+      numbers: '40.85%',
+    },
+  ];
+
   const features = [
     {
-      img: FeaturedSwap,
-      title: t('swapTokens'),
-      desc: t('featureTradeDesc'),
+      img: Features1,
+      title: t('swap'),
+      desc: t('featureSwapDesc'),
+      button: t('TradeNow'),
+      link: '/#/swap',
     },
     {
-      img: ProvideLiquidity,
-      title: t('supplyLiquidity'),
+      img: Features2,
+      title: t('addLiquidity'),
       desc: t('featureLiquidityDesc'),
+      button: t('LPNow'),
+      link: '/#/pools',
     },
     {
-      img: Rewards,
-      title: t('earndQUICK'),
-      desc: t('featureDepositDesc'),
+      img: Features3,
+      title: t('perpetual'),
+      desc: t('featurePerpetualDesc'),
+      button: t('TradeNow'),
+      link: 'https://perps.quickswap.exchange/#/trade',
     },
     {
-      img: DragonsLair,
-      title: t('dragonLair'),
-      desc: t('featureDragonDesc'),
-    },
-    {
-      img: BuyWithFiat,
+      img: Features4,
       title: t('buyWithFiat'),
       desc: t('featureBuyFiatDesc'),
+      button: t('BuyNow'),
+      link: '',
+    },
+  ];
+
+  const earnContent = [
+    {
+      img: Earn1,
+      title: t('DragonLair'),
+      desc: t('earnDragonDesc'),
+      button: t('Stake'),
+      link: '/#/dragons',
     },
     {
-      img: Analytics,
-      title: t('analytics'),
-      desc: t('featureAnalyticsDesc'),
+      img: Earn2,
+      title: t('Farm'),
+      desc: t('earnFarmDesc'),
+      button: t('Add'),
+      link: '/#/farm',
+    },
+    {
+      img: Earn3,
+      title: t('Bonds'),
+      desc: t('earnBondsDesc'),
+      button: t('TradeNow'),
+      link: '/#/bonds',
     },
   ];
 
@@ -92,8 +190,8 @@ const LandingPage: React.FC = () => {
     },
     {
       link: 'https://t.me/QuickSwapAnnouncements',
-      icon: <TelegramIcon />,
-      title: 'Announcement',
+      icon: <Announcements />,
+      title: 'Announcements',
     },
     {
       link: 'https://discord.gg/dSMd7AFH36',
@@ -116,19 +214,9 @@ const LandingPage: React.FC = () => {
       title: 'Reddit',
     },
     {
-      link: 'https://www.tiktok.com/@quickswapofficial',
-      icon: <img src={TikTokIcon} alt='TikTok' />,
-      title: 'TikTok',
-    },
-    {
-      link: 'https://www.instagram.com/quickswapofficial',
-      icon: <img src={InstagramIcon} alt='Instagram' />,
-      title: 'Instagram',
-    },
-    {
-      link: 'https://www.coingecko.com/en/exchanges/quickswap',
-      icon: <CoingeckoIcon />,
-      title: 'CoinGecko',
+      link: 'https://medium.com/@quickswap-layer2',
+      icon: <Medium />,
+      title: 'Medium',
     },
     {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
@@ -140,113 +228,13 @@ const LandingPage: React.FC = () => {
       icon: <img src={CoinpaprikaIcon} alt='Coinpaprika' />,
       title: 'Coinpaprika',
     },
-  ];
-
-  const faqs = [
     {
-      header: t('faq-1-title'),
-      content: <Box>{t('faq-1-content')}</Box>,
-    },
-    {
-      header: t('faq-2-title'),
-      content: (
-        <Box>
-          <Trans
-            i18nKey='faq-2-content'
-            components={{
-              underline: <u></u>,
-            }}
-          />
-        </Box>
-      ),
-    },
-    {
-      header: t('faq-3-title'),
-      content: (
-        <Box>
-          <Trans
-            i18nKey='faq-3-content'
-            components={{
-              underline: <u></u>,
-              break: <br />,
-            }}
-          />
-        </Box>
-      ),
-    },
-    {
-      header: t('faq-4-title'),
-      content: (
-        <Box>
-          <Trans
-            i18nKey='faq-4-content'
-            components={{
-              underline: <u></u>,
-              break: <br />,
-              alink: (
-                <a
-                  className='text-primary'
-                  href='https://snapshot.org/#/quickvote.eth'
-                  rel='noreferrer'
-                  target='_blank'
-                />
-              ),
-            }}
-          />
-        </Box>
-      ),
-    },
-    {
-      header: t('faq-5-title'),
-      content: (
-        <Box>
-          <Trans
-            i18nKey='faq-5-content'
-            components={{
-              underline: <u></u>,
-              break: <br />,
-              alink: (
-                <a
-                  className='text-primary'
-                  href='https://quickswap.exchange/#/convert'
-                  rel='noreferrer'
-                  target='_blank'
-                />
-              ),
-            }}
-          />
-        </Box>
-      ),
-    },
-    {
-      header: t('faq-6-title'),
-      content: (
-        <Box>
-          <Trans
-            i18nKey='faq-6-content'
-            components={{
-              underline: <u></u>,
-              break: <br />,
-            }}
-          />
-        </Box>
-      ),
-    },
-    {
-      header: t('faq-7-title'),
-      content: (
-        <Box>
-          <Trans
-            i18nKey='faq-7-content'
-            components={{
-              underline: <u></u>,
-              break: <br />,
-            }}
-          />
-        </Box>
-      ),
+      link: 'https://coinmarketcap.com/currencies/quickswap-new/',
+      icon: <img src={CoinMarketCap} alt='CoinMarketCao' />,
+      title: 'CoinMarketCap',
     },
   ];
+  //
 
   const history = useHistory();
   const { updateIsV2 } = useIsV2();
@@ -255,96 +243,152 @@ const LandingPage: React.FC = () => {
     updateIsV2(false);
   }, [updateIsV2]);
 
+  const [networkType, setNetworkType] = useState('mainnet');
+  const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
+    const config = getConfig(chain);
+    return config && config.isMainnet === (networkType === 'mainnet');
+  });
+
   return (
-    <div id='landing-page' style={{ width: '100%' }}>
+    <div className='background-img' style={{ width: '100%' }}>
       <GlobalSection />
-      <Box className='smallCommunityContainer'>
-        {socialicons.map((val, ind) => (
-          <Box
-            key={ind}
-            mx={1.5}
-            className={
-              val.title.toLowerCase() === 'geckoterminal' ? 'noFill' : 'svgFill'
-            }
-          >
-            <a href={val.link} target='_blank' rel='noopener noreferrer'>
-              {val.icon}
+
+      <Box className='chainsContainer'>
+        <span className='font-14'>{t('AvailableOn')}</span>
+        {/*  */}
+        {/* <Box className='chainsItems'>
+          {supportedChains.map((chain) => {
+            const config = getConfig(chain);
+            return (
+              <Box className='chainsAddress' key={chain}>
+                <img
+                  src={config['nativeCurrencyImage']}
+                  alt='network Image'
+                  className='networkIcon'
+                />
+                <p className='font-14'>{config['networkName']}</p>
+                <p className='networkDivider'></p>
+              </Box>
+            );
+          })}
+        </Box> */}
+        {/*  */}
+        <Box className='chainsItems'>
+          {availableChains.slice(0, -1).map((val, index) => (
+            <Box key={index} className='chainsAddress'>
+              <img className='networkIcon' src={val.icon} alt={val.name} />
+              <p className='font-14'>{val.name}</p>
+              <p className='networkDivider'></p>
+            </Box>
+          ))}
+          <Box className='chainsAddress'>
+            <img
+              className='networkIcon'
+              src={availableChains[7].icon}
+              alt={availableChains[7].name}
+            />
+            <p className='font-14'>{availableChains[7].name}</p>
+          </Box>
+        </Box>
+        {/*  */}
+      </Box>
+
+      <Box className='sectionContainer statsContainer'>
+        <h3 className='sectionHeading'>{t('QuickStatistics')}</h3>
+        <p className='sectionDesc'>{t('QuickStatisticsDesc')}</p>
+        <Box className='statsCardBox'>
+          {statistics.map((val, index) => (
+            <Box className='statsCard' key={index}>
+              <h5>{val.title}</h5>
+              <p
+                className={val.title == t('DragonsLairAPY') ? 'text-green' : ''}
+              >
+                {val.numbers}
+              </p>
+            </Box>
+          ))}
+        </Box>
+        <a href='/#/analytics' className='analytics'>
+          <p className='btn'>{t('ViewAnalytics')}</p>
+          <img src={GoAhead} alt='goAhead' />
+        </a>
+      </Box>
+
+      <Box className='sectionContainer'>
+        <h3 className='sectionHeading'>{t('TradeLiquidity')}</h3>
+        <p className='sectionDesc'>{t('TradeLiquidityDesc')}</p>
+        <Box className='cardBox'>
+          {features.slice(0, -1).map((val, index) => (
+            <Box className='sectionCard' key={index}>
+              <div>
+                <div className='card_title'>
+                  <img src={val.img} alt={val.title} />
+                  <h5>{val.title}</h5>
+                </div>
+                <p>{val.desc}</p>
+              </div>
+              <a href={val.link}>
+                <p className='btn'>{val.button}</p>
+                <img src={GoAhead} alt='goAhead' />
+              </a>
+            </Box>
+          ))}
+          <Box className='sectionCard'>
+            <div>
+              <div className='card_title'>
+                <img src={features[3].img} alt={features[3].title} />
+                <h5>{features[3].title}</h5>
+              </div>
+              <p>{features[3].desc}</p>
+            </div>
+            <a>
+              {/* <p className='btn'>{features[3].button}</p> */}
+              <BuyFiatButton />
+              <img src={GoAhead} alt='goAhead' />
             </a>
           </Box>
-        ))}
-      </Box>
-      <Box mt={2} width={1}>
-        <TopMovers />
-      </Box>
-      <Box margin='32px auto'>
-        <HypeLabAds />
-      </Box>
-      <Box className='quickInfo'>
-        <h1 className='h4'>{t('quickInfoTitle')}</h1>
-        <img src={Motif} alt='Motif' />
-      </Box>
-      <Box margin='100px 0 120px'>
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={12} md={6}>
-            <BuyFiatSection />
-          </Grid>
-          <Grid item xs={12} sm={12} md={6}>
-            <BuySpritzSection />
-          </Grid>
-        </Grid>
-      </Box>
-      <Box className='featureContainer'>
-        <Box className='featureHeading'>
-          <h3>{t('features')}</h3>
-          <Box className='featureDivider' />
         </Box>
-        <Grid container spacing={4}>
-          {features.map((val, index) => (
-            <Grid item container alignItems='center' sm={12} md={6} key={index}>
-              <img src={val.img} alt={val.title} />
-              <Box className='featureText'>
-                <h5>{val.title}</h5>
+      </Box>
+
+      <Box className='sectionContainer'>
+        <h3 className='sectionHeading'>{t('Earn')}</h3>
+        <p className='sectionDesc'>{t('EarnDesc')}</p>
+        <Box className='cardBox'>
+          {earnContent.map((val, index) => (
+            <Box className='sectionCard' key={index}>
+              <div>
+                <div className='card_title'>
+                  <img src={val.img} alt={val.title} />
+                  <h5>{val.title}</h5>
+                </div>
                 <p>{val.desc}</p>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-      <Box my={4}>
-        <NewsletterSignupForm />
-      </Box>
-      <Box className='communityContainer'>
-        <Box className='featureHeading'>
-          <h3>{t('faqs')}</h3>
-          <Box className='featureDivider' />
-        </Box>
-        <Box>
-          {faqs.map((val, i) => (
-            <Accordion key={`accordation-${i}`}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreOutlined />}
-                aria-controls='panel1a-content'
-                id='panel1a-header'
-              >
-                <Typography>{val.header}</Typography>
-              </AccordionSummary>
-              <AccordionDetails>{val.content}</AccordionDetails>
-            </Accordion>
+              </div>
+              <a href={val.link}>
+                <p className='btn'>{val.button}</p>
+                <img src={GoAhead} alt='goAhead' />
+              </a>
+            </Box>
           ))}
         </Box>
       </Box>
+
       <Box className='communityContainer'>
-        <Box className='featureHeading'>
-          <h3>{t('joinCommunity')}</h3>
-          <Box className='featureDivider' />
+        <Box className='Subscribe'>
+          <h3 className='sectionHeading'>{t('SubscribeQuickSwap')}</h3>
+          <p className='sectionDesc'>{t('SubscribeQuickSwapDesc')}</p>
+          <NewsletterSignupForm />
         </Box>
+
         <Box className='socialContent'>
+          {/* shiny img */}
+          <img src={BGSHINE} className='bg_shine' alt='' />
+
           {socialicons.map((val, ind) => (
             <Box
               key={ind}
               className={
                 val.title.toLowerCase() === 'geckoterminal'
-                  ? 'noFill'
+                  ? 'noFill socialGrid'
                   : 'svgFill'
               }
             >

@@ -352,7 +352,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           confirmedTransactions={confirmed}
         />
         <Link to='/'>
-          {mobileWindowSize && (
+          <img src={QuickIcon} alt='QuickLogo' height={40} />
+          {/* {mobileWindowSize && (
             <img src={QuickIcon} alt='QuickLogo' height={40} />
           )}
           {!mobileWindowSize && (
@@ -360,7 +361,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               <source height={60} srcSet={QuickLogoWebP} type='image/webp' />
               <img src={QuickLogo} alt='QuickLogo' height={60} />
             </picture>
-          )}
+          )} */}
         </Link>
         {!tabletWindowSize && (
           <Box className='mainMenu'>
