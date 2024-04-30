@@ -1,6 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
-import { Box, Button, Tab, CircularProgress } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
+import {
+  Box,
+  Button,
+  Tab,
+  CircularProgress,
+  useMediaQuery,
+} from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import {
   useOldLairInfo,
@@ -47,6 +54,8 @@ import {
 import Web3 from 'web3';
 
 const DragonsLair = () => {
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const { t } = useTranslation();
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -319,7 +328,10 @@ const DragonsLair = () => {
 
   return (
     <Box position='relative' zIndex={3} className='dragonLairBg'>
-      <Box mb={3} className='dragonLairTitle'>
+      <Box
+        mb={3}
+        className={`${!isMobile ? 'dragonLairTitle' : 'dragonLairTitleMobile'}`}
+      >
         <Box className='sub-title'>
           <h5>Manage QUICK</h5>
           <Badge
@@ -331,7 +343,10 @@ const DragonsLair = () => {
           />
         </Box>
         {tabValue !== 'convert' && (
-          <Box className='quickTodQuick'>
+          <Box
+            className='quickTodQuick'
+            style={{ marginTop: isMobile ? '20px' : '0px' }}
+          >
             <CurrencyLogo currency={quickToken} size='16px' />
             <small style={{ margin: '0 8px' }}>
               {isQUICKRate ? 1 : Number(dQUICKtoQUICK).toLocaleString('us')}{' '}
@@ -349,16 +364,21 @@ const DragonsLair = () => {
           </Box>
         )}
         {tabValue === 'convert' && (
-          <Box className='quickTodQuick'>
+          <Box
+            className='quickTodQuick'
+            style={{ marginTop: isMobile ? '20px' : '0px' }}
+          >
             <img
               src={QUICKIconOld}
               alt='QUICK (OLD)'
               width='16px'
               height='16px'
             />
-            <small style={{ margin: '0 8px' }}>1 QUICK (OLD) = </small>
+            <small style={{ margin: isMobile ? '0 2px' : '0 8px' }}>
+              1 QUICK (OLD) ={' '}
+            </small>
             <img src={QUICKIcon} alt='QUICK (NEW)' width='16px' height='16px' />
-            <small style={{ margin: '0 8px' }}>
+            <small style={{ margin: isMobile ? '0 2px' : '0 8px' }}>
               {GlobalConst.utils.QUICK_CONVERSION_RATE} QUICK (NEW)
             </small>
             <PriceExchangeIcon />

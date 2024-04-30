@@ -13,6 +13,7 @@ import { useHistory } from 'react-router-dom';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
+import BurnImage from 'assets/images/fire.png';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -48,7 +49,7 @@ const DragonPage: React.FC = () => {
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>
-      <Grid container className='dragonHeader'>
+      <Grid container className={`dragonHeader ${isMobile ? 'mobile' : ''}`}>
         <Grid item xs={12}>
           <Box className='dragonWrapper-title'>
             <h5>{t('dragonLair')}</h5>
@@ -59,36 +60,88 @@ const DragonPage: React.FC = () => {
               })}
             </small>
           </Box>
-          <Box className='dragonWrapper-overview'>
-            <Box className='total-supply'>
-              <CurrencyLogo currency={quickToken} size='40px' />
+          {!isMobile && (
+            <Box className='dragonWrapper-overview'>
+              <Box className='total-supply'>
+                <CurrencyLogo currency={quickToken} size='40px' />
+                <Box>
+                  <small>{t('totalSupply')}</small>
+                  <h5 className='text-dragon-white'>1 Billion</h5>
+                </Box>
+              </Box>
               <Box>
-                <small>{t('totalSupply')}</small>
-                <h5 className='text-dragon-white'>1 Billion</h5>
+                <small>{t('staked')}</small>
+                <h5 className='text-dragon-white'>280.03M</h5>
+                <small>$13.91M</small>
+              </Box>
+              <Box>
+                <small>{t('stakingApy')}</small>
+                <Box display='flex' alignItems='center'>
+                  <h5 className='text-success'>105.34%</h5>
+                  <img src={APRHover} width={18} />
+                </Box>
+              </Box>
+              <Box>
+                <small>{t('quickBurned')}</small>
+                <h5 className='text-dragon-white'>245.34k</h5>
+                <small>$1.45M</small>
+              </Box>
+              <Box>
+                <small>{t('burnApy')}</small>
+                <Box display='flex' alignItems='center'>
+                  <h5 className='text-success'>2.34%</h5>
+                  <img
+                    src={BurnImage}
+                    width={12}
+                    style={{ marginLeft: '5px' }}
+                  />
+                </Box>
               </Box>
             </Box>
-            <Box>
-              <small>{t('staked')}</small>
-              <h5 className='text-dragon-white'>280.03M</h5>
-              <small>$13.91M</small>
-            </Box>
-            <Box>
-              <small>{t('stakingApy')}</small>
-              <Box display='flex' alignItems='center'>
-                <h5 className='text-success'>105.34%</h5>
-                <img src={APRHover} width={18} />
+          )}
+          {isMobile && (
+            <Box className='dragonWrapper-overview-mobile'>
+              <Box className='flex-wrapper'>
+                <Box className='total-supply' width='50%'>
+                  <CurrencyLogo currency={quickToken} size='40px' />
+                  <Box>
+                    <small>{t('totalSupply')}</small>
+                    <h5 className='text-dragon-white'>1 Billion</h5>
+                  </Box>
+                </Box>
+                <Box width='50%'>
+                  <small>{t('staked')}</small>
+                  <h5 className='text-dragon-white'>280.03M</h5>
+                  <small>$13.91M</small>
+                </Box>
+              </Box>
+              <Box className='flex-wrapper'>
+                <Box width='50%'>
+                  <small>{t('stakingApy')}</small>
+                  <Box display='flex' alignItems='center'>
+                    <h5 className='text-success'>105.34%</h5>
+                    <img src={APRHover} width={18} />
+                  </Box>
+                </Box>
+                <Box width='50%'>
+                  <small>{t('quickBurned')}</small>
+                  <h5 className='text-dragon-white'>245.34k</h5>
+                  <small>$1.45M</small>
+                </Box>
+              </Box>
+              <Box width='50%'>
+                <small>{t('burnApy')}</small>
+                <Box display='flex' alignItems='center'>
+                  <h5 className='text-success'>2.34%</h5>
+                  <img
+                    src={BurnImage}
+                    width={12}
+                    style={{ marginLeft: '5px' }}
+                  />
+                </Box>
               </Box>
             </Box>
-            <Box>
-              <small>{t('quickBurned')}</small>
-              <h5 className='text-dragon-white'>245.34k</h5>
-              <small>$1.45M</small>
-            </Box>
-            <Box>
-              <small>{t('burnApy')}</small>
-              <h5 className='text-success'>2.34%</h5>
-            </Box>
-          </Box>
+          )}
         </Grid>
       </Grid>
       <Grid container spacing={4} style={{ marginTop: '24px' }}>
