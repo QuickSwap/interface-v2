@@ -208,33 +208,43 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
     <>
       <Box padding='15px 10px'>
         {!isMobile && <LeverageManage />}
-        <Box
-          pb={2}
-          mb={2}
-          pt={isMobile ? 0 : 2}
-          mt={isMobile ? 0 : 2}
-          className={`${
-            isMobile ? '' : 'border-top'
-          } border-bottom flex flex-col`}
-          gridGap={12}
-        >
-          <AccountLeverageUpdate />
-          <Box className='leverageGradient' />
-          <Box className='flex justify-between' gridGap={8}>
-            <Box>
-              <p className='span text-secondary'>{t('currentLeverage')}</p>
-              <p className='span'>
-                {formatNumber(currentLeverage)}x{' '}
-                {estLeverage ? `/ ${formatNumber(estLeverage)}x` : ''}
-              </p>
-            </Box>
-            <Box textAlign='right'>
-              <p className='span text-secondary'>{t('marginRatio')}</p>
-              <p className='span'>{formatNumber(marginRatio)}%</p>
+        {state.status === AccountStatusEnum.EnableTrading && (
+          <Box
+            pb={2}
+            mb={2}
+            pt={isMobile ? 0 : 2}
+            mt={isMobile ? 0 : 2}
+            className={`${
+              isMobile ? '' : 'border-top'
+            } border-bottom flex flex-col`}
+            gridGap={12}
+          >
+            <AccountLeverageUpdate />
+            <Box className='leverageGradient' />
+            <Box className='flex justify-between' gridGap={8}>
+              <Box>
+                <p className='span text-secondary'>{t('currentLeverage')}</p>
+                <p className='span'>
+                  {formatNumber(currentLeverage)}x{' '}
+                  {estLeverage ? `/ ${formatNumber(estLeverage)}x` : ''}
+                </p>
+              </Box>
+              <Box textAlign='right'>
+                <p className='span text-secondary'>{t('marginRatio')}</p>
+                <p className='span'>{formatNumber(marginRatio)}%</p>
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Box className='leverageTypesWrapper' gridGap={2}>
+        )}
+        <Box
+          className='leverageTypesWrapper'
+          mt={
+            !isMobile && state.status !== AccountStatusEnum.EnableTrading
+              ? 2
+              : 0
+          }
+          gridGap={2}
+        >
           <Box
             onClick={() => setOrder({ ...order, side: OrderSide.BUY })}
             className={

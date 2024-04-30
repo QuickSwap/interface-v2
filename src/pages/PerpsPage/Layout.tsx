@@ -7,7 +7,7 @@ import { GraphHeader } from './GraphHeader';
 import { Leverage } from './Leverage';
 import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
-import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { PerpsNotification } from './PerpsNotification';
 
 export const Layout = () => {
@@ -51,14 +51,14 @@ export const Layout = () => {
             {!isMobile && <AdvancedChartWrapper token={token} />}
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={3}>
-            <div className='border-bottom'>
+            <Box className='border-bottom' pl={2}>
               <CustomTabSwitch
                 items={tabs}
                 height={48}
                 value={selectedTab}
                 handleTabChange={setSelectedTab}
               />
-            </div>
+            </Box>
             {selectedTab === 'chart' && <AdvancedChartWrapper token={token} />}
             {selectedTab === 'orderbook' && (
               <OrderbookV2 token={token} setOrderItem={setOrderItem} />

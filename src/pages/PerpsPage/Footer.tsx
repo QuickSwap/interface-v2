@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import './Layout.scss';
-import { Box, MenuItem, Select } from '@material-ui/core';
+import {
+  Box,
+  MenuItem,
+  Select,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { PortfolioStatus } from './PortfolioStatus';
 import { Check } from '@material-ui/icons';
@@ -13,6 +19,8 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('all');
   const [showAllInstrument, setShowAllInstrument] = useState(true);
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('sm'));
 
   const footerTabs = [
     {
@@ -55,7 +63,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
         className='flex items-center flex-wrap justify-between border-bottom'
         gridGap={12}
       >
-        <Box flex={1} maxWidth='100%'>
+        <Box flex={1} maxWidth='100%' pl={isMobile ? 2 : 0}>
           <CustomTabSwitch
             items={footerTabs}
             value={selectedItem}
