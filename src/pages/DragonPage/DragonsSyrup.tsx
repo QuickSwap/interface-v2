@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Tab } from '@material-ui/core';
+import { Box, Tab, useMediaQuery } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
 import SyrupIcon from 'assets/images/syrupIcon.png';
 import 'pages/styles/dragon.scss';
+import { useTheme } from '@material-ui/core/styles';
 
 const DragonsSyrup: React.FC = () => {
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
   const [tabValue, setTabValue] = useState('1');
   const { t } = useTranslation();
 
@@ -17,15 +20,29 @@ const DragonsSyrup: React.FC = () => {
   return (
     <>
       <Box className='dragonSyrupWrapper dragonLairBg'>
-        <Box className='dragonSyrupHeader'>
+        <Box
+          className={isMobile ? 'dragonSyrupHeaderMobile' : 'dragonSyrupHeader'}
+        >
           <Box className='dragonSyrupHeaderWrapper'>
-            <QUICKV2Icon width='40px' height='40px' />
+            <QUICKV2Icon
+              width='40px'
+              height='40px'
+              style={{
+                display: isMobile ? 'none' : '',
+              }}
+            />
             <Box>
               <h5 className='text-dragon-white'>{t('dragonSyrup')}</h5>
               <small>{t('dragonSyrupTitle')}</small>
             </Box>
           </Box>
-          <Box className='tab-container'>
+          <Box
+            className='tab-container'
+            style={{
+              width: isMobile ? '170px' : '',
+              marginTop: isMobile ? '20px' : '',
+            }}
+          >
             <button
               className={tabValue === '1' ? 'active' : ''}
               onClick={() => handleTabChange('1')}

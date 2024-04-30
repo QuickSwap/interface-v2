@@ -87,7 +87,12 @@
   background-position: top center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  border-radius: 16px;
   padding: 22px 24px;
+
+  &.mobile {
+    background-image: url('../../assets/images/DragonBgNewMobile.png');
+  }
 
   .dragonWrapper-title {
     h5 {
@@ -106,8 +111,40 @@
     align-items: start;
     gap: 46px;
     margin-top: 26px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    .total-supply {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 16px;
+    }
+
+    small {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #7d95b8;
+    }
+
+    h5 {
+      font-size: 18px;
+    }
+  }
+
+  .dragonWrapper-overview-mobile {
+    display: block;
+    margin-top: 26px;
     padding-top: 10px;
     padding-bottom: 10px;
+
+    .flex-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
 
     .total-supply {
       display: flex;
@@ -150,6 +187,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .sub-title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.dragonLairTitleMobile {
+  display: block;
 
   .sub-title {
     display: flex;
@@ -303,6 +351,44 @@
     justify-content: space-between;
     align-items: center;
 
+    .dragonSyrupHeaderWrapper {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 24px;
+
+      h5 {
+        margin-bottom: 12px;
+      }
+
+      small {
+        color: #cedaeb;
+      }
+    }
+
+    .tab-container {
+      border-radius: 10px;
+      border: solid 1.2px #22314d;
+      padding: 4px;
+
+      button {
+        border-radius: 6px;
+        padding: 5px 20px 6px;
+        background: transparent;
+        font-size: 14px;
+        color: #7d95b8;
+        border-style: none;
+        cursor: pointer;
+
+        &.active {
+          background: #f6f6f9;
+          color: #161f32;
+        }
+      }
+    }
+  }
+
+  .dragonSyrupHeaderMobile {
     .dragonSyrupHeaderWrapper {
       display: flex;
       justify-content: flex-start;
