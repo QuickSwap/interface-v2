@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { usePositionStream } from '@orderly.network/hooks';
-import { API } from '@orderly.network/types';
+import { useOrderStream, usePositionStream } from '@orderly.network/hooks';
+import {
+  API,
+  AlgoOrderRootType,
+  AlgoOrderType,
+  OrderStatus,
+  OrderType,
+} from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatNumber } from 'utils';
@@ -17,6 +23,11 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
 
   const [positionQtyInputs, setPositionQtyInputs] = useState<string[]>([]);
   const [positionPriceInputs, setPositionPriceInputs] = useState<string[]>([]);
+
+  const [orders] = useOrderStream({
+    includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
+    status: OrderStatus.NEW,
+  });
 
   useEffect(() => {
     if (rows && rows.length > 0) {
@@ -110,6 +121,40 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
           {formatNumber(item.unrealized_pnl_ROI)}%)
         </small>
       ),
+    },
+    {
+      id: 'tpsl',
+      label: 'TP/SL',
+      html: (item: API.PositionExt) => {
+        const tpSLOrder = orders?.find((order) => order.symbol === item.symbol);
+        const tpOrder = tpSLOrder?.child_orders.find(
+          (order: any) => order.algo_type === AlgoOrderType.TAKE_PROFIT,
+        );
+        const slOrder = tpSLOrder?.child_orders.find(
+          (order: any) => order.algo_type === AlgoOrderType.STOP_LOSS,
+        );
+        return (
+          <Box minWidth={100}>
+            {tpOrder && (
+              <p className='small'>
+                TP -{' '}
+                <small className='text-success'>
+                  {formatNumber(tpOrder.trigger_price)}
+                </small>
+              </p>
+            )}
+            {slOrder && (
+              <p className='small'>
+                SL -{' '}
+                <small className='text-error'>
+                  {formatNumber(slOrder.trigger_price)}
+                </small>
+              </p>
+            )}
+            {!tpOrder && !slOrder && <small>-</small>}
+          </Box>
+        );
+      },
     },
     {
       id: 'estTotal',

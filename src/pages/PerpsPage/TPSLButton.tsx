@@ -1,93 +1,41 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { OrderParams, useOrderEntry } from '@orderly.network/hooks';
+import { useTPSLOrder } from '@orderly.network/hooks';
 import { Box, Button, Popover } from '@material-ui/core';
-import { API, OrderSide, OrderType } from '@orderly.network/types';
+import { API } from '@orderly.network/types';
 import { useQuery } from '@tanstack/react-query';
 import { ColoredSlider } from 'components';
-import { ArrowDropDown, ArrowDropUp } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import { formatDecimalInput } from 'utils/numbers';
-import { positions } from '@orderly.network/perp';
 import TPSLOrderConfirmModal from './TPSLOrderConfirmModal';
+import { TPPnLInput } from './TPPnLInput';
 
 export const TPSLButton: React.FC<{
   position: API.PositionExt;
   maxQuantity: number;
 }> = ({ position, maxQuantity }) => {
-  const [quantity, setQuantity] = useState('');
-  const [tpPrice, setTPPrice] = useState('');
-  const [slPrice, setSLPrice] = useState('');
   const [openConfirm, setOpenConfirm] = useState(false);
 
-  const tpOrder: OrderParams = {
-    order_type: OrderType.STOP_MARKET,
-    side: position.position_qty < 0 ? OrderSide.BUY : OrderSide.SELL,
-    symbol: position.symbol,
-    isStopOrder: true,
-    order_quantity: quantity,
-    trigger_price: tpPrice,
-  };
-
-  const slOrder: OrderParams = {
-    order_type: OrderType.STOP_MARKET,
-    side: position.position_qty < 0 ? OrderSide.BUY : OrderSide.SELL,
-    symbol: position.symbol,
-    isStopOrder: true,
-    order_quantity: quantity,
-    trigger_price: slPrice,
-  };
-
-  const { onSubmit: onTPSubmit, helper: tpHelper } = useOrderEntry(tpOrder, {
-    watchOrderbook: true,
-  });
-
-  const { onSubmit: onSLSubmit, helper: slHelper } = useOrderEntry(slOrder, {
-    watchOrderbook: true,
-  });
-
-  const { data: tpOrderValidation } = useQuery({
-    queryKey: ['orderly-tp-order-validation', tpOrder],
-    queryFn: async () => {
-      const validation = await tpHelper.validator(tpOrder);
-      return validation;
-    },
-  });
-
-  const { data: slOrderValidation } = useQuery({
-    queryKey: ['orderly-sl-order-validation', slOrder],
-    queryFn: async () => {
-      const validation = await slHelper.validator(slOrder);
-      return validation;
-    },
-  });
+  const [computedOrder, { setValue, submit }] = useTPSLOrder(position);
 
   const tpOrderError = useMemo(() => {
-    if (tpPrice === '') return;
-    if (Number(tpPrice) < position.mark_price) {
+    if (!computedOrder.tp_trigger_price) return;
+    if (Number(computedOrder.tp_trigger_price) < position.mark_price) {
       return `Minimum trigger price should be greater than ${formatNumber(
         position.mark_price,
       )}`;
     }
-    if (tpOrderValidation && Object.values(tpOrderValidation).length > 0) {
-      const validationErrors: any[] = Object.values(tpOrderValidation);
-      return validationErrors[0]?.message;
-    }
     return;
-  }, [position.mark_price, tpOrderValidation, tpPrice]);
+  }, [computedOrder.tp_trigger_price, position.mark_price]);
 
   const slOrderError = useMemo(() => {
-    if (slPrice === '') return;
-    if (Number(slPrice) > position.mark_price) {
+    if (!computedOrder.sl_trigger_price) return;
+    if (Number(computedOrder.sl_trigger_price) > position.mark_price) {
       return `Maximum trigger price should be less than ${formatNumber(
         position.mark_price,
       )}`;
     }
-    if (slOrderValidation && Object.values(slOrderValidation).length > 0) {
-      const validationErrors: any[] = Object.values(slOrderValidation);
-      return validationErrors[0]?.message;
-    }
     return;
-  }, [position.mark_price, slOrderValidation, slPrice]);
+  }, [computedOrder.sl_trigger_price, position.mark_price]);
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
@@ -105,7 +53,8 @@ export const TPSLButton: React.FC<{
 
   const inputRef = useRef<any>(null);
 
-  const quantityPercent = (Number(quantity) / maxQuantity) * 100;
+  const quantityPercent =
+    (Number(computedOrder.quantity ?? 0) / maxQuantity) * 100;
   const isEntirePosition = quantityPercent === 100;
 
   const { data: orderFilter } = useQuery({
@@ -121,8 +70,9 @@ export const TPSLButton: React.FC<{
 
   useEffect(() => {
     if (open && maxQuantity > 0) {
-      setQuantity(maxQuantity.toString());
+      setValue('quantity', maxQuantity);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, maxQuantity]);
 
   useEffect(() => {
@@ -131,80 +81,31 @@ export const TPSLButton: React.FC<{
     }
   }, [isEntirePosition]);
 
-  const [openTPDropdown, setOpenTPDropdown] = useState(false);
-  const [openSLDropdown, setOpenSLDropdown] = useState(false);
-
-  const dropdownOptions = ['PnL', 'Offset', 'Offset%'];
-  const [selectedOption, setSelectedOption] = useState('PnL');
-  const [tpValue, setTPValue] = useState('');
-  const [slValue, setSLValue] = useState('');
   const [tpPriceFocused, setTPPriceFocused] = useState(false);
-  const [tpValueFocused, setTPValueFocused] = useState(false);
   const [slPriceFocused, setSLPriceFocused] = useState(false);
-  const [slValueFocused, setSLValueFocused] = useState(false);
 
   const disabledConfirm = useMemo(() => {
-    if (Number(quantity) === 0 || Number(quantity) > maxQuantity) {
+    if (
+      !computedOrder.quantity ||
+      Number(computedOrder.quantity) > maxQuantity
+    ) {
       return true;
     }
-    if (!Number(tpPrice) && !Number(slPrice)) return true;
+    if (!computedOrder.sl_trigger_price && !computedOrder.tp_trigger_price)
+      return true;
     if (slOrderError || tpOrderError) return true;
     return false;
-  }, [maxQuantity, quantity, slOrderError, slPrice, tpOrderError, tpPrice]);
+  }, [
+    computedOrder.quantity,
+    computedOrder.sl_trigger_price,
+    computedOrder.tp_trigger_price,
+    maxQuantity,
+    slOrderError,
+    tpOrderError,
+  ]);
 
-  const getEstPnL = (quantity: string, trigger_price: string) => {
-    if (!quantity || !trigger_price) return;
-    return positions.unrealizedPnL({
-      qty: Number(quantity),
-      openPrice: position.average_open_price,
-      markPrice: Number(trigger_price),
-    });
-  };
-
-  const estTPPnL = getEstPnL(quantity, tpPrice);
-  const estSLPnL = getEstPnL(quantity, slPrice);
-
-  const getOrderValue = (
-    quantity: string,
-    triggerPrice: string,
-    option: string,
-    isTP?: boolean,
-  ) => {
-    if (!triggerPrice || !quantity) return;
-    if (option === 'PnL') {
-      return getEstPnL(quantity, triggerPrice);
-    } else if (option === 'Offset') {
-      return (
-        (isTP ? 1 : -1) * (Number(triggerPrice) - position.average_open_price)
-      );
-    } else if (option === 'Offset%') {
-      return (
-        (isTP ? 1 : -1) *
-        (((Number(triggerPrice) - position.average_open_price) /
-          position.average_open_price) *
-          100)
-      );
-    }
-  };
-
-  const getOrderPrice = (
-    quantity: string,
-    value: number,
-    option: string,
-    isTP?: boolean,
-  ) => {
-    if (!value || !Number(quantity)) return;
-    if (option === 'PnL') {
-      return value / Number(quantity) + position.average_open_price;
-    } else if (option === 'Offset') {
-      return (isTP ? 1 : -1) * value + position.average_open_price;
-    } else if (option === 'Offset%') {
-      return (
-        ((isTP ? 1 : -1) * value * position.average_open_price) / 100 +
-        position.average_open_price
-      );
-    }
-  };
+  const estTPPnL = computedOrder.tp_pnl;
+  const estSLPnL = computedOrder.sl_pnl;
 
   return (
     <>
@@ -230,13 +131,13 @@ export const TPSLButton: React.FC<{
               flex={1}
               gridGap={8}
               onClick={() => {
-                setQuantity('');
+                setValue('quantity', '');
               }}
             >
               <small>Quantity</small>
               <input
                 ref={inputRef}
-                value={quantity}
+                value={computedOrder.quantity}
                 style={{ opacity: isEntirePosition ? 0 : 1 }}
                 onChange={(e) => {
                   const value = formatDecimalInput(
@@ -246,7 +147,7 @@ export const TPSLButton: React.FC<{
                       : undefined,
                   );
                   if (value !== null) {
-                    setQuantity(value);
+                    setValue('quantity', value);
                   }
                 }}
               />
@@ -258,9 +159,9 @@ export const TPSLButton: React.FC<{
               }`}
               onClick={() => {
                 if (isEntirePosition) {
-                  setQuantity('');
+                  setValue('quantity', '');
                 } else {
-                  setQuantity(maxQuantity.toString());
+                  setValue('quantity', maxQuantity.toString());
                 }
               }}
             >
@@ -293,7 +194,7 @@ export const TPSLButton: React.FC<{
                     : undefined,
                 );
                 if (value !== null) {
-                  setQuantity(value);
+                  setValue('quantity', value);
                 }
               }}
             />
@@ -334,8 +235,7 @@ export const TPSLButton: React.FC<{
               >
                 <small>TP price</small>
                 <input
-                  ref={inputRef}
-                  value={tpPrice}
+                  value={computedOrder.tp_trigger_price}
                   placeholder={quoteToken}
                   onFocus={() => setTPPriceFocused(true)}
                   onBlur={() => setTPPriceFocused(false)}
@@ -347,99 +247,21 @@ export const TPSLButton: React.FC<{
                         : undefined,
                     );
                     if (value !== null) {
-                      setTPPrice(value);
-                      const orderValue = getOrderValue(
-                        quantity,
-                        value,
-                        selectedOption,
-                        true,
-                      );
-                      setTPValue(orderValue ? orderValue.toFixed(2) : '');
+                      setValue('tp_trigger_price', value);
                     }
                   }}
                 />
               </Box>
-              <Box
-                className={`tpslInputWrapper ${
-                  tpValueFocused ? 'border-primary' : 'border-secondary1'
-                }`}
-                flex={1}
-                gridGap={8}
-              >
-                <small>{selectedOption}</small>
-                <Box className='flex items-center' position='relative'>
-                  <input
-                    ref={inputRef}
-                    value={tpValue}
-                    placeholder={
-                      selectedOption === 'Offset%' ? '%' : quoteToken
-                    }
-                    onFocus={() => setTPValueFocused(true)}
-                    onBlur={() => setTPValueFocused(false)}
-                    onChange={(e) => {
-                      const val = formatDecimalInput(e.target.value);
-                      if (val !== null) {
-                        setTPValue(val);
-                        const price = getOrderPrice(
-                          quantity,
-                          Number(val),
-                          selectedOption,
-                          true,
-                        );
-                        if (price !== undefined) {
-                          setTPPrice(
-                            price.toFixed(
-                              orderFilter && orderFilter.quote_tick > 0
-                                ? Math.log10(1 / Number(orderFilter.quote_tick))
-                                : undefined,
-                            ),
-                          );
-                        }
-                      }
-                    }}
-                  />
-                  <Box
-                    className='flex items-center'
-                    onClick={() => {
-                      setOpenTPDropdown(!openTPDropdown);
-                    }}
-                  >
-                    {openTPDropdown ? <ArrowDropUp /> : <ArrowDropDown />}
-                  </Box>
-                  {openTPDropdown && (
-                    <Box className='tpSLDropdown'>
-                      {dropdownOptions.map((option) => (
-                        <Box
-                          key={option}
-                          onClick={() => {
-                            setSelectedOption(option);
-                            setOpenTPDropdown(false);
-                            const tpOrderValue = getOrderValue(
-                              quantity,
-                              tpPrice,
-                              option,
-                              true,
-                            );
-                            setTPValue(
-                              tpOrderValue ? tpOrderValue.toFixed(2) : '',
-                            );
-                            const slOrderValue = getOrderValue(
-                              quantity,
-                              slPrice,
-                              option,
-                            );
-                            setSLValue(
-                              slOrderValue ? slOrderValue.toFixed(2) : '',
-                            );
-                          }}
-                        >
-                          <small>{option}</small>
-                        </Box>
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-              </Box>
+              <TPPnLInput
+                type='TP'
+                quote={quoteToken}
+                onChange={setValue}
+                values={{
+                  PnL: computedOrder.tp_pnl,
+                  Offset: computedOrder.tp_offset,
+                  'Offset%': computedOrder.tp_offset_percentage,
+                }}
+              />
             </Box>
             {tpOrderError && (
               <Box mt='5px'>
@@ -477,8 +299,7 @@ export const TPSLButton: React.FC<{
               >
                 <small>SL price</small>
                 <input
-                  ref={inputRef}
-                  value={slPrice}
+                  value={computedOrder.sl_trigger_price}
                   placeholder={quoteToken}
                   onFocus={() => setSLPriceFocused(true)}
                   onBlur={() => setSLPriceFocused(false)}
@@ -490,101 +311,21 @@ export const TPSLButton: React.FC<{
                         : undefined,
                     );
                     if (value !== null) {
-                      setSLPrice(value);
-                      const orderValue = getOrderValue(
-                        quantity,
-                        value,
-                        selectedOption,
-                      );
-                      setSLValue(orderValue ? orderValue.toFixed(2) : '');
+                      setValue('sl_trigger_price', value);
                     }
                   }}
                 />
               </Box>
-              <Box
-                className={`tpslInputWrapper ${
-                  slValueFocused ? 'border-primary' : 'border-secondary1'
-                }`}
-                flex={1}
-                gridGap={8}
-              >
-                <small>{selectedOption}</small>
-                <Box className='flex items-center' position='relative'>
-                  <input
-                    ref={inputRef}
-                    value={slValue}
-                    placeholder={
-                      selectedOption === 'Offset%' ? '%' : quoteToken
-                    }
-                    onFocus={() => setSLValueFocused(true)}
-                    onBlur={() => setSLValueFocused(false)}
-                    onChange={(e) => {
-                      const val = formatDecimalInput(e.target.value);
-                      if (val !== null) {
-                        const valNumber =
-                          selectedOption === 'PnL'
-                            ? Number(val) * -1
-                            : Number(val);
-                        setSLValue(valNumber.toString());
-                        const price = getOrderPrice(
-                          quantity,
-                          valNumber,
-                          selectedOption,
-                        );
-                        if (price !== undefined) {
-                          setSLPrice(
-                            price.toFixed(
-                              orderFilter && orderFilter.quote_tick > 0
-                                ? Math.log10(1 / Number(orderFilter.quote_tick))
-                                : undefined,
-                            ),
-                          );
-                        }
-                      }
-                    }}
-                  />
-                  <Box
-                    className='flex items-center'
-                    onClick={() => {
-                      setOpenSLDropdown(!openSLDropdown);
-                    }}
-                  >
-                    {openSLDropdown ? <ArrowDropUp /> : <ArrowDropDown />}
-                  </Box>
-                  {openSLDropdown && (
-                    <Box className='tpSLDropdown'>
-                      {dropdownOptions.map((option) => (
-                        <Box
-                          key={option}
-                          onClick={() => {
-                            setSelectedOption(option);
-                            setOpenSLDropdown(false);
-                            const tpOrderValue = getOrderValue(
-                              quantity,
-                              tpPrice,
-                              option,
-                              true,
-                            );
-                            setTPValue(
-                              tpOrderValue ? tpOrderValue.toFixed(2) : '',
-                            );
-                            const slOrderValue = getOrderValue(
-                              quantity,
-                              slPrice,
-                              option,
-                            );
-                            setSLValue(
-                              slOrderValue ? slOrderValue.toFixed(2) : '',
-                            );
-                          }}
-                        >
-                          <small>{option}</small>
-                        </Box>
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-              </Box>
+              <TPPnLInput
+                type='SL'
+                quote={quoteToken}
+                onChange={setValue}
+                values={{
+                  PnL: computedOrder.sl_pnl,
+                  Offset: computedOrder.sl_offset,
+                  'Offset%': computedOrder.sl_offset_percentage,
+                }}
+              />
             </Box>
             {slOrderError && (
               <Box mt='5px'>
@@ -611,10 +352,8 @@ export const TPSLButton: React.FC<{
           open={openConfirm}
           onClose={() => setOpenConfirm(false)}
           position={position}
-          tpOrder={Number(tpPrice) ? tpOrder : undefined}
-          slOrder={Number(slPrice) ? slOrder : undefined}
-          onTPSubmit={onTPSubmit}
-          onSLSubmit={onSLSubmit}
+          order={computedOrder}
+          onSubmit={submit}
         />
       )}
     </>

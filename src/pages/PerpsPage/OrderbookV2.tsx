@@ -31,7 +31,7 @@ const OrderbookV2: React.FC<{
         markPrice={data?.markPrice ?? 0}
         lastPrice={data.middlePrice ?? []}
         depth={allDepths ?? []}
-        activeDepth={depth ?? 0}
+        activeDepth={(depth ?? 0).toString()}
         base={symbolInfo('base')}
         quote={symbolInfo('quote')}
         isLoading={isLoading}

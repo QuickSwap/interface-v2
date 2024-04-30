@@ -11,35 +11,39 @@ import { OrderParams } from '@orderly.network/hooks';
 interface TPSLOrderConfirmModalProps {
   open: boolean;
   onClose: () => void;
-  tpOrder?: OrderParams;
-  slOrder?: OrderParams;
+  order: Partial<
+    import('@orderly.network/types').Optional<
+      import('@orderly.network/types').BaseAlgoOrderEntity<
+        import('@orderly.network/types').AlgoOrderRootType.TP_SL & {
+          tp_pnl: number;
+          tp_offset: number;
+          tp_offset_percentage: number;
+          sl_pnl: number;
+          sl_offset: number;
+          sl_offset_percentage: number;
+        }
+      >,
+      'type' | 'side' | 'order_type' | 'trigger_price'
+    >
+  >;
   position: API.PositionExt;
-  onTPSubmit: (order: OrderEntity) => Promise<any>;
-  onSLSubmit: (order: OrderEntity) => Promise<any>;
+  onSubmit: () => Promise<void>;
 }
 const TPSLOrderConfirmModal: React.FC<TPSLOrderConfirmModalProps> = ({
   open,
   onClose,
   position,
-  tpOrder,
-  slOrder,
-  onTPSubmit,
-  onSLSubmit,
+  order,
+  onSubmit,
 }) => {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const orderQuantity = (tpOrder ?? slOrder)?.order_quantity;
   const quoteToken = position.symbol.split('_')?.[2];
 
   const handleConfirm = async () => {
     setLoading(true);
     try {
-      if (tpOrder) {
-        await onTPSubmit(tpOrder);
-      }
-      if (slOrder) {
-        await onSLSubmit(slOrder);
-      }
+      await onSubmit();
       setLoading(false);
     } catch {
       setLoading(false);
@@ -63,33 +67,33 @@ const TPSLOrderConfirmModal: React.FC<TPSLOrderConfirmModalProps> = ({
           <Box mt={2} className='flex'>
             <Box width='45%'>
               <p>
-                Position {tpOrder ? 'TP' : ''}
-                {tpOrder && slOrder ? '/' : ''}
-                {slOrder ? 'SL' : ''}
+                Position {order.tp_trigger_price ? 'TP' : ''}
+                {order.tp_trigger_price && order.sl_trigger_price ? '/' : ''}
+                {order.sl_trigger_price ? 'SL' : ''}
               </p>
             </Box>
             <Box width='55%'>
               <Box className='flex items-center justify-between' mb={1}>
                 <p className='text-secondary'>Qty.</p>
-                <p>{formatNumber(orderQuantity)}</p>
+                <p>{formatNumber(order.quantity)}</p>
               </Box>
-              {tpOrder && (
+              {order.tp_trigger_price && (
                 <Box className='flex items-center justify-between' mb={1}>
                   <p className='text-secondary'>TP Price</p>
                   <p>
                     <span className='p text-success'>
-                      {formatNumber(tpOrder.trigger_price)}
+                      {formatNumber(order.tp_trigger_price)}
                     </span>{' '}
                     <span className='p text-secondary'>{quoteToken}</span>
                   </p>
                 </Box>
               )}
-              {slOrder && (
+              {order.sl_trigger_price && (
                 <Box className='flex items-center justify-between' mb={1}>
                   <p className='text-secondary'>SL Price</p>
                   <p>
                     <span className='p text-error'>
-                      {formatNumber(slOrder.trigger_price)}
+                      {formatNumber(order.sl_trigger_price)}
                     </span>{' '}
                     <span className='p text-secondary'>{quoteToken}</span>
                   </p>

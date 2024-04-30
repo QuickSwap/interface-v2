@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useOrderStream } from '@orderly.network/hooks';
-import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
+import {
+  AlgoOrderRootType,
+  OrderSide,
+  OrderStatus,
+  OrderType,
+} from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatNumber } from 'utils';
@@ -55,6 +60,7 @@ const FooterOrdersTable: React.FC<{
   const [o, { cancelOrder, cancelAlgoOrder, isLoading }] = useOrderStream({
     symbol: token,
     status: orderStatus,
+    excludes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
   });
 
   const orders = o as Order[] | null;
