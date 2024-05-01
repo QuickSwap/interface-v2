@@ -8,12 +8,14 @@ import { useTranslation } from 'react-i18next';
 import { HypeLabAds, CurrencyLogo } from 'components';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
+import { useNewLairInfo } from 'state/stake/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useHistory } from 'react-router-dom';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
 import BurnImage from 'assets/images/fire.png';
+import { useLairDQUICKAPY } from 'utils';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -23,6 +25,8 @@ const DragonPage: React.FC = () => {
 
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const lairInfoToUse = useNewLairInfo();
+  const APY = useLairDQUICKAPY(true, lairInfoToUse);
   const quickToken = DLQUICK[chainIdToUse];
   const dQuickToken = DLDQUICK[chainIdToUse];
   const config = getConfig(chainIdToUse);
@@ -77,7 +81,7 @@ const DragonPage: React.FC = () => {
               <Box>
                 <small>{t('stakingApy')}</small>
                 <Box display='flex' alignItems='center'>
-                  <h5 className='text-success'>105.34%</h5>
+                  <h5 className='text-success'>{APY ? APY : '-'}%</h5>
                   <img src={APRHover} width={18} />
                 </Box>
               </Box>
