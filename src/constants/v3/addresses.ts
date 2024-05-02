@@ -1264,6 +1264,16 @@ export const EURO3: { [chainId: number]: Token } = {
   ),
 };
 
+export const SD: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x1d734a02ef1e1f5886e66b0673b71af5b53ffa94',
+    18,
+    'SD',
+    'Stader (PoS)',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
