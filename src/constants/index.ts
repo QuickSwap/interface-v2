@@ -52,6 +52,7 @@ import {
   CRS,
   EURO3,
   DAIE,
+  SD,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -2480,6 +2481,7 @@ export const GlobalValue = {
         RNDR[ChainId.MATIC],
         NFTE[ChainId.MATIC],
         CRS[ChainId.MATIC],
+        SD[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
