@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
-import { API, OrderEntity } from '@orderly.network/types';
+import { API } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
 import { formatNumber } from 'utils';
 import './Layout.scss';
 import { useTranslation } from 'react-i18next';
-import { OrderParams } from '@orderly.network/hooks';
 
 interface TPSLOrderConfirmModalProps {
   open: boolean;
@@ -28,6 +27,7 @@ interface TPSLOrderConfirmModalProps {
   >;
   position: API.PositionExt;
   onSubmit: () => Promise<void>;
+  onSuccess?: () => void;
 }
 const TPSLOrderConfirmModal: React.FC<TPSLOrderConfirmModalProps> = ({
   open,
@@ -35,6 +35,7 @@ const TPSLOrderConfirmModal: React.FC<TPSLOrderConfirmModalProps> = ({
   position,
   order,
   onSubmit,
+  onSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
@@ -49,6 +50,9 @@ const TPSLOrderConfirmModal: React.FC<TPSLOrderConfirmModalProps> = ({
       setLoading(false);
     }
     onClose();
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   return (

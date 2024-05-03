@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useOrderStream } from '@orderly.network/hooks';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useOrderStream, usePositionStream } from '@orderly.network/hooks';
 import {
   API,
   AlgoOrderRootType,
@@ -13,16 +13,30 @@ import { formatNumber } from 'utils';
 import { FooterPagination } from './FooterPagination';
 import dayjs from 'dayjs';
 import { CancelTPSLOrderButton } from './CancelTPSLOrderButton';
+import { TPSLButton } from './TPSLButton';
 
-const FooterTPSLTable: React.FC<{ token?: string }> = ({ token }) => {
+const FooterTPSLTable: React.FC<{ token?: string; selectedSide: string }> = ({
+  token,
+  selectedSide,
+}) => {
   const [countPerPage, setCountPerPage] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
 
-  const [orders] = useOrderStream({
+  const [{ rows }] = usePositionStream(token);
+  const [allOrders] = useOrderStream({
     includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
     symbol: token,
     status: OrderStatus.NEW,
   });
+
+  const orders = useMemo(() => {
+    if (!allOrders) return [];
+    return allOrders.filter((order) =>
+      selectedSide === 'all'
+        ? true
+        : order.side.toLowerCase() === selectedSide.toLowerCase(),
+    );
+  }, [allOrders, selectedSide]);
 
   useEffect(() => {
     setPageIndex(0);
@@ -51,12 +65,10 @@ const FooterTPSLTable: React.FC<{ token?: string }> = ({ token }) => {
       id: 'quantity',
       label: 'Quantity',
       html: (item: any) => (
-        <small
-          className={
-            item.side === OrderSide.BUY ? 'text-success' : 'text-error'
-          }
-        >
-          {item.quantity}
+        <small>
+          {Number(item.quantity) === 0
+            ? 'Entire Position'
+            : formatNumber(item.quantity)}
         </small>
       ),
     },
@@ -107,11 +119,21 @@ const FooterTPSLTable: React.FC<{ token?: string }> = ({ token }) => {
     {
       id: 'action',
       label: '',
-      html: (item: any) => (
-        <Box className='flex items-center' gridGap={8}>
-          <CancelTPSLOrderButton order={item} />
-        </Box>
-      ),
+      html: (item: any) => {
+        const position = rows?.find((pos) => pos.symbol === item.symbol);
+        return (
+          <Box className='flex items-center' gridGap={8}>
+            {position && (
+              <TPSLButton
+                position={position}
+                defaultOrder={item}
+                label='Edit'
+              />
+            )}
+            <CancelTPSLOrderButton order={item} />
+          </Box>
+        );
+      },
     },
   ];
 

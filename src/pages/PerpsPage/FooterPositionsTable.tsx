@@ -5,7 +5,6 @@ import {
   AlgoOrderRootType,
   AlgoOrderType,
   OrderStatus,
-  OrderType,
 } from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
@@ -225,23 +224,27 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
     {
       id: 'action',
       label: '',
-      html: (item: API.PositionExt, ind: number) => (
-        <Box className='flex items-center' gridGap={6}>
-          <ClosePositionButton
-            position={item}
-            quantity={Number(positionQtyInputs[ind] ?? '0')}
-            price={
-              !positionPriceInputs[ind] || positionPriceInputs[ind] === ''
-                ? undefined
-                : Number(positionPriceInputs[ind])
-            }
-          />
-          <TPSLButton
-            position={item}
-            maxQuantity={Number(positionQtyInputs[ind] ?? '0')}
-          />
-        </Box>
-      ),
+      html: (item: API.PositionExt, ind: number) => {
+        const tpSLOrder = orders?.find((order) => order.symbol === item.symbol);
+        return (
+          <Box className='flex items-center' gridGap={6}>
+            <ClosePositionButton
+              position={item}
+              quantity={Number(positionQtyInputs[ind] ?? '0')}
+              price={
+                !positionPriceInputs[ind] || positionPriceInputs[ind] === ''
+                  ? undefined
+                  : Number(positionPriceInputs[ind])
+              }
+            />
+            <TPSLButton
+              defaultOrder={tpSLOrder}
+              position={item}
+              maxQuantity={Number(positionQtyInputs[ind] ?? '0')}
+            />
+          </Box>
+        );
+      },
     },
   ];
 

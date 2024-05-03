@@ -11,11 +11,15 @@ import { TPPnLInput } from './TPPnLInput';
 
 export const TPSLButton: React.FC<{
   position: API.PositionExt;
-  maxQuantity: number;
-}> = ({ position, maxQuantity }) => {
+  maxQuantity?: number;
+  defaultOrder?: any;
+  label?: string;
+}> = ({ position, maxQuantity, defaultOrder, label = 'TP/SL' }) => {
   const [openConfirm, setOpenConfirm] = useState(false);
 
-  const [computedOrder, { setValue, submit }] = useTPSLOrder(position);
+  const [computedOrder, { setValue, submit }] = useTPSLOrder(position, {
+    defaultOrder,
+  });
 
   const tpOrderError = useMemo(() => {
     if (!computedOrder.tp_trigger_price) return;
@@ -53,8 +57,9 @@ export const TPSLButton: React.FC<{
 
   const inputRef = useRef<any>(null);
 
-  const quantityPercent =
-    (Number(computedOrder.quantity ?? 0) / maxQuantity) * 100;
+  const quantityPercent = maxQuantity
+    ? (Number(computedOrder.quantity ?? 0) / maxQuantity) * 100
+    : 0;
   const isEntirePosition = quantityPercent === 100;
 
   const { data: orderFilter } = useQuery({
@@ -69,7 +74,7 @@ export const TPSLButton: React.FC<{
   });
 
   useEffect(() => {
-    if (open && maxQuantity > 0) {
+    if (open && maxQuantity && maxQuantity > 0) {
       setValue('quantity', maxQuantity);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,8 +91,8 @@ export const TPSLButton: React.FC<{
 
   const disabledConfirm = useMemo(() => {
     if (
-      !computedOrder.quantity ||
-      Number(computedOrder.quantity) > maxQuantity
+      maxQuantity &&
+      (!computedOrder.quantity || Number(computedOrder.quantity) > maxQuantity)
     ) {
       return true;
     }
@@ -110,7 +115,7 @@ export const TPSLButton: React.FC<{
   return (
     <>
       <Button className='orderTableActionButton' onClick={handleClick}>
-        TP/SL
+        {label}
       </Button>
       <Popover
         open={open}
@@ -123,87 +128,102 @@ export const TPSLButton: React.FC<{
         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Box padding={2} maxWidth={400} className='tpslWrapper'>
-          <Box className='flex items-center' width='100%' gridGap={8}>
-            <Box
-              className={`tpslInputWrapper ${
-                isEntirePosition ? 'border-secondary1' : 'border-primary'
-              }`}
-              flex={1}
-              gridGap={8}
-              onClick={() => {
-                setValue('quantity', '');
-              }}
-            >
-              <small>Quantity</small>
-              <input
-                ref={inputRef}
-                value={computedOrder.quantity}
-                style={{ opacity: isEntirePosition ? 0 : 1 }}
-                onChange={(e) => {
-                  const value = formatDecimalInput(
-                    e.target.value,
-                    orderFilter && orderFilter.base_tick > 0
-                      ? Math.log10(1 / Number(orderFilter.base_tick))
-                      : undefined,
-                  );
-                  if (value !== null) {
-                    setValue('quantity', value);
-                  }
-                }}
-              />
-              <small>{isEntirePosition ? 'Entire Position' : token}</small>
-            </Box>
-            <Box
-              className={`tpslPositionButton ${
-                isEntirePosition ? 'border-primary' : 'border-gray2'
-              }`}
-              onClick={() => {
-                if (isEntirePosition) {
-                  setValue('quantity', '');
-                } else {
-                  setValue('quantity', maxQuantity.toString());
-                }
-              }}
-            >
-              <small
-                className={isEntirePosition ? 'text-primary' : 'text-secondary'}
-              >
-                Position
-              </small>
-            </Box>
-          </Box>
-          <Box className='leverageSquareWrapper' margin='20px 4px 16px 12px'>
-            {[0, 1, 2, 3, 4].map((item) => (
+          {maxQuantity && (
+            <>
+              {' '}
+              <Box className='flex items-center' width='100%' gridGap={8}>
+                <Box
+                  className={`tpslInputWrapper ${
+                    isEntirePosition ? 'border-secondary1' : 'border-primary'
+                  }`}
+                  flex={1}
+                  gridGap={8}
+                  onClick={() => {
+                    setValue('quantity', '');
+                  }}
+                >
+                  <small>Quantity</small>
+                  <input
+                    ref={inputRef}
+                    value={computedOrder.quantity}
+                    style={{ opacity: isEntirePosition ? 0 : 1 }}
+                    onChange={(e) => {
+                      const value = formatDecimalInput(
+                        e.target.value,
+                        orderFilter && orderFilter.base_tick > 0
+                          ? Math.log10(1 / Number(orderFilter.base_tick))
+                          : undefined,
+                      );
+                      if (value !== null) {
+                        setValue('quantity', value);
+                      }
+                    }}
+                  />
+                  <small>{isEntirePosition ? 'Entire Position' : token}</small>
+                </Box>
+                <Box
+                  className={`tpslPositionButton ${
+                    isEntirePosition ? 'border-primary' : 'border-gray2'
+                  }`}
+                  onClick={() => {
+                    if (isEntirePosition) {
+                      setValue('quantity', '');
+                    } else {
+                      setValue('quantity', maxQuantity.toString());
+                    }
+                  }}
+                >
+                  <small
+                    className={
+                      isEntirePosition ? 'text-primary' : 'text-secondary'
+                    }
+                  >
+                    Position
+                  </small>
+                </Box>
+              </Box>
               <Box
-                key={item}
-                className={`leverageSquare
-                  ${quantityPercent > item * 25 ? ' filledSquare' : ''}`}
-                left={`calc(${(item / 4) * 100}% - 8px)`}
-              />
-            ))}
-            <ColoredSlider
-              min={0}
-              max={100}
-              step={1}
-              value={quantityPercent}
-              handleChange={(_, percent) => {
-                const value = formatDecimalInput(
-                  ((Number(percent) / 100) * maxQuantity).toString(),
-                  orderFilter && orderFilter.base_tick > 0
-                    ? Math.log10(1 / Number(orderFilter.base_tick))
-                    : undefined,
-                );
-                if (value !== null) {
-                  setValue('quantity', value);
-                }
-              }}
-            />
-          </Box>
-          <Box className='flex items-center justify-between'>
-            <small>0%</small>
-            <small>Max {formatNumber(maxQuantity)}</small>
-          </Box>
-          <Box className='border-top' mt={1.5} py={1.5}>
+                className='leverageSquareWrapper'
+                margin='20px 4px 16px 12px'
+              >
+                {[0, 1, 2, 3, 4].map((item) => (
+                  <Box
+                    key={item}
+                    className={`leverageSquare
+                ${quantityPercent > item * 25 ? ' filledSquare' : ''}`}
+                    left={`calc(${(item / 4) * 100}% - 8px)`}
+                  />
+                ))}
+                <ColoredSlider
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={quantityPercent}
+                  handleChange={(_, percent) => {
+                    const value = formatDecimalInput(
+                      ((Number(percent) / 100) * maxQuantity).toString(),
+                      orderFilter && orderFilter.base_tick > 0
+                        ? Math.log10(1 / Number(orderFilter.base_tick))
+                        : undefined,
+                    );
+                    if (value !== null) {
+                      setValue('quantity', value);
+                    }
+                  }}
+                />
+              </Box>
+              <Box className='flex items-center justify-between'>
+                <small>0%</small>
+                <small>Max {formatNumber(maxQuantity)}</small>
+              </Box>
+            </>
+          )}
+          <Box
+            className={maxQuantity ? 'border-top' : ''}
+            mt={maxQuantity ? 1.5 : 0}
+            pt={maxQuantity ? 1.5 : 0}
+            pb={1.5}
+          >
             <Box className='flex justify-between'>
               <small>Take profit</small>
               <small>
@@ -354,6 +374,7 @@ export const TPSLButton: React.FC<{
           position={position}
           order={computedOrder}
           onSubmit={submit}
+          onSuccess={handleClose}
         />
       )}
     </>

@@ -117,7 +117,10 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
       {selectedItem === 'Portfolio' ? (
         <FooterPositionsTable token={showAllInstrument ? undefined : token} />
       ) : selectedItem === 'tpSL' ? (
-        <FooterTPSLTable token={showAllInstrument ? undefined : token} />
+        <FooterTPSLTable
+          token={showAllInstrument ? undefined : token}
+          selectedSide={selectedSide}
+        />
       ) : selectedItem === 'DepositWithdraw' ? (
         <FooterAssetHistoryTable />
       ) : (
