@@ -9,6 +9,7 @@ import {
 import { useTheme } from '@material-ui/core/styles';
 import QUICKLogo from 'assets/images/quickLogo.png';
 import QUICKLogoWebP from 'assets/images/quickLogo.webp';
+import Fire from 'assets/images/fire-new.svg';
 import 'components/styles/Footer.scss';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -24,14 +25,24 @@ const Footer: React.FC = () => {
 
   const socialMenuItems = [
     {
-      title: t('services'),
+      title: t('Products'),
       items: [
         { title: t('swap'), link: '/swap' },
+        { title: t('PersV1'), link: '/convert' },
+        { title: 'Perps: Falkor', link: '/convert', isNew: true },
         { title: t('pool'), link: '/pools' },
         { title: t('farm'), link: '/farm' },
+        { title: t('Bonds'), link: '/dragons' },
+      ],
+    },
+    {
+      title: '',
+      items: [
         { title: t('dragonslair'), link: '/dragons' },
-        { title: t('convert'), link: '/convert' },
-        { title: t('calculator'), link: '/calculator/0.01-eth-to-usd' },
+        { title: t('Gaming Hub'), link: '/dragons' },
+        { title: t('Leaderboard'), link: '/dragons' },
+        { title: t('Convert QUICK'), link: '/convert' },
+        { title: t('dappOS'), link: '/calculator/0.01-eth-to-usd' },
         { title: t('analytics'), link: '/analytics' },
       ],
     },
@@ -39,6 +50,7 @@ const Footer: React.FC = () => {
       title: t('developers'),
       items: [
         { title: t('github'), link: 'https://github.com/QuickSwap' },
+        { title: t('gitbook'), link: 'https://github.com/QuickSwap' },
         { title: t('docs'), link: 'https://docs.quickswap.exchange/' },
       ],
     },
@@ -46,6 +58,7 @@ const Footer: React.FC = () => {
       title: t('governance'),
       items: [
         { title: t('proposals'), link: 'https://snapshot.org/#/quickvote.eth' },
+        { title: t('vote'), link: 'https://snapshot.org/#/quickvote.eth' },
       ],
     },
   ];
@@ -60,6 +73,39 @@ const Footer: React.FC = () => {
     <Box className='footer'>
       <Box className='footerContainer'>
         <Grid container spacing={4} className='socialMenuWrapper'>
+          <Grid item container xs={12} sm={12} md={8} spacing={4}>
+            {socialMenuItems.map((item) => (
+              <Grid key={item.title} item xs={12} sm={6} md={3}>
+                <small>{item.title}</small>
+                <Box mt={3}>
+                  {item.items.map((socialItem) => (
+                    <Box
+                      key={socialItem.title}
+                      className='cursor-pointer'
+                      my={1.5}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                      onClick={() => {
+                        if (socialItem.link.includes('http')) {
+                          window.open(socialItem.link, '_blank');
+                        } else {
+                          history.push(socialItem.link);
+                        }
+                      }}
+                    >
+                      <small className='text-secondary'>
+                        {socialItem.title}
+                      </small>
+                      {socialItem.isNew && <img src={Fire} alt='fire' />}
+                    </Box>
+                  ))}
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <picture>
               <source height={40} srcSet={QUICKLogoWebP} type='image/webp' />
@@ -69,7 +115,12 @@ const Footer: React.FC = () => {
               <small className='text-secondary'>{t('socialDescription')}</small>
             </Box>
             <Box mt={2} id='footerNewsletterSignup'>
-              <small className='text-secondary'>{t('signupnewsletter')}</small>
+              <small
+                className='text-secondary'
+                style={{ color: '#cedaeb', fontWeight: 600 }}
+              >
+                {t('Subscribe to Newsletter')}
+              </small>
               <Box className='newsletterInput'>
                 <input
                   placeholder={t('enterEmail')}
@@ -98,33 +149,6 @@ const Footer: React.FC = () => {
                 </Box>
               )}
             </Box>
-          </Grid>
-          <Grid item container xs={12} sm={12} md={8} spacing={4}>
-            {socialMenuItems.map((item) => (
-              <Grid key={item.title} item xs={12} sm={6} md={4}>
-                <small>{item.title}</small>
-                <Box mt={3}>
-                  {item.items.map((socialItem) => (
-                    <Box
-                      key={socialItem.title}
-                      className='cursor-pointer'
-                      my={1.5}
-                      onClick={() => {
-                        if (socialItem.link.includes('http')) {
-                          window.open(socialItem.link, '_blank');
-                        } else {
-                          history.push(socialItem.link);
-                        }
-                      }}
-                    >
-                      <small className='text-secondary'>
-                        {socialItem.title}
-                      </small>
-                    </Box>
-                  ))}
-                </Box>
-              </Grid>
-            ))}
           </Grid>
         </Grid>
         <Box
