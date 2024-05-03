@@ -64,7 +64,7 @@ import {
   SmartRouter,
 } from 'constants/index';
 import { useQuery } from '@tanstack/react-query';
-import { useAllTokens, useCurrency } from 'hooks/Tokens';
+import { useAllTokens, useCurrency, useTokenFee } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
@@ -209,6 +209,11 @@ const SwapBestTrade: React.FC<{
     useCurrency(wrappedCurrency(currencies[Field.INPUT], chainId)?.address),
     useCurrency(wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address),
   ];
+
+  const tokenFee = useTokenFee(
+    wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address,
+  );
+
   const selectedTokens: Token[] = useMemo(
     () =>
       [selectedInputCurrency, selectedOutputCurrency]?.filter(
@@ -1110,6 +1115,7 @@ const SwapBestTrade: React.FC<{
         <ConfirmSwapModal
           isOpen={showConfirm}
           optimalRate={optimalRate}
+          tax={tokenFee}
           inputCurrency={inputCurrency}
           outputCurrency={outputCurrency}
           originalTrade={tradeToConfirm}

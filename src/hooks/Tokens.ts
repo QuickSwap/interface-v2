@@ -11,7 +11,11 @@ import { useUserAddedTokens } from 'state/user/hooks';
 import { isAddress } from 'utils';
 
 import { useActiveWeb3React } from 'hooks';
-import { useBytes32TokenContract, useTokenContract } from 'hooks/useContract';
+import {
+  useBytes32TokenContract,
+  useTaxedTokenContract,
+  useTokenContract,
+} from 'hooks/useContract';
 import ERC20_INTERFACE, { ERC20_BYTES32_INTERFACE } from 'constants/abis/erc20';
 
 export function useAllTokens(): { [address: string]: Token } {
@@ -307,4 +311,24 @@ export function useCurrency(
   const isETH = currencyId?.toUpperCase() === 'ETH';
   const token = useToken(isETH ? undefined : currencyId);
   return isETH ? nativeCurrency : token;
+}
+
+export function useTokenFee(
+  currencyId: string | undefined,
+): number | null | undefined {
+  const tokenContract = useTaxedTokenContract(
+    currencyId ? currencyId : undefined,
+    false,
+  );
+
+  const totalFees = useSingleCallResult(
+    tokenContract,
+    'totalFees',
+    undefined,
+    NEVER_RELOAD,
+  );
+
+  if (totalFees.loading) return null;
+
+  return totalFees.result?.[0].toNumber();
 }

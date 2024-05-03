@@ -59,7 +59,7 @@ import 'components/styles/Swap.scss';
 import { useTranslation } from 'react-i18next';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import { useHistory } from 'react-router-dom';
-import { useAllTokens, useCurrency } from 'hooks/Tokens';
+import { useAllTokens, useCurrency, useTokenFee } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import { GlobalValue } from 'constants/index';
@@ -141,6 +141,11 @@ const Swap: React.FC<{
     useCurrency(wrappedCurrency(currencies[Field.INPUT], chainId)?.address),
     useCurrency(wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address),
   ];
+
+  const tokenFee = useTokenFee(
+    wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address,
+  );
+
   const selectedTokens: Token[] = useMemo(
     () =>
       [selectedInputCurrency, selectedOutputCurrency]?.filter(
@@ -681,6 +686,7 @@ const Swap: React.FC<{
         <ConfirmSwapModal
           isOpen={showConfirm}
           trade={trade}
+          tax={tokenFee}
           originalTrade={tradeToConfirm}
           onAcceptChanges={handleAcceptChanges}
           attemptingTxn={attemptingTxn}
@@ -781,7 +787,7 @@ const Swap: React.FC<{
           <p>{t('fetchingBestRoute')}...</p>
         </Box>
       ) : (
-        <AdvancedSwapDetails trade={trade} />
+        <AdvancedSwapDetails trade={trade} tax={tokenFee} />
       )}
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (

@@ -6,7 +6,7 @@ import {
   ConfirmationModalContent,
 } from 'components';
 import SwapModalHeader from './SwapModalHeader';
-import { formatTokenAmount } from 'utils';
+import { formatTaxedTokenAmount, formatTokenAmount } from 'utils';
 import 'components/styles/ConfirmSwapModal.scss';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate } from '@paraswap/sdk';
@@ -34,6 +34,7 @@ interface ConfirmSwapModalProps {
   isOpen: boolean;
   optimalRate?: OptimalRate | null;
   trade?: Trade;
+  tax: number | null | undefined;
   originalTrade?: Trade;
   inputCurrency?: Currency;
   outputCurrency?: Currency;
@@ -50,6 +51,7 @@ interface ConfirmSwapModalProps {
 
 const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   trade,
+  tax,
   optimalRate,
   inputCurrency,
   outputCurrency,
@@ -80,6 +82,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     return optimalRate ?? trade ? (
       <SwapModalHeader
         trade={trade}
+        tax={tax}
         optimalRate={optimalRate}
         inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
@@ -95,10 +98,15 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     optimalRate,
     showAcceptChanges,
     trade,
+    tax,
     onConfirm,
     inputCurrency,
     outputCurrency,
   ]);
+
+  const pendingOutPutAmount = tax
+    ? formatTaxedTokenAmount(trade?.outputAmount, tax)
+    : formatTokenAmount(trade?.outputAmount);
 
   const liquidityHubState = useLiquidityHubState();
   // text to show while loading
@@ -112,7 +120,7 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
     amount2: optimalRate
       ? Number(liquidityHubState.outAmount || optimalRate.destAmount) /
         10 ** optimalRate.destDecimals
-      : formatTokenAmount(trade?.outputAmount),
+      : pendingOutPutAmount,
     symbol2: trade
       ? trade?.outputAmount?.currency?.symbol
       : outputCurrency?.symbol,
