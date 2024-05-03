@@ -15,7 +15,8 @@ import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
 import BurnImage from 'assets/images/fire.png';
-import { useLairDQUICKAPY } from 'utils';
+import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
+import numbro from 'numbro';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -33,6 +34,18 @@ const DragonPage: React.FC = () => {
   const showLair = config['lair']['available'];
   const showOld = config['lair']['oldLair'];
   const showNew = config['lair']['newLair'];
+  const totalSupply = numbro(
+    formatTokenAmount(lairInfoToUse?.dQuickTotalSupply),
+  ).format({
+    average: true,
+    mantissa: 1,
+    spaceSeparated: false,
+    totalLength: 4,
+    trimMantissa: true,
+    optionalMantissa: true,
+    thousandSeparated: false,
+    forceAverage: 'million',
+  });
   const history = useHistory();
 
   const [tabValue, setTabValue] = React.useState('1');
@@ -70,7 +83,9 @@ const DragonPage: React.FC = () => {
                 <CurrencyLogo currency={quickToken} size='40px' />
                 <Box>
                   <small>{t('totalSupply')}</small>
-                  <h5 className='text-dragon-white'>1 Billion</h5>
+                  <h5 className='text-dragon-white'>
+                    {totalSupply.toString().toUpperCase()}
+                  </h5>
                 </Box>
               </Box>
               <Box>
