@@ -8,7 +8,7 @@ import {
 } from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 import { ClosePositionButton } from './ClosePositionButton';
 import { formatDecimalInput } from 'utils/numbers';
 import { useQuery } from '@tanstack/react-query';
@@ -60,7 +60,7 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
       id: 'instrument',
       label: 'Instrument',
       html: (item: API.PositionExt) => (
-        <small>{item.symbol.replace('PERP_', '')}</small>
+        <small>{getPerpsSymbol(item.symbol)}</small>
       ),
     },
     {

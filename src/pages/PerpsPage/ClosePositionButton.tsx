@@ -5,7 +5,7 @@ import { API, OrderSide, OrderType } from '@orderly.network/types';
 import { useQuery } from '@tanstack/react-query';
 import { CustomTooltip } from 'components';
 import { Close } from '@material-ui/icons';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 
 export const ClosePositionButton: React.FC<{
   position: API.PositionExt;
@@ -98,7 +98,7 @@ export const ClosePositionButton: React.FC<{
             </p>
             {price && (
               <Box className='border-top' mt={2} py={2} gridGap={12}>
-                <p>{position.symbol.replace('PERP_', '')}</p>
+                <p>{getPerpsSymbol(position.symbol)}</p>
                 <Box className='flex' mt='12px' gridGap={32}>
                   <Box className='flex flex-col' gridGap={8}>
                     <p

@@ -8,7 +8,7 @@ import {
 } from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 import dayjs from 'dayjs';
 import { CancelOrderButton } from './CancelOrderButton';
 import { FooterPagination } from './FooterPagination';
@@ -86,7 +86,7 @@ const FooterOrdersTable: React.FC<{
     {
       id: 'instrument',
       label: 'Instrument',
-      html: (item: Order) => <small>{item.symbol.replace('PERP_', '')}</small>,
+      html: (item: Order) => <small>{getPerpsSymbol(item.symbol)}</small>,
     },
     {
       id: 'type',

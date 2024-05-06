@@ -9,7 +9,7 @@ import {
 } from '@orderly.network/types';
 import './Layout.scss';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 import { FooterPagination } from './FooterPagination';
 import dayjs from 'dayjs';
 import { CancelTPSLOrderButton } from './CancelTPSLOrderButton';
@@ -46,7 +46,7 @@ const FooterTPSLTable: React.FC<{ token?: string; selectedSide: string }> = ({
     {
       id: 'instrument',
       label: 'Instrument',
-      html: (item: any) => <small>{item.symbol.replace('PERP_', '')}</small>,
+      html: (item: any) => <small>{getPerpsSymbol(item.symbol)}</small>,
     },
     {
       id: 'side',

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 import { SearchInput } from 'components';
 import { LeverageManage } from './LeverageManage';
 
@@ -65,7 +65,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
         gridGap={12}
       >
         <Box className='perpsTokenSelect' onClick={handleClick} gridGap={8}>
-          <p>{token ? token.symbol.replace('PERP_', '') : 'Tokens'}</p>
+          <p>{token ? getPerpsSymbol(token.symbol) : 'Tokens'}</p>
           {open ? (
             <KeyboardArrowUp className='text-secondary' />
           ) : (
@@ -116,7 +116,7 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
                     filteredData.map((item: any, index) => (
                       <tr key={index} onClick={() => handleTokenSelect(item)}>
                         <td align='left'>
-                          <small>{item.symbol.replace('PERP_', '')}</small>
+                          <small>{getPerpsSymbol(item.symbol)}</small>
                         </td>
                         <td align='right'>
                           <small>{formatNumber(item?.index_price)}</small>

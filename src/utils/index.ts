@@ -1341,3 +1341,7 @@ export const getCurrencyInfo = ({
     chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
   };
 };
+
+export function getPerpsSymbol(symbol: string) {
+  return symbol.replace('PERP_', '').replace('_', '/');
+}
