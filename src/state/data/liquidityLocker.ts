@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ChainId, Pair as UniswapSdkPair } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 const TEAM_FINANCE_BACKEND_URL =
   'https://team-finance-backend-dev-origdfl2wq-uc.a.run.app/api';
 const API_KEY = process.env.TEAM_FINANCE_BACKEND_API_KEY ?? 'yolobolo';
@@ -107,17 +107,14 @@ export const useUserV2LiquidityLocks = (
   liquidityTokenList: UniswapSdkPair[],
   account?: string,
 ) => {
-  const [data, setData] = useState<LockInterface[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const addressArray = liquidityTokenList.map(
+    (item: UniswapSdkPair) => item.liquidityToken.address,
+  );
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: ['v2-tf-lpLock', addressArray, account],
+    queryFn: async () => {
+      if (!account || addressArray.length === 0) return;
       try {
-        setLoading(true);
-        const addressArray = liquidityTokenList.map(
-          (item: UniswapSdkPair) => item.liquidityToken.address,
-        );
         const URL = `/app/allMylocks/${account}`;
         const response = await axios.get(URL);
         const v2LpLocks_ = response.data.data.filter((item: LockInterface) => {
@@ -126,32 +123,22 @@ export const useUserV2LiquidityLocks = (
             addressArray.includes(item.liquidityContract?.tokenAddress)
           );
         });
-        setData(v2LpLocks_);
+        return v2LpLocks_ as LockInterface[];
       } catch (error) {
-        setError('Error getting v2 lp locks');
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
-
-    if (!account || !liquidityTokenList || liquidityTokenList.length === 0)
-      return;
-
-    fetchData();
-  }, [account]);
+    },
+  });
 
   return { data, loading, error };
 };
 
 export const useUserV3LiquidityLocks = (account?: string) => {
-  const [data, setData] = useState<LockInterface[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: ['v3-tf-lpLock', account],
+    queryFn: async () => {
+      if (!account) return;
       try {
-        setLoading(true);
         const URL = `/app/allMylocks/${account}`;
         const response = await axios.get(URL);
         const v3LpLocks_ = response.data.data.filter((item: LockInterface) => {
@@ -161,18 +148,12 @@ export const useUserV3LiquidityLocks = (account?: string) => {
               NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id]
           );
         });
-        setData(v3LpLocks_);
+        return v3LpLocks_ as LockInterface[];
       } catch (error) {
-        setError('Error getting v3 lp locks');
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
-
-    if (!account) return;
-
-    fetchData();
-  }, [account]);
+    },
+  });
 
   return { data, loading, error };
 };
