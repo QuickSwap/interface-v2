@@ -58,7 +58,8 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, tx }) => {
     walletData &&
     walletData.trxId &&
     walletData.side === 'DEPOSIT' &&
-    walletData.trxId.toLowerCase() === tx.hash.toLowerCase();
+    walletData.trxId.toLowerCase() === tx.hash.toLowerCase() &&
+    walletData.transStatus === 'COMPLETED';
 
   useEffect(() => {
     if (txCompleted) {
