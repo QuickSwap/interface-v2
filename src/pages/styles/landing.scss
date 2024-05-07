@@ -1,12 +1,12 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
 
 .heroSection {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   position: relative;
-  text-align: center;
+  text-align: left;
   z-index: 2;
   & h3 {
     text-transform: uppercase;
@@ -28,6 +28,18 @@
     align-items: center;
     justify-content: center;
   }
+  .title {
+    font-size: 50px;
+    font-weight: 600;
+    line-height: 1.16;
+  }
+  .subTitle {
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.67;
+  }
 }
 
 .tradingInfo {
@@ -35,7 +47,9 @@
   position: relative;
   z-index: 2;
   justify-content: center;
-  @include media('screen', '<desktop') {
+  flex-wrap: wrap;
+  gap: 24px;
+  @include media("screen", "<desktop") {
     flex-wrap: wrap;
   }
 }
@@ -54,7 +68,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     margin: 32px 0 64px;
   }
   .allRewardPairs {
@@ -83,17 +97,18 @@
   margin: auto;
 }
 .featureContainer {
-  & > div.MuiGrid-root {
+  & > div {
     margin-top: 32px;
     & > div {
       & img {
-        width: 150px;
-        max-width: 240px;
+        width: 32;
+        height: 32;
+        margin-bottom: 26px;
       }
       & > div {
-        width: calc(100% - 270px);
+        // width: calc(100% - 270px);
       }
-      @include media('screen', '<phone') {
+      @include media("screen", "<phone") {
         flex-direction: column;
         & img,
         & > div {
@@ -102,9 +117,17 @@
         }
       }
     }
+
+    a {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      text-decoration: none;
+      font-size: 14px;
+      color: #ccd8e7;
+    }
   }
   & .featureText {
-    margin-left: 8px;
     & h3 {
       color: white;
       margin-bottom: 8;
@@ -194,7 +217,7 @@
     height: 32px;
     cursor: pointer;
   }
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     display: none;
   }
 }
@@ -208,7 +231,7 @@
   & > div {
     width: 100%;
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     & .MuiGrid-item {
       width: 100%;
       margin-bottom: 32px;
@@ -220,7 +243,7 @@
 .swapInfo {
   text-align: left;
   margin-bottom: 60px;
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     order: -1;
   }
   & h3 {
@@ -229,24 +252,26 @@
 }
 
 .tradingSection {
-  background: $bgColor;
-  width: calc(25% - 24px);
-  max-width: 288px;
-  min-width: 220px;
-  height: 133px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: #9b9b9b0f;
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  width: 204px;
+  // max-width: 288px;
+  // min-width: 220px;
+  height: 107px;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+  // justify-content: center;
+  padding: 28px 24px;
   border-radius: 20px;
-  margin: 12px;
   & h6 {
-    padding-top: 2px;
+    // padding-top: 2px;
   }
   & p {
     font-size: 12px;
     color: $textSecondary;
-    padding-top: 12px;
+    margin-bottom: 12px;
   }
   & h4 {
     font-size: 12px;
@@ -254,8 +279,11 @@
     margin-top: 3px;
     color: $primary;
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     height: unset;
+  }
+  & h3 {
+    font-size: 20px;
   }
 }
 
@@ -265,10 +293,10 @@
   border-radius: 48px;
   overflow: hidden;
   position: relative;
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     height: auto;
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     padding: 24px;
     border-radius: 24px;
   }
@@ -289,7 +317,7 @@
       width: 129px;
       max-width: 320px;
     }
-    @include media('screen', '<phone') {
+    @include media("screen", "<phone") {
       flex-direction: column;
       padding: 0;
     }
@@ -301,7 +329,7 @@
       font-size: 22px;
       margin-bottom: 12px;
     }
-    @include media('screen', '<phone') {
+    @include media("screen", "<phone") {
       flex-direction: column;
       margin-right: 0;
       margin-bottom: 32px;
@@ -332,11 +360,11 @@
   & .buyFiatWrapper {
     width: 408px;
     position: relative;
-    @include media('screen', '<tablet') {
+    @include media("screen", "<tablet") {
       width: calc(100% - 64px);
       margin-bottom: 32px;
     }
-    @include media('screen', '<phone') {
+    @include media("screen", "<phone") {
       width: calc(100% - 40px);
     }
     & .buyContent {
@@ -387,13 +415,13 @@
     right: 0;
     opacity: 0.4;
   }
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     flex-direction: column;
     & > div:first-child {
       text-align: center;
     }
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     padding: 24px;
   }
 }
@@ -429,7 +457,7 @@
       font-weight: 500;
     }
   }
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     margin: 16px 0 0;
     width: 100%;
     max-width: 430px;
