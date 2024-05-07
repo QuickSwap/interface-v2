@@ -57,7 +57,7 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, tx }) => {
     tx.hash &&
     walletData &&
     walletData.trxId &&
-    walletData.side === 'Deposit' &&
+    walletData.side === 'DEPOSIT' &&
     walletData.trxId.toLowerCase() === tx.hash.toLowerCase();
 
   useEffect(() => {
