@@ -15,18 +15,20 @@ import {
   SettingsModal,
 } from 'components';
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
-import { formatTokenAmount } from 'utils';
+import { formatTaxedTokenAmount, formatTokenAmount } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 interface TradeSummaryProps {
   trade: Trade;
   allowedSlippage: number;
+  tax: number | null | undefined;
 }
 
 export const TradeSummary: React.FC<TradeSummaryProps> = ({
   trade,
   allowedSlippage,
+  tax,
 }) => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { t } = useTranslation();
@@ -40,6 +42,14 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
     allowedSlippage,
   );
   const tradeAmount = isExactIn ? trade.outputAmount : trade.inputAmount;
+  const receiveAmount = tax
+    ? formatTaxedTokenAmount(
+        slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
+        tax,
+      )
+    : formatTokenAmount(
+        slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
+      );
 
   return (
     <Box mt={1.5}>
@@ -62,6 +72,15 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
           <EditIcon />
         </Box>
       </Box>
+      {tax && (
+        <Box className='summaryRow'>
+          <Box>
+            <small>Token Tax:</small>
+            <QuestionHelper text={t('priceImpactHelper')} />
+          </Box>
+          <small>{tax}%</small>
+        </Box>
+      )}
       <Box className='summaryRow'>
         <Box>
           <small>{isExactIn ? t('minReceived') : t('maxSold')}:</small>
@@ -69,10 +88,7 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
         </Box>
         <Box>
           <small>
-            {formatTokenAmount(
-              slippageAdjustedAmounts[isExactIn ? Field.OUTPUT : Field.INPUT],
-            )}{' '}
-            {tradeAmount.currency.symbol}
+            {receiveAmount} {tradeAmount.currency.symbol}
           </small>
           <CurrencyLogo currency={tradeAmount.currency} size='16px' />
         </Box>
@@ -117,10 +133,12 @@ export const TradeSummary: React.FC<TradeSummaryProps> = ({
 
 export interface AdvancedSwapDetailsProps {
   trade?: Trade;
+  tax?: number | null | undefined;
 }
 
 export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({
   trade,
+  tax,
 }) => {
   const [allowedSlippage] = useUserSlippageTolerance();
   const { autoSlippage } = useDerivedSwapInfo();
@@ -133,6 +151,7 @@ export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({
           allowedSlippage={
             allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage
           }
+          tax={tax}
         />
       )}
     </>

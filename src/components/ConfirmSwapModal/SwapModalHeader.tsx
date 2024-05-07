@@ -7,7 +7,11 @@ import { DoubleCurrencyLogo } from 'components';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { ReactComponent as ArrowDownIcon } from 'assets/images/ArrowDownIcon.svg';
-import { basisPointsToPercent, formatTokenAmount } from 'utils';
+import {
+  basisPointsToPercent,
+  formatTaxedTokenAmount,
+  formatTokenAmount,
+} from 'utils';
 import { useTranslation } from 'react-i18next';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
@@ -16,6 +20,7 @@ import { useActiveWeb3React } from 'hooks';
 
 interface SwapModalHeaderProps {
   trade?: Trade;
+  tax?: number | null | undefined;
   optimalRate?: OptimalRate | null;
   inputCurrency?: Currency;
   outputCurrency?: Currency;
@@ -27,6 +32,7 @@ interface SwapModalHeaderProps {
 
 const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   trade,
+  tax,
   optimalRate,
   inputCurrency,
   outputCurrency,
@@ -59,6 +65,10 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           .multiply(optimalRate.destAmount).quotient
       : new Fraction(ONE).add(pct).multiply(optimalRate.srcAmount).quotient
     : undefined;
+
+  const receiveAmount = tax
+    ? formatTaxedTokenAmount(trade?.outputAmount, tax)
+    : formatTokenAmount(trade?.outputAmount);
 
   return (
     <Box>
@@ -99,7 +109,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
                 10 ** optimalRate.destDecimals
               ).toLocaleString('us')
             : trade
-            ? formatTokenAmount(trade.outputAmount)
+            ? receiveAmount
             : ''}{' '}
           {trade ? trade.outputAmount.currency.symbol : outputCurrency?.symbol}
         </p>
@@ -119,7 +129,7 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
           <p className='small'>
             {t('outputEstimated1', {
               amount: trade
-                ? formatTokenAmount(slippageAdjustedAmounts[Field.OUTPUT])
+                ? receiveAmount
                 : bestTradeAmount && outputCurrency
                 ? (
                     Number(bestTradeAmount.toString()) /

@@ -821,6 +821,21 @@ export function formatTokenAmount(
   return amount.toSignificant(digits);
 }
 
+export function formatTaxedTokenAmount(
+  amount?: TokenAmount | CurrencyAmount,
+  tax?: number | null | undefined,
+  digits = 3,
+) {
+  if (!amount) return '-';
+  const amountStr = tax
+    ? (Number(amount.toExact()) * (100 - tax)) / 100
+    : amount.toExact();
+  if (Math.abs(Number(amountStr)) > 1) {
+    return Number(amountStr).toLocaleString('us');
+  }
+  return amount.toSignificant(digits);
+}
+
 export function formatMulDivTokenAmount(
   amount?: TokenAmount,
   otherAmount?: number | string,

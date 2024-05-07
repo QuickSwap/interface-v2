@@ -10,7 +10,10 @@ import {
 import ENS_PUBLIC_RESOLVER_ABI from 'constants/abis/ens-public-resolver.json';
 import ENS_ABI from 'constants/abis/ens-registrar.json';
 import EIP_2612 from 'constants/abis/v3/eip_2612.json';
-import ERC20_ABI, { ERC20_BYTES32_ABI } from 'constants/abis/erc20';
+import ERC20_ABI, {
+  ERC20_BYTES32_ABI,
+  ERC20_TAXED_ABI,
+} from 'constants/abis/erc20';
 import V2ToV3MigratorABI from 'constants/abis/v3/migrator.json';
 import { STAKING_DUAL_REWARDS_INTERFACE } from 'constants/abis/staking-rewards';
 import UNISOCKS_ABI from 'constants/abis/unisocks.json';
@@ -198,6 +201,13 @@ export function useTokenContract(
   withSignerIfPossible?: boolean,
 ): Contract | null {
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible);
+}
+
+export function useTaxedTokenContract(
+  tokenAddress?: string,
+  withSignerIfPossible?: boolean,
+): Contract | null {
+  return useContract(tokenAddress, ERC20_TAXED_ABI, withSignerIfPossible);
 }
 
 export function useWETHContract(
