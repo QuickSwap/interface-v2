@@ -12,11 +12,12 @@ const AvailableChainList: React.FC = ({}) => {
   const { t } = useTranslation();
 
   return (
-    <Box style={{ display: 'flex', gap: '16px' }}>
+    <Box className='available_chain_list' style={{ display: 'flex' }}>
       <Typography style={{ width: 'fit-content', whiteSpace: 'nowrap' }}>
         {t('availableOn')}:
       </Typography>
       <Box
+        className='chain_list'
         style={{
           display: 'flex',
           alignItems: 'center',

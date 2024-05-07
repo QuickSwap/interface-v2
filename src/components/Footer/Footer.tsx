@@ -4,6 +4,7 @@ import {
   Button,
   CircularProgress,
   Grid,
+  Typography,
   useMediaQuery,
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
@@ -76,7 +77,7 @@ const Footer: React.FC = () => {
         <Grid container spacing={4} className='socialMenuWrapper'>
           <Grid item container xs={12} sm={12} md={8} spacing={4}>
             {socialMenuItems.map((item) => (
-              <Grid key={item.title} item xs={12} sm={6} md={3}>
+              <Grid key={item.title} item xs={6} sm={6} md={3}>
                 <small>{item.title}</small>
                 <Box mt={3}>
                   {item.items.map((socialItem) => (
@@ -164,6 +165,19 @@ const Footer: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
+        {tabletWindowSize && (
+          <Box>
+            <Typography
+              style={{
+                marginBottom: '16px',
+                fontSize: '12px',
+                color: '#6880a3',
+              }}
+            >
+              Terms of Use
+            </Typography>
+          </Box>
+        )}
         <Box
           className={`copyrightWrapper ${
             tabletWindowSize ? 'copyright-mobile' : ''

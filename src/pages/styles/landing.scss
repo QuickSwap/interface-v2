@@ -8,6 +8,10 @@
   position: relative;
   text-align: left;
   z-index: 2;
+  @media screen and (max-width: "900px") {
+    padding-top: 220px;
+    align-items: center;
+  }
   & h3 {
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -28,10 +32,36 @@
     align-items: center;
     justify-content: center;
   }
+
+  .cover_title {
+    max-width: 40%;
+    margin-bottom: 20px;
+    @media screen and (max-width: "900px") {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 24px;
+      padding: 0 20px;
+    }
+  }
+  .cover_sub_title {
+    max-width: 40%;
+    margin-bottom: 20px;
+    @media screen and (max-width: "900px") {
+      width: 100%;
+      max-width: 100%;
+      padding: 0 40px;
+      margin-bottom: 40px;
+    }
+  }
   .title {
     font-size: 50px;
     font-weight: 600;
     line-height: 1.16;
+    @media screen and (max-width: "900px") {
+      width: 100%;
+      font-size: 32px;
+      text-align: center;
+    }
   }
   .subTitle {
     font-size: 18px;
@@ -39,6 +69,49 @@
     font-stretch: normal;
     font-style: normal;
     line-height: 1.67;
+    @media screen and (max-width: "900px") {
+      width: 100%;
+      font-size: 14px;
+      text-align: center;
+    }
+  }
+}
+
+.available_chain_list {
+  flex-direction: row;
+  gap: 16px;
+  @media screen and (max-width: "900px") {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .chain_list {
+    @media screen and (max-width: "900px") {
+      justify-content: center;
+    }
+  }
+}
+
+.quick_statistics {
+  align-items: center;
+  @media screen and (max-width: "900px") {
+    align-items: start;
+  }
+
+  .title {
+    font-size: 32px;
+    @media screen and (max-width: "900px") {
+      font-size: 24px;
+    }
+  }
+  .desc {
+    text-align: center;
+    font-size: 18px;
+    @media screen and (max-width: "900px") {
+      text-align: left;
+      font-size: 16px;
+    }
   }
 }
 
@@ -84,33 +157,91 @@
 }
 .featureHeading {
   margin: auto;
-  text-align: center;
+  align-items: center;
+  @media screen and (max-width: "900px") {
+    align-items: start;
+  }
   & h3 {
     color: $grey7;
     margin-bottom: 32px;
   }
+
+  .title {
+    font-size: 32px;
+    @media screen and (max-width: "900px") {
+      font-size: 24px;
+    }
+  }
+  .desc {
+    text-align: center;
+    font-size: 18px;
+    @media screen and (max-width: "900px") {
+      text-align: left;
+      font-size: 16px;
+    }
+  }
 }
+
+.feat_block {
+  width: 204px;
+  height: 318px;
+  padding: 24px;
+  @media screen and (max-width: "900px") {
+    width: 100%;
+    height: 200px;
+  }
+  .cover_title {
+    flex-direction: column;
+    gap: 26px;
+    @media screen and (max-width: "900px") {
+      flex-direction: row;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    p {
+      margin-bottom: 12px;
+      @media screen and (max-width: "900px") {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .link_action {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    @media screen and (max-width: "900px") {
+      bottom: 28px;
+    }
+  }
+}
+
 .featureDivider {
   width: 32px;
   height: 2px;
   background: $successLight;
   margin: auto;
 }
+.cover_feat_block {
+  gap: 24px;
+  @media screen and (max-width: "900px") {
+    gap: 16px;
+  }
+}
 .featureContainer {
   & > div {
     margin-top: 32px;
     & > div {
       & img {
-        width: 32;
-        height: 32;
-        margin-bottom: 26px;
+        width: 32px;
+        height: 32px;
       }
       & > div {
         // width: calc(100% - 270px);
       }
       @include media("screen", "<phone") {
         flex-direction: column;
-        & img,
         & > div {
           width: 100%;
           text-align: center;
@@ -132,6 +263,9 @@
       color: white;
       margin-bottom: 8;
     }
+    p {
+      text-align: left;
+    }
   }
 }
 .communityContainer {
@@ -142,6 +276,51 @@
     align-items: center;
     justify-content: center;
     margin-top: 48px;
+    .cover_community_content {
+      padding: 35px 75px;
+      @media screen and (max-width: "900px") {
+        padding: 48px 24px;
+      }
+
+      .cover_content {
+        max-width: 80%;
+        @media screen and (max-width: "900px") {
+          max-width: 100%;
+        }
+
+        .title {
+          text-align: left;
+          font-size: 32px;
+          @media screen and (max-width: "900px") {
+            text-align: center;
+            font-size: 24px;
+          }
+        }
+
+        .desc {
+          text-align: left;
+          font-size: 16px;
+          @media screen and (max-width: "900px") {
+            text-align: center;
+          }
+        }
+      }
+    }
+
+    .email_form {
+      width: 318px;
+      @media screen and (max-width: "900px") {
+        width: 100%;
+        margin-bottom: 40px;
+      }
+    }
+
+    .cover_social_list {
+      @media screen and (max-width: "900px") {
+        justify-content: center;
+      }
+    }
+
     & > div {
       padding: 16px;
       text-align: center;
@@ -165,6 +344,10 @@
         height: 64px;
         margin-bottom: 8px;
         filter: grayscale(1);
+        @media screen and (max-width: "900px") {
+          width: 48px;
+          height: 48px;
+        }
       }
       &.svgFill svg path {
         fill: $textPrimary;
@@ -265,6 +448,10 @@
   // justify-content: center;
   padding: 28px 24px;
   border-radius: 20px;
+
+  @include media("screen", "<desktop") {
+    width: 187px;
+  }
   & h6 {
     // padding-top: 2px;
   }

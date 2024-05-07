@@ -15,7 +15,7 @@ const black = '#000000';
 const white = '#ffffff';
 
 const textPrimary = '#c7cad9';
-const textSecondary = '#f6f6f9';
+const textSecondary = '#6880a3';
 const bgColor = '#192338';
 const bgPalette = '#1b1e29';
 

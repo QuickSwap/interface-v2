@@ -92,12 +92,12 @@ const CommunityBlock: React.FC = ({}) => {
   return (
     <Grid
       container
+      className='cover_community_content'
       style={{
         borderRadius: '24px',
         backgroundColor: '#9b9b9b0f',
         backdropFilter: 'blur(40px)',
         width: '100%',
-        padding: '35px 75px',
         position: 'relative',
       }}
     >
@@ -117,12 +117,11 @@ const CommunityBlock: React.FC = ({}) => {
         }}
       />
       <Grid item sm={12} md={6}>
-        <Box style={{ maxWidth: '80%' }}>
+        <Box className='cover_content'>
           <Typography
+            className='title'
             style={{
-              textAlign: 'left',
               color: '#448aff',
-              fontSize: '32px',
               fontWeight: 600,
               lineHeight: '1.28',
               marginBottom: '16px',
@@ -131,10 +130,9 @@ const CommunityBlock: React.FC = ({}) => {
             {t('subscribeToQuickSwap')}
           </Typography>
           <Typography
+            className='desc'
             style={{
-              textAlign: 'left',
               color: '#ccd8e7',
-              fontSize: '16px',
               lineHeight: '1.63',
               marginBottom: '32px',
             }}
@@ -142,18 +140,19 @@ const CommunityBlock: React.FC = ({}) => {
             {t('subscribeDesc')}
           </Typography>
           <Box
+            className='email_form'
             component='form'
             style={{
               padding: '15px 20px',
               display: 'flex',
               alignItems: 'center',
-              width: 318,
               height: 50,
               borderRadius: '12px',
               backgroundColor: 'rgb(0 0 0 / 12%)',
             }}
           >
             <InputBase
+              className='email_input'
               style={{ flex: 1, fontSize: '16px', color: '#fff' }}
               placeholder='Enter Email'
               inputProps={{ 'aria-label': 'Enter Email' }}
@@ -182,9 +181,9 @@ const CommunityBlock: React.FC = ({}) => {
         </Box>
       </Grid>
       <Grid item sm={12} md={6}>
-        <Grid container spacing={4}>
+        <Grid container spacing={4} className='cover_social_list'>
           {socialicons.map((val, ind) => (
-            <Grid item key={ind} sm={3}>
+            <Grid item key={ind} xs={4} sm={3}>
               <Box
                 className={
                   val.title.toLowerCase() === 'geckoterminal'

@@ -35,38 +35,35 @@ function EarnSection() {
   ];
   return (
     <Box className='featureContainer'>
-      <Box className='featureHeading'>
-        <Box
+      <Box
+        className='featureHeading'
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          marginBottom: '40px',
+        }}
+      >
+        <Typography
+          className='title'
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '40px',
+            fontWeight: 600,
+            color: '#448aff',
+            lineHeight: ' 2.44',
           }}
         >
-          <Typography
-            style={{
-              fontSize: '32px',
-              fontWeight: 600,
-              color: '#448aff',
-              lineHeight: ' 2.44',
-            }}
-          >
-            {t('earn')}
-          </Typography>
-          <Typography
-            style={{
-              fontSize: '18px',
-              color: '#ccd8e7',
-              lineHeight: '1.67',
-              maxWidth: '432px',
-              textAlign: 'center',
-            }}
-          >
-            {t('earnDesc')}
-          </Typography>
-        </Box>
+          {t('earn')}
+        </Typography>
+        <Typography
+          className='desc'
+          style={{
+            color: '#ccd8e7',
+            lineHeight: '1.67',
+            maxWidth: '432px',
+          }}
+        >
+          {t('earnDesc')}
+        </Typography>
       </Box>
       <Box
         style={{

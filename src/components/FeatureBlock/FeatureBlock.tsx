@@ -22,10 +22,8 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({
 }) => {
   return (
     <Box
+      className='feat_block'
       style={{
-        width: '204px',
-        height: '318px',
-        padding: '24px',
         display: 'flex',
         flexDirection: 'column',
         backdropFilter: 'blur(24px)',
@@ -34,18 +32,19 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({
         alignItems: 'start',
       }}
     >
-      <img src={image} alt={title} />
-      <Box className='featureText' style={{ height: '100%' }}>
+      <Box className='cover_title' style={{ display: 'flex' }}>
+        <img src={image} alt={title} />
         <Typography
           style={{
             fontSize: '18px',
             color: '#448aff',
             fontWeight: 600,
-            marginBottom: '12px',
           }}
         >
           {title}
         </Typography>
+      </Box>
+      <Box className='featureText' style={{ height: '100%' }}>
         <Box
           style={{
             height: '80%',
@@ -56,7 +55,7 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({
         >
           <p>{desc}</p>
           {link ? (
-            <Link to={link}>
+            <Link to={link} className='link_action'>
               {actionLabel}
               <KeyboardArrowDown
                 style={{
@@ -67,6 +66,7 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({
             </Link>
           ) : (
             <Box
+              className='link_action'
               style={{
                 display: 'flex',
                 alignItems: 'center',

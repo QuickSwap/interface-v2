@@ -213,6 +213,9 @@ wcm-modal {
   & img {
     width: 100%;
     min-width: 1200px;
+    @media screen and (max-width: "600px") {
+      min-width: 600px;
+    }
   }
 }
 

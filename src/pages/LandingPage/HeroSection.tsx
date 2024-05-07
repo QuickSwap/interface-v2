@@ -87,19 +87,15 @@ const HeroSection: React.FC = () => {
         //   </h1>
         // </Box>
         <>
-          <Box style={{ maxWidth: '40%', marginBottom: '20px' }}>
+          <Box className='cover_title'>
             <Typography className='title' style={{ color: '#f6f6f9' }}>
-              Leading DEX on
-            </Typography>
-            <Typography className='title' style={{ color: '#f6f6f9' }}>
-              all Polygon Chains
+              Leading DEX on all Polygon Chains
             </Typography>
           </Box>
-          <Box sx={{ maxWidth: '40%' }}>
+          <Box className='cover_sub_title'>
             <Typography
               className='subTitle'
               style={{
-                marginBottom: '20px',
                 color: '#ccd8e7',
               }}
             >

@@ -53,46 +53,43 @@ function TradeSection() {
           onClose={() => setShowMeldWidgetWidget(false)}
         />
       )}
-      <Box className='featureHeading'>
-        <Box
+      <Box
+        className='featureHeading'
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          marginBottom: '40px',
+        }}
+      >
+        <Typography
+          className='title'
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '40px',
+            fontWeight: 600,
+            color: '#448aff',
+            lineHeight: ' 2.44',
           }}
         >
-          <Typography
-            style={{
-              fontSize: '32px',
-              fontWeight: 600,
-              color: '#448aff',
-              lineHeight: ' 2.44',
-            }}
-          >
-            {t('tradeAndProvide')}
-          </Typography>
-          <Typography
-            style={{
-              fontSize: '18px',
-              color: '#ccd8e7',
-              lineHeight: '1.67',
-              maxWidth: '432px',
-              textAlign: 'center',
-            }}
-          >
-            {t('swapAndLP')}
-          </Typography>
-        </Box>
+          {t('tradeAndProvide')}
+        </Typography>
+        <Typography
+          className='desc'
+          style={{
+            color: '#ccd8e7',
+            lineHeight: '1.67',
+            maxWidth: '432px',
+          }}
+        >
+          {t('swapAndLP')}
+        </Typography>
       </Box>
       <Box
+        className='cover_feat_block'
         style={{
           width: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '24px',
           flexWrap: 'wrap',
           marginBottom: '128px',
         }}

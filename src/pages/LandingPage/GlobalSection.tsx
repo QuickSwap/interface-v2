@@ -21,17 +21,17 @@ const GlobalSection: React.FC = () => {
         <AvailableChainList />
       </Box>
       <Box
+        className='quick_statistics'
         style={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '40px',
         }}
       >
         <Typography
+          className='title'
           style={{
-            fontSize: '32px',
             fontWeight: 600,
             color: '#448aff',
             lineHeight: ' 2.44',
@@ -40,12 +40,11 @@ const GlobalSection: React.FC = () => {
           {t('quickStatistics')}
         </Typography>
         <Typography
+          className='desc'
           style={{
-            fontSize: '18px',
             color: '#ccd8e7',
             lineHeight: '1.67',
             maxWidth: '432px',
-            textAlign: 'center',
           }}
         >
           {t('quickStatisticsDescription')}

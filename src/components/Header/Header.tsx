@@ -169,6 +169,19 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           window.open(process.env.REACT_APP_PERPS_URL, '_self');
         }
       },
+      items: [
+        {
+          id: 'perps-new-page-link',
+          link: '#',
+          text: 'Perps : Folklore',
+          isNew: true,
+        },
+        {
+          id: 'perps-v1-page-link',
+          link: '#',
+          text: 'Perps V1',
+        },
+      ],
     });
   }
   if (showPool) {
