@@ -557,6 +557,7 @@ const SwapBestTrade: React.FC<{
     callback: paraswapCallback,
     error: paraswapCallbackError,
   } = useParaswapCallback(
+    allowedSlippage,
     optimalRate,
     recipient,
     inputCurrency,
