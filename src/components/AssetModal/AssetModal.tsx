@@ -60,6 +60,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const config = getConfig(chainId);
   const currency = useCurrency(token?.address);
   const { account } = useAccount();
+  const [depositTx, setDepositTx] = useState<any>(undefined);
 
   return (
     <CustomModal
@@ -178,7 +179,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
           <Box>
             <Box className='flex items-center justify-between'>
               <small>{t('yourFalkorAccount')}</small>
-              <img src={QuickPerpsIcon} />
+              <img src={QuickPerpsIcon} alt='Falkor' />
             </Box>
             <Box className='assetModalInputWrapper' mt={1}>
               <Box className='flex justify-between'>
@@ -260,7 +261,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
               } else {
                 try {
                   setLoading(true);
-                  await deposit.deposit();
+                  const res = await deposit.deposit();
+                  setDepositTx(res);
                   setNotifications(true);
                   setLoading(false);
                 } catch {
@@ -302,10 +304,13 @@ const AssetModal: React.FC<AssetModalProps> = ({
           </Button>
         )}
       </Box>
-      <NotifyModal
-        open={notifications}
-        onClose={() => setNotifications(false)}
-      />
+      {notifications && (
+        <NotifyModal
+          open={notifications}
+          onClose={() => setNotifications(false)}
+          tx={depositTx}
+        />
+      )}
     </CustomModal>
   );
 };
