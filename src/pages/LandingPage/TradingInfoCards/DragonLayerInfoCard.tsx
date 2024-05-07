@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useNewLairInfo } from 'state/stake/hooks';
@@ -61,20 +61,27 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
       )}
       {(oldLair || newLair) && (
         <Box className='tradingSection' pt='20px'>
+          <Typography
+            className='text-uppercase'
+            style={{ fontSize: '11px', fontWeight: 600 }}
+          >
+            {t('dragonslair')}{' '}
+          </Typography>
           {loading ? (
             <Skeleton variant='rect' width={100} height={45} />
           ) : (
             <Box>
-              <Box display='flex'>
-                <h6>$</h6>
+              {/* <Box display='flex'>
+                <sup>$</sup>
                 <h3>{rewards}</h3>
-              </Box>
-              <Box className='text-success text-center'>
-                <small>{dQUICKAPY}%</small>
+              </Box> */}
+              <Box className='text-success'>
+                <Typography style={{ fontSize: '20px', color: '#1fb85f' }}>
+                  {dQUICKAPY}%
+                </Typography>
               </Box>
             </Box>
           )}
-          <p>{t('dragonslair')}</p>
           {account && (
             <h4 onClick={() => setOpenStakeModal(true)}>
               {t('stake')} {'>'}

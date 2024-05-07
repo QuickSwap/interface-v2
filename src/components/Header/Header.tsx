@@ -351,42 +351,47 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           pendingTransactions={pending}
           confirmedTransactions={confirmed}
         />
-        <Link to='/'>
-          {mobileWindowSize && (
-            <img src={QuickIcon} alt='QuickLogo' height={40} />
-          )}
-          {!mobileWindowSize && (
-            <picture>
-              <source height={60} srcSet={QuickLogoWebP} type='image/webp' />
-              <img src={QuickLogo} alt='QuickLogo' height={60} />
-            </picture>
-          )}
-        </Link>
-        {!tabletWindowSize && (
-          <Box className='mainMenu'>
-            {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
-              <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
-            ))}
-            {menuItems.slice(menuItemCountToShow, menuItems.length).length >
-              0 && (
-              <Box display='flex' className='menuItem subMenuItem'>
-                <ThreeDotIcon />
-                <Box className='subMenuWrapper'>
-                  <Box className='subMenu'>
-                    {menuItems
-                      .slice(menuItemCountToShow, menuItems.length)
-                      .map((val, i) => (
-                        <HeaderListItem key={'sub-menu' + i} item={val} />
-                      ))}
+        <Box style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <Link to='/'>
+            {mobileWindowSize && (
+              <img src={QuickIcon} alt='QuickLogo' height={32} />
+            )}
+            {!mobileWindowSize && (
+              <picture>
+                <source height={32} srcSet={QuickIcon} type='image/webp' />
+                <img src={QuickLogo} alt='QuickLogo' height={32} />
+              </picture>
+            )}
+          </Link>
+          {!tabletWindowSize && (
+            <Box className='mainMenu'>
+              {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
+                <HeaderDesktopItem
+                  key={`header-desktop-item-${i}`}
+                  item={val}
+                />
+              ))}
+              {menuItems.slice(menuItemCountToShow, menuItems.length).length >
+                0 && (
+                <Box display='flex' className='menuItem subMenuItem'>
+                  <ThreeDotIcon />
+                  <Box className='subMenuWrapper'>
+                    <Box className='subMenu'>
+                      {menuItems
+                        .slice(menuItemCountToShow, menuItems.length)
+                        .map((val, i) => (
+                          <HeaderListItem key={'sub-menu' + i} item={val} />
+                        ))}
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            )}
-          </Box>
-        )}
+              )}
+            </Box>
+          )}
+        </Box>
         {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          {!parsedChain && <NetworkSelection />}
+          {/* {!parsedChain && <NetworkSelection />} */}
 
           {account ? (
             <Box
@@ -402,7 +407,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               className='connectButton bg-primary'
               onClick={toggleWalletModal}
             >
-              {t('connectWallet')}
+              Launch App
             </Box>
           )}
         </Box>
