@@ -20,10 +20,10 @@ export const Layout = () => {
   const tabs = useMemo(() => {
     return isMobile
       ? [
+          { id: 'bidAsk', text: 'Bids / Asks' },
           { id: 'chart', text: 'Chart' },
           { id: 'orderbook', text: 'Orderbook' },
           { id: 'trades', text: 'Last Trades' },
-          { id: 'bidAsk', text: 'Bids / Asks' },
         ]
       : [
           { id: 'orderbook', text: 'Orderbook' },
@@ -32,7 +32,7 @@ export const Layout = () => {
   }, [isMobile]);
 
   useEffect(() => {
-    setSelectedTab(isMobile ? 'chart' : 'orderbook');
+    setSelectedTab(isMobile ? 'bidAsk' : 'orderbook');
   }, [isMobile]);
 
   return (
