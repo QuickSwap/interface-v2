@@ -9,6 +9,8 @@ import { Footer } from './Footer';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { Box, Grid, useMediaQuery, useTheme } from '@material-ui/core';
 import { PerpsNotification } from './PerpsNotification';
+import { useAccount } from '@orderly.network/hooks';
+import { AccountStatusEnum } from '@orderly.network/types';
 
 export const Layout = () => {
   const [token, setToken] = useState('PERP_ETH_USDC');
@@ -16,6 +18,7 @@ export const Layout = () => {
   const [selectedTab, setSelectedTab] = useState<string>('orderbook');
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
+  const { state } = useAccount();
 
   const tabs = useMemo(() => {
     return isMobile
@@ -68,7 +71,13 @@ export const Layout = () => {
                 <Box margin='8px -18px 0 -8px' minWidth='190px'>
                   <OrderbookV2 token={token} setOrderItem={setOrderItem} />
                 </Box>
-                <Box margin='-32px 0 0'>
+                <Box
+                  margin={
+                    state.status === AccountStatusEnum.EnableTrading
+                      ? '-32px 0 0'
+                      : ''
+                  }
+                >
                   <Leverage perpToken={token} orderItem={orderItem} />
                 </Box>
               </Box>
