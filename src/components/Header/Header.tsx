@@ -1,40 +1,38 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
-import { KeyboardArrowDown, Close, KeyboardArrowUp } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
+import { Close } from '@material-ui/icons';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { useUDDomain, useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress } from 'utils';
+import { getWalletKeys, shortenAddress } from 'utils';
 //import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
-import QuickLogoWebP from 'assets/images/quickLogo.webp';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
+import { ChainSelector, WalletModal } from 'components';
+import { useActiveWeb3React } from 'hooks';
 // import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import 'components/styles/Header.scss';
-import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
-import useDeviceWidth from 'hooks/useDeviceWidth';
-import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import 'components/styles/Header.scss';
+import { getConfig } from 'config/index';
 import {
   networkConnection,
   walletConnectConnection,
   zengoConnectConnection,
 } from 'connectors';
-import { MobileMenuDrawer } from './MobileMenuDrawer';
+import { USDC, USDT } from 'constants/v3/addresses';
+import useDeviceWidth from 'hooks/useDeviceWidth';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
+import { useTranslation } from 'react-i18next';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
+import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import MobileHeader from './MobileHeader';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -46,6 +44,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { account, chainId, connector } = useActiveWeb3React();
+  console.log('🚀 ~ account, chainId, connector:', account, chainId, connector);
   //const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   //const [openDetailMenu, setOpenDetailMenu] = useState(false);
@@ -70,6 +69,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const toggleWalletModal = useWalletModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
+  const icon = getWalletKeys(connector, chainId).map(
+    (connection) => connection.iconName,
+  )[0];
 
   const handleShowNewsletter = (val: boolean) => {
     setShowNewsletter(val);
@@ -410,13 +412,22 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           {/* {!parsedChain && <NetworkSelection />} */}
 
           {account ? (
-            <Box
-              id='web3-status-connected'
-              className='accountDetails'
-              onClick={toggleWalletModal}
-            >
-              <p>{udDomain ?? shortenAddress(account)}</p>
-              <img src={WalletIcon} alt='Wallet' />
+            <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <ChainSelector
+                onSelect={() => {
+                  console.log('asdasd');
+                }}
+              />
+              <Box
+                id='web3-status-connected'
+                className='accountDetails'
+                onClick={toggleWalletModal}
+                style={{ gap: '8px' }}
+              >
+                <img src={icon} width={24} alt='wallet icon' />
+                <p>{udDomain ?? shortenAddress(account)}</p>
+                <KeyboardArrowDownIcon />
+              </Box>
             </Box>
           ) : (
             <Box
@@ -428,6 +439,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           )}
         </Box>
       </Box>
+
       {(mobileWindowSize || tabletWindowSize) && (
         <MobileHeader
           isMobile={mobileWindowSize}
