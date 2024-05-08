@@ -210,10 +210,8 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
         {!isMobile && <LeverageManage />}
         {state.status === AccountStatusEnum.EnableTrading && (
           <Box
-            pb={2}
-            mb={2}
-            pt={isMobile ? 0 : 2}
-            mt={isMobile ? 0 : 2}
+            padding='16px 0'
+            margin='16px 0'
             className={`${
               isMobile ? '' : 'border-top'
             } border-bottom flex flex-col`}

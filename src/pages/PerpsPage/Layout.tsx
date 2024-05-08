@@ -22,7 +22,6 @@ export const Layout = () => {
       ? [
           { id: 'bidAsk', text: 'Bids / Asks' },
           { id: 'chart', text: 'Chart' },
-          { id: 'orderbook', text: 'Orderbook' },
           { id: 'trades', text: 'Last Trades' },
         ]
       : [
@@ -65,7 +64,14 @@ export const Layout = () => {
             )}
             {selectedTab === 'trades' && <Market token={token} />}
             {selectedTab === 'bidAsk' && (
-              <Leverage perpToken={token} orderItem={orderItem} />
+              <Box className='flex'>
+                <Box margin='8px -18px 0 -8px' minWidth='190px'>
+                  <OrderbookV2 token={token} setOrderItem={setOrderItem} />
+                </Box>
+                <Box margin='-32px 0 0'>
+                  <Leverage perpToken={token} orderItem={orderItem} />
+                </Box>
+              </Box>
             )}
           </Grid>
         </Grid>
