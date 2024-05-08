@@ -1,9 +1,8 @@
 import React from 'react';
 import { CurrencyLogo, CustomModal } from 'components';
 import { useMemo, useState } from 'react';
-import { useActiveWeb3React, useGetConnection } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import 'components/styles/AssetModal.scss';
-import { useSelectedWallet } from '../../state/user/hooks';
 import NotifyModal from '../NotifyModal';
 import {
   useAccount,
@@ -19,6 +18,7 @@ import { getConfig } from 'config/index';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { NumericalInput } from 'components';
 import QuickPerpsIcon from 'assets/images/quickPerpsIcon.svg';
+import { useWalletInfo } from '@web3modal/ethers5/react';
 
 interface AssetModalProps {
   open: boolean;
@@ -33,15 +33,11 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState(modalType);
   const { account: quickSwapAccount, chainId } = useActiveWeb3React();
-  const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
+  const { walletInfo } = useWalletInfo();
   const [chains] = useChains('mainnet');
   const chainData = chains.find(
     (item) => item.network_infos.chain_id === chainId,
   );
-  const connections = selectedWallet
-    ? getConnection(selectedWallet)
-    : undefined;
   const collateral = useCollateral();
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState(false);
@@ -95,8 +91,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
           <Box className='flex flex-col'>
             <Box className='flex justify-between items-start'>
               <small>{t('yourWallet')}</small>
-              {connections && (
-                <img src={connections.iconName} width='16' height='16' />
+              {walletInfo && (
+                <img src={walletInfo.icon} width='16' height='16' />
               )}
             </Box>
             <Box className='flex items-center' gridGap={8}>

@@ -21,7 +21,6 @@ import {
 } from 'state/swap/hooks';
 import {
   useExpertModeManager,
-  useSelectedWallet,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
@@ -30,7 +29,6 @@ import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
 import {
   useActiveWeb3React,
   useConnectWallet,
-  useGetConnection,
   useIsProMode,
   useMasaAnalytics,
 } from 'hooks';
@@ -80,6 +78,7 @@ import useNativeConvertCallback, {
 } from 'hooks/useNativeConvertCallback';
 import { useApproveCallback } from 'hooks/useApproveCallback';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { useWalletInfo } from '@web3modal/ethers5/react';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -88,6 +87,7 @@ const SwapBestTrade: React.FC<{
   const loadedUrlParams = useDefaultsFromURLSearch();
   const isProMode = useIsProMode();
   const isSupportedNetwork = useIsSupportedNetwork();
+  const { walletInfo } = useWalletInfo();
 
   // token warning stuff
   // const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -822,8 +822,6 @@ const SwapBestTrade: React.FC<{
 
   const { fireEvent } = useMasaAnalytics();
   const config = getConfig(chainId);
-  const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
   const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     fromTokenWrapped?.address ?? '',
@@ -879,10 +877,9 @@ const SwapBestTrade: React.FC<{
             account &&
             optimalRate &&
             fromTokenWrapped &&
-            selectedWallet &&
+            walletInfo &&
             chainId === ChainId.MATIC
           ) {
-            const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -890,7 +887,7 @@ const SwapBestTrade: React.FC<{
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: fromTokenWrapped.symbol ?? '',
               additionalEventData: {
-                wallet: connection.name,
+                wallet: walletInfo.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -928,13 +925,12 @@ const SwapBestTrade: React.FC<{
     outputCurrency?.symbol,
     optimalRate,
     fromTokenWrapped,
-    selectedWallet,
     chainId,
-    getConnection,
     fireEvent,
     config,
     formattedAmounts,
     fromTokenUSDPrice,
+    walletInfo,
   ]);
 
   const paraRate = optimalRate

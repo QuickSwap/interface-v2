@@ -17,13 +17,13 @@ import AccountModal from '../../components/AccountModal';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { ColoredSlider, CustomMenu, ToggleSwitch } from 'components';
 import { useTranslation } from 'react-i18next';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { formatNumber } from 'utils';
 import { formatDecimalInput } from 'utils/numbers';
 import OrderConfirmModal from './OrderConfirmModal';
 import { useQuery } from '@tanstack/react-query';
 import { AccountLeverageUpdate } from './AccountLeverageUpdate';
 import { LeverageManage } from './LeverageManage';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 type Inputs = {
   side: OrderSide;
@@ -57,6 +57,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
   orderItem,
 }) => {
   const { t } = useTranslation();
+  const { open } = useWeb3Modal();
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
@@ -198,8 +199,6 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
     }
     return t('signIn');
   }, [loading, orderValidation, orderValue, quickSwapAccount, state.status, t]);
-
-  const toggleWalletModal = useWalletModalToggle();
 
   const quantityPercent =
     maxQty > 0 ? (Number(order.order_quantity) / maxQty) * 100 : 0;
@@ -642,7 +641,7 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
           disabled={buttonDisabled}
           onClick={async () => {
             if (!quickSwapAccount) {
-              toggleWalletModal();
+              open();
             } else if (state.status === AccountStatusEnum.EnableTrading) {
               if (orderConfirm) {
                 setOpenConfirmModal(true);
