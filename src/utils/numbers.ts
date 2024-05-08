@@ -1,4 +1,6 @@
 import numbro from 'numbro';
+import { DEFAULT_LOCALE, SupportedLocale } from 'constants/v3/locales';
+import { Percent } from '@uniswap/sdk-core';
 
 // using a currency library here in case we want to add more in future
 export const formatDollarAmount = (
@@ -37,6 +39,18 @@ export const formatPercent = (
   }
 
   return parseFloat(num.toString()).toFixed(2) + '%';
+};
+
+export const formatAdvancedPercent = (
+  percent: Percent | undefined,
+  locale: SupportedLocale = DEFAULT_LOCALE,
+) => {
+  if (!percent) return '0';
+
+  return Number(percent.toFixed(3)).toLocaleString(locale, {
+    maximumFractionDigits: 3,
+    useGrouping: false,
+  });
 };
 
 export const formatAmount = (num: number | undefined, digits = 3) => {
