@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { AppDispatch } from 'state';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
 import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
@@ -16,6 +16,13 @@ import { useUDDomain } from 'state/application/hooks';
 import { useSelectedWallet } from 'state/user/hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import { networkConnection } from 'connectors';
+import ReplayIcon from '@material-ui/icons/Replay';
+import { VscArrowSwap } from 'react-icons/vsc';
+import { TbCopy, TbLogout } from 'react-icons/tb';
+import { AiOutlineGlobal } from 'react-icons/ai';
+import { FaCog } from 'react-icons/fa';
+import { MdWallet } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -64,81 +71,108 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     if (chainId) dispatch(clearAllTransactions({ chainId }));
   }, [dispatch, chainId]);
 
+  const links = [
+    {
+      icon: <VscArrowSwap />,
+      name: 'View transactions',
+      url: '#',
+    },
+    {
+      icon: <TbCopy />,
+      name: 'Copy address',
+      url: '#',
+    },
+    {
+      icon: <AiOutlineGlobal />,
+      name: 'View on explorer',
+      url: '#',
+    },
+    {
+      icon: <FaCog />,
+      name: 'Settings',
+      url: '#',
+    },
+    {
+      icon: <MdWallet />,
+      name: 'Buy crypto with fiat',
+      url: '#',
+    },
+    {
+      icon: <TbLogout />,
+      name: 'Disconnect',
+      url: '#',
+    },
+  ];
+
   return (
-    <Box paddingX={3} paddingY={4}>
-      <Box className='flex justify-between'>
+    <Box sx={{ padding: '16px', border: 'solid 1px #282d3d' }}>
+      {/* <Box className='flex justify-between'>
         <h5 className='text-bold'>{t('account')}</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
-      </Box>
-      <Box mt={2} padding={2} borderRadius={10} className='bg-secondary2'>
-        <Box className='flex justify-between items-center'>
-          {formatConnectorName()}
-          <Box className='flex items-center'>
-            <small
-              style={{ cursor: 'pointer', marginRight: 8 }}
-              onClick={async () => {
-                if (arcxSdk) {
-                  await arcxSdk.disconnection({ account, chainId });
-                }
-                if (connector && connector.deactivate) {
-                  await connector.deactivate();
-                }
-                await connector.resetState();
-                updateSelectedWallet(undefined);
-
-                const localChainId = localStorage.getItem('localChainId');
-                await networkConnection.connector.activate(
-                  Number(localChainId),
-                );
-              }}
-            >
-              {t('disconnect')}
-            </small>
-            <small
-              className='cursor-pointer'
-              onClick={() => {
-                openOptions();
-              }}
-            >
-              {t('change')}
-            </small>
-          </Box>
-        </Box>
-        <Box className='flex items-center' my={1.5}>
+      </Box> */}
+      <Box className='flex items-center justify-between'>
+        <Box className='flex items-center' style={{ gap: '14px' }}>
           <StatusIcon />
-          <h5 style={{ marginLeft: 8 }} id='web3-account-identifier-row'>
+          <Typography
+            style={{ fontSize: '16px' }}
+            id='web3-account-identifier-row'
+          >
             {udDomain
               ? udDomain
               : ENSName
               ? ENSName
               : account && shortenAddress(account)}
-          </h5>
+          </Typography>
         </Box>
-        <Box className='flex justify-between items-center'>
-          {account && (
-            <Box className='flex items-center'>
-              <Copy toCopy={account} />
-              <small>{t('copyAddress')}</small>
-            </Box>
-          )}
-          {chainId && account && (
-            <a
-              className='addressLink'
-              href={getEtherscanLink(
-                chainId,
-                ENSName ? ENSName : account,
-                'address',
-              )}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              <LinkIcon size={16} />
-              <small>{t('viewonBlockExplorer')}</small>
-            </a>
-          )}
+        <Box
+          className='flex items-center'
+          gridGap={4}
+          sx={{ color: '#448aff' }}
+        >
+          <ReplayIcon style={{ fontSize: '18px' }} /> Change
         </Box>
       </Box>
-      {!!pendingTransactions.length || !!confirmedTransactions.length ? (
+      <Box
+        mt={2}
+        padding={2}
+        mb={3}
+        borderRadius={10}
+        className='bg-secondary2'
+      >
+        <Box className=''>
+          <Typography
+            style={{ color: '#c7cad9', fontSize: '24px', marginBottom: '8px' }}
+          >
+            52.24 MATIC
+          </Typography>
+          <Typography style={{ color: '#696c80', fontSize: '14px' }}>
+            $26.59
+          </Typography>
+        </Box>
+      </Box>
+      <Box>
+        {links.map((item, index) => {
+          return (
+            <Link
+              key={index}
+              to={item.url}
+              style={{
+                height: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '18px',
+                textDecoration: 'none',
+                fontSize: '16px',
+                color: '#c7cad9',
+              }}
+            >
+              {item.icon}
+              {item.name}
+            </Link>
+          );
+        })}
+      </Box>
+      {/* {!!pendingTransactions.length || !!confirmedTransactions.length ? (
         <>
           <Box
             className='flex justify-between items-center'
@@ -163,7 +197,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         <Box paddingX={2} pt={2}>
           <p>{t('transactionsWillAppear')}...</p>
         </Box>
-      )}
+      )} */}
     </Box>
   );
 };
