@@ -664,18 +664,22 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
           {buttonText}
         </Button>
       </Box>
-      <AccountModal
-        open={accountModalOpen}
-        onClose={() => setAccountModalOpen(false)}
-      />
-      <OrderConfirmModal
-        open={openConfirmModal}
-        onClose={() => setOpenConfirmModal(false)}
-        order={getInput(order, reducedOnly, orderHidden, otherOrderType)}
-        orderValue={orderValue}
-        tokenSymbol={token?.symbol}
-        onSubmit={onSubmit}
-      />
+      {accountModalOpen && (
+        <AccountModal
+          open={accountModalOpen}
+          onClose={() => setAccountModalOpen(false)}
+        />
+      )}
+      {openConfirmModal && (
+        <OrderConfirmModal
+          open={openConfirmModal}
+          onClose={() => setOpenConfirmModal(false)}
+          order={getInput(order, reducedOnly, orderHidden, otherOrderType)}
+          orderValue={orderValue}
+          tokenSymbol={token?.symbol}
+          onSubmit={onSubmit}
+        />
+      )}
     </>
   );
 };
