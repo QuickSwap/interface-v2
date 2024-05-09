@@ -38,7 +38,6 @@ const Footer: React.FC = () => {
       ],
     },
     {
-      title: '',
       items: [
         { title: t('dragonslair'), link: '/dragons' },
         { title: t('Gaming Hub'), link: '/dragons' },
@@ -78,7 +77,7 @@ const Footer: React.FC = () => {
           <Grid item container xs={12} sm={12} md={8} spacing={4}>
             {socialMenuItems.map((item) => (
               <Grid key={item.title} item xs={6} sm={6} md={3}>
-                <small>{item.title}</small>
+                <small style={{ height: '17px' }}>{item.title} &emsp;</small>
                 <Box mt={3}>
                   {item.items.map((socialItem) => (
                     <Box

@@ -27,6 +27,8 @@ const AvailableChainList: React.FC = ({}) => {
       >
         {supportedChains.map((chain: any, index) => {
           const config = getConfig(chain);
+          console.log('🚀 ~ {supportedChains.map ~ config:', config);
+          if (!config.isMainnet) return;
           return (
             <Box
               className='networkItemWrapper'

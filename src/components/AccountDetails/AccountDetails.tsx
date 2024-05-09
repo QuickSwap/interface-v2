@@ -126,7 +126,12 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </Box>
         <Box
           className='flex items-center'
+<<<<<<< HEAD
           sx={{ color: '#448aff', gap: '4px' }}
+=======
+          gridGap={4}
+          sx={{ color: '#448aff' }}
+>>>>>>> 5ed462415c8091e8566e830d03ee7ff057e5f69f
         >
           <ReplayIcon style={{ fontSize: '18px' }} /> Change
         </Box>
