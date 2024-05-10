@@ -4,8 +4,7 @@ import { getConfig } from 'config/index';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import React, { useMemo, useState } from 'react';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import { IoMdClose } from 'react-icons/io';
-import { GoDotFill } from 'react-icons/go';
+import { Close } from '@material-ui/icons';
 
 interface ChainSelectorProps {
   onSelect: (chain: any) => void;
@@ -71,13 +70,15 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ onSelect }) => {
               Select Network
             </Typography>
             <ButtonBase onClick={() => setModalVisible(false)}>
-              <IoMdClose style={{ color: '#696c80' }} />
+              <Close />
+              {/* <IoMdClose style={{ color: '#696c80' }} /> */}
             </ButtonBase>
           </Box>
           <Box sx={{ padding: '16px 0' }}>
             {supportedChains.map((item, index) => {
               const config = getConfig(item);
               const isActive = selectedChain === item;
+              if (!config.isMainnet) return;
               return (
                 <Box
                   onClick={() => {
@@ -109,7 +110,17 @@ const ChainSelector: React.FC<ChainSelectorProps> = ({ onSelect }) => {
                       {config['networkName']}
                     </small>
                   </Box>
-                  {isActive && <GoDotFill style={{ color: '#0fc679' }} />}
+                  {/* {isActive && <GoDotFill style={{ color: '#0fc679' }} />} */}
+                  {isActive && (
+                    <Box
+                      style={{
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        backgroundColor: '#0fc679',
+                      }}
+                    />
+                  )}
                 </Box>
               );
             })}

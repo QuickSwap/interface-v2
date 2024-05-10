@@ -1,27 +1,23 @@
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useActiveWeb3React } from 'hooks';
-import { AppDispatch } from 'state';
-import { Box, Typography } from '@material-ui/core';
-import { clearAllTransactions } from 'state/transactions/actions';
-import { shortenAddress, getEtherscanLink, getWalletKeys } from 'utils';
-import { ReactComponent as Close } from 'assets/images/CloseIcon.svg';
-import { ExternalLink as LinkIcon } from 'react-feather';
-import 'components/styles/AccountDetails.scss';
-import StatusIcon from './StatusIcon';
-import Copy from './CopyHelper';
-import Transaction from './Transaction';
-import { useTranslation } from 'react-i18next';
-import { useUDDomain } from 'state/application/hooks';
-import { useSelectedWallet } from 'state/user/hooks';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
-import { networkConnection } from 'connectors';
+import { Box, Typography } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
-import { VscArrowSwap } from 'react-icons/vsc';
-import { TbCopy, TbLogout } from 'react-icons/tb';
-import { AiOutlineGlobal } from 'react-icons/ai';
-import { FaCog } from 'react-icons/fa';
-import { MdWallet } from 'react-icons/md';
+import 'components/styles/AccountDetails.scss';
+import { useActiveWeb3React } from 'hooks';
+import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from 'state';
+import { useUDDomain } from 'state/application/hooks';
+import { clearAllTransactions } from 'state/transactions/actions';
+import { useSelectedWallet } from 'state/user/hooks';
+import { getWalletKeys, shortenAddress } from 'utils';
+import StatusIcon from './StatusIcon';
+import Transaction from './Transaction';
+import swapIcon from 'assets/images/icons/swap.svg';
+import globalIcon from 'assets/images/icons/global.webp';
+import logout from 'assets/images/icons/logout.svg';
+import copyIcon from 'assets/images/icons/copy.svg';
+
 import { Link } from 'react-router-dom';
 
 function renderTransactions(transactions: string[]) {
@@ -73,32 +69,39 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   const links = [
     {
-      icon: <VscArrowSwap />,
+      icon: <img src={swapIcon} alt='swap icon' />,
       name: 'View transactions',
       url: '#',
     },
     {
-      icon: <TbCopy />,
+      icon: <img src={copyIcon} alt='copy icon' />,
       name: 'Copy address',
       url: '#',
     },
     {
-      icon: <AiOutlineGlobal />,
+      icon: (
+        <img
+          src={globalIcon}
+          alt='global icon'
+          width={'24px'}
+          height={'24px'}
+        />
+      ),
       name: 'View on explorer',
       url: '#',
     },
     {
-      icon: <FaCog />,
+      // icon: <FaCog />,
       name: 'Settings',
       url: '#',
     },
     {
-      icon: <MdWallet />,
+      // icon: <MdWallet />,
       name: 'Buy crypto with fiat',
       url: '#',
     },
     {
-      icon: <TbLogout />,
+      icon: <img src={logout} alt='logout icon' />,
       name: 'Disconnect',
       url: '#',
     },
@@ -126,12 +129,8 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </Box>
         <Box
           className='flex items-center'
-<<<<<<< HEAD
-          sx={{ color: '#448aff', gap: '4px' }}
-=======
           gridGap={4}
           sx={{ color: '#448aff' }}
->>>>>>> 5ed462415c8091e8566e830d03ee7ff057e5f69f
         >
           <ReplayIcon style={{ fontSize: '18px' }} /> Change
         </Box>
@@ -155,7 +154,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         </Box>
       </Box>
       <Box>
-        {links.map((item, index) => {
+        {links?.map((item, index) => {
           return (
             <Link
               key={index}

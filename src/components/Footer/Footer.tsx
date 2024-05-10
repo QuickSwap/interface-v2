@@ -79,7 +79,7 @@ const Footer: React.FC = () => {
               <Grid key={item.title} item xs={6} sm={6} md={3}>
                 <small style={{ height: '17px' }}>{item.title} &emsp;</small>
                 <Box mt={3}>
-                  {item.items.map((socialItem) => (
+                  {item.items.map((socialItem: any) => (
                     <Box
                       key={socialItem.title}
                       className='cursor-pointer'
