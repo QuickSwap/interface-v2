@@ -290,12 +290,12 @@ const AccountManageModalMyAccount: React.FC = () => {
                 mt={2}
               >
                 <Box className='flex flex-col' gridGap={16}>
-                  <Box className='accountPanelRow'>
+                  {/* <Box className='accountPanelRow'>
                     <span>Email</span>
                     <span className='text-secondary'>
                       {accountInfo?.email ?? 'Bind email for notification'}
                     </span>
-                  </Box>
+                  </Box> */}
                   <Box className='accountPanelRow'>
                     <span>Web3 Wallet</span>
                     <span>{shortenAddress(account.address ?? '')}</span>
@@ -337,13 +337,13 @@ const AccountManageModalMyAccount: React.FC = () => {
                 <Box className='accountPanelRow'>
                   <span>Maker Fee</span>
                   <span>
-                    {Number(accountInfo?.futures_maker_fee_rate ?? 0) / 100}%
+                    {formatNumber(accountInfo?.futures_maker_fee_rate ?? 0)}%
                   </span>
                 </Box>
                 <Box className='accountPanelRow' mt={2}>
                   <span>Taker Fee</span>
                   <span>
-                    {Number(accountInfo?.futures_taker_fee_rate ?? 0) / 100}%
+                    {formatNumber(accountInfo?.futures_taker_fee_rate ?? 0)}%
                   </span>
                 </Box>
               </Box>
