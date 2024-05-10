@@ -82,9 +82,10 @@ const FooterTPSLTable: React.FC<{ token?: string; selectedSide: string }> = ({
         const slOrder = item?.child_orders.find(
           (order: any) => order.algo_type === AlgoOrderType.STOP_LOSS,
         );
+
         return (
           <Box minWidth={100}>
-            {tpOrder && (
+            {!!tpOrder?.trigger_price && (
               <p className='small'>
                 TP -{' '}
                 <small className='text-success'>
@@ -92,7 +93,7 @@ const FooterTPSLTable: React.FC<{ token?: string; selectedSide: string }> = ({
                 </small>
               </p>
             )}
-            {slOrder && (
+            {!!slOrder?.trigger_price && (
               <p className='small'>
                 SL -{' '}
                 <small className='text-error'>

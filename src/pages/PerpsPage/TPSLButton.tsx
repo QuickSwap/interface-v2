@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useTPSLOrder } from '@orderly.network/hooks';
+import { useMutation, useTPSLOrder } from '@orderly.network/hooks';
 import { Box, Button, Popover } from '@material-ui/core';
 import { API } from '@orderly.network/types';
 import { useQuery } from '@tanstack/react-query';
@@ -20,6 +20,21 @@ export const TPSLButton: React.FC<{
   const [computedOrder, { setValue, submit }] = useTPSLOrder(position, {
     defaultOrder,
   });
+  // const [doUpdateOrder] = useMutation('/v1/algo/order', 'PUT');
+
+  // const isNewOrder =
+  //   !defaultOrder ||
+  //   (Number(position.position_qty) === Number(computedOrder.quantity) &&
+  //     Number(defaultOrder.quantity) === 0) ||
+  //   Number(defaultOrder.quantity) === Number(computedOrder.quantity);
+
+  // const updateOrder = async () => {
+  //   if (!defaultOrder) return;
+  //   return doUpdateOrder({
+  //     order_id: defaultOrder.algo_order_id,
+  //     quantity: Number(computedOrder.quantity),
+  //   });
+  // };
 
   const tpOrderError = useMemo(() => {
     if (!computedOrder.tp_trigger_price) return;

@@ -134,7 +134,7 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
         );
         return (
           <Box minWidth={100}>
-            {tpOrder && (
+            {!!tpOrder?.trigger_price && (
               <p className='small'>
                 TP -{' '}
                 <small className='text-success'>
@@ -142,7 +142,7 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
                 </small>
               </p>
             )}
-            {slOrder && (
+            {!!slOrder?.trigger_price && (
               <p className='small'>
                 SL -{' '}
                 <small className='text-error'>

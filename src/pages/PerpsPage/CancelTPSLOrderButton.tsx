@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useOrderStream } from '@orderly.network/hooks';
-import { AlgoOrderRootType } from '@orderly.network/types';
+import { useMutation } from '@orderly.network/hooks';
 
 export const CancelTPSLOrderButton: React.FC<{
   order: any;
 }> = ({ order }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [_, { cancelAllTPSLOrders }] = useOrderStream({
-    includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
-    symbol: order.symbol,
-  });
+  const [doDeleteOrder] = useMutation('/v1/algo/order', 'DELETE');
 
   return order ? (
     <Button
@@ -21,7 +17,10 @@ export const CancelTPSLOrderButton: React.FC<{
       onClick={async () => {
         try {
           setLoading(true);
-          await cancelAllTPSLOrders();
+          await doDeleteOrder(null, {
+            order_id: order.algo_order_id,
+            symbol: order.symbol,
+          });
           setLoading(false);
         } catch (e) {
           setLoading(false);
