@@ -2,6 +2,8 @@ import axios from 'axios';
 import { ChainId, Pair as UniswapSdkPair } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useLastTransactionHash } from 'state/transactions/hooks';
 const TEAM_FINANCE_BACKEND_URL =
   'https://team-finance-backend-dev-origdfl2wq-uc.a.run.app/api';
 const API_KEY = process.env.TEAM_FINANCE_BACKEND_API_KEY ?? 'yolobolo';
@@ -104,7 +106,9 @@ axios.defaults.headers.common.Accept = 'application/json';
 axios.defaults.headers.common.Authorization = API_KEY;
 
 const useUserLPLocks = (account?: string) => {
-  const { data, isLoading: loading, error } = useQuery({
+  const lastTx = useLastTransactionHash();
+
+  const { data, isLoading: loading, error, refetch } = useQuery({
     queryKey: ['tf-lpLock', account],
     queryFn: async () => {
       if (!account) return [];
@@ -119,6 +123,13 @@ const useUserLPLocks = (account?: string) => {
     refetchInterval: 300000,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      refetch();
+    }, 30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastTx]);
 
   return { data, loading, error };
 };
