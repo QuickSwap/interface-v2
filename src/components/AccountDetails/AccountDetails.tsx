@@ -17,6 +17,8 @@ import swapIcon from 'assets/images/icons/swap.svg';
 import globalIcon from 'assets/images/icons/global.webp';
 import logout from 'assets/images/icons/logout.svg';
 import copyIcon from 'assets/images/icons/copy.svg';
+import cogIcon from 'assets/images/icons/cog.png';
+import walletIcon from 'assets/images/icons/wallet.png';
 
 import { Link } from 'react-router-dom';
 
@@ -91,12 +93,20 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       url: '#',
     },
     {
-      // icon: <FaCog />,
+      icon: (
+        <img
+          src={cogIcon}
+          alt='cog icon'
+          width='20px'
+          height='20px'
+          style={{ marginLeft: '2px' }}
+        />
+      ),
       name: 'Settings',
       url: '#',
     },
     {
-      // icon: <MdWallet />,
+      icon: <img src={walletIcon} alt='wallet icon' />,
       name: 'Buy crypto with fiat',
       url: '#',
     },
