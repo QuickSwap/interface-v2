@@ -901,5 +901,6 @@
   "last24hours": "Last 24 hours",
   "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch.",
   "mainnets": "Mainnets",
-  "testnets": "Testnets"
+  "testnets": "Testnets",
+  "oldFarms": "Old Farms"
 }
