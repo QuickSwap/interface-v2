@@ -902,5 +902,6 @@
   "liquidityhubvolumesincelaunch": "*Quickswap liquidity hub volume since launch.",
   "mainnets": "Mainnets",
   "testnets": "Testnets",
-  "oldFarms": "Old Farms"
+  "oldFarms": "Old Farms",
+  "poolManager": "Pool Manager"
 }
