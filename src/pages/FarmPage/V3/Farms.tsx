@@ -16,7 +16,6 @@ import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, CustomSwitch, ToggleSwitch } from 'components';
 import AllMerklFarms from './AllMerklFarms';
-import MyRewardFarms from './MyRewardFarms';
 import { getConfig } from 'config/index';
 import AllV3Farms from './AllV3Farms';
 import { MerklClaimAll } from './MerklClaimAll';
@@ -189,12 +188,25 @@ export default function Farms() {
               selectedItem={selectedFarmCategory}
               handleChange={onChangeFarmCategory}
             />
+            {isMobile && !poolId && (
+              <Box className='flex items-center' gridGap={6}>
+                <small className='text-secondary'>{t('oldFarms')}</small>
+                <ToggleSwitch
+                  toggled={isOld}
+                  onToggle={() => setIsOld(!isOld)}
+                />
+              </Box>
+            )}
             <Box
-              className='flex items-center flex-wrap'
+              className={
+                isMobile
+                  ? 'flex items-center flex-wrap justify-between'
+                  : 'flex items-center flex-wrap'
+              }
               width={isMobile ? '100%' : 'auto'}
               gridGap='16px'
             >
-              <Box width={isMobile ? '100%' : 200}>
+              <Box width={200}>
                 <SearchInput
                   placeholder='Search'
                   value={searchValue}
@@ -202,29 +214,33 @@ export default function Farms() {
                   isIconAfter={false}
                 />
               </Box>
-              <Box className='sortSelectBox' width={isMobile ? '100%' : 'auto'}>
-                <label>Sort by: </label>
-                <Select value={selectedSort} className='sortSelect'>
-                  {sortItems.map((item) => (
-                    <MenuItem
-                      key={item.value}
-                      value={item.value}
-                      onClick={() => {
-                        setSelectedSort(item.value);
-                      }}
-                    >
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-              <Box className='flex items-center' gridGap={6}>
-                <small className='text-secondary'>{t('oldFarms')}</small>
-                <ToggleSwitch
-                  toggled={isOld}
-                  onToggle={() => setIsOld(isOld)}
-                />
-              </Box>
+              {!(isMobile && poolId) && (
+                <Box className='sortSelectBox'>
+                  <label>Sort by: </label>
+                  <Select value={selectedSort} className='sortSelect'>
+                    {sortItems.map((item) => (
+                      <MenuItem
+                        key={item.value}
+                        value={item.value}
+                        onClick={() => {
+                          setSelectedSort(item.value);
+                        }}
+                      >
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              )}
+              {!isMobile && (
+                <Box className='flex items-center' gridGap={6}>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <ToggleSwitch
+                    toggled={isOld}
+                    onToggle={() => setIsOld(!isOld)}
+                  />
+                </Box>
+              )}
               {selectedFarmCategory.id !== 0 && !merklAvailable && (
                 <Box width={isMobile ? '100%' : 160}>
                   <CustomSwitch
@@ -239,11 +255,7 @@ export default function Farms() {
         )}
 
         {selectedFarmCategory?.id === 0 && (
-          <MyRewardFarms
-            searchValue={searchValue}
-            farmStatus={farmStatus}
-            sortValue={selectedSort}
-          />
+          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
         )}
         {selectedFarmCategory.id === 1 &&
           (merklAvailable ? (

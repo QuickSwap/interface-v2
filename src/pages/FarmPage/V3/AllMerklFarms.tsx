@@ -271,7 +271,6 @@ const AllMerklFarms: React.FC<Props> = ({
   const selectedPool = v3Farms.find(
     (item) => poolId && item.pool.toLowerCase() === poolId.toLowerCase(),
   );
-  console.log(selectedPool);
   const currency0 = useCurrency(selectedPool?.token0);
   const currency1 = useCurrency(selectedPool?.token1);
 
@@ -355,7 +354,6 @@ const AllMerklFarms: React.FC<Props> = ({
 
   const [farmType, setFarmType] = useState(farmTypes[0]);
   const [staked, setStaked] = useState(false);
-  console.log(selectedFarms);
 
   const filteredSelectedFarms = useMemo(() => {
     const farmsFilteredWithRewards = selectedFarms.filter((item) =>
