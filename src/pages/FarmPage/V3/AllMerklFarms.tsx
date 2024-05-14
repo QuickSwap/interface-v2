@@ -403,31 +403,36 @@ const AllMerklFarms: React.FC<Props> = ({
                 </h5>
               </Box>
             </Box>
-            <Box className='flex items-center' gridGap={16}>
-              <Box className='sortSelectBox' width={isMobile ? '100%' : 'auto'}>
-                <label>Sort by: </label>
-                <Select value={selectedSort} className='sortSelect'>
-                  {sortItems.map((item) => (
-                    <MenuItem
-                      key={item.value}
-                      value={item.value}
-                      onClick={() => {
-                        setSelectedSort(item.value);
-                      }}
-                    >
-                      {item.label}
-                    </MenuItem>
-                  ))}
-                </Select>
+            {!isMobile && (
+              <Box className='flex items-center' gridGap={16}>
+                <Box
+                  className='sortSelectBox'
+                  width={isMobile ? '100%' : 'auto'}
+                >
+                  <label>Sort by: </label>
+                  <Select value={selectedSort} className='sortSelect'>
+                    {sortItems.map((item) => (
+                      <MenuItem
+                        key={item.value}
+                        value={item.value}
+                        onClick={() => {
+                          setSelectedSort(item.value);
+                        }}
+                      >
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+                <Box className='flex items-center' gridGap={6}>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <ToggleSwitch
+                    toggled={isOld}
+                    onToggle={() => setIsOld(!isOld)}
+                  />
+                </Box>
               </Box>
-              <Box className='flex items-center' gridGap={6}>
-                <small className='text-secondary'>{t('oldFarms')}</small>
-                <ToggleSwitch
-                  toggled={isOld}
-                  onToggle={() => setIsOld(!isOld)}
-                />
-              </Box>
-            </Box>
+            )}
           </Box>
         </>
       )}
@@ -445,6 +450,17 @@ const AllMerklFarms: React.FC<Props> = ({
                 />
               )}
             </Box>
+            {isMobile && (
+              <Box className='flex items-center' gridGap={16}>
+                <Box className='flex items-center' gridGap={6}>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <ToggleSwitch
+                    toggled={isOld}
+                    onToggle={() => setIsOld(!isOld)}
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
         ) : (
           <>

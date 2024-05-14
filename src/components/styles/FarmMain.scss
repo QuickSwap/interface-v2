@@ -44,3 +44,33 @@
         color: #448aff;
     }
 }
+
+.pageHeading {
+    .version-toggle-container {
+        height: 28px;
+        display: flex;
+        border: 1px solid rgba(130, 177, 255, 0.08);
+        border-radius: 8px;
+
+        & > div {
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            cursor: pointer;
+
+            &.version-toggle-active {
+                background-color: rgba(68, 138, 255, 0.3);
+                border: 1px solid #448aff;
+
+                small {
+                    color: #c7cad9;
+                }
+            }
+
+            small {
+                color: #696c80;
+            }
+        }
+    }
+}

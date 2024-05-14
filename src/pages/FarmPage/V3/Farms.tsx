@@ -63,6 +63,7 @@ export default function Farms() {
     GlobalConst.utils.v3FarmSortBy.pool,
   );
   const [isOld, setIsOld] = useState(true);
+  const [version, setVersion] = useState('v3');
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -174,6 +175,30 @@ export default function Farms() {
 
   return (
     <>
+      <Box className='pageHeading'>
+        <Box className='flex row items-center'>
+          <h1 className='h4'>{t('farms')}</h1>
+          <Box className='version-toggle-container' ml={2}>
+            <Box
+              className={version === 'v2' ? 'version-toggle-active' : ''}
+              onClick={() => {
+                setVersion('v2');
+              }}
+            >
+              <small>{t('V2')}</small>
+            </Box>
+
+            <Box
+              className={version === 'v3' ? 'version-toggle-active' : ''}
+              onClick={() => {
+                setVersion('v3');
+              }}
+            >
+              <small>{t('V3')}</small>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
       {merklAvailable && <MerklClaimAll />}
       <Box className='bg-palette' borderRadius={10}>
         {!isAllFarms && (
@@ -207,7 +232,7 @@ export default function Farms() {
               width={isMobile ? '100%' : 'auto'}
               gridGap='16px'
             >
-              <Box width={200}>
+              <Box width={isMobile ? 150 : 200}>
                 <SearchInput
                   placeholder='Search'
                   value={searchValue}
