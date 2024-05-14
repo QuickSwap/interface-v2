@@ -1274,6 +1274,16 @@ export const SD: { [chainId: number]: Token } = {
   ),
 };
 
+export const ABOND: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xe6828D65bf5023AE1851D90D8783Cc821ba7eeE1',
+    18,
+    'ABOND',
+    'ApeBond',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1463,6 +1473,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.MANTA],
     NEW_QUICK[ChainId.MANTA],
     MANTA[ChainId.MANTA],
+    STONE[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
