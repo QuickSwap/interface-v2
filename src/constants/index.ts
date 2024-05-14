@@ -277,6 +277,7 @@ export const GlobalConst = {
       tvl: '2',
       rewards: '3',
       apr: '4',
+      sevendayApr: '5'
     },
     v3FarmFilter: {
       allFarms: '0',

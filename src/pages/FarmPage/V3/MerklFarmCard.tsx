@@ -94,7 +94,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
           className='flex items-center flex-wrap'
         >
           <Box
-            width={isMobile ? '80%' : '30%'}
+            width={isMobile ? '80%' : '25%'}
             className='flex items-center'
             gridGap={12}
           >
@@ -117,14 +117,35 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
           </Box>
           <Box
             my={2}
-            width={isMobile ? '100%' : '20%'}
+            width={isMobile ? '100%' : '15%'}
             className='flex items-center justify-between'
           >
             {isMobile && <p>{t('tvl')}</p>}
             <p>${formatNumber(farm.tvl)}</p>
           </Box>
           <Box
-            width={isMobile ? '100%' : '20%'}
+            width={isMobile ? '100%' : '15%'}
+            className='flex items-center justify-between'
+          >
+            {isMobile && <p>{t('apr')}</p>}
+            <Box className={isMobile ? 'flex flex-col items-end' : ''}>
+              <small>{t('upTo')}</small>
+              <Box className='flex'>
+                <MerklFarmAPRTooltip
+                  farms={farm.alm}
+                  token0={farm.token0}
+                  token1={farm.token1}
+                >
+                  <Box className='farmCardAPR' gridGap={4}>
+                    <p>{formatNumber(farm.apr)}%</p>
+                    <img src={APRHover} width={16} />
+                  </Box>
+                </MerklFarmAPRTooltip>
+              </Box>
+            </Box>
+          </Box>
+          <Box
+            width={isMobile ? '100%' : '15%'}
             className='flex items-center justify-between'
           >
             {isMobile && <p>{t('apr')}</p>}
