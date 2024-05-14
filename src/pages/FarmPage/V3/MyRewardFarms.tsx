@@ -18,12 +18,14 @@ interface Props {
   searchValue: string;
   farmStatus: string;
   sortValue: string;
+  isOld: boolean;
 }
 
 const MyRewardFarms: React.FC<Props> = ({
   searchValue,
   farmStatus,
   sortValue,
+  isOld,
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
@@ -344,16 +346,14 @@ const MyRewardFarms: React.FC<Props> = ({
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item) =>
-      staked ? item.rewards.length > 0 : true,
-    );
-    if (farmType.link === 'all') {
-      return farmsFilteredWithRewards;
-    }
-    return farmsFilteredWithRewards.filter(
-      (item) => item.title && item.title === farmType.link,
-    );
-  }, [farmType.link, selectedFarms, staked]);
+    return selectedFarms.filter((item) => {
+      if (isOld) {
+        return item.label.includes('Gamma') || item.label.includes('Quickswap');
+      } else {
+        return true;
+      }
+    });
+  }, [isOld, selectedFarms]);
 
   return (
     <>

@@ -10,12 +10,13 @@ import CustomSelector from 'components/v3/CustomSelector';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { FarmingMyFarms } from 'components/StakerMyStakes';
+// import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
 import { SearchInput, CustomSwitch, ToggleSwitch } from 'components';
 import AllMerklFarms from './AllMerklFarms';
+import MyRewardFarms from './MyRewardFarms';
 import { getConfig } from 'config/index';
 import AllV3Farms from './AllV3Farms';
 import { MerklClaimAll } from './MerklClaimAll';
@@ -255,7 +256,12 @@ export default function Farms() {
         )}
 
         {selectedFarmCategory?.id === 0 && (
-          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+          <MyRewardFarms
+            searchValue={searchValue}
+            farmStatus={farmStatus}
+            sortValue={selectedSort}
+            isOld={isOld}
+          />
         )}
         {selectedFarmCategory.id === 1 &&
           (merklAvailable ? (
@@ -263,6 +269,7 @@ export default function Farms() {
               searchValue={searchValue}
               farmStatus={farmStatus}
               sortValue={selectedSort}
+              isAllOld={isOld}
             />
           ) : (
             <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />

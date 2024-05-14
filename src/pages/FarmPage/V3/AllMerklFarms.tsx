@@ -28,12 +28,14 @@ interface Props {
   searchValue: string;
   farmStatus: string;
   sortValue: string;
+  isAllOld: boolean;
 }
 
 const AllMerklFarms: React.FC<Props> = ({
   searchValue,
   farmStatus,
   sortValue,
+  isAllOld,
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
@@ -247,6 +249,17 @@ const AllMerklFarms: React.FC<Props> = ({
           : true)
       );
     })
+    .filter((farm) => {
+      if (isAllOld) {
+        return farm.alm.some(
+          (almItem: any) =>
+            almItem.label.includes('Gamma') ||
+            almItem.label.includes('Quickswap'),
+        );
+      } else {
+        return true;
+      }
+    })
     .sort((farm1, farm2) => {
       if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
         return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
@@ -353,19 +366,16 @@ const AllMerklFarms: React.FC<Props> = ({
   }, [selectedFarms, t]);
 
   const [farmType, setFarmType] = useState(farmTypes[0]);
-  const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item) =>
-      staked ? item.rewards.length > 0 : true,
-    );
-    if (farmType.link === 'all') {
-      return farmsFilteredWithRewards;
-    }
-    return farmsFilteredWithRewards.filter(
-      (item) => item.title && item.title === farmType.link,
-    );
-  }, [farmType.link, selectedFarms, staked]);
+    return selectedFarms.filter((item) => {
+      if (isOld) {
+        return item.label.includes('Gamma') || item.label.includes('Quickswap');
+      } else {
+        return true;
+      }
+    });
+  }, [isOld, selectedFarms]);
 
   return (
     <>
@@ -414,7 +424,7 @@ const AllMerklFarms: React.FC<Props> = ({
                 <small className='text-secondary'>{t('oldFarms')}</small>
                 <ToggleSwitch
                   toggled={isOld}
-                  onToggle={() => setIsOld(isOld)}
+                  onToggle={() => setIsOld(!isOld)}
                 />
               </Box>
             </Box>
@@ -435,13 +445,6 @@ const AllMerklFarms: React.FC<Props> = ({
                 />
               )}
             </Box>
-            {/* <Box className='flex items-center' gridGap={6}>
-              <small className='text-secondary'>{t('staked')}</small>
-              <ToggleSwitch
-                toggled={staked}
-                onToggle={() => setStaked(!staked)}
-              />
-            </Box> */}
           </Box>
         ) : (
           <>
