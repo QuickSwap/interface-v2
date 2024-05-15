@@ -13,6 +13,16 @@ import { useHistory } from 'react-router-dom';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import {
+  useDefiedgePositions,
+  useICHIPositions,
+  useUnipilotPositions,
+  useV3SteerPositions,
+} from 'hooks/v3/useV3Positions';
+import { useGammaPositions } from 'hooks/v3/useGammaData';
+import { useMasterChefContracts } from 'hooks/useContract';
+import { useMultipleContractMultipleData } from 'state/multicall/v3/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface Props {
   searchValue: string;
@@ -30,6 +40,26 @@ const MyRewardFarms: React.FC<Props> = ({
   const { account, chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const history = useHistory();
+
+  const myPositionIds: any = [];
+  const { positions: defiedgePositions } = useDefiedgePositions(
+    account,
+    chainId,
+  );
+  const { unipilotPositions } = useUnipilotPositions(account, chainId);
+  const { positions: ichiPositions } = useICHIPositions();
+  const steerPositions = useV3SteerPositions();
+  const gammaPositions = useGammaPositions();
+  defiedgePositions.map((item) => myPositionIds.push(item?.id));
+  unipilotPositions.map((item) => myPositionIds.push(item?.id));
+  ichiPositions.map((item) => myPositionIds.push(item?.address));
+  steerPositions.map((item) => myPositionIds.push(item?.address));
+  if (gammaPositions.data) {
+    const gammaIds = Object.keys(gammaPositions?.data).filter((item) =>
+      item.includes('0x'),
+    );
+    gammaIds.map((item) => myPositionIds.push(item));
+  }
 
   const farmFilters = useMemo(
     () => [
@@ -251,76 +281,97 @@ const MyRewardFarms: React.FC<Props> = ({
       return 1;
     });
 
-  const parsedQuery = useParsedQueryString();
-  const poolId =
-    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
-  const selectedPool = v3Farms.find(
-    (item) => Object.keys(item.rewardsPerToken).length > 0,
-  );
+  const selectedPool: any = v3Farms.filter((item) => {
+    const selectedAml = item?.alm.filter((almItem: any) => {
+      const myPositionId = (myPositionIds as string[]).find(
+        (myPositionId) =>
+          almItem.almAddress.toLowerCase() === myPositionId.toLowerCase(),
+      );
+
+      if (myPositionId) return true;
+      else return false;
+    });
+
+    return (
+      selectedAml.length > 0 || Object.keys(item.rewardsPerToken).length > 0
+    );
+  });
 
   const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
-    .filter(
-      (item) =>
-        !!(selectedPool?.alm ?? []).find(
+    .filter((item) => {
+      // Check if any pool in selectedPool contains the almAddress
+      return (selectedPool ?? []).some((pool: any) =>
+        (pool.alm ?? []).some(
           (alm: any) => alm.almAddress.toLowerCase() === item.id.toLowerCase(),
         ),
-    )
+      );
+    })
     .map((item) => item.id);
   const defiEdgeTitles = useDefiEdgeRangeTitles(selectedDefiEdgeIds);
   const selectedFarmsPre: any[] = useMemo(() => {
-    const almFarms: any[] = selectedPool?.alm ?? [];
-    return almFarms.map((alm) => {
-      let title = alm.title ?? '';
-      if (alm.label.includes('Gamma')) {
-        title =
-          getAllGammaPairs(chainId).find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
-      } else if (alm.label.includes('DefiEdge')) {
-        title =
-          defiEdgeTitles.find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
-      }
-      const farmType = alm.label.split(' ')[0];
-      const poolRewards = selectedPool?.rewardsPerToken;
-      const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
-      const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
-      const rewards = rewardData
-        .map((item, ind) => {
-          return { ...item, address: rewardTokenAddresses[ind] };
-        })
-        .filter((item) => {
-          const accumulatedRewards = item.breakdownOfAccumulated;
-          return (
-            accumulatedRewards &&
-            Object.keys(accumulatedRewards).find((item) =>
-              item.includes(farmType),
-            )
-          );
-        });
-      return {
-        ...alm,
-        token0: selectedPool?.token0,
-        token1: selectedPool?.token1,
-        title,
-        rewards,
-        poolFee:
-          (selectedPool?.ammName ?? '').toLowerCase() === 'quickswapuni'
-            ? selectedPool?.poolFee
-            : undefined,
-      };
+    return selectedPool.map((pool: any) => {
+      const almFarms: any[] = pool?.alm ?? [];
+      return almFarms.map((alm) => {
+        let title = alm.title ?? '';
+        if (alm.label.includes('Gamma')) {
+          title =
+            getAllGammaPairs(chainId).find(
+              (item) =>
+                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            )?.title ?? '';
+        } else if (alm.label.includes('DefiEdge')) {
+          title =
+            defiEdgeTitles.find(
+              (item) =>
+                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            )?.title ?? '';
+        }
+        const farmType = alm.label.split(' ')[0];
+        const poolRewards = pool?.rewardsPerToken;
+        const rewardTokenAddresses = poolRewards
+          ? Object.keys(poolRewards)
+          : [];
+        const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
+        const rewards = rewardData
+          .map((item, ind) => {
+            return { ...item, address: rewardTokenAddresses[ind] };
+          })
+          .filter((item) => {
+            const accumulatedRewards = item.breakdownOfAccumulated;
+            return (
+              accumulatedRewards &&
+              Object.keys(accumulatedRewards).find((item) =>
+                item.includes(farmType),
+              )
+            );
+          });
+        return {
+          ...alm,
+          token0: pool?.token0,
+          token1: pool?.token1,
+          title,
+          rewards,
+          poolFee:
+            (pool?.ammName ?? '').toLowerCase() === 'quickswapuni'
+              ? pool?.poolFee
+              : undefined,
+        };
+      });
     });
   }, [chainId, defiEdgeTitles, selectedPool]);
+  const combinedArray = [].concat(...selectedFarmsPre);
 
-  const selectedFarms = selectedFarmsPre.filter(
-    (item) => item.rewards.length > 0,
-  );
+  const selectedFarms = combinedArray.filter((item: any) => {
+    const myPositionId = (myPositionIds as string[]).find(
+      (myPositionId) =>
+        item.almAddress.toLowerCase() === myPositionId.toLowerCase(),
+    );
+
+    return item.rewards.length > 0 || myPositionId;
+  });
 
   const farmTypes = useMemo(() => {
-    const mTypes = selectedFarms.reduce((memo: string[], item) => {
+    const mTypes = selectedFarms.reduce((memo: string[], item: any) => {
       if (item.title && !memo.includes(item.title)) {
         memo.push(item.title);
       }
@@ -344,14 +395,14 @@ const MyRewardFarms: React.FC<Props> = ({
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item) =>
+    const farmsFilteredWithRewards = selectedFarms.filter((item: any) =>
       staked ? item.rewards.length > 0 : true,
     );
     if (farmType.link === 'all') {
       return farmsFilteredWithRewards;
     }
     return farmsFilteredWithRewards.filter(
-      (item) => item.title && item.title === farmType.link,
+      (item: any) => item.title && item.title === farmType.link,
     );
   }, [farmType.link, selectedFarms, staked]);
 

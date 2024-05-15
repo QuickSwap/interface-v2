@@ -26,16 +26,23 @@ export const MerklPairFarmCard: React.FC<Props> = ({ farm }) => {
   let poolIcon;
   switch (farmType) {
     case 'Gamma':
-      poolIcon = <img src={GammaLogo} alt='Gamma Logo' height={12} />;
+      poolIcon = <img src={GammaLogo} alt='Gamma Logo' height={10} />;
       break;
     case 'DefiEdge':
-      poolIcon = <img src={DefiedgeLogo} alt='Defiedge Logo' height={36} />;
+      poolIcon = (
+        <img
+          src={DefiedgeLogo}
+          alt='Defiedge Logo'
+          height={36}
+          style={{ marginLeft: '-10px' }}
+        />
+      );
       break;
     case 'Ichi':
-      poolIcon = <img src={IchiLogo} alt='ICHI Logo' height={16} />;
+      poolIcon = <img src={IchiLogo} alt='ICHI Logo' height={18} />;
       break;
     case 'Steer':
-      poolIcon = <img src={SteerLogo} alt='SteerProtocal Logo' height={16} />;
+      poolIcon = <img src={SteerLogo} alt='SteerProtocal Logo' height={15} />;
       break;
     default:
       poolIcon = <img src={QuickSwapLogo} alt='QuickSwap Logo' height={32} />;
