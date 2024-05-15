@@ -16,6 +16,7 @@ const farm_paths = [
   'farm/v2?tab=OtherFarm',
   '/farm/v3',
   '/farm/v3?tab=my-farms',
+  '/farm/v3?tab=my-rewards',
   '/farm/v3?tab=eternal-farms',
   '/farm/v3?tab=gamma-farms',
 ];

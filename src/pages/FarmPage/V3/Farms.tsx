@@ -10,7 +10,7 @@ import CustomSelector from 'components/v3/CustomSelector';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-// import { FarmingMyFarms } from 'components/StakerMyStakes';
+import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
@@ -63,7 +63,6 @@ export default function Farms() {
     GlobalConst.utils.v3FarmSortBy.pool,
   );
   const [isOld, setIsOld] = useState(true);
-  const [version, setVersion] = useState('v3');
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -85,19 +84,37 @@ export default function Farms() {
     parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'farms';
 
   const v3FarmCategories = useMemo(() => {
-    return [
-      {
-        text: t('allFarms'),
-        id: 1,
-        link: 'farms',
-      },
-      {
-        text: t('myrewards'),
-        id: 0,
-        link: 'my-farms',
-      },
-    ];
-  }, [t]);
+    return isOld
+      ? [
+          {
+            text: t('allFarms'),
+            id: 1,
+            link: 'farms',
+          },
+          {
+            text: t('myrewards'),
+            id: 0,
+            link: 'my-rewards',
+          },
+          {
+            text: t('myFarms'),
+            id: 2,
+            link: 'my-farms',
+          },
+        ]
+      : [
+          {
+            text: t('allFarms'),
+            id: 1,
+            link: 'farms',
+          },
+          {
+            text: t('myrewards'),
+            id: 0,
+            link: 'my-rewards',
+          },
+        ];
+  }, [t, isOld]);
 
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
@@ -178,25 +195,6 @@ export default function Farms() {
       <Box className='pageHeading'>
         <Box className='flex row items-center'>
           <h1 className='h4'>{t('farms')}</h1>
-          <Box className='version-toggle-container' ml={2}>
-            <Box
-              className={version === 'v2' ? 'version-toggle-active' : ''}
-              onClick={() => {
-                setVersion('v2');
-              }}
-            >
-              <small>{t('V2')}</small>
-            </Box>
-
-            <Box
-              className={version === 'v3' ? 'version-toggle-active' : ''}
-              onClick={() => {
-                setVersion('v3');
-              }}
-            >
-              <small>{t('V3')}</small>
-            </Box>
-          </Box>
         </Box>
       </Box>
       {merklAvailable && <MerklClaimAll />}
@@ -285,7 +283,6 @@ export default function Farms() {
             searchValue={searchValue}
             farmStatus={farmStatus}
             sortValue={selectedSort}
-            isOld={isOld}
           />
         )}
         {selectedFarmCategory.id === 1 &&
@@ -294,11 +291,13 @@ export default function Farms() {
               searchValue={searchValue}
               farmStatus={farmStatus}
               sortValue={selectedSort}
-              isAllOld={isOld}
             />
           ) : (
             <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
           ))}
+        {selectedFarmCategory.id === 2 && (
+          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+        )}
       </Box>
     </>
   );
