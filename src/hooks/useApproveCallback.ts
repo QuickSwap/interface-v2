@@ -8,10 +8,12 @@ import {
   Fraction,
   Percent,
   ChainId,
+  currencyEquals,
 } from '@uniswap/sdk';
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { useCallback, useMemo } from 'react';
 import { useTokenAllowance, useTokenAllowanceV3 } from 'data/Allowances';
@@ -21,7 +23,11 @@ import {
   useHasPendingApproval,
 } from 'state/transactions/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
-import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
+import {
+  calculateGasMargin,
+  calculateGasMarginBonus,
+  maxAmountSpend,
+} from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useTokenContract } from './useContract';
 import {
@@ -32,6 +38,7 @@ import {
 import { OptimalRate } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import { useIsInfiniteApproval } from 'state/user/hooks';
+import { useDerivedSwapInfo } from 'state/swap/hooks';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -81,7 +88,7 @@ export function useApproveCallback(
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
-  const [isInfiniteApproval] = useIsInfiniteApproval();
+  // const [isInfiniteApproval] = useIsInfiniteApproval();
 
   const approve = useCallback(async (): Promise<void> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
@@ -112,7 +119,8 @@ export function useApproveCallback(
     const estimatedGas = await tokenContract.estimateGas
       .approve(
         spender,
-        isInfiniteApproval ? MaxUint256 : amountToApprove.raw.toString(),
+        // isInfiniteApproval ? MaxUint256 : amountToApprove.raw.toString(),
+        amountToApprove.raw.toString(),
       )
       .catch(() => {
         // general fallback for tokens who restrict approval amounts
@@ -126,9 +134,9 @@ export function useApproveCallback(
     return tokenContract
       .approve(
         spender,
-        useExact || !isInfiniteApproval
-          ? amountToApprove.raw.toString()
-          : MaxUint256,
+        // useExact || !isInfiniteApproval
+        amountToApprove.raw.toString(),
+        // useExact ? amountToApprove.raw.toString() : MaxUint256,
         {
           gasLimit: calculateGasMargin(estimatedGas),
         },
@@ -155,7 +163,7 @@ export function useApproveCallback(
     tokenContract,
     amountToApprove,
     spender,
-    isInfiniteApproval,
+    // isInfiniteApproval,
     addTransaction,
   ]);
 
@@ -196,7 +204,7 @@ export function useApproveCallbackV3(
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
-  const [isInfiniteApproval] = useIsInfiniteApproval();
+  // const [isInfiniteApproval] = useIsInfiniteApproval();
 
   const approve = useCallback(async (): Promise<void> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
@@ -230,10 +238,7 @@ export function useApproveCallbackV3(
 
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
-      .approve(
-        spender,
-        isInfiniteApproval ? MaxUint256 : amountToApprove.quotient.toString(),
-      )
+      .approve(spender, amountToApprove.quotient.toString())
       .catch(() => {
         // general fallback for tokens who restrict approval amounts
         useExact = true;
@@ -244,17 +249,11 @@ export function useApproveCallbackV3(
       });
 
     return tokenContract
-      .approve(
-        spender,
-        useExact || !isInfiniteApproval
-          ? amountToApprove.quotient.toString()
-          : MaxUint256,
-        {
-          gasLimit: isBonusRoute
-            ? calculateGasMarginBonus(estimatedGas)
-            : calculateGasMargin(estimatedGas),
-        },
-      )
+      .approve(spender, amountToApprove.quotient.toString(), {
+        gasLimit: isBonusRoute
+          ? calculateGasMarginBonus(estimatedGas)
+          : calculateGasMargin(estimatedGas),
+      })
       .then((response: TransactionResponse) => {
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,
@@ -272,7 +271,6 @@ export function useApproveCallbackV3(
     tokenContract,
     amountToApprove,
     spender,
-    isInfiniteApproval,
     isBonusRoute,
     addTransaction,
   ]);
@@ -286,6 +284,10 @@ export function useApproveCallbackFromTrade(
   allowedSlippage = 0,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const { currencyBalances } = useDerivedSwapInfo();
+  const [isInfiniteApproval] = useIsInfiniteApproval();
+
   const amountToApprove = useMemo(
     () =>
       trade
@@ -294,8 +296,13 @@ export function useApproveCallbackFromTrade(
     [trade, allowedSlippage],
   );
 
+  const maxAmountApprove: CurrencyAmount | undefined = maxAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
+
   return useApproveCallback(
-    amountToApprove,
+    isInfiniteApproval ? maxAmountApprove : amountToApprove,
     chainId ? V2_ROUTER_ADDRESS[chainId] : undefined,
   );
 }
@@ -309,6 +316,31 @@ export function useApproveCallbackFromBestTrade(
   atMaxAmountInput?: boolean,
 ): [ApprovalState, () => Promise<void>] {
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const [isInfiniteApproval] = useIsInfiniteApproval();
+  const { currencyBalances, currencies } = useDerivedSwapInfo();
+  const maxAmountInputV2 = maxAmountSpend(
+    chainIdToUse,
+    currencyBalances[Field.INPUT],
+  );
+  const inputCurrency = currencies[Field.INPUT];
+  const inputCurrencyV3 = useMemo(() => {
+    if (!inputCurrency || !chainId) return;
+    if (currencyEquals(inputCurrency, ETHER[chainId])) {
+      return {
+        ...ETHER[chainId],
+        isNative: true,
+        isToken: false,
+      } as NativeCurrency;
+    }
+    return { ...inputCurrency, isNative: false, isToken: true } as Currency;
+  }, [chainId, inputCurrency]);
+
+  const maxAmountApprove =
+    maxAmountInputV2 && inputCurrencyV3
+      ? CurrencyAmountV3.fromRawAmount(inputCurrencyV3, maxAmountInputV2.raw)
+      : undefined;
+
   const amountToApprove = useMemo(
     () =>
       optimalRate
@@ -321,10 +353,13 @@ export function useApproveCallbackFromBestTrade(
     [optimalRate, allowedSlippage, atMaxAmountInput],
   );
 
-  return useApproveCallbackV3(
+  const approveAmount =
     amountToApprove && currency
       ? CurrencyAmountV3.fromRawAmount(currency, amountToApprove)
-      : undefined,
+      : undefined;
+
+  return useApproveCallbackV3(
+    isInfiniteApproval ? maxAmountApprove : approveAmount,
     chainId
       ? bonusRouteFound
         ? SWAP_ROUTER_ADDRESS[chainId]

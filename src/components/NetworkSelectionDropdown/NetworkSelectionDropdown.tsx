@@ -123,7 +123,7 @@ const NetworkSelectionDropdown: React.FC = () => {
         <Box
           className='networkItemWrapper'
           onClick={() => {
-            window.open('https://dex.kinetix.finance', '_blank');
+            window.open('https://kinetix.finance/home', '_blank');
           }}
         >
           <Box className='flex items-center'>
