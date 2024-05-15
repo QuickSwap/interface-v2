@@ -1,6 +1,7 @@
 import { Price, Token } from '@uniswap/sdk-core';
 import { tickToPrice } from './index';
 import { priceToClosestTick } from './priceTickConversions';
+import { expect } from '@jest/globals';
 
 describe('priceTickConversions', () => {
   /**
