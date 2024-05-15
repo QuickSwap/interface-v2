@@ -89,6 +89,7 @@
   "convertQUICK": "Convert your QUICK(OLD) to QUICK(NEW). Read more about QUICK token split <alink>here</alink>.",
   "conversionRate": "Conversion Rate",
   "yourbalance": "Your balance",
+  "yourdragonlairbalance": "Your Dragon Lair Balance",
   "youwillreceive": "You will receive",
   "insufficientBalance": "Insufficient {{ symbol }} Balance",
   "enterAmount": "Enter Amount",

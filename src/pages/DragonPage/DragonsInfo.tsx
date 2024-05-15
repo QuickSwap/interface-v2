@@ -36,7 +36,7 @@ const DragonsInfo = () => {
       className='dragonLairBg dragonInfoWrapper'
     >
       <Box className='dragonLairTitle'>
-        <h5>{t('yourbalance')}</h5>
+        <h5>{t('yourdragonlairbalance')}</h5>
       </Box>
       <Box marginBottom='32px'>
         <small className='text-dragon-gray uppercase sub-title'>
