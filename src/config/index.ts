@@ -10,6 +10,7 @@ import x1 from './x1.json';
 import IMX from './imx.json';
 import astarZkevm from './astarzkevm.json';
 import layerX from './layerx.json';
+import orderlyFeeTiers from './orderlyFeeTiers.json';
 import { ChainId } from '@uniswap/sdk';
 
 const configs: any = {
@@ -36,4 +37,8 @@ export const getConfig = (network: ChainId | undefined) => {
 
 export const getQlpManager = () => {
   return qlpmanager;
+};
+
+export const getOrderlyFeeTiers = () => {
+  return orderlyFeeTiers;
 };

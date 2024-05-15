@@ -17,6 +17,7 @@ import { formatNumber, shortenAddress, shortenTx } from 'utils';
 import AssetModal from 'components/AssetModal';
 import { useOrderlyAPIKey } from 'hooks/useOrderlyData';
 import OrderlyAPITradingKeysModal from './OrderlyAPITradingKeysModal';
+import { getOrderlyFeeTiers } from 'config/index';
 
 const AccountManageModalMyAccount: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -72,6 +73,15 @@ const AccountManageModalMyAccount: React.FC = () => {
 
   const [openKeyModal, setOpenKeyModal] = useState(false);
 
+  const orderlyFeeTiers = getOrderlyFeeTiers();
+  const currentFeeTier = orderlyFeeTiers.find(
+    (item) =>
+      item['maker_fee'].toFixed(3) ===
+        (Number(accountInfo?.futures_maker_fee_rate ?? 0) / 100).toFixed(3) &&
+      item['taker_fee'].toFixed(3) ===
+        (Number(accountInfo?.futures_taker_fee_rate ?? 0) / 100).toFixed(3),
+  );
+
   return (
     <>
       <Box className='accountPanelWrapper'>
@@ -122,7 +132,10 @@ const AccountManageModalMyAccount: React.FC = () => {
             >
               <img src={AccountTierImage} width={64} />
               <small className='text-secondary'>
-                Current Tier: <small className='text-primaryText'>1</small>
+                Current Tier:{' '}
+                <small className='text-primaryText'>
+                  {currentFeeTier?.tier}
+                </small>
               </small>
               {/* <small className='text-primary cursor-pointer'>View more</small> */}
               <Box position='absolute' right={0} top={8}>
@@ -337,13 +350,19 @@ const AccountManageModalMyAccount: React.FC = () => {
                 <Box className='accountPanelRow'>
                   <span>Maker Fee</span>
                   <span>
-                    {formatNumber(accountInfo?.futures_maker_fee_rate ?? 0)}%
+                    {formatNumber(
+                      Number(accountInfo?.futures_maker_fee_rate ?? 0) / 100,
+                    )}
+                    %
                   </span>
                 </Box>
                 <Box className='accountPanelRow' mt={2}>
                   <span>Taker Fee</span>
                   <span>
-                    {formatNumber(accountInfo?.futures_taker_fee_rate ?? 0)}%
+                    {formatNumber(
+                      Number(accountInfo?.futures_taker_fee_rate ?? 0) / 100,
+                    )}
+                    %
                   </span>
                 </Box>
               </Box>
