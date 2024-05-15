@@ -3,7 +3,7 @@ import { Currency, ETHER, currencyEquals } from '@uniswap/sdk';
 import { NativeCurrency } from '@uniswap/sdk-core';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { NumericalInput } from 'components';
 import { useActiveWeb3React } from 'hooks';
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import CurrencySelect from 'components/CurrencySelect';
 import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { fontSizes } from 'components/Dropdown/types';
 
 interface CurrencyInputProps {
   title?: string;
@@ -30,6 +31,9 @@ interface CurrencyInputProps {
   bgClass?: string;
   color?: string;
   id?: string;
+  classNames?: string;
+  balancePrev?: string;
+  balanceAfter?: string;
 }
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({
@@ -47,6 +51,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   bgClass,
   color,
   id,
+  classNames,
+  balancePrev,
+  balanceAfter,
 }) => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
@@ -74,11 +81,26 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     <Box
       id={id}
       className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
-        'bg-secondary2'}`}
+        'bg-secondary2'} ${classNames}`}
     >
       <Box className='flex justify-between' mb={2}>
-        <p>{title || `${t('youPay')}:`}</p>
-        <Box display='flex'>
+        <p
+          style={{
+            color: '#fff',
+            fontSize: '13px',
+          }}
+        >
+          {title || `${t('youPay')}:`}
+        </p>
+        <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
+          <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+            {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
+          </small>
+          <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+            ${(usdPrice * Number(amount)).toLocaleString('us')}
+          </small>
+        </Box>
+        {/* <Box display='flex'>
           {account && currency && showHalfButton && (
             <Box className='maxWrapper' onClick={onHalf}>
               <small>50%</small>
@@ -89,19 +111,16 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
               <small>{t('max')}</small>
             </Box>
           )}
-        </Box>
+        </Box> */}
       </Box>
-      <Box mb={2}>
-        <CurrencySelect
-          id={id}
-          currency={currency}
-          otherCurrency={otherCurrency}
-          handleCurrencySelect={handleCurrencySelect}
-        />
+      <Box
+        mb={2}
+        sx={{ bgcolor: '#141827', borderRadius: '10px', padding: '8px 16px' }}
+      >
         <Box className='inputWrapper'>
           <NumericalInput
             value={amount}
-            align='right'
+            align='left'
             color={color}
             placeholder='0.00'
             onUserInput={(val) => {
@@ -109,14 +128,23 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
             }}
           />
         </Box>
+        <CurrencySelect
+          id={id}
+          currency={currency}
+          otherCurrency={otherCurrency}
+          handleCurrencySelect={handleCurrencySelect}
+        />
       </Box>
-      <Box className='flex justify-between'>
-        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-          {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
-        </small>
-        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-          ${(usdPrice * Number(amount)).toLocaleString('us')}
-        </small>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography style={{ fontSize: '13px' }}>{balancePrev}</Typography>
+        <Typography style={{ fontSize: '13px' }}>{balanceAfter}</Typography>
       </Box>
     </Box>
   );
