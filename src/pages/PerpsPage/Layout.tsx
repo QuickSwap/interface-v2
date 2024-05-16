@@ -49,7 +49,7 @@ export const Layout = () => {
             lg={9}
             className='border-right flex flex-col'
           >
-            <GraphHeader setTokenName={setToken} />
+            <GraphHeader tokenSymbol={token} setTokenSymbol={setToken} />
             {!isMobile && <AdvancedChartWrapper token={token} />}
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={3}>
@@ -85,7 +85,7 @@ export const Layout = () => {
           </Grid>
         </Grid>
         <div className='kingFooter'>
-          <Footer token={token} />
+          <Footer token={token} setToken={setToken} />
         </div>
       </Grid>
       {!isMobile && (

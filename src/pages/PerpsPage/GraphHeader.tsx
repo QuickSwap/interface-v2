@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
@@ -7,12 +7,15 @@ import { SearchInput } from 'components';
 import { LeverageManage } from './LeverageManage';
 
 interface Props {
-  setTokenName: (token: string) => void;
+  tokenSymbol: string;
+  setTokenSymbol: (token: string) => void;
 }
 
-export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
+export const GraphHeader: React.FC<Props> = ({
+  tokenSymbol,
+  setTokenSymbol,
+}) => {
   const { data } = useMarketsStream();
-  const [tokenSymbol, setTokenSymbol] = useState<string | null>();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
@@ -30,13 +33,8 @@ export const GraphHeader: React.FC<Props> = ({ setTokenName }) => {
   const open = Boolean(anchorEl);
   const handleTokenSelect = (token: any) => {
     setTokenSymbol(token.symbol);
-    setTokenName(token.symbol);
     handleClose();
   };
-
-  useEffect(() => {
-    setTokenSymbol('PERP_ETH_USDC');
-  }, []);
 
   const token: any = data?.find((item) => item.symbol === tokenSymbol);
   const [search, setSearch] = useState('');

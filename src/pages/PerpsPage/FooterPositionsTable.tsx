@@ -15,7 +15,10 @@ import { useQuery } from '@tanstack/react-query';
 import { FooterPagination } from './FooterPagination';
 import { TPSLButton } from './TPSLButton';
 
-const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
+const FooterPositionsTable: React.FC<{
+  token?: string;
+  setToken?: (token: string) => void;
+}> = ({ token, setToken }) => {
   const [{ rows }] = usePositionStream(token);
   const [countPerPage, setCountPerPage] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -60,7 +63,16 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
       id: 'instrument',
       label: 'Instrument',
       html: (item: API.PositionExt) => (
-        <small>{getPerpsSymbol(item.symbol)}</small>
+        <small
+          className={setToken ? 'cursor-pointer' : ''}
+          onClick={() => {
+            if (setToken) {
+              setToken(item.symbol);
+            }
+          }}
+        >
+          {getPerpsSymbol(item.symbol)}
+        </small>
       ),
     },
     {

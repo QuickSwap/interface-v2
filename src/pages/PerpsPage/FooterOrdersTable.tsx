@@ -40,7 +40,8 @@ const FooterOrdersTable: React.FC<{
   token?: string;
   selectedItem: string;
   selectedSide: string;
-}> = ({ token, selectedItem, selectedSide }) => {
+  setToken?: (token: string) => void;
+}> = ({ token, selectedItem, selectedSide, setToken }) => {
   const [countPerPage, setCountPerPage] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -86,7 +87,18 @@ const FooterOrdersTable: React.FC<{
     {
       id: 'instrument',
       label: 'Instrument',
-      html: (item: Order) => <small>{getPerpsSymbol(item.symbol)}</small>,
+      html: (item: Order) => (
+        <small
+          className={setToken ? 'cursor-pointer' : ''}
+          onClick={() => {
+            if (setToken) {
+              setToken(item.symbol);
+            }
+          }}
+        >
+          {getPerpsSymbol(item.symbol)}
+        </small>
+      ),
     },
     {
       id: 'type',
@@ -159,7 +171,13 @@ const FooterOrdersTable: React.FC<{
       label: 'Est. total',
       html: (item: Order) => (
         <small>
-          {formatNumber(item.average_executed_price * item.quantity)}
+          {formatNumber(
+            (item.average_executed_price > 0
+              ? item.average_executed_price
+              : item.trigger_price
+              ? item.trigger_price
+              : item.price) * item.quantity,
+          )}
         </small>
       ),
     },

@@ -15,7 +15,10 @@ import FooterPositionsTable from './FooterPositionsTable';
 import { FooterAssetHistoryTable } from './FooterAssetHistoryTable';
 import FooterTPSLTable from './FooterTPSLTable';
 
-export const Footer: React.FC<{ token: string }> = ({ token }) => {
+export const Footer: React.FC<{
+  token: string;
+  setToken: (token: string) => void;
+}> = ({ token, setToken }) => {
   const [selectedItem, setSelectedItem] = useState('Portfolio');
   const [selectedSide, setSelectedSide] = useState<string>('all');
   const [showAllInstrument, setShowAllInstrument] = useState(true);
@@ -115,7 +118,10 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
         </Box>
       )}
       {selectedItem === 'Portfolio' ? (
-        <FooterPositionsTable token={showAllInstrument ? undefined : token} />
+        <FooterPositionsTable
+          token={showAllInstrument ? undefined : token}
+          setToken={setToken}
+        />
       ) : selectedItem === 'tpSL' ? (
         <FooterTPSLTable
           token={showAllInstrument ? undefined : token}
@@ -128,6 +134,7 @@ export const Footer: React.FC<{ token: string }> = ({ token }) => {
           token={showAllInstrument ? undefined : token}
           selectedItem={selectedItem}
           selectedSide={selectedSide}
+          setToken={setToken}
         />
       )}
     </div>
