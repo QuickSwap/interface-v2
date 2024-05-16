@@ -4,25 +4,21 @@ import { useTranslation } from 'react-i18next';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
 import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
-import { useCurrency } from 'hooks/v3/Tokens';
 import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import {
   useDefiedgePositions,
   useICHIPositions,
   useUnipilotPositions,
+  useV3Positions,
   useV3SteerPositions,
 } from 'hooks/v3/useV3Positions';
 import { useGammaPositions } from 'hooks/v3/useGammaData';
-import { useMasterChefContracts } from 'hooks/useContract';
-import { useMultipleContractMultipleData } from 'state/multicall/v3/hooks';
-import { formatUnits } from 'ethers/lib/utils';
 
 interface Props {
   searchValue: string;
@@ -38,10 +34,9 @@ const MyRewardFarms: React.FC<Props> = ({
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { account, chainId } = useActiveWeb3React();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const history = useHistory();
 
   const myPositionIds: any = [];
+  const { positions } = useV3Positions(account, true);
   const { positions: defiedgePositions } = useDefiedgePositions(
     account,
     chainId,
@@ -118,39 +113,6 @@ const MyRewardFarms: React.FC<Props> = ({
       justify: 'flex-start',
     },
   ];
-
-  const sortItems = [
-    {
-      label: t('pool'),
-      value: GlobalConst.utils.v3FarmSortBy.pool,
-    },
-    {
-      label: t('tvl'),
-      value: GlobalConst.utils.v3FarmSortBy.tvl,
-    },
-    {
-      label: t('apr'),
-      value: GlobalConst.utils.v3FarmSortBy.apr,
-    },
-    {
-      label: t('rewards'),
-      value: GlobalConst.utils.v3FarmSortBy.rewards,
-    },
-  ];
-
-  const sortByDesktopItems = sortColumns.map((item) => {
-    return {
-      ...item,
-      onClick: () => {
-        if (sortBy === item.index) {
-          setSortDesc(!sortDesc);
-        } else {
-          setSortBy(item.index);
-          setSortDesc(false);
-        }
-      },
-    };
-  });
 
   useEffect(() => {
     setSortBy(sortValue);
@@ -292,9 +254,15 @@ const MyRewardFarms: React.FC<Props> = ({
       else return false;
     });
 
-    return (
-      selectedAml.length > 0 || Object.keys(item.rewardsPerToken).length > 0
-    );
+    if (positions) {
+      const qsPosition = positions.find(
+        (position) =>
+          position.token0.toLowerCase() === item.token0.toLowerCase() &&
+          position.token1.toLowerCase() === item.token1.toLowerCase(),
+      );
+
+      return selectedAml.length > 0 || qsPosition;
+    }
   });
 
   const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
@@ -367,7 +335,14 @@ const MyRewardFarms: React.FC<Props> = ({
         item.almAddress.toLowerCase() === myPositionId.toLowerCase(),
     );
 
-    return item.rewards.length > 0 || myPositionId;
+    const qsPosition = positions?.find(
+      (position) =>
+        position.token0.toLowerCase() === item.token0.toLowerCase() &&
+        position.token1.toLowerCase() === item.token1.toLowerCase() &&
+        item.label.includes('Quickswap'),
+    );
+
+    return qsPosition || myPositionId;
   });
 
   const farmTypes = useMemo(() => {
