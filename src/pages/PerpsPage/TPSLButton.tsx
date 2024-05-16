@@ -23,23 +23,39 @@ export const TPSLButton: React.FC<{
 
   const tpOrderError = useMemo(() => {
     if (!computedOrder.tp_trigger_price) return;
-    if (Number(computedOrder.tp_trigger_price) < position.mark_price) {
-      return `Minimum trigger price should be greater than ${formatNumber(
-        position.mark_price,
-      )}`;
+    if (
+      position.position_qty > 0
+        ? Number(computedOrder.tp_trigger_price) < position.mark_price
+        : Number(computedOrder.tp_trigger_price) > position.mark_price
+    ) {
+      return `Minimum trigger price should be ${
+        position.position_qty > 0 ? 'greater' : 'less'
+      } than ${formatNumber(position.mark_price)}`;
     }
     return;
-  }, [computedOrder.tp_trigger_price, position.mark_price]);
+  }, [
+    computedOrder.tp_trigger_price,
+    position.mark_price,
+    position.position_qty,
+  ]);
 
   const slOrderError = useMemo(() => {
     if (!computedOrder.sl_trigger_price) return;
-    if (Number(computedOrder.sl_trigger_price) > position.mark_price) {
-      return `Maximum trigger price should be less than ${formatNumber(
-        position.mark_price,
-      )}`;
+    if (
+      position.position_qty > 0
+        ? Number(computedOrder.sl_trigger_price) > position.mark_price
+        : Number(computedOrder.sl_trigger_price) < position.mark_price
+    ) {
+      return `Maximum trigger price should be ${
+        position.position_qty > 0 ? 'less' : 'greater'
+      } than ${formatNumber(position.mark_price)}`;
     }
     return;
-  }, [computedOrder.sl_trigger_price, position.mark_price]);
+  }, [
+    computedOrder.sl_trigger_price,
+    position.mark_price,
+    position.position_qty,
+  ]);
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
@@ -326,8 +342,8 @@ export const TPSLButton: React.FC<{
                   onChange={(e) => {
                     const value = formatDecimalInput(
                       e.target.value,
-                      orderFilter && orderFilter.base_tick > 0
-                        ? Math.log10(1 / Number(orderFilter.base_tick))
+                      orderFilter && orderFilter.quote_tick > 0
+                        ? Math.log10(1 / Number(orderFilter.quote_tick))
                         : undefined,
                     );
                     if (value !== null) {

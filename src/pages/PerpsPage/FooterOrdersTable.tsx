@@ -128,7 +128,11 @@ const FooterOrdersTable: React.FC<{
     {
       id: 'price',
       label: 'Order Price',
-      html: (item: Order) => <small>{formatNumber(item.price)}</small>,
+      html: (item: Order) => (
+        <small>
+          {!Number(item.price) ? 'Market' : formatNumber(item.price)}
+        </small>
+      ),
     },
     ...(showTriggerPriceCol
       ? [
@@ -148,6 +152,15 @@ const FooterOrdersTable: React.FC<{
       label: 'Avg. Price',
       html: (item: Order) => (
         <small>{formatNumber(item.average_executed_price)}</small>
+      ),
+    },
+    {
+      id: 'estTotal',
+      label: 'Est. total',
+      html: (item: Order) => (
+        <small>
+          {formatNumber(item.average_executed_price * item.quantity)}
+        </small>
       ),
     },
     {
