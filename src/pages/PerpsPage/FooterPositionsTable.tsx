@@ -129,7 +129,7 @@ const FooterPositionsTable: React.FC<{
           }
         >
           {formatNumber(item.unrealized_pnl)} (
-          {formatNumber(item.unrealized_pnl_ROI)}%)
+          {formatNumber(item.unrealized_pnl_ROI * 100)}%)
         </small>
       ),
     },
