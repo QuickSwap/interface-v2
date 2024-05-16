@@ -3,7 +3,7 @@ import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
 import { OrderEntity, OrderSide } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 import './Layout.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,7 @@ const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box py={2}>
-          <h6>{order.symbol}</h6>
+          <h6>{getPerpsSymbol(order.symbol)}</h6>
           <Box mt={2} className='flex'>
             <Box width='45%'>
               <p

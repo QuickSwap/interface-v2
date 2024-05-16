@@ -165,6 +165,17 @@ const FooterPositionsTable: React.FC<{ token?: string }> = ({ token }) => {
       ),
     },
     {
+      id: 'margin',
+      label: 'Margin',
+      html: (item: API.PositionExt) => (
+        <small>
+          {formatNumber(
+            Math.abs(item.mmr * item.mark_price * item.position_qty),
+          )}
+        </small>
+      ),
+    },
+    {
       id: 'qtyInput',
       label: 'Qty.',
       html: (pos: API.PositionExt, ind: number) => (

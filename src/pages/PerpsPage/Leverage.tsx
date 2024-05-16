@@ -109,9 +109,12 @@ export const Leverage: React.FC<{ perpToken: string; orderItem: number[] }> = ({
     if (selectedOrderQuantity) {
       orderToSelect.order_quantity = selectedOrderQuantity.toString();
     }
+    if (perpToken) {
+      orderToSelect.order_symbol = perpToken;
+    }
     setOrder(orderToSelect);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOrderPrice, selectedOrderQuantity]);
+  }, [selectedOrderPrice, selectedOrderQuantity, perpToken]);
 
   const { onSubmit, helper, maxQty, markPrice, estLeverage } = useOrderEntry(
     {

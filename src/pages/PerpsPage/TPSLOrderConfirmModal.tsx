@@ -3,7 +3,7 @@ import { CustomModal } from 'components';
 import { Box, Button } from '@material-ui/core';
 import { API } from '@orderly.network/types';
 import { Close } from '@material-ui/icons';
-import { formatNumber } from 'utils';
+import { formatNumber, getPerpsSymbol } from 'utils';
 import './Layout.scss';
 import { useTranslation } from 'react-i18next';
 
@@ -67,7 +67,7 @@ const TPSLOrderConfirmModal: React.FC<TPSLOrderConfirmModalProps> = ({
           <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box py={2}>
-          <h6>{position.symbol}</h6>
+          <h6>{getPerpsSymbol(position.symbol)}</h6>
           <Box mt={2} className='flex'>
             <Box width='45%'>
               <p>
