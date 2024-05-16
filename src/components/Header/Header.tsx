@@ -1,40 +1,38 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
-import { KeyboardArrowDown, Close, KeyboardArrowUp } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
+import { Close } from '@material-ui/icons';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { useUDDomain, useWalletModalToggle } from 'state/application/hooks';
 import {
   isTransactionRecent,
   useAllTransactions,
 } from 'state/transactions/hooks';
 import { TransactionDetails } from 'state/transactions/reducer';
-import { shortenAddress } from 'utils';
+import { getWalletKeys, shortenAddress } from 'utils';
 //import useENSName from 'hooks/useENSName';
-import { WalletModal } from 'components';
-import { useActiveWeb3React } from 'hooks';
+import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
-import QuickLogoWebP from 'assets/images/quickLogo.webp';
-import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
+import { ChainSelector, WalletModal } from 'components';
+import { useActiveWeb3React } from 'hooks';
 // import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
-import WalletIcon from 'assets/images/WalletIcon.png';
-import 'components/styles/Header.scss';
-import { useTranslation } from 'react-i18next';
-import { getConfig } from 'config/index';
-import useDeviceWidth from 'hooks/useDeviceWidth';
-import { USDC, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import 'components/styles/Header.scss';
+import { getConfig } from 'config/index';
 import {
   networkConnection,
   walletConnectConnection,
   zengoConnectConnection,
 } from 'connectors';
-import { MobileMenuDrawer } from './MobileMenuDrawer';
+import { USDC, USDT } from 'constants/v3/addresses';
+import useDeviceWidth from 'hooks/useDeviceWidth';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
+import { useTranslation } from 'react-i18next';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
-import { NetworkSelection } from './NetworkSelection';
+import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
+import MobileHeader from './MobileHeader';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -46,6 +44,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { account, chainId, connector } = useActiveWeb3React();
+  console.log('🚀 ~ account, chainId, connector:', account, chainId, connector);
   //const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   //const [openDetailMenu, setOpenDetailMenu] = useState(false);
@@ -66,9 +65,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     .map((tx: any) => tx.hash);
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
+  console.log('🚀 ~ tabletWindowSize:', mobileWindowSize, tabletWindowSize);
   const toggleWalletModal = useWalletModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
+  const icon = getWalletKeys(connector, chainId).map(
+    (connection) => connection.iconName,
+  )[0];
 
   const handleShowNewsletter = (val: boolean) => {
     setShowNewsletter(val);
@@ -168,6 +171,19 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           window.open(process.env.REACT_APP_PERPS_URL, '_self');
         }
       },
+      items: [
+        {
+          id: 'perps-new-page-link',
+          link: '#',
+          text: 'Perps : Folklore',
+          isNew: true,
+        },
+        {
+          id: 'perps-v1-page-link',
+          link: '#',
+          text: 'Perps V1',
+        },
+      ],
     });
   }
   if (showPool) {
@@ -351,62 +367,86 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           pendingTransactions={pending}
           confirmedTransactions={confirmed}
         />
-        <Link to='/'>
-          {mobileWindowSize && (
-            <img src={QuickIcon} alt='QuickLogo' height={40} />
-          )}
-          {!mobileWindowSize && (
-            <picture>
-              <source height={60} srcSet={QuickLogoWebP} type='image/webp' />
-              <img src={QuickLogo} alt='QuickLogo' height={60} />
-            </picture>
-          )}
-        </Link>
-        {!tabletWindowSize && (
-          <Box className='mainMenu'>
-            {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
-              <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
-            ))}
-            {menuItems.slice(menuItemCountToShow, menuItems.length).length >
-              0 && (
-              <Box display='flex' className='menuItem subMenuItem'>
-                <ThreeDotIcon />
-                <Box className='subMenuWrapper'>
-                  <Box className='subMenu'>
-                    {menuItems
-                      .slice(menuItemCountToShow, menuItems.length)
-                      .map((val, i) => (
-                        <HeaderListItem key={'sub-menu' + i} item={val} />
-                      ))}
+        <Box style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <Link to='/'>
+            {mobileWindowSize && (
+              <img src={QuickIcon} alt='QuickLogo' height={32} />
+            )}
+            {!mobileWindowSize && (
+              <picture>
+                <source height={32} srcSet={QuickIcon} type='image/webp' />
+                <img src={QuickLogo} alt='QuickLogo' height={32} />
+              </picture>
+            )}
+          </Link>
+          {!tabletWindowSize && !mobileWindowSize && (
+            <Box className='mainMenu'>
+              {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
+                <HeaderDesktopItem
+                  key={`header-desktop-item-${i}`}
+                  item={val}
+                />
+              ))}
+              {menuItems.slice(menuItemCountToShow, menuItems.length).length >
+                0 && (
+                <Box display='flex' className='menuItem subMenuItem'>
+                  <ThreeDotIcon />
+                  <Box className='subMenuWrapper'>
+                    <Box className='subMenu'>
+                      {menuItems
+                        .slice(menuItemCountToShow, menuItems.length)
+                        .map((val, i) => (
+                          <HeaderListItem key={'sub-menu' + i} item={val} />
+                        ))}
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            )}
-          </Box>
-        )}
-        {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
+              )}
+            </Box>
+          )}
+        </Box>
+        {/* {tabletWindowSize && !mobileWindowSize && (
+          <MobileMenuDrawer menuItems={menuItems} />
+        )} */}
         <Box>
-          {!parsedChain && <NetworkSelection />}
+          {/* {!parsedChain && <NetworkSelection />} */}
 
           {account ? (
-            <Box
-              id='web3-status-connected'
-              className='accountDetails'
-              onClick={toggleWalletModal}
-            >
-              <p>{udDomain ?? shortenAddress(account)}</p>
-              <img src={WalletIcon} alt='Wallet' />
+            <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <ChainSelector
+                onSelect={() => {
+                  console.log('asdasd');
+                }}
+              />
+              <Box
+                id='web3-status-connected'
+                className='accountDetails'
+                onClick={toggleWalletModal}
+                style={{ gap: '8px' }}
+              >
+                <img src={icon} width={24} alt='wallet icon' />
+                <p>{udDomain ?? shortenAddress(account)}</p>
+                <KeyboardArrowDownIcon />
+              </Box>
             </Box>
           ) : (
             <Box
               className='connectButton bg-primary'
               onClick={toggleWalletModal}
             >
-              {t('connectWallet')}
+              Launch App
             </Box>
           )}
         </Box>
       </Box>
+
+      {(mobileWindowSize || tabletWindowSize) && (
+        <MobileHeader
+          isMobile={mobileWindowSize}
+          isTablet={tabletWindowSize}
+          menuItems={menuItems}
+        />
+      )}
     </Box>
   );
 };

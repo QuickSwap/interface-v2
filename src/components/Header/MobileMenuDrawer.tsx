@@ -33,7 +33,12 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
       </Box>
 
       <Drawer anchor='bottom' open={open} onClose={() => setOpen(false)}>
-        <Box role='presentation'>
+        <Box
+          role='presentation'
+          sx={{
+            padding: '0 16px',
+          }}
+        >
           <Box className='mobileMenuDrawerContainer'>
             <List>
               {menuItems.map((item, index) => (
