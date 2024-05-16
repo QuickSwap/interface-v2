@@ -15,7 +15,7 @@ import {
   Currency,
   NativeCurrency,
 } from '@uniswap/sdk-core';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTokenAllowance, useTokenAllowanceV3 } from 'data/Allowances';
 import { Field } from 'state/swap/actions';
 import {
@@ -52,6 +52,7 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
+  const [isApproved, setApproved] = useState(false);
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
@@ -72,6 +73,8 @@ export function useApproveCallback(
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
+    if (isApproved) return ApprovalState.APPROVED;
+
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
       ? pendingApproval
@@ -84,6 +87,7 @@ export function useApproveCallback(
     nativeCurrency,
     pendingApproval,
     spender,
+    isApproved,
   ]);
 
   const tokenContract = useTokenContract(token?.address);
@@ -148,7 +152,9 @@ export function useApproveCallback(
         });
         try {
           await response.wait();
+          setApproved(true);
         } catch (e) {
+          setApproved(false);
           console.debug('Failed to approve token', e);
           throw e;
         }
@@ -176,6 +182,7 @@ export function useApproveCallbackV3(
   spender?: string,
   isBonusRoute?: boolean,
 ): [ApprovalState, () => Promise<void>] {
+  const [isApproved, setApproved] = useState(false);
   const { account, chainId } = useActiveWeb3React();
   const token = amountToApprove?.currency?.isToken
     ? amountToApprove.currency
@@ -194,13 +201,15 @@ export function useApproveCallbackV3(
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
+    if (isApproved) return ApprovalState.APPROVED;
+
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
       ? pendingApproval
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [amountToApprove, currentAllowance, pendingApproval, spender]);
+  }, [amountToApprove, currentAllowance, pendingApproval, spender, isApproved]);
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
@@ -254,11 +263,19 @@ export function useApproveCallbackV3(
           ? calculateGasMarginBonus(estimatedGas)
           : calculateGasMargin(estimatedGas),
       })
-      .then((response: TransactionResponse) => {
+      .then(async (response: TransactionResponse) => {
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,
           approval: { tokenAddress: token.address, spender: spender },
         });
+        try {
+          await response.wait();
+          setApproved(true);
+        } catch (e) {
+          setApproved(false);
+          console.debug('Failed to approve token', e);
+          throw e;
+        }
       })
       .catch((error: Error) => {
         console.debug('Failed to approve token', error);
