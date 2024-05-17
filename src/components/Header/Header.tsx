@@ -21,6 +21,7 @@ import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
 import { NetworkSelection } from './NetworkSelection';
 import { useSwitchNetwork } from '@web3modal/ethers5/react';
+import { OrderlyPoints } from './OrderlyPoints';
 
 const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   onUpdateNewsletter,
@@ -350,6 +351,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         )}
         {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
+          <OrderlyPoints />
           {!parsedChain && <NetworkSelection />}
 
           <w3m-button balance='hide' />

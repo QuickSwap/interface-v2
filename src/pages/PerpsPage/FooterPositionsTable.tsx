@@ -31,15 +31,16 @@ const FooterPositionsTable: React.FC<{
     status: OrderStatus.NEW,
   });
 
+  const qtyStr = rows
+    ?.map((row) => Math.abs(row.position_qty).toString())
+    .join('_');
+
   useEffect(() => {
-    if (rows && rows.length > 0) {
-      setPositionQtyInputs(
-        rows.map((row) => Math.abs(row.position_qty).toString()),
-      );
-      setPositionPriceInputs(rows.map(() => ''));
+    if (qtyStr) {
+      setPositionQtyInputs(qtyStr.split('_'));
+      setPositionPriceInputs(qtyStr.split('_').map(() => ''));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows?.length]);
+  }, [qtyStr]);
 
   useEffect(() => {
     setPageIndex(0);
@@ -288,7 +289,9 @@ const FooterPositionsTable: React.FC<{
                       <small className='text-secondary weight-500'>
                         {item.label}
                       </small>
-                      <Box mt='6px'>{item.html(row, ind)}</Box>
+                      <Box mt='6px'>
+                        {item.html(row, countPerPage * pageIndex + ind)}
+                      </Box>
                     </Grid>
                   ))}
                 </Grid>
@@ -326,7 +329,9 @@ const FooterPositionsTable: React.FC<{
                     <tr key={ind}>
                       {portfolioHeadCells.map((cell) => (
                         <td key={cell.id}>
-                          <Box p='6px'>{cell.html(row, ind)}</Box>
+                          <Box p='6px'>
+                            {cell.html(row, countPerPage * pageIndex + ind)}
+                          </Box>
                         </td>
                       ))}
                     </tr>
