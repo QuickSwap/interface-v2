@@ -744,8 +744,6 @@ export function useV3DerivedMintInfo(
       item.id.toLowerCase() === presetRange.address.toLowerCase(),
   );
 
-  console.log('ccc', defiedgeStrategy);
-
   const { data: steerVaults } = useSteerVaults(chainId);
   const steerVault = steerVaults.find(
     (item) =>
