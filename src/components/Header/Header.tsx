@@ -33,6 +33,7 @@ import { HeaderDesktopItem } from './HeaderDesktopItem';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import MobileHeader from './MobileHeader';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { NetworkSelection } from 'components/Header/NetworkSelection';
 
 const newTransactionsFirst = (a: TransactionDetails, b: TransactionDetails) => {
   return b.addedTime - a.addedTime;
@@ -418,11 +419,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
 
           {account ? (
             <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <ChainSelector
-                onSelect={() => {
-                  console.log('asdasd');
-                }}
-              />
+              <NetworkSelection />
               <Box
                 id='web3-status-connected'
                 className='accountDetails'

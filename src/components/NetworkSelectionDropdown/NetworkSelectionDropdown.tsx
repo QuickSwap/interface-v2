@@ -80,7 +80,12 @@ const NetworkSelectionDropdown: React.FC = () => {
   );
 
   return (
-    <Box className='networkSelectionDropdown'>
+    <Box
+      className='networkSelectionDropdown'
+      sx={{
+        bgcolor: '#1b1e29',
+      }}
+    >
       <p>{t('selectNetwork')}</p>
       <Box className='networkTypeWrapper'>
         <CustomTabSwitch
@@ -123,7 +128,7 @@ const NetworkSelectionDropdown: React.FC = () => {
         <Box
           className='networkItemWrapper'
           onClick={() => {
-            window.open('https://dex.kinetix.finance', '_blank');
+            window.open('https://kinetix.finance/home', '_blank');
           }}
         >
           <Box className='flex items-center'>
