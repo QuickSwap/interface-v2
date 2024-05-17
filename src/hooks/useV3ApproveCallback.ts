@@ -6,7 +6,7 @@ import {
   TradeType,
 } from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,
   UNI_SWAP_ROUTER,
@@ -36,6 +36,7 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount<Currency>,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
+  const [isApproved, setApproved] = useState(false);
   const { account, chainId } = useActiveWeb3React();
   const token = amountToApprove?.currency?.isToken
     ? amountToApprove.currency
@@ -54,13 +55,15 @@ export function useApproveCallback(
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
+    if (isApproved) return ApprovalState.APPROVED;
+
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
       ? pendingApproval
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [amountToApprove, currentAllowance, pendingApproval, spender]);
+  }, [amountToApprove, currentAllowance, pendingApproval, spender, isApproved]);
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
@@ -127,12 +130,20 @@ export function useApproveCallback(
           gasLimit: calculateGasMargin(estimatedGas),
         },
       )
-      .then((response: TransactionResponse) => {
+      .then(async (response: TransactionResponse) => {
         addTransaction(response, {
           summary:
             `Approve ` + (amountToApprove.currency.symbol || `LP-tokens`),
           approval: { tokenAddress: token.address, spender: spender },
         });
+        try {
+          await response.wait();
+          setApproved(true);
+        } catch (e) {
+          setApproved(false);
+          console.debug('Failed to approve token', e);
+          throw e;
+        }
       })
       .catch((error: Error) => {
         console.debug('Failed to approve token', error);
