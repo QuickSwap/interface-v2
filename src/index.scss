@@ -73,7 +73,7 @@ wcm-modal {
 
 .wrapper {
   padding: 24px;
-  background: $bgPalette;
+  // background: $bgPalette;
   border-radius: 20px;
   @include media("screen", "<phone") {
     padding: 16px 12px;
