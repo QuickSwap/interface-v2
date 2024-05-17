@@ -83,6 +83,8 @@ import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import arrowDown from 'assets/images/icons/arrow-down.png';
 import chart from 'assets/images/icons/chart.svg';
 import SignUp from './SignUp';
+import inforIcon from 'assets/images/info-icon.webp';
+import settingIcon from 'assets/images/setting-icon.webp';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -1267,6 +1269,29 @@ const SwapBestTrade: React.FC<{
         inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
       />
+      {/* <Box className='subtext-color infoWrapper'>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('slipPage')}
+          </Box>
+          <Box>
+            1%
+            <img src={settingIcon} alt='Setting' />
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('minimumReceived')}
+          </Box>
+          <Box>5463.44 MATIC</Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('priceImpact')}
+          </Box>
+          <Box>0.3%</Box>
+        </Box>
+      </Box> */}
       <Box className='swapButtonWrapper' sx={{ marginBottom: '16px' }}>
         {showApproveFlow && (
           <Box width='48%'>

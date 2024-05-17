@@ -81,7 +81,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     <Box
       id={id}
       className={`swapBox${showPrice ? ' priceShowBox' : ''} ${bgClass ??
-        'bg-secondary2'} ${classNames}`}
+        'bg-secondary4'} ${classNames}`}
     >
       <Box className='flex justify-between' mb={2}>
         <p
@@ -94,7 +94,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         </p>
         <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
           <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-            {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
+            <span className='subtext-color'>{t('balance')}:</span>{' '}
+            {formatTokenAmount(selectedCurrencyBalance)}
           </small>
           <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
             ${(usdPrice * Number(amount)).toLocaleString('us')}
@@ -115,7 +116,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       </Box>
       <Box
         mb={2}
-        sx={{ bgcolor: '#141827', borderRadius: '10px', padding: '8px 16px' }}
+        sx={{ borderRadius: '10px', padding: '8px 16px' }}
+        className='bg-input1'
       >
         <Box className='inputWrapper'>
           <NumericalInput
@@ -143,8 +145,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           justifyContent: 'space-between',
         }}
       >
-        <Typography style={{ fontSize: '13px' }}>{balancePrev}</Typography>
-        <Typography style={{ fontSize: '13px' }}>{balanceAfter}</Typography>
+        <Typography className='subtext-color' style={{ fontSize: '13px' }}>
+          {balancePrev}
+        </Typography>
+        <Typography className='subtext-color' style={{ fontSize: '13px' }}>
+          {balanceAfter}
+        </Typography>
       </Box>
     </Box>
   );

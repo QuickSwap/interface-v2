@@ -8,6 +8,7 @@ import arrowDown from 'assets/images/icons/arrow-down.png';
 import plus from 'assets/images/icons/plus-circle.svg';
 import { InfomationHelper } from 'components/QuestionHelper';
 import { ReactComponent as SettingsIcon } from 'assets/images/icons/cog-fill.svg';
+import NumericalInput from 'components/NumericalInput';
 
 interface SwapBlockProps {
   onConfirm: () => void;
@@ -199,11 +200,13 @@ const SwapBlock: React.FC<SwapBlockProps> = ({ onConfirm }) => {
             marginBottom: '16px',
           }}
         >
-          <Typography
-            style={{ fontSize: '20px', fontWeight: 500, color: '#f6f6f9' }}
-          >
-            100
-          </Typography>
+          <NumericalInput
+            onUserInput={(val) => {
+              console.log(val);
+            }}
+            value={0}
+          />
+
           <Box sx={{ display: 'flex', alignItems: 'center', gridGap: '8px' }}>
             <ButtonBase
               style={{

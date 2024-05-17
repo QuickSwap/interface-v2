@@ -67,7 +67,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           onClose={() => setOpenSettingsModal(false)}
         />
       )} */}
-      <Box className='summaryRow'>
+      <Box className='summaryRow subtext-color'>
         <Box>
           <InfomationHelper text={t('slippageHelper')} />
           <small>{t('slippage')}</small>
@@ -85,7 +85,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           <SettingsIcon />
         </Box>
       </Box>
-      <Box className='summaryRow'>
+      <Box className='summaryRow subtext-color'>
         <Box>
           <InfomationHelper text={t('txLimitHelper')} />
           <small>{isExactIn ? t('minReceived') : t('maxSold')}</small>
@@ -100,7 +100,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           </small>
         </Box>
       </Box>
-      <Box className='summaryRow'>
+      <Box className='summaryRow subtext-color'>
         <Box>
           <InfomationHelper text={t('priceImpactHelper')} />
           <small>{t('priceimpact')}</small>
