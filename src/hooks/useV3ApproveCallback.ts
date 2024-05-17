@@ -1,4 +1,3 @@
-import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   Currency,
@@ -19,13 +18,10 @@ import {
 } from '../state/transactions/hooks';
 import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
-import { useTokenAllowance } from './useTokenAllowance';
+import { useV3TokenAllowance } from './useTokenAllowance';
 import { calculateGasMargin } from 'utils';
 import { MergedZap } from 'state/zap/actions';
 import { useIsInfiniteApproval } from 'state/user/hooks';
-import { useDerivedSwapInfo } from 'state/swap/v3/hooks';
-import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
-import { Field } from 'state/swap/v3/actions';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 
 export enum ApprovalState {
@@ -45,7 +41,7 @@ export function useApproveCallback(
   const token = amountToApprove?.currency?.isToken
     ? amountToApprove.currency
     : undefined;
-  const currentAllowance = useTokenAllowance(
+  const currentAllowance = useV3TokenAllowance(
     token,
     account ?? undefined,
     spender,
