@@ -80,7 +80,12 @@ const NetworkSelectionDropdown: React.FC = () => {
   );
 
   return (
-    <Box className='networkSelectionDropdown'>
+    <Box
+      className='networkSelectionDropdown'
+      sx={{
+        bgcolor: '#1b1e29',
+      }}
+    >
       <p>{t('selectNetwork')}</p>
       <Box className='networkTypeWrapper'>
         <CustomTabSwitch
