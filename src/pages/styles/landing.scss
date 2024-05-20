@@ -186,6 +186,17 @@
   width: 204px;
   height: 318px;
   padding: 24px;
+  background-color: #9b9b9b0f;
+  transition: 0.3s ease-in-out;
+
+  &:hover {
+    // background-color: #9b9b9b4b;
+    box-shadow: 1px 3px 30px 0px rgba(145, 145, 145, 0.75);
+    -webkit-box-shadow: 1px 3px 30px 0px rgba(145, 145, 145, 0.75);
+    -moz-box-shadow: 1px 3px 30px 0px rgba(145, 145, 145, 0.75);
+    transform: translateY(-5px);
+  }
+
   @media screen and (max-width: "900px") {
     width: 100%;
     height: 200px;
@@ -264,6 +275,7 @@
       margin-bottom: 8;
     }
     p {
+      font-size: 14px;
       text-align: left;
     }
   }
@@ -448,6 +460,12 @@
   // justify-content: center;
   padding: 28px 24px;
   border-radius: 20px;
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    background: #9b9b9b5b;
+  }
 
   @include media("screen", "<desktop") {
     width: 187px;
