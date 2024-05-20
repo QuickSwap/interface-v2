@@ -21,7 +21,7 @@ const LandingPage: React.FC = () => {
   }, [updateIsV2]);
 
   return (
-    <div id='landing-page' style={{ width: '100%', overflow: 'hidden' }}>
+    <div id='landing-page' style={{ width: '100%' }}>
       <GlobalSection />
       <TradeSection />
       <EarnSection />
