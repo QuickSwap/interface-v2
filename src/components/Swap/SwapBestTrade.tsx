@@ -12,7 +12,7 @@ import {
 import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
-import { Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button, CircularProgress, Typography } from '@material-ui/core';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -80,6 +80,11 @@ import useNativeConvertCallback, {
 } from 'hooks/useNativeConvertCallback';
 import { useApproveCallback } from 'hooks/useApproveCallback';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import arrowDown from 'assets/images/icons/arrow-down.png';
+import chart from 'assets/images/icons/chart.svg';
+import SignUp from './SignUp';
+import inforIcon from 'assets/images/info-icon.webp';
+import settingIcon from 'assets/images/setting-icon.webp';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -1128,8 +1133,9 @@ const SwapBestTrade: React.FC<{
         />
       )}
       <CurrencyInput
-        title={`${t('from')}:`}
+        title={`${t('Pay')}:`}
         id='swap-currency-input'
+        classNames='from_input'
         currency={currencies[Field.INPUT]}
         onHalf={handleHalfInput}
         onMax={handleMaxInput}
@@ -1141,20 +1147,44 @@ const SwapBestTrade: React.FC<{
         setAmount={handleTypeInput}
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        balancePrev={'$4942.85'}
+        balanceAfter={'$4942.85'}
       />
       <Box className='exchangeSwap'>
-        <ExchangeIcon
+        {/* <ExchangeIcon
           onClick={() => {
             setSwapType(
               swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY,
             );
             redirectWithSwitch();
           }}
-        />
+        /> */}
+        <Box
+          onClick={() => {
+            setSwapType(
+              swapType === SwapSide.BUY ? SwapSide.SELL : SwapSide.BUY,
+            );
+            redirectWithSwitch();
+          }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '24px',
+            height: '24px',
+            borderRadius: '4px',
+            border: '2px solid #191b2e',
+            bgcolor: '#232734',
+          }}
+        >
+          {/* <AddLiquidityIcon /> */}
+          <img src={arrowDown} alt='arrow down' width='12px' height='12px' />
+        </Box>
       </Box>
       <CurrencyInput
-        title={`${t('toEstimate')}:`}
+        title={`${t('Receive')}:`}
         id='swap-currency-output'
+        classNames='to_input'
         currency={currencies[Field.OUTPUT]}
         showPrice={Boolean(optimalRate)}
         showMaxButton={false}
@@ -1164,8 +1194,32 @@ const SwapBestTrade: React.FC<{
         setAmount={handleTypeOutput}
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
+        balancePrev={'$4942.85'}
+        balanceAfter={'$4942.85'}
       />
-      {paraRate && (
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gridGap: '4px',
+          marginTop: '16px',
+        }}
+      >
+        <img src={chart} alt='chart' />
+        <Typography
+          style={{
+            fontSize: '13px',
+            color: '#fff',
+            fontWeight: 500,
+            marginBottom: '-2px',
+          }}
+        >
+          1 WBTC = 51218.18 MATIC
+        </Typography>
+      </Box>
+      {/* {paraRate && (
         <Box className='swapPrice'>
           <small>{t('price')}:</small>
           <small>
@@ -1186,7 +1240,7 @@ const SwapBestTrade: React.FC<{
             />
           </small>
         </Box>
-      )}
+      )} */}
       {!showNativeConvert && !showWrap && isExpertMode && (
         <Box className='recipientInput'>
           <Box className='recipientInputHeader'>
@@ -1218,7 +1272,30 @@ const SwapBestTrade: React.FC<{
         inputCurrency={inputCurrency}
         outputCurrency={outputCurrency}
       />
-      <Box className='swapButtonWrapper'>
+      {/* <Box className='subtext-color infoWrapper'>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('slipPage')}
+          </Box>
+          <Box>
+            1%
+            <img src={settingIcon} alt='Setting' />
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('minimumReceived')}
+          </Box>
+          <Box>5463.44 MATIC</Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('priceImpact')}
+          </Box>
+          <Box>0.3%</Box>
+        </Box>
+      </Box> */}
+      <Box className='swapButtonWrapper' sx={{ marginBottom: '16px' }}>
         {showApproveFlow && (
           <Box width='48%'>
             <Button
@@ -1280,6 +1357,11 @@ const SwapBestTrade: React.FC<{
           </Button>
         </Box>
       </Box>
+      <SignUp
+        onSubcribe={() => {
+          console.log('sub');
+        }}
+      />
     </Box>
   );
 };

@@ -64,6 +64,7 @@ import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
+import Bridge from 'pages/Bridge';
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;
@@ -235,6 +236,11 @@ const App: React.FC = () => {
                   <Route exact path='/calculator/0.01-eth-to-usd'>
                     <PageLayout>
                       <CalculatorPage />
+                    </PageLayout>
+                  </Route>
+                  <Route exact path='/bridge'>
+                    <PageLayout>
+                      <Bridge />
                     </PageLayout>
                   </Route>
                   <Route path='*'>

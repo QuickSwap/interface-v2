@@ -127,6 +127,7 @@ const Swap: React.FC<{
   const toggledVersion = useToggledVersion();
   const finalizedTransaction = useTransactionFinalizer();
   const [isExpertMode] = useExpertModeManager();
+
   const {
     wrapType,
     execute: onWrap,
@@ -785,6 +786,7 @@ const Swap: React.FC<{
       ) : (
         <AdvancedSwapDetails trade={trade} />
       )}
+
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>
