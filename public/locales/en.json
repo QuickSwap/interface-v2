@@ -925,5 +925,8 @@
   "quickStatisticsDescription": "Experience the very best of Polygon DeFi - deep liquidity, high volume, and much more",
   "allRights": "All rights reserved.",
   "subNewsletter": "Subscribe to Newsletter",
-  "addDestinationAddress": "Add destination address"
+  "addDestinationAddress": "Add destination address",
+  "partners": "Partners",
+  "dappOS": "dappOS",
+  "bridge": "Bridge"
 }
