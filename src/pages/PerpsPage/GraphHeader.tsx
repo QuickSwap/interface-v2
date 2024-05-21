@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
@@ -159,7 +159,7 @@ export const GraphHeader: React.FC<Props> = ({
                 (token?.change ?? 0) < 0 ? 'text-error' : 'text-success'
               }`}
             >
-              {formatNumber(token?.change)}%
+              {formatNumber(Number(token?.change ?? 0) * 100)}%
             </p>
           )}
         </Box>
@@ -172,7 +172,7 @@ export const GraphHeader: React.FC<Props> = ({
                   (token?.change ?? 0) < 0 ? 'text-error' : 'text-success'
                 }`}
               >
-                {formatNumber(token?.change)}%
+                {formatNumber(Number(token?.change ?? 0) * 100)}%
               </p>
             </Box>
             <Box>

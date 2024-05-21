@@ -7,6 +7,8 @@ import { useActiveWeb3React } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
 import QuickLogoWebP from 'assets/images/quickLogo.webp';
+import QuickPerpsLogo from 'assets/images/quickPerpsLogo.webp';
+import QuickPerpsIcon from 'assets/images/quickPerpsIcon.svg';
 import { ReactComponent as ThreeDotIcon } from 'assets/images/ThreeDot.svg';
 // import { ReactComponent as LightIcon } from 'assets/images/LightIcon.svg';
 import 'components/styles/Header.scss';
@@ -299,6 +301,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, parsedChain]);
 
+  const isPerpsPage = history.location.pathname === '/perpsV2';
+
   return (
     <Box className='header'>
       {showNewsletter && (
@@ -316,42 +320,66 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Box>
       )}
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
-        <Link to='/'>
-          {mobileWindowSize && (
-            <img src={QuickIcon} alt='QuickLogo' className='mobileLogo' />
-          )}
-          {!mobileWindowSize && (
-            <picture>
-              <source srcSet={QuickLogoWebP} type='image/webp' />
-              <img src={QuickLogo} alt='QuickLogo' className='desktopLogo' />
-            </picture>
-          )}
-        </Link>
-        {!tabletWindowSize && (
-          <Box className='mainMenu' gridGap={6}>
-            {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
-              <HeaderDesktopItem key={`header-desktop-item-${i}`} item={val} />
-            ))}
-            {menuItems.slice(menuItemCountToShow, menuItems.length).length >
-              0 && (
-              <Box display='flex' className='menuItem subMenuItem'>
-                <ThreeDotIcon />
-                <Box className='subMenuWrapper'>
-                  <Box className='subMenu'>
-                    {menuItems
-                      .slice(menuItemCountToShow, menuItems.length)
-                      .map((val, i) => (
-                        <HeaderListItem key={'sub-menu' + i} item={val} />
-                      ))}
+        <Box gridGap={isPerpsPage ? 16 : 0}>
+          <Link to={isPerpsPage ? '/perpsV2' : '/'}>
+            {mobileWindowSize && (
+              <img
+                src={isPerpsPage ? QuickPerpsIcon : QuickIcon}
+                alt='QuickLogo'
+                className='mobileLogo'
+              />
+            )}
+            {!mobileWindowSize &&
+              (isPerpsPage ? (
+                <img
+                  src={QuickPerpsLogo}
+                  alt='QuickPerpsLogo'
+                  className='perpsDesktopLogo'
+                />
+              ) : (
+                <picture>
+                  <source srcSet={QuickLogoWebP} type='image/webp' />
+                  <img
+                    src={QuickLogo}
+                    alt='QuickLogo'
+                    className='desktopLogo'
+                  />
+                </picture>
+              ))}
+          </Link>
+          {!tabletWindowSize && (
+            <Box
+              className={`${isPerpsPage ? 'mainMenuPerps' : 'mainMenu'}`}
+              gridGap={6}
+            >
+              {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
+                <HeaderDesktopItem
+                  key={`header-desktop-item-${i}`}
+                  item={val}
+                />
+              ))}
+              {menuItems.slice(menuItemCountToShow, menuItems.length).length >
+                0 && (
+                <Box display='flex' className='menuItem subMenuItem'>
+                  <ThreeDotIcon />
+                  <Box className='subMenuWrapper'>
+                    <Box className='subMenu'>
+                      {menuItems
+                        .slice(menuItemCountToShow, menuItems.length)
+                        .map((val, i) => (
+                          <HeaderListItem key={'sub-menu' + i} item={val} />
+                        ))}
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            )}
-          </Box>
-        )}
+              )}
+            </Box>
+          )}
+        </Box>
+
         {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          <OrderlyPoints />
+          {isPerpsPage && <OrderlyPoints />}
           {!parsedChain && <NetworkSelection />}
 
           <w3m-button balance='hide' />
