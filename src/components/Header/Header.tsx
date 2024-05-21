@@ -322,12 +322,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
         <Box gridGap={isPerpsPage ? 16 : 0}>
           <Link to={isPerpsPage ? '/perpsV2' : '/'}>
-            {mobileWindowSize && (
-              <img
-                src={isPerpsPage ? QuickPerpsIcon : QuickIcon}
-                alt='QuickLogo'
-                className='mobileLogo'
-              />
+            {mobileWindowSize && !isPerpsPage && (
+              <img src={QuickIcon} alt='QuickLogo' className='mobileLogo' />
             )}
             {!mobileWindowSize &&
               (isPerpsPage ? (
@@ -382,7 +378,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           {isPerpsPage && <OrderlyPoints />}
           {!parsedChain && <NetworkSelection />}
 
-          <w3m-button balance='hide' />
+          <Box className='web3ModalButton'>
+            <w3m-button balance='hide' />
+          </Box>
         </Box>
       </Box>
     </Box>
