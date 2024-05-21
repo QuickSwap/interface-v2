@@ -91,7 +91,9 @@
   padding: 22px 24px;
 
   &.mobile {
+    min-height: 360px;
     background-image: url('../../assets/images/DragonBgNewMobile.png');
+    background-size: cover;
   }
 
   .dragonWrapper-title {

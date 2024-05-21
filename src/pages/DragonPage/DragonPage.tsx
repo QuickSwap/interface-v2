@@ -37,18 +37,6 @@ const DragonPage: React.FC = () => {
   const showLair = config['lair']['available'];
   const showOld = config['lair']['oldLair'];
   const showNew = config['lair']['newLair'];
-  const totalSupply = numbro(
-    formatTokenAmount(lairInfoToUse?.dQuickTotalSupply),
-  ).format({
-    average: true,
-    mantissa: 1,
-    spaceSeparated: false,
-    totalLength: 4,
-    trimMantissa: true,
-    optionalMantissa: true,
-    thousandSeparated: false,
-    forceAverage: 'million',
-  });
   const totalStaked = numbro(
     formatTokenAmount(lairInfoToUse?.totalQuickBalance),
   ).format({
@@ -143,24 +131,11 @@ const DragonPage: React.FC = () => {
               <Box className='total-supply'>
                 <CurrencyLogo currency={quickToken} size='40px' />
                 <Box>
-                  <small>{t('totalSupply')}</small>
+                  <small>{t('staked')}</small>
                   <h5 className='text-dragon-white'>
-                    {totalSupply.toString().toUpperCase()}
+                    {totalStaked.toString().toUpperCase()}
                   </h5>
-                </Box>
-              </Box>
-              <Box>
-                <small>{t('staked')}</small>
-                <h5 className='text-dragon-white'>
-                  {totalStaked.toString().toUpperCase()}
-                </h5>
-                <small>${totalStakedUSDPrice.toString().toUpperCase()}</small>
-              </Box>
-              <Box>
-                <small>{t('stakingApy')}</small>
-                <Box display='flex' alignItems='center'>
-                  <h5 className='text-success'>{APY ? APY : '-'}%</h5>
-                  <img src={APRHover} width={18} />
+                  <small>${totalStakedUSDPrice.toString().toUpperCase()}</small>
                 </Box>
               </Box>
               <Box>
@@ -169,6 +144,13 @@ const DragonPage: React.FC = () => {
                   {quickBurnAmount.toUpperCase()}
                 </h5>
                 <small>${quickBurnUSD.toUpperCase()}</small>
+              </Box>
+              <Box>
+                <small>{t('stakingApy')}</small>
+                <Box display='flex' alignItems='center'>
+                  <h5 className='text-success'>{APY ? APY : '-'}%</h5>
+                  <img src={APRHover} width={18} />
+                </Box>
               </Box>
               <Box>
                 <small>{t('burnApy')}</small>
@@ -188,19 +170,22 @@ const DragonPage: React.FC = () => {
               <Box className='flex-wrapper'>
                 <Box className='total-supply' width='50%'>
                   <CurrencyLogo currency={quickToken} size='40px' />
-                  <Box>
-                    <small>{t('totalSupply')}</small>
+                  <Box width='50%'>
+                    <small>{t('staked')}</small>
                     <h5 className='text-dragon-white'>
-                      {totalSupply.toString().toUpperCase()}
+                      {totalStaked.toString().toUpperCase()}
                     </h5>
+                    <small>
+                      ${totalStakedUSDPrice.toString().toUpperCase()}
+                    </small>
                   </Box>
                 </Box>
                 <Box width='50%'>
-                  <small>{t('staked')}</small>
+                  <small>{t('quickBurned')}</small>
                   <h5 className='text-dragon-white'>
-                    {totalStaked.toString().toUpperCase()}
+                    {quickBurnAmount.toUpperCase()}
                   </h5>
-                  <small>${totalStakedUSDPrice.toString().toUpperCase()}</small>
+                  <small>${quickBurnUSD.toUpperCase()}</small>
                 </Box>
               </Box>
               <Box className='flex-wrapper'>
@@ -212,22 +197,15 @@ const DragonPage: React.FC = () => {
                   </Box>
                 </Box>
                 <Box width='50%'>
-                  <small>{t('quickBurned')}</small>
-                  <h5 className='text-dragon-white'>
-                    {quickBurnAmount.toUpperCase()}
-                  </h5>
-                  <small>${quickBurnUSD.toUpperCase()}</small>
-                </Box>
-              </Box>
-              <Box width='50%'>
-                <small>{t('burnApy')}</small>
-                <Box display='flex' alignItems='center'>
-                  <h5 className='text-success'>{quickBurnApy}%</h5>
-                  <img
-                    src={BurnImage}
-                    width={12}
-                    style={{ marginLeft: '5px' }}
-                  />
+                  <small>{t('burnApy')}</small>
+                  <Box display='flex' alignItems='center'>
+                    <h5 className='text-success'>{quickBurnApy}%</h5>
+                    <img
+                      src={BurnImage}
+                      width={12}
+                      style={{ marginLeft: '5px' }}
+                    />
+                  </Box>
                 </Box>
               </Box>
             </Box>
