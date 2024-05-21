@@ -1,28 +1,24 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import {
-  Box,
-  Select,
-  MenuItem,
-  useMediaQuery,
-  useTheme,
-} from '@material-ui/core';
+import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { GlobalConst, GlobalData } from 'constants/index';
-import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
-import MerklFarmCard from './MerklFarmCard';
-import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
 import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { KeyboardArrowLeft } from '@material-ui/icons';
 import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import {
+  useDefiedgePositions,
+  useICHIPositions,
+  useUnipilotPositions,
+  useV3Positions,
+  useV3SteerPositions,
+} from 'hooks/v3/useV3Positions';
+import { useGammaPositions } from 'hooks/v3/useGammaData';
 
 interface Props {
   searchValue: string;
@@ -30,16 +26,35 @@ interface Props {
   sortValue: string;
 }
 
-const AllMerklFarms: React.FC<Props> = ({
+const MyRewardFarms: React.FC<Props> = ({
   searchValue,
   farmStatus,
   sortValue,
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const { chainId } = useActiveWeb3React();
-  const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const history = useHistory();
+  const { account, chainId } = useActiveWeb3React();
+
+  const myPositionIds: any = [];
+  const { positions } = useV3Positions(account, true);
+  const { positions: defiedgePositions } = useDefiedgePositions(
+    account,
+    chainId,
+  );
+  const { unipilotPositions } = useUnipilotPositions(account, chainId);
+  const { positions: ichiPositions } = useICHIPositions();
+  const steerPositions = useV3SteerPositions();
+  const gammaPositions = useGammaPositions();
+  defiedgePositions.map((item) => myPositionIds.push(item?.id));
+  unipilotPositions.map((item) => myPositionIds.push(item?.id));
+  ichiPositions.map((item) => myPositionIds.push(item?.address));
+  steerPositions.map((item) => myPositionIds.push(item?.address));
+  if (gammaPositions.data) {
+    const gammaIds = Object.keys(gammaPositions?.data).filter((item) =>
+      item.includes('0x'),
+    );
+    gammaIds.map((item) => myPositionIds.push(item));
+  }
 
   const farmFilters = useMemo(
     () => [
@@ -68,12 +83,8 @@ const AllMerklFarms: React.FC<Props> = ({
   );
   const [farmFilter, setFarmFilter] = useState(farmFilters[0].id);
 
-  const [selectedSort, setSelectedSort] = useState(
-    GlobalConst.utils.v3FarmSortBy.pool,
-  );
   const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
   const [sortDesc, setSortDesc] = useState(false);
-  const [isOld, setIsOld] = useState(true);
   const sortMultiplier = sortDesc ? 1 : -1;
 
   const sortColumns = [
@@ -102,39 +113,6 @@ const AllMerklFarms: React.FC<Props> = ({
       justify: 'flex-start',
     },
   ];
-
-  const sortItems = [
-    {
-      label: t('pool'),
-      value: GlobalConst.utils.v3FarmSortBy.pool,
-    },
-    {
-      label: t('tvl'),
-      value: GlobalConst.utils.v3FarmSortBy.tvl,
-    },
-    {
-      label: t('apr'),
-      value: GlobalConst.utils.v3FarmSortBy.apr,
-    },
-    {
-      label: t('rewards'),
-      value: GlobalConst.utils.v3FarmSortBy.rewards,
-    },
-  ];
-
-  const sortByDesktopItems = sortColumns.map((item) => {
-    return {
-      ...item,
-      onClick: () => {
-        if (sortBy === item.index) {
-          setSortDesc(!sortDesc);
-        } else {
-          setSortBy(item.index);
-          setSortDesc(false);
-        }
-      },
-    };
-  });
 
   useEffect(() => {
     setSortBy(sortValue);
@@ -265,74 +243,110 @@ const AllMerklFarms: React.FC<Props> = ({
       return 1;
     });
 
-  const parsedQuery = useParsedQueryString();
-  const poolId =
-    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
-  const selectedPool = v3Farms.find(
-    (item) => poolId && item.pool.toLowerCase() === poolId.toLowerCase(),
-  );
-  const currency0 = useCurrency(selectedPool?.token0);
-  const currency1 = useCurrency(selectedPool?.token1);
+  const selectedPool: any = v3Farms.filter((item) => {
+    const selectedAml = item?.alm.filter((almItem: any) => {
+      const myPositionId = (myPositionIds as string[]).find(
+        (myPositionId) =>
+          almItem.almAddress.toLowerCase() === myPositionId.toLowerCase(),
+      );
+
+      if (myPositionId) return true;
+      else return false;
+    });
+
+    if (positions) {
+      const qsPosition = positions.find(
+        (position) =>
+          position.token0.toLowerCase() === item.token0.toLowerCase() &&
+          position.token1.toLowerCase() === item.token1.toLowerCase(),
+      );
+
+      return selectedAml.length > 0 || qsPosition;
+    }
+  });
 
   const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
-    .filter(
-      (item) =>
-        !!(selectedPool?.alm ?? []).find(
+    .filter((item) => {
+      // Check if any pool in selectedPool contains the almAddress
+      return (selectedPool ?? []).some((pool: any) =>
+        (pool.alm ?? []).some(
           (alm: any) => alm.almAddress.toLowerCase() === item.id.toLowerCase(),
         ),
-    )
+      );
+    })
     .map((item) => item.id);
   const defiEdgeTitles = useDefiEdgeRangeTitles(selectedDefiEdgeIds);
-  const selectedFarms: any[] = useMemo(() => {
-    const almFarms: any[] = selectedPool?.alm ?? [];
-    return almFarms.map((alm) => {
-      let title = alm.title ?? '';
-      if (alm.label.includes('Gamma')) {
-        title =
-          getAllGammaPairs(chainId).find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
-      } else if (alm.label.includes('DefiEdge')) {
-        title =
-          defiEdgeTitles.find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
-      }
-      const farmType = alm.label.split(' ')[0];
-      const poolRewards = selectedPool?.rewardsPerToken;
-      const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
-      const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
-      const rewards = rewardData
-        .map((item, ind) => {
-          return { ...item, address: rewardTokenAddresses[ind] };
-        })
-        .filter((item) => {
-          const accumulatedRewards = item.breakdownOfAccumulated;
-          return (
-            accumulatedRewards &&
-            Object.keys(accumulatedRewards).find((item) =>
-              item.includes(farmType),
-            )
-          );
-        });
-      return {
-        ...alm,
-        token0: selectedPool?.token0,
-        token1: selectedPool?.token1,
-        title,
-        rewards,
-        poolFee:
-          (selectedPool?.ammName ?? '').toLowerCase() === 'quickswapuni'
-            ? selectedPool?.poolFee
-            : undefined,
-      };
+  const selectedFarmsPre: any[] = useMemo(() => {
+    return selectedPool.map((pool: any) => {
+      const almFarms: any[] = pool?.alm ?? [];
+      return almFarms.map((alm) => {
+        let title = alm.title ?? '';
+        if (alm.label.includes('Gamma')) {
+          title =
+            getAllGammaPairs(chainId).find(
+              (item) =>
+                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            )?.title ?? '';
+        } else if (alm.label.includes('DefiEdge')) {
+          title =
+            defiEdgeTitles.find(
+              (item) =>
+                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
+            )?.title ?? '';
+        }
+        const farmType = alm.label.split(' ')[0];
+        const poolRewards = pool?.rewardsPerToken;
+        const rewardTokenAddresses = poolRewards
+          ? Object.keys(poolRewards)
+          : [];
+        const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
+        const rewards = rewardData
+          .map((item, ind) => {
+            return { ...item, address: rewardTokenAddresses[ind] };
+          })
+          .filter((item) => {
+            const accumulatedRewards = item.breakdownOfAccumulated;
+            return (
+              accumulatedRewards &&
+              Object.keys(accumulatedRewards).find((item) =>
+                item.includes(farmType),
+              )
+            );
+          });
+        return {
+          ...alm,
+          token0: pool?.token0,
+          token1: pool?.token1,
+          title,
+          rewards,
+          poolFee:
+            (pool?.ammName ?? '').toLowerCase() === 'quickswapuni'
+              ? pool?.poolFee
+              : undefined,
+        };
+      });
     });
   }, [chainId, defiEdgeTitles, selectedPool]);
+  const combinedArray = [].concat(...selectedFarmsPre);
+
+  const selectedFarms = combinedArray.filter((item: any) => {
+    const myPositionId = (myPositionIds as string[]).find(
+      (myPositionId) =>
+        item.almAddress.toLowerCase() === myPositionId.toLowerCase(),
+    );
+
+    const qsPosition = positions?.find(
+      (position) =>
+        position.token0.toLowerCase() === item.token0.toLowerCase() &&
+        position.token1.toLowerCase() === item.token1.toLowerCase() &&
+        item.label.includes('Quickswap'),
+    );
+
+    return qsPosition || myPositionId;
+  });
 
   const farmTypes = useMemo(() => {
-    const mTypes = selectedFarms.reduce((memo: string[], item) => {
+    const mTypes = selectedFarms.reduce((memo: string[], item: any) => {
       if (item.title && !memo.includes(item.title)) {
         memo.push(item.title);
       }
@@ -356,125 +370,32 @@ const AllMerklFarms: React.FC<Props> = ({
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item) =>
+    const farmsFilteredWithRewards = selectedFarms.filter((item: any) =>
       staked ? item.rewards.length > 0 : true,
     );
     if (farmType.link === 'all') {
       return farmsFilteredWithRewards;
     }
     return farmsFilteredWithRewards.filter(
-      (item) => item.title && item.title === farmType.link,
+      (item: any) => item.title && item.title === farmType.link,
     );
   }, [farmType.link, selectedFarms, staked]);
 
   return (
     <>
-      {poolId && (
-        <>
-          <Box className='flex items-center justify-between' pt={2} mx={2}>
-            <Box className='flex items-center'>
-              <Box
-                className='flex items-center cursor-pointer back-to-farm'
-                gridGap={3}
-                onClick={() => history.push('/farm')}
-                mr={2}
-              >
-                <KeyboardArrowLeft />
-                <small>{t('Back')}</small>
-              </Box>
-              <Box className='flex items-center' gridGap={8}>
-                <DoubleCurrencyLogo
-                  currency0={currency0 ?? undefined}
-                  currency1={currency1 ?? undefined}
-                  size={24}
-                />
-                <h5 className='weight-500'>
-                  {currency0?.symbol}/{currency1?.symbol}
-                </h5>
-              </Box>
-            </Box>
-            {!isMobile && (
-              <Box className='flex items-center' gridGap={16}>
-                <Box
-                  className='sortSelectBox'
-                  width={isMobile ? '100%' : 'auto'}
-                >
-                  <label>Sort by: </label>
-                  <Select value={selectedSort} className='sortSelect'>
-                    {sortItems.map((item) => (
-                      <MenuItem
-                        key={item.value}
-                        value={item.value}
-                        onClick={() => {
-                          setSelectedSort(item.value);
-                        }}
-                      >
-                        {item.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Box>
-                <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>{t('oldFarms')}</small>
-                  <ToggleSwitch
-                    toggled={isOld}
-                    onToggle={() => setIsOld(!isOld)}
-                  />
-                </Box>
-              </Box>
-            )}
-          </Box>
-        </>
-      )}
-
       <Box pt={2}>
-        {poolId ? (
-          <Box className='flex justify-between items-center' px={2} mb={2}>
-            <Box className='flex'>
-              {selectedFarms.length > 1 && (
-                <CustomSelector
-                  height={36}
-                  items={farmTypes}
-                  selectedItem={farmType}
-                  handleChange={setFarmType}
-                />
-              )}
-            </Box>
-            {isMobile && (
-              <Box className='flex items-center' gridGap={16}>
-                <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>{t('oldFarms')}</small>
-                  <ToggleSwitch
-                    toggled={isOld}
-                    onToggle={() => setIsOld(!isOld)}
-                  />
-                </Box>
-              </Box>
+        <Box className='flex justify-between items-center' px={2} mb={2}>
+          <Box className='flex'>
+            {selectedFarms.length > 1 && (
+              <CustomSelector
+                height={36}
+                items={farmTypes}
+                selectedItem={farmType}
+                handleChange={setFarmType}
+              />
             )}
           </Box>
-        ) : (
-          <>
-            <Box pl='12px' className='bg-secondary1' mb={isMobile ? '16px' : 0}>
-              <CustomTabSwitch
-                items={farmFilters}
-                value={farmFilter}
-                handleTabChange={setFarmFilter}
-                height={50}
-              />
-            </Box>
-            {!isMobile && (
-              <Box px={5} py={1}>
-                <Box width='90%'>
-                  <SortColumns
-                    sortColumns={sortByDesktopItems}
-                    selectedSort={sortBy}
-                    sortDesc={sortDesc}
-                  />
-                </Box>
-              </Box>
-            )}
-          </>
-        )}
+        </Box>
 
         {loading ? (
           <Box minHeight={200} className='flex justify-center items-center'>
@@ -482,26 +403,10 @@ const AllMerklFarms: React.FC<Props> = ({
           </Box>
         ) : (
           <Box px={2}>
-            {poolId ? (
-              filteredSelectedFarms.length > 0 ? (
-                filteredSelectedFarms.map((farm, ind) => (
-                  <Box key={ind} pb={2}>
-                    <MerklPairFarmCard farm={farm} />
-                  </Box>
-                ))
-              ) : (
-                <Box
-                  width='100%'
-                  minHeight={200}
-                  className='flex items-center justify-center'
-                >
-                  <p>{t('nofarms')}</p>
-                </Box>
-              )
-            ) : v3Farms.length > 0 ? (
-              v3Farms.map((farm, ind) => (
+            {filteredSelectedFarms.length > 0 ? (
+              filteredSelectedFarms.map((farm, ind) => (
                 <Box key={ind} pb={2}>
-                  <MerklFarmCard farm={farm} />
+                  <MerklPairFarmCard farm={farm} />
                 </Box>
               ))
             ) : (
@@ -520,4 +425,4 @@ const AllMerklFarms: React.FC<Props> = ({
   );
 };
 
-export default AllMerklFarms;
+export default MyRewardFarms;

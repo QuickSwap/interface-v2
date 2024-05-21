@@ -1,0 +1,76 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.sortSelectBox {
+    label {
+        color: #696c80;
+    }
+
+    .sortSelect {
+        margin-left: 12px;
+        background: #282d3d;
+        border-radius: 10px;
+        padding: 6px 16px;
+        font-size: 14px;
+    }
+
+    .MuiSelect-select {
+        padding-right: 16px;
+        color: #ccced9;
+    }
+
+    .MuiInput-underline:before,
+    .MuiInput-underline:after,
+    .MuiInput-underline:hover:not(.Mui-disabled):before {
+        border: unset;
+    }
+
+    .MuiSelect-select:focus {
+        background-color: transparent;
+    }
+
+    .MuiSelect-icon {
+        margin-right: 6px;
+    }
+}
+
+.back-to-farm {
+    background: #282d3d;
+    padding: 2px 10px 2px 0px;
+    border-radius: 8px;
+    color: #ccced9;
+
+    svg {
+        color: #448aff;
+    }
+}
+
+.pageHeading {
+    .version-toggle-container {
+        height: 28px;
+        display: flex;
+        border: 1px solid rgba(130, 177, 255, 0.08);
+        border-radius: 8px;
+
+        & > div {
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            cursor: pointer;
+
+            &.version-toggle-active {
+                background-color: rgba(68, 138, 255, 0.3);
+                border: 1px solid #448aff;
+
+                small {
+                    color: #c7cad9;
+                }
+            }
+
+            small {
+                color: #696c80;
+            }
+        }
+    }
+}

@@ -928,5 +928,7 @@
   "addDestinationAddress": "Add destination address",
   "slipPage": "Slippage",
   "minimumReceived": "Minimum Received",
-  "priceImpact": "Price Imppact"
+  "priceImpact": "Price Imppact",
+  "oldFarms": "Old Farms",
+  "poolManager": "Pool Manager"
 }
