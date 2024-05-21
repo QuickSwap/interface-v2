@@ -543,6 +543,8 @@ const SwapBestTrade: React.FC<{
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
+    } else if (approval === ApprovalState.APPROVED) {
+      setApprovalSubmitted(false);
     }
   }, [approval]);
 
@@ -562,6 +564,7 @@ const SwapBestTrade: React.FC<{
     callback: paraswapCallback,
     error: paraswapCallbackError,
   } = useParaswapCallback(
+    allowedSlippage,
     optimalRate,
     recipient,
     inputCurrency,
@@ -1076,14 +1079,14 @@ const SwapBestTrade: React.FC<{
     approval, //Added to trigger bonus route search when approval changes
   ]);
   //Reset approvalSubmitted when approval changes, it's needed when user hadn't nor paraswap neither wallchain approvals
-  useEffect(() => {
-    if (
-      approval === ApprovalState.NOT_APPROVED ||
-      approval === ApprovalState.UNKNOWN
-    ) {
-      setApprovalSubmitted(false);
-    }
-  }, [approval]);
+  // useEffect(() => {
+  //   if (
+  //     approval === ApprovalState.NOT_APPROVED ||
+  //     approval === ApprovalState.UNKNOWN
+  //   ) {
+  //     setApprovalSubmitted(false);
+  //   }
+  // }, [approval]);
 
   useEffect(() => {
     if (
@@ -1327,7 +1330,7 @@ const SwapBestTrade: React.FC<{
                 }
               }}
             >
-              {approval === ApprovalState.PENDING ? (
+              {approvalSubmitted && approval !== ApprovalState.APPROVED ? (
                 <Box className='content'>
                   {t('approving')} <CircularProgress size={16} />
                 </Box>

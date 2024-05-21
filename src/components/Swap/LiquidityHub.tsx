@@ -1,11 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import Web3 from 'web3';
 import BN from 'bignumber.js';
-import {
-  useExpertModeManager,
-  useLiquidityHubManager,
-  useUserSlippageTolerance,
-} from 'state/user/hooks';
+import { useExpertModeManager, useLiquidityHubManager } from 'state/user/hooks';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@material-ui/styles';
@@ -51,6 +47,7 @@ const getApiEndpoint = (chainId: number) => {
 };
 
 export const useLiquidityHubCallback = (
+  allowedSlippage: number,
   inTokenAddress?: string,
   outTokenAddress?: string,
   inTokenCurrency?: Currency,
@@ -67,7 +64,7 @@ export const useLiquidityHubCallback = (
   const isApproved = useApproved();
   const swap = useSwap();
   const sign = useSign();
-  const quote = useQuote();
+  const quote = useQuote(allowedSlippage);
   const wrap = useWrap();
   const isSupported = useIsLiquidityHubSupported();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -82,7 +79,6 @@ export const useLiquidityHubCallback = (
 
   const isProMode = useIsProMode();
   const [expertMode] = useExpertModeManager();
-  const [userSlippageTolerance] = useUserSlippageTolerance();
 
   return async (
     srcAmount?: string,
@@ -104,7 +100,7 @@ export const useLiquidityHubCallback = (
       dstTokenAddress: outTokenAddress,
       dstTokenSymbol: outTokenCurrency?.symbol,
       srcAmount,
-      slippage: userSlippageTolerance / 100,
+      slippage: allowedSlippage / 100,
       walletAddress: account,
       chainId: chainIdToUse,
       dexOutAmountWS,
@@ -386,9 +382,8 @@ const useSwap = () => {
   };
 };
 
-const useQuote = () => {
+const useQuote = (allowedSlippage: number) => {
   const { account, chainId } = useActiveWeb3React();
-  const [userSlippageTolerance] = useUserSlippageTolerance();
   const { lhControl } = useQueryParam();
 
   return async (args: QuoteArgs) => {
@@ -413,7 +408,7 @@ const useQuote = () => {
             inAmount: args.inAmount,
             outAmount: args.minDestAmount,
             user: account,
-            slippage: userSlippageTolerance / 100,
+            slippage: allowedSlippage / 100,
             qs: encodeURIComponent(window.location.hash),
             sessionId: liquidityHubAnalytics.data.sessionId,
           }),

@@ -112,8 +112,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     },
     {
       icon: <img src={logout} alt='logout icon' />,
-      name: 'Disconnect',
+      name: t('disconnect'),
       url: '#',
+      onClick: () => {
+        console.log('logout');
+      },
     },
   ];
 

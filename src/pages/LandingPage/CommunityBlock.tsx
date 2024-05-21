@@ -99,6 +99,7 @@ const CommunityBlock: React.FC = ({}) => {
         backdropFilter: 'blur(40px)',
         width: '100%',
         position: 'relative',
+        overflow: 'hidden',
       }}
     >
       <img

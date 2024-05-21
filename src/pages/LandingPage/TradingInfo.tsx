@@ -77,8 +77,8 @@ const TradingInfo: React.FC = () => {
           <Skeleton variant='rect' width={100} height={45} />
         ) : (
           <Box display='flex'>
-            <sup>$</sup>
             <h3>
+              $
               {formatCompact(
                 (v2 && globalData && globalData.totalLiquidityUSD
                   ? Number(globalData.totalLiquidityUSD)
@@ -104,8 +104,8 @@ const TradingInfo: React.FC = () => {
           <Skeleton variant='rect' width={100} height={45} />
         ) : (
           <Box display='flex'>
-            <sup>$</sup>
             <h3>
+              $
               {formatCompact(
                 (v2 && globalData && globalData.totalVolumeUSD
                   ? Number(globalData.totalVolumeUSD)
@@ -131,8 +131,8 @@ const TradingInfo: React.FC = () => {
           <Skeleton variant='rect' width={100} height={45} />
         ) : (
           <Box display='flex'>
-            <sup>$</sup>
             <h3>
+              $
               {formatCompact(
                 (v2 && globalData && globalData.oneDayVolumeUSD
                   ? Number(globalData.oneDayVolumeUSD)
@@ -156,8 +156,8 @@ const TradingInfo: React.FC = () => {
           <Skeleton variant='rect' width={100} height={45} />
         ) : (
           <Box display='flex'>
-            <sup>$</sup>
             <h3>
+              $
               {formatCompact(
                 (v2 && globalData && globalData.oneDayTxns
                   ? Number(globalData.oneDayTxns)
@@ -181,8 +181,7 @@ const TradingInfo: React.FC = () => {
           <Skeleton variant='rect' width={100} height={45} />
         ) : (
           <Box display='flex'>
-            <sup>$</sup>
-            <h3>{rewards}</h3>
+            <h3>${rewards}</h3>
           </Box>
         )}
       </Box>

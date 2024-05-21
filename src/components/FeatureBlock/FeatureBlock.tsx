@@ -27,7 +27,6 @@ const FeatureBlock: React.FC<FeatureBlockProps> = ({
         display: 'flex',
         flexDirection: 'column',
         backdropFilter: 'blur(24px)',
-        backgroundColor: '#9b9b9b0f',
         borderRadius: '16px',
         alignItems: 'start',
       }}
