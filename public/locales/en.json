@@ -931,5 +931,7 @@
   "priceImpact": "Price Imppact",
   "partners": "Partners",
   "dappOS": "dappOS",
-  "bridge": "Bridge"
+  "bridge": "Bridge",
+  "oldFarms": "Old Farms",
+  "poolManager": "Pool Manager"
 }
