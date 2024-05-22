@@ -923,5 +923,7 @@
   "testnets": "Testnets",
   "stopLimit": "Stop Limit",
   "stopMarket": "Stop Market",
-  "trigger": "Trigger"
+  "trigger": "Trigger",
+  "oldFarms": "Old Farms",
+  "poolManager": "Pool Manager"
 }

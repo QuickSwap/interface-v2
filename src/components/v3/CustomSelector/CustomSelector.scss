@@ -4,7 +4,7 @@
 .customSelectorWrapper {
   display: flex;
   align-items: center;
-  border: 2px solid $divider;
+  // border: 2px solid $divider;
   border-radius: 8px;
 }
 
@@ -32,9 +32,9 @@
 }
 
 .selectedCustomSelector {
-  background-color: $grey32;
+  background-color: #282d3d;
   border-radius: 8px;
   & small {
-    color: $black1;
+    color: rgba(255, 255, 255, 0.8);
   }
 }

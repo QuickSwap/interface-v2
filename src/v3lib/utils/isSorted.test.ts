@@ -1,5 +1,5 @@
 import { isSorted } from './isSorted';
-
+import { expect } from '@jest/globals';
 describe('#isSorted', () => {
   it('empty list', () => {
     expect(isSorted([], (a: number, b: number) => a - b)).toEqual(true);

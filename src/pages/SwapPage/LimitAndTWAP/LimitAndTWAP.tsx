@@ -4,37 +4,49 @@ import {
   Orders as QuickSwapOrders,
 } from '@orbs-network/twap-ui-quickswap';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { SwapSide } from '@paraswap/sdk';
+import { useQuery } from '@tanstack/react-query';
+import BN from 'bignumber.js';
 import { CurrencySearchModal } from 'components';
 import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
+import { GlobalValue, paraswapTaxBuy, paraswapTaxSell } from 'constants/index';
 import { useIsProMode, useActiveWeb3React } from 'hooks';
-import { useAllTokens, useCurrency } from 'hooks/Tokens';
+import { useAllTokens } from 'hooks/Tokens';
+import useGasPrice from 'hooks/useGasPrice';
+import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import React, { FC, useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   useDefaultsFromURLSearch,
+  useDerivedSwapInfo,
   useSwapActionHandlers,
 } from 'state/swap/hooks';
 import { Field } from 'state/swap/v3/actions';
+import { useExpertModeManager } from 'state/user/hooks';
 import { getTokenLogoURL } from 'utils/getTokenLogoURL';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 const getLogo = (value: string) => {
   return getTokenLogoURL(value).find((it) => it !== 'error') as any;
 };
 
+const usePriceUSD = (address?: string) => {
+  return useUSDCPriceFromAddress(address ?? '').price;
+};
+
 function TWAPBase({ limit }: { limit?: boolean }) {
   const { account, chainId, library } = useActiveWeb3React();
-  const loadedUrlParams = useDefaultsFromURLSearch();
-  const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
-  const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
-
-  const inputCurrency = useCurrency(inputCurrencyId);
-  const outputCurrency = useCurrency(outputCurrencyId);
+  useDefaultsFromURLSearch();
+  const [srcAmount, setSrcAmount] = useState('');
+  const gasPrice = useGasPrice();
 
   const allTokens = useAllTokens();
   const { open } = useWeb3Modal();
-  const onCurrencySelection = useSwapActionHandlers().onCurrencySelection;
-  const isProMode = useIsProMode();
+  const { onCurrencySelection } = useSwapActionHandlers();
+  const { isProMode } = useIsProMode();
   const { redirectWithCurrency } = useSwapRedirects();
+
+  const { currencies } = useDerivedSwapInfo();
 
   const onSrcSelect = useCallback(
     (token: any) => {
@@ -73,6 +85,80 @@ function TWAPBase({ limit }: { limit?: boolean }) {
     [limit, chainId],
   );
 
+  const onInputChange = useCallback(
+    (value: string) => {
+      setSrcAmount(value);
+    },
+    [setSrcAmount],
+  );
+
+  const paraswap = useParaswap();
+  const [isExpertMode] = useExpertModeManager();
+
+  const maxImpactAllowed = useMemo(() => {
+    return isExpertMode
+      ? 100
+      : Number(
+          GlobalValue.percents.BLOCKED_PRICE_IMPACT_NON_EXPERT.multiply(
+            '100',
+          ).toFixed(4),
+        );
+  }, [isExpertMode]);
+
+  const hasSrcAmount = BN(srcAmount || '0').gt(0);
+  const inputCurrency = currencies[Field.INPUT];
+  const outputCurrency = currencies[Field.OUTPUT];
+  const srcToken = inputCurrency
+    ? getBestTradeCurrencyAddress(inputCurrency, chainId)
+    : undefined;
+  const destToken = outputCurrency
+    ? getBestTradeCurrencyAddress(outputCurrency, chainId)
+    : undefined;
+
+  const {
+    isLoading: loadingOptimalRate,
+    data: optimalRateData,
+    refetch: reFetchOptimalRate,
+  } = useQuery({
+    queryKey: [
+      'fetchTwapOptimalRate',
+      srcToken,
+      destToken,
+      srcAmount,
+      account,
+      chainId,
+      maxImpactAllowed,
+    ],
+    queryFn: async () => {
+      if (!srcToken || !destToken || !srcAmount || !account)
+        return { error: undefined, rate: undefined };
+      try {
+        const rate = await paraswap.getRate({
+          srcToken,
+          destToken,
+          srcDecimals: inputCurrency?.decimals,
+          destDecimals: outputCurrency?.decimals,
+          amount: srcAmount,
+          side: SwapSide.SELL,
+          options: {
+            includeDEXS: 'quickswap,quickswapv3,quickswapv3.1,quickperps',
+            maxImpact: maxImpactAllowed,
+            partner: 'quickswapv3',
+            //@ts-ignore
+            srcTokenTransferFee: paraswapTaxSell[srcToken.toLowerCase()],
+            destTokenTransferFee: paraswapTaxBuy[destToken.toLowerCase()],
+          },
+        });
+
+        return { error: undefined, rate };
+      } catch (err) {
+        return { error: err.message, rate: undefined };
+      }
+    },
+    refetchInterval: 5000,
+    enabled: !!srcToken && !!destToken && hasSrcAmount && !!account,
+  });
+
   return (
     <>
       <QuickSwapTWAP
@@ -92,6 +178,11 @@ function TWAPBase({ limit }: { limit?: boolean }) {
         onDstTokenSelected={onDstSelect}
         getTokenLogoURL={getLogo}
         onTxSubmitted={onTxSubmitted}
+        usePriceUSD={usePriceUSD}
+        onInputChange={onInputChange}
+        dstAmountOut={optimalRateData?.rate?.destAmount}
+        dstAmountLoading={hasSrcAmount && loadingOptimalRate}
+        maxFeePerGas={gasPrice?.toString()}
       />
       <QuickSwapOrders />
     </>

@@ -333,6 +333,8 @@ const SwapV3Page: React.FC = () => {
   useEffect(() => {
     if (approvalState === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
+    } else if (approvalState === ApprovalState.APPROVED) {
+      setApprovalSubmitted(false);
     }
   }, [approvalState, approvalSubmitted]);
 
@@ -936,7 +938,8 @@ const SwapV3Page: React.FC = () => {
                             currencies[Field.INPUT]?.symbol
                           }`}
                     </span>
-                    {approvalState === ApprovalState.PENDING ? (
+                    {approvalSubmitted &&
+                    approvalState !== ApprovalState.APPROVED ? (
                       <Loader stroke='white' />
                     ) : (approvalSubmitted &&
                         approvalState === ApprovalState.APPROVED) ||

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import ClaimAllBg from 'assets/images/claimAllBg.png';
 import { useTranslation } from 'react-i18next';
 import { useGetMerklFarms } from 'hooks/v3/useV3Farms';
@@ -16,6 +16,8 @@ export const MerklClaimAll: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const { isLoading: loadingFarms, data: merklFarms } = useGetMerklFarms();
   const tokenMap = useSelectedTokenList();
+  const { breakpoints } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down('xs'));
 
   const rewards = useMemo(() => {
     if (!merklFarms) return [];
@@ -67,7 +69,7 @@ export const MerklClaimAll: React.FC = () => {
   const { claiming, claimReward } = useClaimMerklRewards();
 
   return (
-    <Box className='claimAllBox'>
+    <Box className={isMobile ? 'claimAllBox mobile' : 'claimAllBox'}>
       <img src={ClaimAllBg} width='100%' />
       <Box className='flex flex-col' gridGap={8}>
         <p>{t('myrewards')}</p>
