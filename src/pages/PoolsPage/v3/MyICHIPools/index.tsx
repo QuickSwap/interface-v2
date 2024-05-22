@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import ICHILPItem from './ICHILPItem';
 import { useICHIPositions } from 'hooks/v3/useV3Positions';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 export default function MyICHIPools() {
   const { t } = useTranslation();
@@ -12,7 +12,7 @@ export default function MyICHIPools() {
 
   const showConnectAWallet = Boolean(!account);
 
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   const { positions } = useICHIPositions();
 
@@ -29,7 +29,7 @@ export default function MyICHIPools() {
           <p>{t('noLiquidityPositions')}.</p>
           {showConnectAWallet && (
             <Box maxWidth={250} margin='20px auto 0'>
-              <Button fullWidth onClick={toggleWalletModal}>
+              <Button fullWidth onClick={() => open()}>
                 {t('connectWallet')}
               </Button>
             </Box>

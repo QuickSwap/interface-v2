@@ -4,7 +4,6 @@
   width: 40px;
   height: 20px;
   position: relative;
-  cursor: pointer;
   border-radius: 10px;
   border: 1px solid $textDisabled;
   background-color: transparent;
@@ -26,5 +25,5 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  right: 'unset'
+  right: 'unset';
 }

@@ -15,7 +15,7 @@ import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
 import TradePrice from 'components/v3/swap/TradePrice';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import { useActiveWeb3React, useGetConnection, useMasaAnalytics } from 'hooks';
+import { useActiveWeb3React, useMasaAnalytics } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import {
   ApprovalState,
@@ -40,7 +40,6 @@ import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
 import {
   useDefaultsFromURLSearch,
@@ -48,7 +47,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/v3/hooks';
-import { useExpertModeManager, useSelectedWallet } from 'state/user/hooks';
+import { useExpertModeManager } from 'state/user/hooks';
 import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -74,6 +73,7 @@ import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
+import { useWalletInfo, useWeb3Modal } from '@web3modal/ethers5/react';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -114,7 +114,7 @@ const SwapV3Page: React.FC = () => {
   //   });
 
   // toggle wallet when disconnected
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager();
@@ -370,8 +370,6 @@ const SwapV3Page: React.FC = () => {
 
   const { fireEvent } = useMasaAnalytics();
   const config = getConfig(chainId);
-  const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     currencies[Field.INPUT]?.wrapped.address ?? '',
   );
@@ -402,6 +400,8 @@ const SwapV3Page: React.FC = () => {
     });
 
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
+
+  const { walletInfo } = useWalletInfo();
 
   const handleSwap = useCallback(() => {
     onV3TradeAnalytics(formattedAmounts);
@@ -458,10 +458,9 @@ const SwapV3Page: React.FC = () => {
           if (
             account &&
             currencies[Field.INPUT] &&
-            selectedWallet &&
+            walletInfo &&
             chainId === ChainId.MATIC
           ) {
-            const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -471,7 +470,7 @@ const SwapV3Page: React.FC = () => {
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: currencies[Field.INPUT].symbol ?? '',
               additionalEventData: {
-                wallet: connection.name,
+                wallet: walletInfo.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -498,24 +497,23 @@ const SwapV3Page: React.FC = () => {
         });
       });
   }, [
+    onV3TradeAnalytics,
+    formattedAmounts,
     swapCallback,
-    account,
-    currencies,
-    selectedWallet,
-    chainId,
     tradeToConfirm,
     showConfirm,
-    getConnection,
-    fireEvent,
-    config,
-    formattedAmounts,
-    fromTokenUSDPrice,
     finalizedTransaction,
     recipient,
     recipientAddress,
+    account,
     trade,
+    currencies,
+    walletInfo,
+    chainId,
+    fireEvent,
+    config,
     isUni,
-    onV3TradeAnalytics,
+    fromTokenUSDPrice,
   ]);
 
   // errors
@@ -851,7 +849,7 @@ const SwapV3Page: React.FC = () => {
 
         <Box className='swapButtonWrapper'>
           {!account ? (
-            <Button fullWidth onClick={toggleWalletModal}>
+            <Button fullWidth onClick={() => open()}>
               {t('connectWallet')}
             </Button>
           ) : showNativeConvert ? (

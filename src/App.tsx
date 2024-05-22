@@ -8,6 +8,8 @@ import {
 import { Provider } from 'react-redux';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
+import { OrderlyConfigProvider } from '@orderly.network/hooks';
+const PerpsPage = lazy(() => import('./pages/PerpsPage'));
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -48,7 +50,7 @@ const MigrateV2DetailsPage = lazy(() =>
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
 
 import { PageLayout } from 'layouts';
-import { Web3ReactManager, Popups, TermsWrapper } from 'components';
+import { Popups, TermsWrapper } from 'components';
 import ApplicationUpdater from 'state/application/updater';
 import TransactionUpdater from 'state/transactions/updater';
 import ListsUpdater from 'state/lists/updater';
@@ -64,6 +66,56 @@ import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
+import '@orderly.network/react/dist/styles.css';
+import './index.scss';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import { ChainId } from '@uniswap/sdk';
+import { SUPPORTED_CHAINIDS } from 'constants/index';
+import { getConfig } from 'config/index';
+
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
+
+const metadata = {
+  name: 'QuickSwap',
+  description: 'Largest DEX on Polygon',
+  url: 'https://quickswap.exchange',
+  icons: ['https://quickswap.exchange/logo_circle.png'],
+};
+
+const ethersConfig = defaultConfig({
+  metadata,
+  defaultChainId: ChainId.MATIC,
+});
+
+const chainsToShow = SUPPORTED_CHAINIDS.filter((chainId) => {
+  const config = getConfig(chainId);
+  return !!config;
+});
+const chains = chainsToShow.map((chainId) => {
+  const config = getConfig(chainId);
+  return {
+    chainId,
+    name: config['networkName'],
+    currency: config['nativeCurrency']['symbol'],
+    explorerUrl: config['blockExplorer'],
+    rpcUrl: config['rpc'],
+  };
+});
+
+const chainImages: { [chainId: number]: string } = {};
+chainsToShow.forEach((chainId) => {
+  const config = getConfig(chainId);
+  chainImages[chainId] = config['nativeCurrencyImage'];
+});
+
+createWeb3Modal({
+  ethersConfig,
+  chains,
+  chainImages,
+  projectId,
+  enableAnalytics: true,
+  allowUnsupportedChain: true,
+});
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
   const theme = mainTheme;
@@ -104,11 +156,11 @@ const App: React.FC = () => {
   return (
     <ArcxAnalyticsProvider apiKey={arcxAPIKey}>
       <QueryClientProvider client={queryClient}>
-        <Route component={GoogleAnalyticsReporter} />
-        <Provider store={store}>
-          <Providers>
-            <TermsWrapper>
-              <Web3ReactManager>
+        <OrderlyConfigProvider brokerId='quick_perps' networkId='mainnet'>
+          <Route component={GoogleAnalyticsReporter} />
+          <Provider store={store}>
+            <Providers>
+              <TermsWrapper>
                 <Updaters />
                 <Popups />
                 <Switch>
@@ -135,6 +187,11 @@ const App: React.FC = () => {
                   <Route exact strict path='/pool/:tokenId'>
                     <PageLayout>
                       <PositionPage></PositionPage>
+                    </PageLayout>
+                  </Route>
+                  <Route exact strict path='/perpsV2'>
+                    <PageLayout>
+                      <PerpsPage />
                     </PageLayout>
                   </Route>
                   <Route
@@ -243,10 +300,10 @@ const App: React.FC = () => {
                     </PageLayout>
                   </Route>
                 </Switch>
-              </Web3ReactManager>
-            </TermsWrapper>
-          </Providers>
-        </Provider>
+              </TermsWrapper>
+            </Providers>
+          </Provider>
+        </OrderlyConfigProvider>
       </QueryClientProvider>
     </ArcxAnalyticsProvider>
   );
