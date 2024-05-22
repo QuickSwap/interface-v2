@@ -22,7 +22,6 @@ import walletIcon from 'assets/images/icons/wallet.png';
 import {
   currencyEquals,
   Token,
-  ETHER,
   CurrencyAmount,
   ChainId,
   WETH,
@@ -38,6 +37,13 @@ import useUSDCPrice from 'hooks/v3/useUSDCPrice';
 import { Currency } from '@uniswap/sdk';
 import { useDefaultCurrencies } from 'state/zap/hooks';
 import { ethers } from 'ethers';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import {
+  DLQUICK,
+  ETHER,
+  nativeTokenSymbols,
+  wrappedTokenAddresses,
+} from 'constants/v3/addresses';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -71,6 +77,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
   const [balance, setBalance] = useState<string | null>(null);
+  const tokenAddress =
+    wrappedTokenAddresses[chainId as keyof typeof wrappedTokenAddresses];
+
+  const price = useUSDCPriceFromAddress(tokenAddress);
 
   const getCurrentBalance = async () => {
     if (!account || !provider) return null;
@@ -202,11 +212,13 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               marginBottom: '8px',
             }}
           >
-            {balance ?? '-'} MATIC
+            {balance ?? '-'}{' '}
+            {nativeTokenSymbols?.[chainId as keyof typeof nativeTokenSymbols] ||
+              ''}
           </Typography>
-          {/* <Typography style={{ color: '#696c80', fontSize: '14px' }}>
-              $26.59
-            </Typography> */}
+          <Typography style={{ color: '#696c80', fontSize: '14px' }}>
+            ${(+price.price * +(balance || 0) || 0)?.toFixed(2)}
+          </Typography>
         </Box>
       </Box>
       <Box>
