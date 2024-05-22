@@ -45,7 +45,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const { account, chainId, connector } = useActiveWeb3React();
-  console.log('🚀 ~ account, chainId, connector:', account, chainId, connector);
   //const { ENSName } = useENSName(account ?? undefined);
   const { udDomain } = useUDDomain();
   //const [openDetailMenu, setOpenDetailMenu] = useState(false);
@@ -66,7 +65,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     .map((tx: any) => tx.hash);
   const tabletWindowSize = useMediaQuery(theme.breakpoints.down('sm'));
   const mobileWindowSize = useMediaQuery(theme.breakpoints.down('xs'));
-  console.log('🚀 ~ tabletWindowSize:', mobileWindowSize, tabletWindowSize);
   const toggleWalletModal = useWalletModalToggle();
   const deviceWidth = useDeviceWidth();
   const [headerClass, setHeaderClass] = useState('');
@@ -199,11 +197,32 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     id: 'earn-tab',
     link: '/',
     items: [],
-    isNew: true,
+  };
+
+  const partnersTab: HeaderMenuItem = {
+    text: t('partners'),
+    id: 'partners',
+    link: '/partners',
+    items: [
+      {
+        link: '/dappOS',
+        text: 'DappOS',
+        id: 'dappos-page-link',
+        isExternal: true,
+        target: '_blank',
+        externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+      },
+      {
+        id: 'bridge',
+        text: t('bridge'),
+        link: '/bridge',
+      },
+    ],
   };
   if (showEarn) {
     menuItems.push(earnTab);
   }
+  menuItems.push(partnersTab);
   if (showFarm) {
     if (showEarn) {
       earnTab.items?.push({
@@ -293,17 +312,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'convert-quick',
     });
   }
-  if (showDappOS) {
-    menuItems.push({
-      link: '/dappos',
-      text: 'DappOS',
-      id: 'dappos-page-link',
-      isExternal: true,
-      target: '_blank',
-      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-      isNew: true,
-    });
-  }
+
   if (showLending) {
     menuItems.push({
       link: '/lend',

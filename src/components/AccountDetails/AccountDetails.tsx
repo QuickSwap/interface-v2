@@ -3,7 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import 'components/styles/AccountDetails.scss';
 import { useActiveWeb3React } from 'hooks';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
@@ -19,8 +19,31 @@ import logout from 'assets/images/icons/logout.svg';
 import copyIcon from 'assets/images/icons/copy.svg';
 import cogIcon from 'assets/images/icons/cog.png';
 import walletIcon from 'assets/images/icons/wallet.png';
-
+import {
+  currencyEquals,
+  Token,
+  CurrencyAmount,
+  ChainId,
+  WETH,
+} from '@uniswap/sdk';
 import { Link } from 'react-router-dom';
+import {
+  useAllTokenBalances,
+  useCurrencyBalance,
+  useETHBalances,
+} from 'state/wallet/hooks';
+import { networkConnection } from 'connectors';
+import useUSDCPrice from 'hooks/v3/useUSDCPrice';
+import { Currency } from '@uniswap/sdk';
+import { useDefaultCurrencies } from 'state/zap/hooks';
+import { ethers } from 'ethers';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import {
+  DLQUICK,
+  ETHER,
+  nativeTokenSymbols,
+  wrappedTokenAddresses,
+} from 'constants/v3/addresses';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -47,12 +70,28 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   ENSName,
   openOptions,
 }) => {
-  const { chainId, account, connector } = useActiveWeb3React();
+  const { chainId, account, connector, provider } = useActiveWeb3React();
   const { udDomain, updateUDDomain } = useUDDomain();
   const { updateSelectedWallet } = useSelectedWallet();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
+  const [balance, setBalance] = useState<string | null>(null);
+  const tokenAddress =
+    wrappedTokenAddresses[chainId as keyof typeof wrappedTokenAddresses];
+
+  const price = useUSDCPriceFromAddress(tokenAddress);
+
+  const getCurrentBalance = async () => {
+    if (!account || !provider) return null;
+    const balance = await provider?.getBalance(account || '');
+
+    setBalance(ethers.utils.formatEther(balance || '0'));
+  };
+
+  useEffect(() => {
+    getCurrentBalance();
+  }, [account, provider]);
 
   function formatConnectorName() {
     const name = getWalletKeys(connector, chainId).map(
@@ -114,8 +153,18 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       icon: <img src={logout} alt='logout icon' />,
       name: t('disconnect'),
       url: '#',
-      onClick: () => {
-        console.log('logout');
+      onClick: async () => {
+        if (arcxSdk) {
+          await arcxSdk.disconnection({ account, chainId });
+        }
+        if (connector && connector.deactivate) {
+          await connector.deactivate();
+        }
+        await connector.resetState();
+        updateSelectedWallet(undefined);
+
+        const localChainId = localStorage.getItem('localChainId');
+        await networkConnection.connector.activate(Number(localChainId));
       },
     },
   ];
@@ -157,18 +206,41 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       >
         <Box className=''>
           <Typography
-            style={{ color: '#c7cad9', fontSize: '24px', marginBottom: '8px' }}
+            style={{
+              color: '#c7cad9',
+              fontSize: '24px',
+              marginBottom: '8px',
+            }}
           >
-            52.24 MATIC
+            {balance ?? '-'}{' '}
+            {nativeTokenSymbols?.[chainId as keyof typeof nativeTokenSymbols] ||
+              ''}
           </Typography>
           <Typography style={{ color: '#696c80', fontSize: '14px' }}>
-            $26.59
+            ${(+price.price * +(balance || 0) || 0)?.toFixed(2)}
           </Typography>
         </Box>
       </Box>
       <Box>
         {links?.map((item, index) => {
-          return (
+          return item.onClick ? (
+            <div
+              onClick={item.onClick}
+              style={{
+                height: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '18px',
+                textDecoration: 'none',
+                fontSize: '16px',
+                color: '#c7cad9',
+                cursor: 'pointer',
+              }}
+            >
+              {item.icon}
+              {item.name}
+            </div>
+          ) : (
             <Link
               key={index}
               to={item.url}

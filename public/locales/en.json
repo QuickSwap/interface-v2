@@ -928,5 +928,8 @@
   "addDestinationAddress": "Add destination address",
   "slipPage": "Slippage",
   "minimumReceived": "Minimum Received",
-  "priceImpact": "Price Imppact"
+  "priceImpact": "Price Imppact",
+  "partners": "Partners",
+  "dappOS": "dappOS",
+  "bridge": "Bridge"
 }

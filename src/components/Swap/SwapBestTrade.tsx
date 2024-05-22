@@ -1105,7 +1105,6 @@ const SwapBestTrade: React.FC<{
   }, [!optimalRate]);
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
   return (
     <Box>
       <TokenWarningModal
