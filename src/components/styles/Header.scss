@@ -54,6 +54,18 @@
   }
 }
 
+.desktopLogo {
+  height: 60px;
+}
+
+.perpsDesktopLogo {
+  height: 36px;
+}
+
+.mobileLogo {
+  height: 40px;
+}
+
 .menuBar {
   padding: 0 24px;
   min-height: 88px;
@@ -63,6 +75,10 @@
   justify-content: space-between;
   & a {
     display: flex;
+  }
+  & > div > a {
+    position: relative;
+    z-index: 10;
   }
   & > div {
     display: flex;
@@ -105,17 +121,24 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+}
+.mainMenuPerps {
+  flex: 1;
+}
+.mainMenu,
+.mainMenuPerps {
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
+  width: 100%;
   & .menuItem {
     cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     height: 36px;
-    padding: 0 24px;
-    margin-right: 6px;
+    padding: 0 20px;
     overflow: hidden;
     border-radius: 10px;
     color: $textSecondary;
@@ -379,14 +402,14 @@
   top: -2px;
 }
 
-.networkSelectionWrapper {
+.headerDropdownWrapper {
   position: relative;
   @include media('screen', '<tablet') {
     position: unset;
   }
 }
 
-.networkSelection {
+.headerDropdown {
   background-color: $secondary1;
   display: flex;
   align-items: center;
@@ -398,11 +421,40 @@
   img {
     width: 18px;
     border-radius: 18px;
+    &.orderlyPointsIcon {
+      width: 24px;
+      height: 24px;
+      border-radius: 24px;
+    }
   }
   svg {
     width: 18px;
     height: 18px;
     margin-left: 4px;
+  }
+}
+
+.orderlyPointsTitle {
+  margin-left: 6px;
+}
+
+.orderlyPointsDropdown {
+  width: 230px;
+  padding: 16px;
+  border-radius: 14px;
+  backdrop-filter: blur(40px);
+  box-shadow: 0 0 12px 0 rgba(46, 48, 60, 0.12), inset 0 0 10px 0 #448aff;
+  border: solid 1px rgba(255, 255, 255, 0.1);
+  position: absolute;
+  right: 0;
+  top: 50px;
+  display: flex;
+  flex-direction: column;
+
+  @include media('screen', '<tablet') {
+    top: 70px;
+    right: 5%;
+    width: 90%;
   }
 }
 
@@ -448,5 +500,12 @@
   &.active {
     color: #448aff;
     // background-color: #252833;
+  }
+}
+
+.web3ModalButton {
+  margin-right: -12px;
+  @include media('screen', '<tablet') {
+    margin: 0 -12px;
   }
 }

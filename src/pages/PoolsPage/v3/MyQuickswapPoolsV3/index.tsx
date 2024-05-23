@@ -3,11 +3,10 @@ import { Box, Button } from '@material-ui/core';
 import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
-import usePrevious from 'hooks/usePrevious';
 import PositionList from './components/PositionList';
 import { PositionPool } from 'models/interfaces';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 const MyQuickswapPoolsV3: React.FC<{
   hideFarmingPositions: boolean;
@@ -20,8 +19,6 @@ const MyQuickswapPoolsV3: React.FC<{
     userHideClosedPositions,
     hideFarmingPositions,
   );
-
-  const prevAccount = usePrevious(account);
 
   const [openPositions, closedPositions] = positions?.reduce<
     [PositionPool[], PositionPool[]]
@@ -63,7 +60,7 @@ const MyQuickswapPoolsV3: React.FC<{
 
   const showConnectAWallet = Boolean(!account);
 
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   return (
     <Box>
@@ -84,7 +81,7 @@ const MyQuickswapPoolsV3: React.FC<{
             <p>{t('noLiquidityPositions')}.</p>
             {showConnectAWallet && (
               <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={toggleWalletModal}>
+                <Button fullWidth onClick={() => open()}>
                   {t('connectWallet')}
                 </Button>
               </Box>
