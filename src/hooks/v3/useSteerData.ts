@@ -48,8 +48,8 @@ export interface SteerVault {
   token0Balance?: BigNumber;
   token1Balance?: BigNumber;
   vaultCreator: string;
-  lowerTick?: BigNumber;
-  upperTick?: BigNumber;
+  lowerTick?: number;
+  upperTick?: number;
   poolAddress?: string;
   sqrtPriceX96?: BigNumber;
   tick?: BigNumber;
@@ -320,13 +320,17 @@ export const useSteerVaults = (chainId: ChainId) => {
         vaultPosition &&
         vaultPosition.lowerTicks &&
         vaultPosition.lowerTicks.length > 0
-          ? vaultPosition.lowerTicks[0]
+          ? Math.min(
+              ...vaultPosition.lowerTicks.map((tick: any) => Number(tick)),
+            )
           : undefined,
       upperTick:
         vaultPosition &&
         vaultPosition.upperTicks &&
         vaultPosition.upperTicks.length > 0
-          ? vaultPosition.upperTicks[0]
+          ? Math.max(
+              ...vaultPosition.upperTicks.map((tick: any) => Number(tick)),
+            )
           : undefined,
     };
   });

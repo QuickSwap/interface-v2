@@ -16,7 +16,7 @@ import { useSwitchNetwork } from '@web3modal/ethers5/react';
 const NetworkSelectionDropdown: React.FC = () => {
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId, account, currentChainId } = useActiveWeb3React();
   const { switchNetwork } = useSwitchNetwork();
   const networkTypes = [
     { id: 'mainnet', text: t('mainnets') },
@@ -53,8 +53,11 @@ const NetworkSelectionDropdown: React.FC = () => {
         await arcxSdk.chain({ chainId, account });
       }
       localStorage.setItem('localChainId', chainId.toString());
+      if (!currentChainId) {
+        window.location.reload();
+      }
     },
-    [account, arcxSdk, switchNetwork],
+    [account, arcxSdk, currentChainId, switchNetwork],
   );
 
   return (
