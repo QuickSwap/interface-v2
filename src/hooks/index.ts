@@ -33,7 +33,15 @@ export function useActiveWeb3React() {
   const { walletProvider } = useWeb3ModalProvider();
 
   const chainId: ChainId | undefined = useMemo(() => {
-    if (!web3ModalChainId || !SUPPORTED_CHAINIDS.includes(web3ModalChainId)) {
+    if (!web3ModalChainId) {
+      const localChainId = localStorage.getItem('localChainId');
+      if (localChainId) {
+        return Number(localChainId) as ChainId;
+      } else {
+        return ChainId.MATIC;
+      }
+    }
+    if (!SUPPORTED_CHAINIDS.includes(web3ModalChainId)) {
       return ChainId.MATIC;
     }
     return web3ModalChainId;
