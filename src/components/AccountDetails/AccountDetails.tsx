@@ -1,5 +1,5 @@
 import { useArcxAnalytics } from '@arcxmoney/analytics';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Snackbar, Typography } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import 'components/styles/AccountDetails.scss';
 import { useActiveWeb3React } from 'hooks';
@@ -10,7 +10,7 @@ import { AppDispatch } from 'state';
 import { useUDDomain } from 'state/application/hooks';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { useSelectedWallet } from 'state/user/hooks';
-import { getWalletKeys, shortenAddress } from 'utils';
+import { getEtherscanLink, getWalletKeys, shortenAddress } from 'utils';
 import StatusIcon from './StatusIcon';
 import Transaction from './Transaction';
 import swapIcon from 'assets/images/icons/swap.svg';
@@ -44,6 +44,10 @@ import {
   nativeTokenSymbols,
   wrappedTokenAddresses,
 } from 'constants/v3/addresses';
+import useCopyClipboard from 'hooks/useCopyClipboard';
+import MeldModal from 'components/MeldModal';
+import { Alert } from '@material-ui/lab';
+import SettingsModal from 'components/SettingsModal';
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -72,7 +76,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 }) => {
   const { chainId, account, connector, provider } = useActiveWeb3React();
   const { udDomain, updateUDDomain } = useUDDomain();
+  const [isC, staticCopy] = useCopyClipboard();
   const { updateSelectedWallet } = useSelectedWallet();
+  const [showMeldWidget, setShowMeldWidgetWidget] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [isSettingOpen, setIsSettingOpen] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
@@ -104,6 +112,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     );
   }
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const clearAllTransactionsCallback = useCallback(() => {
     if (chainId) dispatch(clearAllTransactions({ chainId }));
   }, [dispatch, chainId]);
@@ -118,6 +130,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       icon: <img src={copyIcon} alt='copy icon' />,
       name: 'Copy address',
       url: '#',
+      onClick: () => {
+        staticCopy(account || '');
+        setOpen(true);
+      },
     },
     {
       icon: (
@@ -129,7 +145,11 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
         />
       ),
       name: 'View on explorer',
-      url: '#',
+      url: getEtherscanLink(
+        chainId,
+        ENSName ? ENSName : account || '',
+        'address',
+      ),
     },
     {
       icon: (
@@ -143,11 +163,17 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       ),
       name: 'Settings',
       url: '#',
+      onClick: () => {
+        setIsSettingOpen(true);
+      },
     },
     {
       icon: <img src={walletIcon} alt='wallet icon' />,
       name: 'Buy crypto with fiat',
       url: '#',
+      onClick: () => {
+        setShowMeldWidgetWidget(true);
+      },
     },
     {
       icon: <img src={logout} alt='logout icon' />,
@@ -169,12 +195,28 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     },
   ];
 
+  const handleCloseSettingModal = () => {
+    setIsSettingOpen(false);
+  };
+
   return (
     <Box sx={{ padding: '16px', border: 'solid 1px #282d3d' }}>
       {/* <Box className='flex justify-between'>
         <h5 className='text-bold'>{t('account')}</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
       </Box> */}
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity='success'>
+          Copy to clipboard
+        </Alert>
+      </Snackbar>
+      <SettingsModal open={isSettingOpen} onClose={handleCloseSettingModal} />
+      {showMeldWidget && (
+        <MeldModal
+          open={showMeldWidget}
+          onClose={() => setShowMeldWidgetWidget(false)}
+        />
+      )}
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center' style={{ gap: '14px' }}>
           <StatusIcon />
@@ -190,9 +232,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           </Typography>
         </Box>
         <Box
-          className='flex items-center'
+          className='flex items-center cursor-pointer'
           gridGap={4}
           sx={{ color: '#448aff' }}
+          onClick={openOptions}
         >
           <ReplayIcon style={{ fontSize: '18px' }} /> Change
         </Box>
@@ -241,9 +284,9 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               {item.name}
             </div>
           ) : (
-            <Link
+            <a
               key={index}
-              to={item.url}
+              href={item.url}
               style={{
                 height: '48px',
                 display: 'flex',
@@ -253,10 +296,12 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                 fontSize: '16px',
                 color: '#c7cad9',
               }}
+              target='_blank'
+              rel='noopener noreferrer'
             >
               {item.icon}
               {item.name}
-            </Link>
+            </a>
           );
         })}
       </Box>
