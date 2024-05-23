@@ -138,14 +138,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   if (showPerpsV2) {
     if (showPerps) {
       perpsTab.items?.push({
-        link: `/perpsV2`,
+        link: `/falkor`,
         text: 'Falkor',
         id: 'perps-page-link',
       });
     } else {
       menuItems.push({
-        link: `/perpsV2`,
-        text: 'Perps',
+        link: `/falkor`,
+        text: 'Falkor',
         id: 'perps-page-link',
         isNew: true,
       });
@@ -301,7 +301,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, parsedChain]);
 
-  const isPerpsPage = history.location.pathname === '/perpsV2';
+  const isPerpsPage = history.location.pathname === '/falkor';
 
   return (
     <Box className='header'>
@@ -321,7 +321,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       )}
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
         <Box gridGap={isPerpsPage ? 16 : 0}>
-          <Link to={isPerpsPage ? '/perpsV2' : '/'}>
+          <Link to={isPerpsPage ? '/falkor' : '/'}>
             {mobileWindowSize && !isPerpsPage && (
               <img src={QuickIcon} alt='QuickLogo' className='mobileLogo' />
             )}

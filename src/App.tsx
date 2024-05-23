@@ -189,7 +189,7 @@ const App: React.FC = () => {
                       <PositionPage></PositionPage>
                     </PageLayout>
                   </Route>
-                  <Route exact strict path='/perpsV2'>
+                  <Route exact strict path='/falkor'>
                     <PageLayout>
                       <PerpsPage />
                     </PageLayout>
