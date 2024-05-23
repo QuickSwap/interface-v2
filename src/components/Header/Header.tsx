@@ -139,13 +139,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     if (showPerps) {
       perpsTab.items?.push({
         link: `/falkor`,
-        text: 'Falkor',
+        text: 'Perps',
         id: 'perps-page-link',
       });
     } else {
       menuItems.push({
         link: `/falkor`,
-        text: 'Falkor',
+        text: 'Perps',
         id: 'perps-page-link',
         isNew: true,
       });
