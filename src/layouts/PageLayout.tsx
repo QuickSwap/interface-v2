@@ -3,6 +3,7 @@ import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import { useActiveWeb3React, useIsProMode, useMasaAnalytics } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import IntractAttribution, { trackCustomWallet } from '@intract/attribution';
+import { config, passport } from '@imtbl/sdk';
 import NewsletterSignupPanel from './NewsletterSignupPanel';
 const Header = lazy(() => import('components/Header'));
 const Footer = lazy(() => import('components/Footer'));
@@ -65,6 +66,23 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
         'feature-immutable-mainnet-1.interface-v2-01.pages.dev'
     ) {
       setOpenPassModal(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (process.env.REACT_APP_PASSPORT_CLIENT_ID) {
+      const connector = new passport.Passport({
+        baseConfig: {
+          environment: config.Environment.PRODUCTION,
+          publishableKey: process.env.REACT_APP_PASSPORT_PUBLISHABLE_KEY,
+        },
+        clientId: process.env.REACT_APP_PASSPORT_CLIENT_ID,
+        redirectUri: 'https://quickswap.exchange',
+        logoutRedirectUri: 'https://quickswap.exchange',
+        audience: 'platform_api',
+        scope: 'openid offline_access email transact',
+      });
+      connector.loginCallback();
     }
   }, []);
 

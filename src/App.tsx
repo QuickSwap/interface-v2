@@ -72,6 +72,7 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 import { ChainId } from '@uniswap/sdk';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config/index';
+import 'connectors/passport';
 
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
@@ -115,6 +116,7 @@ createWeb3Modal({
   projectId,
   enableAnalytics: true,
   allowUnsupportedChain: true,
+  enableOnramp: true,
 });
 
 const ThemeProvider: React.FC<{ children: any }> = ({ children }) => {
