@@ -260,8 +260,14 @@ const SwapBestTrade: React.FC<{
         redirectWithCurrency(inputCurrency, true);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [parsedCurrency0Id],
+    [
+      chainIdToUse,
+      defaultTokens,
+      parsedCurrency1Id,
+      redirectWithCurrency,
+      redirectWithSwitch,
+      swapType,
+    ],
   );
 
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);
@@ -272,7 +278,7 @@ const SwapBestTrade: React.FC<{
       redirectWithCurrency(ETHER[chainIdToUse], true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
+  }, [parsedCurrency0Id, chainIdToUse]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency: any) => {
@@ -1082,14 +1088,13 @@ const SwapBestTrade: React.FC<{
     }
   }, [nativeConvertApproval]);
 
+  const optimalRateNotExisting = !optimalRate;
   useEffect(() => {
-    if (!optimalRate) {
+    if (!optimalRateNotExisting) {
       reFetchOptimalRate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!optimalRate]);
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
+  }, [optimalRateNotExisting]);
 
   return (
     <Box>
