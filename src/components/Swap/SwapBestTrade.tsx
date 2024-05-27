@@ -260,14 +260,8 @@ const SwapBestTrade: React.FC<{
         redirectWithCurrency(inputCurrency, true);
       }
     },
-    [
-      chainIdToUse,
-      parsedCurrency1Id,
-      redirectWithSwitch,
-      swapType,
-      redirectWithCurrency,
-      defaultTokens,
-    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [parsedCurrency0Id],
   );
 
   const parsedCurrency0 = useCurrency(parsedCurrency0Id);

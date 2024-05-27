@@ -277,7 +277,7 @@ const Swap: React.FC<{
       redirectWithCurrency(ETHER, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
+  }, [parsedCurrency0Id]);
 
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency: any) => {
