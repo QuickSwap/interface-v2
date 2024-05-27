@@ -188,6 +188,7 @@
   padding: 24px;
   background-color: #9b9b9b0f;
   transition: 0.3s ease-in-out;
+  position: relative;
 
   &:hover {
     // background-color: #9b9b9b4b;
@@ -324,6 +325,12 @@
       @media screen and (max-width: "900px") {
         width: 100%;
         margin-bottom: 40px;
+      }
+
+      button {
+        &:hover {
+          transform: translateX(5px);
+        }
       }
     }
 

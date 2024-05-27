@@ -174,7 +174,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         {
           id: 'perps-new-page-link',
           link: '#',
-          text: 'Perps : Folklore',
+          text: 'Perps : Falkor',
           isNew: true,
         },
         {

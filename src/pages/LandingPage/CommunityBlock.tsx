@@ -166,6 +166,10 @@ const CommunityBlock: React.FC = ({}) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                transition: '.3s ease-in-out',
+                width: '18px',
+                height: '18px',
+                cursor: 'pointer',
               }}
             >
               <CallMadeIcon
