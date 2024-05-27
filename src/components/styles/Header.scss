@@ -15,12 +15,7 @@
 
 .newsletterBar {
   position: relative;
-  background: linear-gradient(
-    90deg,
-    $black2 -11.2%,
-    $purple4 41.95%,
-    $primary 100%
-  );
+  background: linear-gradient(90deg, $black2 -11.2%, $purple4 41.95%, $primary 100%);
   z-index: 5;
   display: flex;
   min-height: 40px;
@@ -43,7 +38,7 @@
     right: 12px;
     display: flex;
   }
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     padding: 6px 28px;
     flex-direction: column;
     & button {
@@ -94,12 +89,12 @@
       }
     }
   }
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     align-items: center;
     position: relative;
     min-height: 64px;
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     padding: 0 16px;
     position: relative;
     min-height: 64px;
@@ -208,7 +203,7 @@
   left: 0;
   border-radius: 10px;
   top: 32px;
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     width: 100%;
     left: unset;
     top: unset;
@@ -386,7 +381,7 @@
 
 .networkSelectionWrapper {
   position: relative;
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     position: unset;
   }
 }
