@@ -1,5 +1,5 @@
 import { useArcxAnalytics } from '@arcxmoney/analytics';
-import { Box, Snackbar, Typography } from '@material-ui/core';
+import { Box, ButtonBase, Snackbar, Typography } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import 'components/styles/AccountDetails.scss';
 import { useActiveWeb3React } from 'hooks';
@@ -48,6 +48,84 @@ import useCopyClipboard from 'hooks/useCopyClipboard';
 import MeldModal from 'components/MeldModal';
 import { Alert } from '@material-ui/lab';
 import SettingsModal from 'components/SettingsModal';
+import { KeyboardArrowLeft } from '@material-ui/icons';
+import { TransactionType } from 'models/enums';
+import TransactionItem from './TransactionItem';
+
+const TRANSACTIONS_MOCK = [
+  {
+    title: 'Sent',
+    desc: '0.01 MATIC to 0e43…9480',
+    type: TransactionType.SEND,
+    time: '1min',
+  },
+  {
+    title: 'Swapped',
+    desc: '100 USDC for 197.39 WMATIC',
+    type: TransactionType.SWAPPED,
+    time: '1hr',
+  },
+  {
+    title: 'Approved',
+    desc: 'USDC',
+    type: TransactionType.APPROVED,
+    time: '1d',
+  },
+  {
+    title: 'Received',
+    desc: '1000 USDC from 0b84…9589',
+    type: TransactionType.RECEIVED,
+    time: '1w',
+  },
+  {
+    title: 'Added Liquidity',
+    desc: 'Added 100 USDC + 199.34 MATIC',
+    type: TransactionType.ADDED_LIQUIDITY,
+    time: '1mo',
+  },
+  {
+    title: 'Claimed Rewards',
+    desc: 'WBTC',
+    type: TransactionType.CLAIMED_REWARDS,
+    time: '1mo',
+  },
+  {
+    title: 'Received',
+    desc: '1000 USDC from 0b84…9589',
+    type: TransactionType.RECEIVED,
+    time: '1w',
+  },
+  {
+    title: 'Added Liquidity',
+    desc: 'Added 100 USDC + 199.34 MATIC',
+    type: TransactionType.ADDED_LIQUIDITY,
+    time: '1mo',
+  },
+  {
+    title: 'Claimed Rewards',
+    desc: 'WBTC',
+    type: TransactionType.CLAIMED_REWARDS,
+    time: '1mo',
+  },
+  {
+    title: 'Received',
+    desc: '1000 USDC from 0b84…9589',
+    type: TransactionType.RECEIVED,
+    time: '1w',
+  },
+  {
+    title: 'Added Liquidity',
+    desc: 'Added 100 USDC + 199.34 MATIC',
+    type: TransactionType.ADDED_LIQUIDITY,
+    time: '1mo',
+  },
+  {
+    title: 'Claimed Rewards',
+    desc: 'WBTC',
+    type: TransactionType.CLAIMED_REWARDS,
+    time: '1mo',
+  },
+];
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -87,6 +165,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const [balance, setBalance] = useState<string | null>(null);
   const tokenAddress =
     wrappedTokenAddresses[chainId as keyof typeof wrappedTokenAddresses];
+  const [viewTransaction, setViewTransaction] = useState(false);
 
   const price = useUSDCPriceFromAddress(tokenAddress);
 
@@ -124,7 +203,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
     {
       icon: <img src={swapIcon} alt='swap icon' />,
       name: 'View transactions',
-      url: '#',
+      onClick: () => {
+        setViewTransaction(true);
+        console.log('open transaction');
+      },
     },
     {
       icon: <img src={copyIcon} alt='copy icon' />,
@@ -200,7 +282,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   };
 
   return (
-    <Box sx={{ padding: '16px', border: 'solid 1px #282d3d' }}>
+    <Box
+      sx={{
+        padding: '16px',
+        border: 'solid 1px #282d3d',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
       {/* <Box className='flex justify-between'>
         <h5 className='text-bold'>{t('account')}</h5>
         <Close className='cursor-pointer' onClick={toggleWalletModal} />
@@ -305,32 +394,99 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
           );
         })}
       </Box>
-      {/* {!!pendingTransactions.length || !!confirmedTransactions.length ? (
-        <>
-          <Box
-            className='flex justify-between items-center'
-            px={2}
-            pt={2}
-            mb={1}
+      <Box
+        style={{
+          height: '100%',
+          visibility: viewTransaction ? 'visible' : 'hidden',
+          position: 'absolute',
+          left: viewTransaction ? 16 : 400,
+          right: viewTransaction ? 16 : -400,
+          top: 16,
+          bottom: 16,
+          zIndex: 100,
+          backgroundColor: '#1b1e29',
+          transition: '0.5s ease-in-out',
+        }}
+      >
+        {/* <button
+          onClick={() => {
+            setViewTransaction(false);
+          }}
+        >
+          Back
+        </button> */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gridGap: '8px',
+            paddingBottom: '12px',
+            borderBottom: '1px solid #282d3d',
+          }}
+        >
+          <ButtonBase
+            onClick={() => {
+              setViewTransaction(false);
+            }}
           >
-            <small>{t('recentTransactions')}</small>
-            <small
-              className='cursor-pointer'
-              onClick={clearAllTransactionsCallback}
-            >
-              {t('clearAll')}
-            </small>
-          </Box>
-          <Box paddingX={2} flex={1} overflow='auto'>
-            {renderTransactions(pendingTransactions)}
-            {renderTransactions(confirmedTransactions)}
-          </Box>
-        </>
-      ) : (
-        <Box paddingX={2} pt={2}>
-          <p>{t('transactionsWillAppear')}...</p>
+            <KeyboardArrowLeft />
+          </ButtonBase>
+          <Typography>Transaction History</Typography>
         </Box>
-      )} */}
+        <Box
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            height: '90%',
+            overflow: 'scroll',
+            paddingTop: '12px',
+            position: 'relative',
+          }}
+        >
+          {TRANSACTIONS_MOCK.map((item, index) => {
+            return <TransactionItem transaction={item} key={index} />;
+          })}
+        </Box>
+        <Box
+          style={{
+            position: 'absolute',
+            bottom: 16,
+            left: 0,
+            width: '100%',
+            height: '64px',
+            backgroundImage:
+              'linear-gradient(to bottom, rgba(27, 30, 41, 0) 15%, rgba(27, 30, 41, 0.64) 47%, #1b1e29 81%)',
+          }}
+        />
+        {!!pendingTransactions.length || !!confirmedTransactions.length ? (
+          <>
+            <Box
+              className='flex justify-between items-center'
+              px={2}
+              pt={2}
+              mb={1}
+            >
+              <small>{t('recentTransactions')}</small>
+              <small
+                className='cursor-pointer'
+                onClick={clearAllTransactionsCallback}
+              >
+                {t('clearAll')}
+              </small>
+            </Box>
+            <Box paddingX={2} flex={1} overflow='auto'>
+              {renderTransactions(pendingTransactions)}
+              {renderTransactions(confirmedTransactions)}
+            </Box>
+            <Box></Box>
+          </>
+        ) : (
+          <Box paddingX={2} pt={2}>
+            <p>{t('transactionsWillAppear')}...</p>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };
