@@ -622,7 +622,7 @@ const SwapV3Page: React.FC = () => {
       redirectWithCurrency(nativeCurrency, true, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id]);
+  }, [parsedCurrency0Id]);
 
   const handleMaxInput = useCallback(() => {
     maxInputAmount && onUserInput(Field.INPUT, maxInputAmount.toExact());
