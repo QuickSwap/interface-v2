@@ -11,6 +11,7 @@ import { StyledMenu } from './StyledMenu';
 export const HeaderDesktopItem: React.FC<{ item: HeaderMenuItem }> = ({
   item,
 }) => {
+  console.log('🚀 ~HeaderDesktopItem item:', item);
   const { pathname } = useLocation();
   const history = useHistory();
   const hasSubMenu = Array.isArray(item.items);
@@ -71,11 +72,13 @@ export const HeaderDesktopItem: React.FC<{ item: HeaderMenuItem }> = ({
         }}
       >
         {item.items?.map((d, i) => (
-          <HeaderListItem
-            key={'desktop-sub-menu-item' + i}
-            item={d}
-            onClick={handleClose}
-          />
+          <>
+            <HeaderListItem
+              key={'desktop-sub-menu-item' + i}
+              item={d}
+              onClick={handleClose}
+            />
+          </>
         ))}
       </StyledMenu>
     </>

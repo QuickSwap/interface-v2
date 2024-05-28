@@ -441,12 +441,63 @@
   }
 }
 
+#basic-menu {
+  .MuiPaper-root {
+    background-color: rgba(18, 19, 26, 0.4) !important;
+  }
+}
+
 .menu-list-item {
   max-height: 48px;
   height: 48px;
+  overflow: hidden;
+  position: relative;
 
   &.active {
     color: #448aff;
     // background-color: #252833;
+  }
+
+  .menuItemSparkle {
+    position: absolute;
+    transition: all 0.5s;
+  }
+  .menuItemSparkleTop {
+    top: -10px;
+    left: 0;
+    // margin-left: -10px;
+  }
+  .menuItemSparkleBottom {
+    bottom: -10px;
+    left: 0;
+    // margin-left: -12px;
+  }
+  .menuItemSparkleLeft {
+    left: -10px;
+    top: 20px;
+  }
+  .menuItemSparkleRight {
+    right: -10px;
+    top: 20px;
+  }
+
+  &:hover {
+    color: $textPrimary;
+    background: $secondary1;
+    .menuItemSparkleTop {
+      top: 2px;
+    }
+    .menuItemSparkleBottom {
+      bottom: 2px;
+    }
+    .menuItemSparkleLeft {
+      left: 8px;
+    }
+    .menuItemSparkleRight {
+      right: 8px;
+    }
+    & .subMenu {
+      display: block;
+    }
   }
 }
