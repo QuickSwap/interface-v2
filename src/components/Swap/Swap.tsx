@@ -248,20 +248,6 @@ const Swap: React.FC<{
     ],
   );
 
-  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
-  useEffect(() => {
-    if (parsedCurrency0) {
-      onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else if (
-      history.location.pathname !== '/' &&
-      parsedCurrency0 === undefined &&
-      !parsedCurrency1Id
-    ) {
-      redirectWithCurrency(ETHER[chainIdToUse], true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0Id]);
-
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency: any) => {
       const isSwichRedirect = currencyEquals(
@@ -292,13 +278,32 @@ const Swap: React.FC<{
     ],
   );
 
+  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
+  const parsedCurrency0Fetched = !!parsedCurrency0;
+  const parsedCurrency1Fetched = !!parsedCurrency1;
   useEffect(() => {
-    if (parsedCurrency1) {
-      onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+    if (
+      history.location.pathname !== '/' &&
+      !parsedCurrency0Id &&
+      !parsedCurrency1Id
+    ) {
+      redirectWithCurrency(ETHER[chainIdToUse], true);
+    } else {
+      if (parsedCurrency0) {
+        onCurrencySelection(Field.INPUT, parsedCurrency0);
+      }
+      if (parsedCurrency1) {
+        onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency1Id]);
+  }, [
+    parsedCurrency0Id,
+    parsedCurrency1Id,
+    parsedCurrency0Fetched,
+    parsedCurrency1Fetched,
+  ]);
 
   const selectedTokens: Token[] = useMemo(
     () =>
