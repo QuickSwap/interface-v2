@@ -68,7 +68,11 @@ export const NATIVE_TOKEN_ADDRESS =
   '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const PRICE_GETTER_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x56CC45d405483e38d7f6533184b3435C5269eEf1',
+  [ChainId.MATIC]: '0x6908356faC751dA36F4ec1B4ADBc56d0B3862155',
+};
+
+export const SoulZapTokenManager: AddressMap = {
+  [ChainId.MATIC]: '0x3F15Ee3d7dd7AcFB14625A1E2FBce22912Fa91be',
 };
 
 export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {

@@ -7,6 +7,7 @@ import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useIsSupportedNetwork } from 'utils';
+import SoulZapAPIPath from './Paths/SoulZapAPIPath';
 
 export interface BondActionsProps {
   bond: any;
@@ -56,6 +57,16 @@ const BondActions: React.FC<BondActionsProps> = ({
       case purchasePath === PurchasePath.SoulZap:
         return (
           <SoulZapPath
+            purchasePath={purchasePath}
+            bond={bond}
+            inputTokenAddress={inputTokenAddress}
+            onBillId={onBillId}
+            onTransactionSubmitted={onTransactionSubmitted}
+          />
+        );
+      case purchasePath === PurchasePath.SoulZapApi:
+        return (
+          <SoulZapAPIPath
             purchasePath={purchasePath}
             bond={bond}
             inputTokenAddress={inputTokenAddress}

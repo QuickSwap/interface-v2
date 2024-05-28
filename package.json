@@ -107,8 +107,11 @@
     "@orderly.network/react": "^1.4.3",
     "@orderly.network/types": "^1.4.3",
     "@paraswap/sdk": "^5.6.0-alpha.6",
+    "@soulsolidity/soul-zap-trpc-client": "^1.0.0-beta.0",
     "@soulsolidity/soulzap-v1": "0.1.0",
     "@tanstack/react-query": "^4.32.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/react-query": "^10.45.2",
     "@web3modal/ethers5": "^4.2.1",
     "apexcharts": "3.32.1",
     "i18next-http-backend": "^1.4.1",
@@ -122,7 +125,6 @@
     "react-tradingview-embed": "^3.0.6",
     "react-virtuoso": "^4.1.0",
     "sass": "^1.77.1",
-    "slick-carousel": "^1.8.1",
-    "wido": "^0.4.1"
+    "slick-carousel": "^1.8.1"
   }
 }
