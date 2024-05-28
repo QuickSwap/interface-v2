@@ -136,23 +136,6 @@ const Swap: React.FC<{
     typedValue,
   );
 
-  const [selectedInputCurrency, selectedOutputCurrency] = [
-    useCurrency(wrappedCurrency(currencies[Field.INPUT], chainId)?.address),
-    useCurrency(wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address),
-  ];
-  const selectedTokens: Token[] = useMemo(
-    () =>
-      [selectedInputCurrency, selectedOutputCurrency]?.filter(
-        (c): c is Token => c instanceof Token,
-      ) ?? [],
-    [selectedInputCurrency, selectedOutputCurrency],
-  );
-  const selectedTokensNotInDefault =
-    selectedTokens &&
-    selectedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
-
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
     [Version.v1]: v1Trade,
@@ -316,6 +299,19 @@ const Swap: React.FC<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency1Id]);
+
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [parsedCurrency0, parsedCurrency1]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [parsedCurrency0, parsedCurrency1],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
 
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
     trade,
@@ -817,7 +813,7 @@ const Swap: React.FC<{
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
             fullWidth
-            disabled={swapButtonDisabled as boolean}
+            disabled={showApproveFlow || (swapButtonDisabled as boolean)}
             onClick={account && isSupportedNetwork ? onSwap : connectWallet}
           >
             {swapButtonText}

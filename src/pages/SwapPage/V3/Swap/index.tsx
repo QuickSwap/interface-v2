@@ -378,27 +378,6 @@ const SwapV3Page: React.FC = () => {
     allowedSlippage,
   );
 
-  const [selectedInputCurrency, selectedOutputCurrency] = [
-    useCurrency(
-      currencies[Field.INPUT]?.isNative
-        ? currencies[Field.INPUT]?.wrapped.address
-        : currencies[Field.INPUT]?.address,
-    ),
-    useCurrency(currencies[Field.OUTPUT]?.wrapped.address),
-  ];
-  const selectedTokens: Token[] = useMemo(
-    () =>
-      [selectedInputCurrency, selectedOutputCurrency]?.filter(
-        (c): c is Token => c instanceof Token,
-      ) ?? [],
-    [selectedInputCurrency, selectedOutputCurrency],
-  );
-  const selectedTokensNotInDefault =
-    selectedTokens &&
-    selectedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
-
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
 
   const { walletInfo } = useWalletInfo();
@@ -677,6 +656,20 @@ const SwapV3Page: React.FC = () => {
       ? chainInfo.nativeCurrencySymbol
       : parsedCurrency1Id,
   );
+
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [parsedCurrency0, parsedCurrency1]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [parsedCurrency0, parsedCurrency1],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
+
   useEffect(() => {
     if (parsedCurrency1) {
       onCurrencySelection(Field.OUTPUT, parsedCurrency1);
@@ -1006,7 +999,12 @@ const SwapV3Page: React.FC = () => {
                 }
               }}
               id='swap-button'
-              disabled={!isValid || priceImpactTooHigh || !!swapCallbackError}
+              disabled={
+                !isValid ||
+                priceImpactTooHigh ||
+                !!swapCallbackError ||
+                showApproveFlow
+              }
             >
               {swapInputError
                 ? swapInputError

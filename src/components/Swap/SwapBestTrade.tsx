@@ -205,23 +205,6 @@ const SwapBestTrade: React.FC<{
     typedValue,
   );
 
-  const [selectedInputCurrency, selectedOutputCurrency] = [
-    useCurrency(wrappedCurrency(currencies[Field.INPUT], chainId)?.address),
-    useCurrency(wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address),
-  ];
-  const selectedTokens: Token[] = useMemo(
-    () =>
-      [selectedInputCurrency, selectedOutputCurrency]?.filter(
-        (c): c is Token => c instanceof Token,
-      ) ?? [],
-    [selectedInputCurrency, selectedOutputCurrency],
-  );
-  const selectedTokensNotInDefault =
-    selectedTokens &&
-    selectedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
-
   const showNativeConvert = convertType !== ConvertType.NOT_APPLICABLE;
 
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
@@ -319,6 +302,19 @@ const SwapBestTrade: React.FC<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedCurrency1Id]);
+
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [parsedCurrency0, parsedCurrency1]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [parsedCurrency0, parsedCurrency1],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
 
   const paraswap = useParaswap();
 
