@@ -733,7 +733,7 @@ export function SelectRange({
                     components={{
                       alink: (
                         <a
-                          href='https://quickswap.exchange'
+                          href='https://blog.quickswap.exchange/posts/understanding-impermanent-loss-on-quickswaps-v3'
                           target='_blank'
                           rel='noreferrer'
                         />
