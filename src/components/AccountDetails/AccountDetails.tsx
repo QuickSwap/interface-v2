@@ -1,8 +1,26 @@
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import { Box, ButtonBase, Snackbar, Typography } from '@material-ui/core';
+import { KeyboardArrowLeft } from '@material-ui/icons';
 import ReplayIcon from '@material-ui/icons/Replay';
+import { Alert } from '@material-ui/lab';
+import cogIcon from 'assets/images/icons/cog.png';
+import copyIcon from 'assets/images/icons/copy.svg';
+import globalIcon from 'assets/images/icons/global.webp';
+import logout from 'assets/images/icons/logout.svg';
+import swapIcon from 'assets/images/icons/swap.svg';
+import walletIcon from 'assets/images/icons/wallet.png';
+import MeldModal from 'components/MeldModal';
+import SettingsModal from 'components/SettingsModal';
 import 'components/styles/AccountDetails.scss';
+import { networkConnection } from 'connectors';
+import {
+  nativeTokenSymbols,
+  wrappedTokenAddresses,
+} from 'constants/v3/addresses';
+import { ethers } from 'ethers';
 import { useActiveWeb3React } from 'hooks';
+import useCopyClipboard from 'hooks/useCopyClipboard';
+import { TransactionType } from 'models/enums';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -11,45 +29,9 @@ import { useUDDomain } from 'state/application/hooks';
 import { clearAllTransactions } from 'state/transactions/actions';
 import { useSelectedWallet } from 'state/user/hooks';
 import { getEtherscanLink, getWalletKeys, shortenAddress } from 'utils';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import StatusIcon from './StatusIcon';
 import Transaction from './Transaction';
-import swapIcon from 'assets/images/icons/swap.svg';
-import globalIcon from 'assets/images/icons/global.webp';
-import logout from 'assets/images/icons/logout.svg';
-import copyIcon from 'assets/images/icons/copy.svg';
-import cogIcon from 'assets/images/icons/cog.png';
-import walletIcon from 'assets/images/icons/wallet.png';
-import {
-  currencyEquals,
-  Token,
-  CurrencyAmount,
-  ChainId,
-  WETH,
-} from '@uniswap/sdk';
-import { Link } from 'react-router-dom';
-import {
-  useAllTokenBalances,
-  useCurrencyBalance,
-  useETHBalances,
-} from 'state/wallet/hooks';
-import { networkConnection } from 'connectors';
-import useUSDCPrice from 'hooks/v3/useUSDCPrice';
-import { Currency } from '@uniswap/sdk';
-import { useDefaultCurrencies } from 'state/zap/hooks';
-import { ethers } from 'ethers';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import {
-  DLQUICK,
-  ETHER,
-  nativeTokenSymbols,
-  wrappedTokenAddresses,
-} from 'constants/v3/addresses';
-import useCopyClipboard from 'hooks/useCopyClipboard';
-import MeldModal from 'components/MeldModal';
-import { Alert } from '@material-ui/lab';
-import SettingsModal from 'components/SettingsModal';
-import { KeyboardArrowLeft } from '@material-ui/icons';
-import { TransactionType } from 'models/enums';
 import TransactionItem from './TransactionItem';
 
 const TRANSACTIONS_MOCK = [

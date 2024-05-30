@@ -112,6 +112,7 @@
   "liquiditySectionLongDesc": "Provide Liquidity and earn 0.25% fee on all trades proportional to your share of the pool. Earn additional rewards by depositing your LP Tokens in Rewards Pools.",
   "24hTxs": "24h Transactions",
   "24hTradingVol": "24H VOLUME",
+  "24hTradingFees": "24H Trading fees",
   "24hRewardsDistributed": "24h Rewards Dist",
   "totalTradingPairs": "TOTAL TRADING PAIRS",
   "stake": "Stake",

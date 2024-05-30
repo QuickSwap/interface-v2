@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
       title: t('developers'),
       items: [
         { title: t('github'), link: 'https://github.com/QuickSwap' },
-        { title: t('gitbook'), link: 'https://github.com/QuickSwap' },
+        // { title: t('gitbook'), link: 'https://github.com/QuickSwap' },
         { title: t('docs'), link: 'https://docs.quickswap.exchange/' },
       ],
     },
@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
       title: t('governance'),
       items: [
         { title: t('proposals'), link: 'https://snapshot.org/#/quickvote.eth' },
-        { title: t('vote'), link: 'https://snapshot.org/#/quickvote.eth' },
+        // { title: t('vote'), link: 'https://snapshot.org/#/quickvote.eth' },
       ],
     },
   ];
