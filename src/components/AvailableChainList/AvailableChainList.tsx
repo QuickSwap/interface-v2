@@ -34,10 +34,10 @@ const AvailableChainList: React.FC = ({}) => {
               className='networkItemWrapper'
               key={chain}
               style={{
-                borderRight:
-                  index === supportedChains.length
-                    ? 'none'
-                    : '2px dotted #1f263d',
+                // borderRight:
+                //   index === supportedChains.length
+                //     ? 'none'
+                //     : '2px dotted #1f263d',
                 height: '18px',
                 width: 'fit-content',
                 borderRadius: '0px',

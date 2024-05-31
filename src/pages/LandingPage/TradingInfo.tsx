@@ -38,6 +38,7 @@ const TradingInfo: React.FC = () => {
     isLoading: loadingV3GlobalData,
     data: v3GlobalData,
   } = useAnalyticsGlobalData('v3', chainId);
+  console.log('🚀 ~ v3GlobalData:', v3GlobalData);
   const loading =
     (v2 ? loadingV2GlobalData : false) && (v3 ? loadingV3GlobalData : false);
 
@@ -175,13 +176,23 @@ const TradingInfo: React.FC = () => {
           className='text-uppercase'
           style={{ fontSize: '11px', fontWeight: 600 }}
         >
-          {t('totalTradingPairs')}
+          {t('24hTradingFees')}
         </Typography>
         {loading ? (
           <Skeleton variant='rect' width={100} height={45} />
         ) : (
           <Box display='flex'>
-            <h3>${rewards}</h3>
+            <h3>
+              $
+              {formatCompact(
+                (v2 && globalData && globalData.feesUSD
+                  ? Number(globalData.feesUSD)
+                  : 0) +
+                  (v3 && v3GlobalData && v3GlobalData.feesUSD
+                    ? Number(v3GlobalData.feesUSD)
+                    : 0),
+              )}
+            </h3>
           </Box>
         )}
       </Box>

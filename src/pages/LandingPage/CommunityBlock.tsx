@@ -68,7 +68,7 @@ const CommunityBlock: React.FC = ({}) => {
       title: 'Reddit',
     },
     {
-      link: 'https://www.tiktok.com/@quickswapofficial',
+      link: 'https://quickswap-layer2.medium.com/',
       icon: <Medium />,
       title: 'Medium',
     },

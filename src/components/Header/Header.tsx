@@ -213,11 +213,11 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         target: '_blank',
         externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
       },
-      {
-        id: 'bridge',
-        text: t('bridge'),
-        link: '/bridge',
-      },
+      // {
+      //   id: 'bridge',
+      //   text: t('bridge'),
+      //   link: '/bridge',
+      // },
     ],
   };
   if (showEarn) {
@@ -444,7 +444,10 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           ) : (
             <Box
               className='connectButton bg-primary'
-              onClick={toggleWalletModal}
+              onClick={() => {
+                // toggleWalletModal()
+                history.push(`/swap?currency0=ETH${swapCurrencyStr}`);
+              }}
             >
               Launch App
             </Box>
