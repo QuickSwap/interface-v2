@@ -63,11 +63,11 @@ const SoulZapApiPath = ({
   const { typedValue } = useZapState();
   const inputAmount = useDebounce(typedValue, 300);
 
-  const [loading, zapData, consideredValue] = useSoulZapBondApiQuote(
-    inputAmount,
-    inputTokenAddress,
-    bond,
-  );
+  const {
+    loading,
+    response: zapData,
+    estimateOutput: consideredValue,
+  } = useSoulZapBondApiQuote(inputAmount, inputTokenAddress, bond);
 
   // Balance state
   const inputCurrency = useCurrency(inputTokenAddress);

@@ -69,3 +69,6 @@ export const setInputList = createAction<{
 export const setZapNewOutputList = createAction<{
   zapNewOutputList: { currencyIdA: string; currencyIdB: string }[];
 }>('zap/setZapNewOutputList');
+export const setOutputValue = createAction<{ outputValue: string | null }>(
+  'zap/setOutputValue',
+);

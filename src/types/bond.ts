@@ -16,13 +16,16 @@ export interface BondToken {
   price?: number;
   liquidityDex?: Partial<Record<ChainId, LiquidityDex>>;
   getLpUrl?: Partial<Record<ChainId, string>>;
+  vaultDeployer?: string;
+  router?: string;
 }
 
 export interface BondConfig {
   index: number;
+  chainId: ChainId;
   contractAddress: Partial<Record<ChainId, string>>;
   billVersion: BillVersion;
-  billType: 'liquidity' | 'reserve' | 'launch' | 'migration';
+  billType: 'liquidity' | 'reserve' | 'launch' | 'migration' | 'cex';
   token: BondToken;
   quoteToken: BondToken;
   lpToken: BondToken;
@@ -43,9 +46,13 @@ export interface BondConfig {
   bannerURL?: string;
   shortDescription?: string;
   fullDescription?: string;
+  tags?: string[];
   apeswapNote?: string;
+  featuredURLS?: string[];
+  partnersURLS?: string[];
   vestingTerm?: number;
   multiplier?: number;
+  onlyPartner?: boolean;
 }
 
 export interface UserBondNft {
@@ -91,6 +98,7 @@ export interface Bond extends BondConfig {
   maxDebt?: string;
   lpPriceUsd?: number;
   earnTokenPrice?: number;
+  tokenPrice?: number;
   userData?: {
     allowance?: string;
     stakingTokenBalance?: string;

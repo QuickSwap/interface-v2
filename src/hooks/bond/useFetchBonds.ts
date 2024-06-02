@@ -7,15 +7,8 @@ import {
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import {
-  V2_FACTORY_ADDRESSES,
-  V2_FACTORY_BOND,
-  V3_CORE_FACTORY_ADDRESSES,
-  V3_FACTORY_BOND,
-} from 'constants/v3/addresses';
 import { usePriceGetterContract } from '../useContract';
-import { LiquidityProtocol, getLiquidityDexIndex } from 'utils';
-import { ZERO_ADDRESS } from 'constants/v3/misc';
+import { getPriceGetterCallData } from 'utils';
 import { Bond, BondConfig } from 'types/bond';
 
 export const useFetchBonds = () => {
@@ -66,31 +59,11 @@ export const useFetchBonds = () => {
   const priceGetterContract = usePriceGetterContract();
   const lpPriceParams = useMemo(() => {
     if (!bonds) return [];
-    return bonds.map((bond) => {
-      const address =
-        bond && bond.lpToken && bond.lpToken.address
-          ? bond.lpToken.address[chainId]
-          : undefined;
-      const protocol =
-        bond && bond.lpToken && bond.lpToken.liquidityDex
-          ? getLiquidityDexIndex(bond.lpToken.liquidityDex[chainId], true)
-          : LiquidityProtocol.V2;
-      let factoryV2 = V2_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      if (bond && bond.lpToken && bond.lpToken.liquidityDex) {
-        factoryV2 = V2_FACTORY_ADDRESSES[chainId];
-      }
-      const factoryV3 = V3_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      const factoryAlgebra = V3_CORE_FACTORY_ADDRESSES[chainId] ?? ZERO_ADDRESS;
-      const factorySolidly = ZERO_ADDRESS;
-      return [
-        address,
-        protocol,
-        factoryV2,
-        factoryV3,
-        factoryAlgebra,
-        factorySolidly,
-      ];
-    });
+    return getPriceGetterCallData(
+      bonds.map((bond) => bond.lpToken),
+      chainId,
+      true,
+    );
   }, [bonds, chainId]);
   const lpPriceCalls = useSingleContractMultipleData(
     priceGetterContract,
@@ -108,31 +81,11 @@ export const useFetchBonds = () => {
 
   const earnTokenPriceParams = useMemo(() => {
     if (!bonds) return [];
-    return bonds.map((bond) => {
-      const address =
-        bond && bond.earnToken && bond.earnToken.address
-          ? bond.earnToken.address[chainId]
-          : undefined;
-      const protocol =
-        bond && bond.earnToken && bond.earnToken.liquidityDex
-          ? getLiquidityDexIndex(bond.earnToken.liquidityDex[chainId])
-          : undefined;
-      let factoryV2 = V2_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      if (bond && bond.earnToken && bond.earnToken.liquidityDex) {
-        factoryV2 = V2_FACTORY_ADDRESSES[chainId];
-      }
-      const factoryV3 = V3_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      const factoryAlgebra = V3_CORE_FACTORY_ADDRESSES[chainId] ?? ZERO_ADDRESS;
-      const factorySolidly = ZERO_ADDRESS;
-      return [
-        address,
-        protocol,
-        factoryV2,
-        factoryV3,
-        factoryAlgebra,
-        factorySolidly,
-      ];
-    });
+    return getPriceGetterCallData(
+      bonds.map((bond) => bond.earnToken),
+      chainId,
+      false,
+    );
   }, [bonds, chainId]);
   const earnTokenPriceCalls = useSingleContractMultipleData(
     priceGetterContract,
