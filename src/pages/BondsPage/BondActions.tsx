@@ -1,5 +1,5 @@
 import React from 'react';
-import { PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import LPPath from './Paths/LPPath';
 import ApeZapPath from './Paths/ApeZapPath';
 import SoulZapPath from './Paths/SoulZapPath';
@@ -10,7 +10,7 @@ import { useIsSupportedNetwork } from 'utils';
 import SoulZapAPIPath from './Paths/SoulZapAPIPath';
 
 export interface BondActionsProps {
-  bond: any;
+  bond: Bond;
   purchasePath: PurchasePath;
   onBillId: ((billId: string) => void) | undefined;
   inputTokenAddress: string;

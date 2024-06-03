@@ -6,7 +6,7 @@ export const useBondType = (billAddress: string) => {
   const { chainId } = useActiveWeb3React();
   const { data: bonds } = useFetchBonds();
   const selectedBond = bonds?.find(
-    (bond: any) =>
+    (bond) =>
       bond?.contractAddress[chainId as ChainId]?.toLowerCase() ===
       billAddress?.toLowerCase(),
   );
@@ -18,7 +18,7 @@ export const useBondTypes = (billAddresses: string[]) => {
   const { data: bonds } = useFetchBonds();
   return billAddresses.map((billAddress) => {
     const selectedBond = bonds?.find(
-      (bond: any) =>
+      (bond) =>
         bond?.contractAddress[chainId as ChainId]?.toLowerCase() ===
         billAddress?.toLowerCase(),
     );

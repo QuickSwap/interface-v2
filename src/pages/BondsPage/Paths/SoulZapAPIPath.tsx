@@ -6,7 +6,7 @@ import {
   BillReferenceData,
   usePostBillReference,
 } from 'hooks/bond/usePostBondReference';
-import { PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import useDebounce from 'hooks/useDebounce';
@@ -19,7 +19,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { JSBI } from '@uniswap/sdk';
-import { getFixedValue } from 'utils';
+import { calculateGasMargin, getFixedValue } from 'utils';
 import BigNumber from 'bignumber.js';
 import WarningModal from '../WarningModal';
 import DisplayValues from '../DisplayValues';
@@ -35,7 +35,7 @@ const SoulZapApiPath = ({
 }: {
   purchasePath: PurchasePath;
   onBillId: ((billId: string, transactionHash: string) => void) | undefined;
-  bond: any;
+  bond: Bond;
   inputTokenAddress: string;
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
@@ -49,7 +49,7 @@ const SoulZapApiPath = ({
   // Bond Data
   const {
     earnTokenPrice,
-    maxTotalPayout,
+    maxTotalPayOut,
     totalPayoutGiven,
     earnToken,
     maxPayoutTokens,
@@ -110,7 +110,7 @@ const SoulZapApiPath = ({
           data: zapData.txData.data,
           value: inputCurrency?.isNative ? bigishInputAmount : undefined,
         });
-        const gasToUse = gas?.toNumber();
+        const gasToUse = calculateGasMargin(gas);
         console.log(gasToUse);
         if (gasToUse)
           await signer
@@ -118,7 +118,7 @@ const SoulZapApiPath = ({
               to: zapData.txData.to,
               data: zapData.txData.data,
               value: inputCurrency?.isNative ? bigishInputAmount : undefined,
-              gasLimit: gasToUse * 1.5, // some little extra love to make it go through ;)
+              gasLimit: gasToUse,
             })
             .then((res) => {
               addTransaction(
@@ -181,7 +181,7 @@ const SoulZapApiPath = ({
   ]);
 
   // Approve logic
-  const zapContractAddress = SoulZapTokenManager[bond?.chainId as ChainId];
+  const zapContractAddress = SoulZapTokenManager[chainId];
   const [approvalState, approveCallback] = useApproveCallbackV3(
     parsedAmount,
     zapContractAddress,
@@ -199,7 +199,7 @@ const SoulZapApiPath = ({
     formatUnits(consideredValue, bond?.earnToken?.decimals?.[chainId] ?? 18),
   );
   const billValue = Number(price ?? 0) > 0 ? bigValue / Number(price ?? 0) : 0;
-  const available = new BigNumber(maxTotalPayout ?? 0)
+  const available = new BigNumber(maxTotalPayOut ?? 0)
     ?.minus(new BigNumber(totalPayoutGiven ?? 0))
     ?.div(new BigNumber(10).pow(earnToken?.decimals?.[chainId] ?? 18));
   const threshold = 5;
@@ -216,7 +216,7 @@ const SoulZapApiPath = ({
   const [openBuyWarning, setOpenBuyWarning] = useState(false);
 
   const handleValidationBeforeTx = () => {
-    if (parseFloat(bond?.discount as string) < 0) {
+    if ((bond?.discount ?? 0) < 0) {
       setOpenBuyWarning(true);
     } else soulZapCallback();
   };
@@ -235,7 +235,7 @@ const SoulZapApiPath = ({
       <Box className='bondModalButtonsWrapper' gridGap={8}>
         <GetLPButton bond={bond} />
         {purchasePath === PurchasePath.Loading ? (
-          <Button disabled>Loading</Button>
+          <Button disabled>{t('loading')}</Button>
         ) : approvalState === ApprovalState.APPROVED ? (
           <Button
             onClick={handleValidationBeforeTx}
@@ -252,12 +252,12 @@ const SoulZapApiPath = ({
             fullWidth
           >
             {loading
-              ? 'Loading'
+              ? t('loading')
               : notEnoughBalance
-              ? 'Not enough Balance'
+              ? t('notEnoughBalance')
               : exceedsAvailable
-              ? 'Exceeds limit'
-              : 'Buy'}
+              ? t('exceedLimit')
+              : t('buy')}
           </Button>
         ) : (
           <Button
@@ -271,8 +271,8 @@ const SoulZapApiPath = ({
             fullWidth
           >
             {pendingTx || approvalState === ApprovalState.PENDING
-              ? 'Enabling'
-              : 'Enable'}
+              ? t('enabling')
+              : t('enable')}
           </Button>
         )}
       </Box>

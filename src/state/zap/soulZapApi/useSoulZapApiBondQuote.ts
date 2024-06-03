@@ -37,7 +37,7 @@ export const useSoulZapBondApiQuote = (
     ?.div(bond?.lpPrice ?? 0); // then we divide the lp USD price to get the amount of LP tokens
 
   const estimateOutput = lpAmount.times(new BigNumber(10).pow(18)).toFixed(0);
-  console.log(response);
+  console.log('soulzap API response', response);
   useEffect(() => {
     if (loading) {
       onSetOutputValue('0');
