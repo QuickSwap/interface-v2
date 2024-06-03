@@ -925,5 +925,6 @@
   "stopMarket": "Stop Market",
   "trigger": "Trigger",
   "oldFarms": "Old Farms",
-  "poolManager": "Pool Manager"
+  "poolManager": "Pool Manager",
+  "notEnoughBalance": "Not Enough Balance"
 }
