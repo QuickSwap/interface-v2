@@ -52,16 +52,20 @@ import {
   EMPTY,
   NATIVE_TOKEN_ADDRESS,
   OLD_QUICK,
+  bondDexFactories,
+  defaultBondDexFactories,
 } from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 import { SteerVault } from 'hooks/v3/useSteerData';
-import { LiquidityDex } from '@ape.swap/apeswap-lists';
+import { LiquidityDex, Protocols } from '@ape.swap/apeswap-lists';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { FeeAmount } from 'v3lib/utils';
+import { BondToken } from 'types/bond';
+import { ZERO_ADDRESS } from 'constants/v3/misc';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -1146,23 +1150,77 @@ export enum LiquidityProtocol {
   Gamma = 5,
   Steer = 6,
   Solidly = 7,
+  XFAI = 8,
 }
 
-export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
-  if (dex === 'Algebra') {
-    if (isLP) {
-      return LiquidityProtocol.Gamma;
+export function getPriceGetterCallData(
+  tokens: BondToken[],
+  chainId: ChainId,
+  lpTokens: boolean,
+) {
+  return Object.values(tokens).map((token) => {
+    const liquidityDex = token.liquidityDex?.[chainId];
+    let dexFactory;
+    let protocol = 2;
+    let factoryV2 = defaultBondDexFactories?.[chainId]?.[2] ?? ZERO_ADDRESS;
+    let factoryV3 = defaultBondDexFactories?.[chainId]?.[3] ?? ZERO_ADDRESS;
+    let factoryAlgebra =
+      defaultBondDexFactories?.[chainId]?.[4] ?? ZERO_ADDRESS;
+    let factorySolidly =
+      defaultBondDexFactories?.[chainId]?.[7] ?? ZERO_ADDRESS;
+    if (liquidityDex) {
+      dexFactory = bondDexFactories[chainId]?.[liquidityDex as LiquidityDex];
+      protocol = dexFactory?.protocol ?? Protocols.V2;
+      switch (protocol) {
+        case Protocols.V2:
+          factoryV2 = dexFactory?.factory ?? factoryV2;
+          break;
+        case Protocols.V3:
+          factoryV3 = dexFactory?.factory ?? factoryV3;
+          break;
+        case Protocols.Algebra:
+          factoryAlgebra = dexFactory?.factory ?? factoryAlgebra;
+          break;
+        case Protocols.Solidly:
+          factorySolidly = dexFactory?.factory ?? factorySolidly;
+          break;
+      }
     }
-    return LiquidityProtocol.Algebra;
-  }
-  if (dex === 'UniswapV3') {
-    if (isLP) {
-      return LiquidityProtocol.Steer;
+
+    const errMsg = `No default dex factory found for retrieving price. For Protocol: ${protocol}.`;
+    switch (protocol as Protocols) {
+      case Protocols.Both:
+        if (factoryV2 === ZERO_ADDRESS || factoryV3 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+      case Protocols.V2:
+        if (factoryV2 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+      case Protocols.V3:
+        if (factoryV3 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
     }
-    return LiquidityProtocol.V3;
-  }
-  return LiquidityProtocol.V2;
-};
+    if (lpTokens && protocol == Protocols.Algebra) {
+      protocol = Protocols.Gamma;
+    }
+    if (lpTokens && protocol == Protocols.V3) {
+      protocol = Protocols.Steer;
+    }
+    return [
+      token.address[chainId],
+      protocol,
+      factoryV2,
+      factoryV3,
+      factoryAlgebra,
+      factorySolidly,
+    ];
+  });
+}
 
 export function getFixedValue(value: string, decimals?: number) {
   if (!value) return '0';

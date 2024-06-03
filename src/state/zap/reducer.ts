@@ -11,12 +11,14 @@ import {
   setZapNewOutputList,
   setZapType,
   typeInput,
+  setOutputValue,
 } from './actions';
 import { V3TradeState } from 'hooks/v3/useBestV3Trade';
 
 export interface ZapState {
   readonly independentField: Field;
   readonly typedValue: string;
+  readonly outputValue: string;
   readonly zapRouteState: V3TradeState;
   readonly zapType: ZapType;
   readonly [Field.INPUT]: {
@@ -37,6 +39,7 @@ const initialState: ZapState = {
   zapRouteState: V3TradeState.INVALID,
   zapType: ZapType.ZAP,
   typedValue: '',
+  outputValue: '',
   [Field.INPUT]: {
     currencyId: 'ETH',
   },
@@ -102,6 +105,12 @@ export default createReducer<ZapState>(initialState, (builder) =>
         ...state,
         independentField: Field.INPUT,
         typedValue,
+      };
+    })
+    .addCase(setOutputValue, (state, { payload: { outputValue } }) => {
+      return {
+        ...state,
+        outputValue: outputValue ?? '',
       };
     })
     .addCase(setRecipient, (state, { payload: { recipient } }) => {
