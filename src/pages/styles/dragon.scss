@@ -82,18 +82,33 @@
   margin-top: 12px;
 }
 
-.dragonHeader {
+.dragonHeader::before {
+  content: "";
+  position: absolute;
   background-image: url('../../assets/images/DragonBgNew.png');
-  background-position: top center;
+  background-size: auto 100%;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-position: top right;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: 0.5;
+}
+
+
+.dragonHeader {
+  position: relative;
   border-radius: 16px;
   padding: 22px 24px;
-
-  &.mobile {
+  background-color: #322751;
+  &.mobile::before {
+    content: "";
+    position: absolute;
     min-height: 360px;
     background-image: url('../../assets/images/DragonBgNewMobile.png');
     background-size: cover;
+    opacity: 0.2;
   }
 
   .dragonWrapper-title {
