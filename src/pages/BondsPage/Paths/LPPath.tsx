@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
 import { useZapState } from 'state/zap/hooks';
-import { PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import { CEX_BILL_ADDRESS } from 'constants/index';
 import { useActiveWeb3React } from 'hooks';
 import useBuyBond from 'hooks/bond/useBuyBond';
@@ -31,7 +31,7 @@ const LpPath = ({
 }: {
   purchasePath: PurchasePath;
   onBillId: ((billId: string) => void) | undefined;
-  bond: any;
+  bond: Bond;
   inputTokenAddress: string;
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
@@ -86,7 +86,7 @@ const LpPath = ({
     onTransactionSubmitted && onTransactionSubmitted(true);
     await onBuyBond()
       .then((resp: any) => {
-        searchForBillId(resp, bondNftAddress, onBillId);
+        searchForBillId(resp, bondNftAddress[chainId] ?? '', onBillId);
         const billsReference: Partial<BillReferenceData> = {
           chainId,
           transactionHash: resp?.transactionHash,
@@ -119,7 +119,7 @@ const LpPath = ({
   const handleValidationBeforeTx = () => {
     if (bond?.contractAddress[chainId] === CEX_BILL_ADDRESS) {
       setOpenBondTypeWarning(true);
-    } else if (parseFloat(bond?.discount as string) < 0) {
+    } else if ((bond?.discount ?? 0) < 0) {
       setOpenBuyWarning(true);
     } else handleBuy();
   };

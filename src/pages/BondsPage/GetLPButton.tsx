@@ -11,8 +11,9 @@ import { Box, Button } from '@material-ui/core';
 import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
 import { useTranslation } from 'react-i18next';
 import useAddLiquidityModal from './DualAddLiquidity/hooks/useAddLiquidityModal';
+import { Bond } from 'types/bond';
 
-const GetLpButton = ({ bond }: { bond: any }) => {
+const GetLpButton = ({ bond }: { bond: Bond }) => {
   // Hooks
   const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
