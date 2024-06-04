@@ -93,5 +93,5 @@
   },
   "maxHops": 3,
   "maxChunks": 400,
-  "blocksPerFetch": 30
+  "blocksPerFetch": 5
 }
