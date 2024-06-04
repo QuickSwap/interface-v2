@@ -20,6 +20,7 @@ import liquidityHub from './swap/liquidity-hub/reducer';
 import singleToken from './singleToken/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { api as dataApi } from './data/slice';
+import userBalance from './balance/reducer';
 
 const PERSISTED_KEYS: string[] = [
   'user',
@@ -37,6 +38,7 @@ const store = configureStore({
     user,
     transactions,
     swap,
+    userBalance,
     swapV3,
     mint,
     mintV3,
