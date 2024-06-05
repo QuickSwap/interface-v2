@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ETHER, Pair } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
@@ -13,6 +13,10 @@ import { useTranslation } from 'react-i18next';
 import './index.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useAppSelector } from 'state';
+import { getCurrencyBalanceImmediately } from 'state/wallet/hooks';
+import { useMulticallContract } from 'hooks/useContract';
+import { useBlockNumber } from 'state/application/hooks';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -90,6 +94,43 @@ export default function CurrencyInputPanel({
     account ?? undefined,
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
+  const balanceUpdateSelector = useAppSelector((state) => state.userBalance);
+  const [updatedEthBalance, setUpdatedEthBalance] = useState(ethBalance);
+  const [updatedBalance, setUpdatedBalance] = useState(balance);
+
+  const multicallContract = useMulticallContract();
+  const latestBlockNumber = useBlockNumber();
+  useEffect(() => {
+    if (!multicallContract || !latestBlockNumber || !account) return;
+    getCurrencyBalanceImmediately(
+      multicallContract!,
+      chainId,
+      latestBlockNumber!,
+      account,
+      nativeCurrency,
+    ).then((value) => {
+      setUpdatedEthBalance(value);
+      if (currency?.isNative) {
+        setUpdatedBalance(value);
+      }
+    });
+    if (currency?.isNative) return;
+    getCurrencyBalanceImmediately(
+      multicallContract!,
+      chainId,
+      latestBlockNumber!,
+      account,
+      currency?.isNative ? nativeCurrency : currency ?? undefined,
+    ).then((value) => {
+      setUpdatedBalance(value);
+    });
+  }, [
+    multicallContract,
+    account,
+    ethBalance,
+    balance,
+    balanceUpdateSelector.flag,
+  ]);
 
   const { price: currentPrice } = useUSDCPriceFromAddress(
     currency?.wrapped?.address ?? '',
@@ -174,9 +215,10 @@ export default function CurrencyInputPanel({
           <Box display='flex'>
             <small className='text-secondary'>
               {t('balance')}:{' '}
-              {(showETH && ethBalance
-                ? Number(ethBalance.toSignificant(5))
-                : 0) + (balance ? Number(balance.toSignificant(5)) : 0)}
+              {(showETH && updatedEthBalance
+                ? Number(updatedEthBalance.toSignificant(5))
+                : 0) +
+                (updatedBalance ? Number(updatedBalance.toSignificant(5)) : 0)}
             </small>
 
             {account && currency && showHalfButton && (

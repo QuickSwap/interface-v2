@@ -58,7 +58,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     account ?? undefined,
     currency,
   );
-  const selector = useAppSelector((state) => state.userBalance);
+  const balanceUpdateSelector = useAppSelector((state) => state.userBalance);
   const [
     updatedSelectedCurrencyBalance,
     setUpdatedSelectedCurrencyBalance,
@@ -77,7 +77,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     ).then((value) => {
       setUpdatedSelectedCurrencyBalance(value);
     });
-  }, [multicallContract, account, selectedCurrencyBalance, selector.flag]);
+  }, [
+    multicallContract,
+    account,
+    selectedCurrencyBalance,
+    balanceUpdateSelector.flag,
+  ]);
 
   const usdPriceV2 = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
   const currencyV3 =
