@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { ETHER, Pair } from '@uniswap/sdk';
+import { Pair } from '@uniswap/sdk';
+import { Ether } from '@uniswap/sdk-core';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
@@ -14,8 +15,8 @@ import './index.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { useAppSelector } from 'state';
-import { getCurrencyBalanceImmediately } from 'state/wallet/hooks';
-import { useMulticallContract } from 'hooks/useContract';
+import { getCurrencyBalanceImmediately } from 'state/wallet/v3/hooks';
+import { useMulticall2Contract } from 'hooks/useContract';
 import { useBlockNumber } from 'state/application/hooks';
 
 interface CurrencyInputPanelProps {
@@ -87,8 +88,7 @@ export default function CurrencyInputPanel({
   const [modalOpen, setModalOpen] = useState(false);
   const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
-
-  const nativeCurrency = chainId ? ETHER[chainId] : undefined;
+  const nativeCurrency = chainId ? Ether.onChain(chainId) : undefined;
   const ethBalance = useCurrencyBalance(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
@@ -98,7 +98,7 @@ export default function CurrencyInputPanel({
   const [updatedEthBalance, setUpdatedEthBalance] = useState(ethBalance);
   const [updatedBalance, setUpdatedBalance] = useState(balance);
 
-  const multicallContract = useMulticallContract();
+  const multicallContract = useMulticall2Contract();
   const latestBlockNumber = useBlockNumber();
   useEffect(() => {
     if (!multicallContract || !latestBlockNumber || !account) return;

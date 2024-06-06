@@ -276,59 +276,6 @@ export function useMultipleContractSingleData(
   }, [fragment, results, contractInterface, latestBlockNumber]);
 }
 
-export function useMultipleContractSingleData2(
-  addresses: (string | undefined)[],
-  contractInterface: Interface,
-  methodName: string,
-  callInputs?: OptionalMethodInputs,
-  options?: Partial<ListenerOptions> & { gasRequired?: number },
-): CallState[] {
-  const fragment = useMemo(() => contractInterface.getFunction(methodName), [
-    contractInterface,
-    methodName,
-  ]);
-
-  const blocksPerFetch = options?.blocksPerFetch;
-  const gasRequired = options?.gasRequired;
-
-  const callData: string | undefined = useMemo(
-    () =>
-      fragment && isValidMethodArgs(callInputs)
-        ? contractInterface.encodeFunctionData(fragment, callInputs)
-        : undefined,
-    [callInputs, contractInterface, fragment],
-  );
-
-  const calls = useMemo(
-    () =>
-      fragment && addresses && addresses.length > 0 && callData
-        ? addresses.map<Call | undefined>((address) => {
-            return address && callData
-              ? {
-                  address,
-                  callData,
-                  ...(gasRequired ? { gasRequired } : {}),
-                }
-              : undefined;
-          })
-        : [],
-    [addresses, callData, fragment, gasRequired],
-  );
-
-  const results = useCallsData(
-    calls,
-    blocksPerFetch ? { blocksPerFetch } : undefined,
-  );
-
-  const latestBlockNumber = useBlockNumber();
-
-  return useMemo(() => {
-    return results.map((result) =>
-      toCallState(result, contractInterface, fragment, latestBlockNumber),
-    );
-  }, [fragment, results, contractInterface, latestBlockNumber]);
-}
-
 export function useSingleCallResult(
   contract: Contract | null | undefined,
   methodName: string,
@@ -395,12 +342,12 @@ export async function getSingleContractMultipleDataImmediately(
 }
 
 export async function getCallsDataImmediately(
-  multicall: Contract,
+  contract: Contract,
   blockNumber: number,
   calls: (Call | undefined)[],
 ): Promise<CallResult[]> {
   try {
-    const { returnData } = await multicall.callStatic.tryBlockAndAggregate(
+    const { returnData } = await contract.callStatic.tryBlockAndAggregate(
       false,
       calls
         .filter((call: Call | undefined) => {
@@ -433,7 +380,6 @@ export async function getMultipleContractSingleDataImmediately(
   contractInterface: Interface,
   methodName: string,
   callInputs?: OptionalMethodInputs,
-  options?: ListenerOptions,
 ): Promise<CallState[]> {
   const fragment = contractInterface.getFunction(methodName);
   const callData: string | undefined =
