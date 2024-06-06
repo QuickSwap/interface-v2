@@ -13,7 +13,6 @@ import {
 import { Call, parseCallKey, toCallKey } from './utils';
 import { useBlockNumber } from 'state/application/hooks';
 import { getConfig } from '../../../config/index';
-import { getCallsDataImmediately } from 'state/multicall/hooks';
 
 export interface Result extends ReadonlyArray<any> {
   readonly [key: string]: any;
@@ -483,6 +482,37 @@ export function useSingleCallResult(
       latestBlockNumber,
     );
   }, [result, contract, fragment, latestBlockNumber]);
+}
+
+export async function getCallsDataImmediately(
+  contract: Contract,
+  blockNumber: number,
+  calls: (Call | undefined)[],
+): Promise<CallResult[]> {
+  try {
+    const { returnData } = await contract.callStatic.multicall(
+      calls
+        .filter((call: Call | undefined) => {
+          return call !== undefined;
+        })
+        .map((obj) => ({
+          target: obj?.address,
+          callData: obj?.callData,
+          gasLimit: obj?.gasRequired ?? 10_000_000,
+        })),
+      { blockTag: blockNumber },
+    );
+    return returnData.map((data: { success: boolean; returnData: string }) => {
+      return {
+        valid: data.success,
+        data: data.returnData,
+        blockNumber,
+      } as CallResult;
+    });
+  } catch (error) {
+    console.error('Failed to fetch chunk', error);
+    return [];
+  }
 }
 
 export async function getSingleContractMultipleDataImmediately(

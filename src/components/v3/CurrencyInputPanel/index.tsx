@@ -95,42 +95,52 @@ export default function CurrencyInputPanel({
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
   const balanceUpdateSelector = useAppSelector((state) => state.userBalance);
-  const [updatedEthBalance, setUpdatedEthBalance] = useState(ethBalance);
-  const [updatedBalance, setUpdatedBalance] = useState(balance);
+  const [updatedEthBalance, setUpdatedEthBalance] = useState<
+    CurrencyAmount<Currency> | undefined
+  >(undefined);
+  const [updatedBalance, setUpdatedBalance] = useState<
+    CurrencyAmount<Currency> | undefined
+  >(undefined);
 
   const multicallContract = useMulticall2Contract();
   const latestBlockNumber = useBlockNumber();
   useEffect(() => {
-    if (!multicallContract || !latestBlockNumber || !account) return;
-    getCurrencyBalanceImmediately(
-      multicallContract!,
-      chainId,
-      latestBlockNumber!,
-      account,
-      nativeCurrency,
-    ).then((value) => {
-      setUpdatedEthBalance(value);
-      if (currency?.isNative) {
+    if (updatedEthBalance == undefined) {
+      setUpdatedEthBalance(ethBalance);
+    } else {
+      if (!multicallContract || !latestBlockNumber || !account) return;
+      getCurrencyBalanceImmediately(
+        multicallContract!,
+        chainId,
+        latestBlockNumber!,
+        account,
+        nativeCurrency,
+      ).then((value) => {
+        setUpdatedEthBalance(value);
+        if (currency?.isNative) {
+          setUpdatedBalance(value);
+        }
+      });
+    }
+    if (updatedBalance == undefined) {
+      setUpdatedBalance(balance);
+    } else {
+      if (currency?.isNative) return;
+      getCurrencyBalanceImmediately(
+        multicallContract!,
+        chainId,
+        latestBlockNumber!,
+        account,
+        currency ?? undefined,
+      ).then((value) => {
         setUpdatedBalance(value);
-      }
-    });
-    if (currency?.isNative) return;
-    getCurrencyBalanceImmediately(
-      multicallContract!,
-      chainId,
-      latestBlockNumber!,
-      account,
-      currency?.isNative ? nativeCurrency : currency ?? undefined,
-    ).then((value) => {
-      setUpdatedBalance(value);
-    });
-  }, [
-    multicallContract,
-    account,
-    ethBalance,
-    balance,
-    balanceUpdateSelector.flag,
-  ]);
+      });
+    }
+  }, [balanceUpdateSelector.flag]);
+  useEffect(() => {
+    setUpdatedEthBalance(ethBalance);
+    setUpdatedBalance(balance);
+  }, [ethBalance, balance]);
 
   const { price: currentPrice } = useUSDCPriceFromAddress(
     currency?.wrapped?.address ?? '',
