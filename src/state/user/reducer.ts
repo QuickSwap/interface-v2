@@ -17,12 +17,10 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
-  updateSelectedWallet,
   updateUserLiquidityHub,
   updateUserZapSlippage,
   updateIsInfiniteApproval,
 } from './actions';
-import { ConnectionType } from 'connectors';
 
 const currentTimestamp = () => new Date().getTime();
 export const INITIAL_ZAP_SLIPPAGE = 100;
@@ -63,7 +61,6 @@ export interface UserState {
   URLWarningVisible: boolean;
   // v3 user states
   userSingleHopOnly: boolean; // only allow swaps on direct pairs
-  selectedWallet?: ConnectionType;
   userZapSlippage: number;
   isInfiniteApproval: boolean;
 }
@@ -86,7 +83,6 @@ export const initialState: UserState = {
   timestamp: currentTimestamp(),
   URLWarningVisible: true,
   userSingleHopOnly: false,
-  selectedWallet: undefined,
   userZapSlippage: INITIAL_ZAP_SLIPPAGE,
   isInfiniteApproval: false,
 };
@@ -180,9 +176,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateSlippageManuallySet, (state, action) => {
       state.slippageManuallySet = action.payload.slippageManuallySet;
-    })
-    .addCase(updateSelectedWallet, (state, action) => {
-      state.selectedWallet = action.payload.wallet;
     })
     .addCase(updateUserLiquidityHub, (state, action) => {
       state.userLiquidityHubDisabled = action.payload.userLiquidityHubDisabled;

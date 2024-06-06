@@ -1,31 +1,32 @@
 import React, { useCallback, useState } from 'react';
+import { Box, Button } from '@material-ui/core';
 import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
 import { useZapState } from 'state/zap/hooks';
-import BigNumber from 'bignumber.js';
-import { Bond, PurchasePath } from 'types/bond';
-import { useCurrency } from 'hooks/v3/Tokens';
-import { DEX } from '@soulsolidity/soulzap-v1';
-import { useSoulZapQuote } from 'state/zap/soulZap/useSoulZapQuote';
-import { useTransactionAdder } from 'state/transactions/hooks';
-import { useActiveWeb3React } from 'hooks';
 import {
   BillReferenceData,
   usePostBillReference,
 } from 'hooks/bond/usePostBondReference';
-import { CurrencyAmount } from '@uniswap/sdk-core';
-import { JSBI } from '@uniswap/sdk';
-import { formatUnits, parseUnits } from '@ethersproject/units';
-import { Box, Button } from '@material-ui/core';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import WarningModal from '../WarningModal';
-import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useSoulZap } from 'state/application/hooks';
-import { getFixedValue, getLiquidityDEX } from 'utils';
-import DisplayValues from '../DisplayValues';
+import { Bond, PurchasePath } from 'types/bond';
+import { useCurrency } from 'hooks/v3/Tokens';
+import { useTransactionAdder } from 'state/transactions/hooks';
+import useDebounce from 'hooks/useDebounce';
+import { ChainId } from '@ape.swap/sdk';
+import { useSoulZapBondApiQuote } from 'state/zap/soulZapApi/useSoulZapApiBondQuote';
+import { SoulZapTokenManager } from 'constants/v3/addresses';
 import GetLPButton from '../GetLPButton';
+import { useActiveWeb3React } from 'hooks';
+import useParsedQueryString from 'hooks/useParsedQueryString';
+import { CurrencyAmount } from '@uniswap/sdk-core';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { JSBI } from '@uniswap/sdk';
+import { calculateGasMargin, getFixedValue } from 'utils';
+import BigNumber from 'bignumber.js';
+import WarningModal from '../WarningModal';
+import DisplayValues from '../DisplayValues';
 import { useTranslation } from 'react-i18next';
+import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 
-const SoulZapPath = ({
+const SoulZapApiPath = ({
   purchasePath,
   bond,
   inputTokenAddress,
@@ -40,14 +41,13 @@ const SoulZapPath = ({
 }) => {
   // Hooks
   const { t } = useTranslation();
-  const { chainId, account, provider } = useActiveWeb3React();
+  const { account, provider, chainId } = useActiveWeb3React();
   const parsedQuery = useParsedQueryString();
   const { mutate: postBillReference } = usePostBillReference();
   const addTransaction = useTransactionAdder();
 
   // Bond Data
   const {
-    billNnftAddress: bondNftAddress,
     earnTokenPrice,
     maxTotalPayOut,
     totalPayoutGiven,
@@ -55,22 +55,19 @@ const SoulZapPath = ({
     maxPayoutTokens,
     price,
   } = bond ?? {};
-  const bondContractAddress = bond?.contractAddress?.[chainId] ?? '';
-  const liquidityDex = bond?.lpToken?.liquidityDex?.[chainId];
-
-  // Zap logic
-  const soulZap = useSoulZap();
-  const { typedValue } = useZapState();
-  const { loading, response: zapData } = useSoulZapQuote(
-    bondContractAddress,
-    getLiquidityDEX(liquidityDex) as DEX,
-    true,
-  );
-  const consideredValue =
-    zapData?.zapParams?.liquidityPath?.lpAmount.toString() ?? '0';
 
   // State
   const [pendingTx, setPendingTx] = useState(false);
+
+  // Zap logic
+  const { typedValue } = useZapState();
+  const inputAmount = useDebounce(typedValue, 300);
+
+  const {
+    loading,
+    response: zapData,
+    estimateOutput: consideredValue,
+  } = useSoulZapBondApiQuote(inputAmount, inputTokenAddress, bond);
 
   // Balance state
   const inputCurrency = useCurrency(inputTokenAddress);
@@ -79,97 +76,112 @@ const SoulZapPath = ({
     inputCurrency ?? undefined,
   );
   const notEnoughBalance =
-    parseFloat(inputCurrencyBalance?.toExact() ?? '0') < parseFloat(typedValue);
+    parseFloat(inputCurrencyBalance?.toExact() ?? '0') <
+    parseFloat(inputAmount);
 
   const parsedAmount = inputCurrency
     ? CurrencyAmount.fromRawAmount(
         inputCurrency,
         JSBI.BigInt(
           parseUnits(
-            getFixedValue(typedValue, inputCurrency?.decimals),
+            getFixedValue(inputAmount, inputCurrency?.decimals),
             inputCurrency?.decimals,
           ),
         ),
       )
     : undefined;
 
+  const signer = provider?.getSigner();
+  const bigishInputAmount = JSBI.BigInt(
+    parseUnits(
+      getFixedValue(inputAmount, inputCurrency?.decimals),
+      inputCurrency?.decimals,
+    ),
+  ).toString();
+
   const soulZapCallback = useCallback(async () => {
-    if (soulZap && zapData) {
-      console.log('Attempting SoulZap tx');
-      console.log(zapData);
-      setPendingTx(true);
-      onTransactionSubmitted && onTransactionSubmitted(true);
-      return await soulZap
-        //TODO: remove ts ignore once type is fixed
-        //@ts-ignore
-        .zapBond(zapData)
-        .then((res) => {
-          console.log('Successful tx');
-          console.log(res);
-          if (res.success) {
-            addTransaction(
-              undefined,
-              {
-                summary: t('zapBond'),
-              },
-              res.txHash,
-            );
-            const billsReference: Partial<BillReferenceData> = {
-              chainId,
-              transactionHash: res.txHash,
-              referenceId: parsedQuery?.referenceId?.toString(),
-              billContract: bondContractAddress ?? '',
-            };
-            postBillReference(billsReference);
-            provider
-              ?.waitForTransaction(res.txHash)
-              .then((receipt) => {
-                setPendingTx(false);
-                const { logs } = receipt;
-                const findBillNftLog = logs.find(
-                  (log) =>
-                    log.address.toLowerCase() ===
-                    bondNftAddress[chainId]?.toLowerCase(),
-                );
-                const getBillNftIndex =
-                  findBillNftLog?.topics[findBillNftLog.topics.length - 1];
-                const convertHexId = parseInt(getBillNftIndex ?? '', 16);
-                onBillId && onBillId(convertHexId.toString(), res.txHash);
-              })
-              .catch((e) => {
-                setPendingTx(false);
-                console.error(e);
-                onTransactionSubmitted && onTransactionSubmitted(false);
-              });
-          } else {
-            setPendingTx(false);
-            console.log(res);
-            onTransactionSubmitted && onTransactionSubmitted(false);
-          }
-        })
-        .catch((e) => {
-          setPendingTx(false);
-          console.log(e);
-          onTransactionSubmitted && onTransactionSubmitted(false);
+    if (signer && zapData && zapData?.txData?.to && zapData?.txData?.data) {
+      console.log('Attempting zap tx');
+      try {
+        setPendingTx(true);
+        onTransactionSubmitted && onTransactionSubmitted(true);
+        const gas = await signer.estimateGas({
+          to: zapData.txData.to,
+          data: zapData.txData.data,
+          value: inputCurrency?.isNative ? bigishInputAmount : undefined,
         });
+        const gasToUse = calculateGasMargin(gas);
+        console.log(gasToUse);
+        if (gasToUse)
+          await signer
+            .sendTransaction({
+              to: zapData.txData.to,
+              data: zapData.txData.data,
+              value: inputCurrency?.isNative ? bigishInputAmount : undefined,
+              gasLimit: gasToUse,
+            })
+            .then((res) => {
+              addTransaction(
+                undefined,
+                {
+                  summary: t('zapBond'),
+                },
+                res.hash,
+              );
+              const billsReference: Partial<BillReferenceData> = {
+                chainId,
+                transactionHash: res.hash,
+                referenceId: parsedQuery?.referenceId?.toString(),
+                billContract: bond?.contractAddress[bond?.chainId] ?? '',
+              };
+              postBillReference(billsReference);
+              provider
+                ?.waitForTransaction(res.hash)
+                .then((receipt) => {
+                  setPendingTx(false);
+                  const { logs } = receipt;
+                  const findBillNftLog = logs.find(
+                    (log) =>
+                      log.address.toLowerCase() ===
+                      bond?.billNnftAddress?.[bond.chainId]?.toLowerCase(),
+                  );
+                  const getBillNftIndex =
+                    findBillNftLog?.topics[findBillNftLog.topics.length - 1];
+                  const convertHexId = parseInt(getBillNftIndex ?? '', 16);
+                  onBillId && onBillId(convertHexId.toString(), res.hash);
+                })
+                .catch((e) => {
+                  setPendingTx(false);
+                  console.error(e);
+                  onTransactionSubmitted && onTransactionSubmitted(false);
+                });
+            });
+      } catch (e) {
+        console.log(e);
+        setPendingTx(false);
+        onTransactionSubmitted && onTransactionSubmitted(false);
+      }
     }
   }, [
-    soulZap,
+    signer,
     zapData,
     onTransactionSubmitted,
+    inputCurrency?.isNative,
+    bigishInputAmount,
     addTransaction,
     t,
     chainId,
     parsedQuery?.referenceId,
-    bondContractAddress,
+    bond?.contractAddress,
+    bond.chainId,
+    bond?.billNnftAddress,
     postBillReference,
     provider,
     onBillId,
-    bondNftAddress,
   ]);
 
   // Approve logic
-  const zapContractAddress = soulZap?.getZapContract().address;
+  const zapContractAddress = SoulZapTokenManager[chainId];
   const [approvalState, approveCallback] = useApproveCallbackV3(
     parsedAmount,
     zapContractAddress,
@@ -222,25 +234,27 @@ const SoulZapPath = ({
       <DisplayValues bond={bond} consideredValue={bigValue} />
       <Box className='bondModalButtonsWrapper' gridGap={8}>
         <GetLPButton bond={bond} />
-        {purchasePath === PurchasePath.Loading || !soulZap ? (
-          <Button disabled>Loading</Button>
+        {purchasePath === PurchasePath.Loading ? (
+          <Button disabled>{t('loading')}</Button>
         ) : approvalState === ApprovalState.APPROVED ? (
           <Button
             onClick={handleValidationBeforeTx}
             disabled={
               pendingTx ||
-              !typedValue ||
-              parseFloat(typedValue) === 0 ||
+              loading ||
+              !inputAmount ||
+              parseFloat(inputAmount) === 0 ||
               loading ||
               notEnoughBalance ||
-              exceedsAvailable
+              exceedsAvailable ||
+              !(parseFloat(consideredValue) > 0)
             }
             fullWidth
           >
             {loading
               ? t('loading')
               : notEnoughBalance
-              ? t('insufficientBalance', { symbol: inputCurrency?.symbol })
+              ? t('notEnoughBalance')
               : exceedsAvailable
               ? t('exceedLimit')
               : t('buy')}
@@ -251,7 +265,7 @@ const SoulZapPath = ({
             disabled={
               approvalState === ApprovalState.PENDING ||
               pendingTx ||
-              !typedValue ||
+              !inputAmount ||
               parseFloat(typedValue) === 0
             }
             fullWidth
@@ -266,4 +280,4 @@ const SoulZapPath = ({
   );
 };
 
-export default React.memo(SoulZapPath);
+export default React.memo(SoulZapApiPath);

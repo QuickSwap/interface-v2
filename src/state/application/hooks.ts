@@ -16,7 +16,6 @@ import {
   updateTokenDetails,
   updateMaticPrice,
   updateIsV2,
-  updateUDDomain,
   updateSoulZap,
   updateOpenNetworkSelection,
 } from './actions';
@@ -55,10 +54,6 @@ export function useOpenModal(modal: ApplicationModal): () => void {
 export function useCloseModals(): () => void {
   const dispatch = useDispatch<AppDispatch>();
   return useCallback(() => dispatch(setOpenModal(null)), [dispatch]);
-}
-
-export function useWalletModalToggle(): () => void {
-  return useToggleModal(ApplicationModal.WALLET);
 }
 
 export function useToggleSettingsMenu(): () => void {
@@ -244,21 +239,6 @@ export function useIsV2(): {
     [dispatch],
   );
   return { isV2, updateIsV2: _updateIsV2 };
-}
-
-export function useUDDomain(): {
-  udDomain: string | undefined;
-  updateUDDomain: (udDomain: string | undefined) => void;
-} {
-  const udDomain = useSelector((state: AppState) => state.application.udDomain);
-  const dispatch = useDispatch();
-  const _updateUDDomain = useCallback(
-    (udDomain: string | undefined) => {
-      dispatch(updateUDDomain(udDomain));
-    },
-    [dispatch],
-  );
-  return { udDomain, updateUDDomain: _updateUDDomain };
 }
 
 export function useSoulZap() {

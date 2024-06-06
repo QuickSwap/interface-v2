@@ -76,6 +76,8 @@ export class WrappedTokenInfo implements Token {
     return (
       other.chainId === this.chainId &&
       other.isToken &&
+      !!this.address &&
+      !!other.address &&
       other.address.toLowerCase() === this.address.toLowerCase()
     );
   }

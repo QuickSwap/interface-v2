@@ -14,7 +14,7 @@ import {
 } from 'hooks/bond/usePostBondReference';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalance } from 'state/wallet/hooks';
-import { PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import { JSBI } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import { parseUnits } from 'ethers/lib/utils';
@@ -35,7 +35,7 @@ const ApeZapPath = ({
 }: {
   purchasePath: PurchasePath;
   onBillId: ((billId: string, transactionHash: string) => void) | undefined;
-  bond: any;
+  bond: Bond;
   inputTokenAddress: string;
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
@@ -133,7 +133,8 @@ const ApeZapPath = ({
             const { logs } = receipt;
             const findBillNftLog = logs.find(
               (log) =>
-                log.address.toLowerCase() === bondNftAddress?.toLowerCase(),
+                log.address.toLowerCase() ===
+                bondNftAddress[chainId]?.toLowerCase(),
             );
             const getBillNftIndex =
               findBillNftLog?.topics[findBillNftLog.topics.length - 1];
@@ -182,7 +183,7 @@ const ApeZapPath = ({
   const [openBuyWarning, setOpenBuyWarning] = useState(false);
 
   const handleValidationBeforeTx = () => {
-    if (parseFloat(bond?.discount as string) < 0) {
+    if ((bond?.discount ?? 0) < 0) {
       setOpenBuyWarning(true);
     } else handleApeZap();
   };

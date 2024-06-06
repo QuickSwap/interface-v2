@@ -15,7 +15,7 @@ import SwapCallbackError from 'components/v3/swap/SwapCallbackError';
 import SwapHeader from 'components/v3/swap/SwapHeader';
 import TradePrice from 'components/v3/swap/TradePrice';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
-import { useActiveWeb3React, useGetConnection, useMasaAnalytics } from 'hooks';
+import { useActiveWeb3React, useMasaAnalytics } from 'hooks';
 import useENSAddress from 'hooks/useENSAddress';
 import {
   ApprovalState,
@@ -40,16 +40,13 @@ import { ArrowDown, CheckCircle, HelpCircle, Info } from 'react-feather';
 import ReactGA from 'react-ga';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { Field } from 'state/swap/v3/actions';
 import {
-  useDefaultsFromURLSearch,
   useDerivedSwapInfo,
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/v3/hooks';
-import { useExpertModeManager, useSelectedWallet } from 'state/user/hooks';
-import { computeFiatValuePriceImpact } from 'utils/v3/computeFiatValuePriceImpact';
+import { useExpertModeManager } from 'state/user/hooks';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
@@ -74,47 +71,27 @@ import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
+import { useWalletInfo, useWeb3Modal } from '@web3modal/ethers5/react';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const history = useHistory();
-  // const loadedUrlParams = useDefaultsFromURLSearch();
-  // const inputCurrencyId = loadedUrlParams?.inputCurrencyId;
-  // const outputCurrencyId = loadedUrlParams?.outputCurrencyId;
-  // const paramInputCurrency = useCurrency(inputCurrencyId);
-  // const paramOutputCurrency = useCurrency(outputCurrencyId);
-  // token warning stuff
-  // const [loadedInputCurrency, loadedOutputCurrency] = [
-  //   paramInputCurrency,
-  //   paramOutputCurrency,
-  // ];
 
   const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(
     false,
   );
-  // const urlLoadedTokens: Token[] = useMemo(
-  //   () =>
-  //     [loadedInputCurrency, loadedOutputCurrency]?.filter(
-  //       (c): c is Token => c?.isToken ?? false,
-  //     ) ?? [],
-  //   [loadedInputCurrency, loadedOutputCurrency],
-  // );
+
   const handleConfirmTokenWarning = useCallback(() => {
     setDismissTokenWarning(true);
   }, []);
 
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
-  // const importTokensNotInDefault =
-  //   urlLoadedTokens &&
-  //   urlLoadedTokens.filter((token: Token) => {
-  //     return !Boolean(token.address in defaultTokens);
-  //   });
 
   // toggle wallet when disconnected
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager();
@@ -370,8 +347,6 @@ const SwapV3Page: React.FC = () => {
 
   const { fireEvent } = useMasaAnalytics();
   const config = getConfig(chainId);
-  const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     currencies[Field.INPUT]?.wrapped.address ?? '',
   );
@@ -380,28 +355,9 @@ const SwapV3Page: React.FC = () => {
     allowedSlippage,
   );
 
-  const [selectedInputCurrency, selectedOutputCurrency] = [
-    useCurrency(
-      currencies[Field.INPUT]?.isNative
-        ? currencies[Field.INPUT]?.wrapped.address
-        : currencies[Field.INPUT]?.address,
-    ),
-    useCurrency(currencies[Field.OUTPUT]?.wrapped.address),
-  ];
-  const selectedTokens: Token[] = useMemo(
-    () =>
-      [selectedInputCurrency, selectedOutputCurrency]?.filter(
-        (c): c is Token => c instanceof Token,
-      ) ?? [],
-    [selectedInputCurrency, selectedOutputCurrency],
-  );
-  const selectedTokensNotInDefault =
-    selectedTokens &&
-    selectedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
-
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
+
+  const { walletInfo } = useWalletInfo();
 
   const handleSwap = useCallback(() => {
     onV3TradeAnalytics(formattedAmounts);
@@ -458,10 +414,9 @@ const SwapV3Page: React.FC = () => {
           if (
             account &&
             currencies[Field.INPUT] &&
-            selectedWallet &&
+            walletInfo &&
             chainId === ChainId.MATIC
           ) {
-            const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -471,7 +426,7 @@ const SwapV3Page: React.FC = () => {
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: currencies[Field.INPUT].symbol ?? '',
               additionalEventData: {
-                wallet: connection.name,
+                wallet: walletInfo.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -498,24 +453,23 @@ const SwapV3Page: React.FC = () => {
         });
       });
   }, [
+    onV3TradeAnalytics,
+    formattedAmounts,
     swapCallback,
-    account,
-    currencies,
-    selectedWallet,
-    chainId,
     tradeToConfirm,
     showConfirm,
-    getConnection,
-    fireEvent,
-    config,
-    formattedAmounts,
-    fromTokenUSDPrice,
     finalizedTransaction,
     recipient,
     recipientAddress,
+    account,
     trade,
+    currencies,
+    walletInfo,
+    chainId,
+    fireEvent,
+    config,
     isUni,
-    onV3TradeAnalytics,
+    fromTokenUSDPrice,
   ]);
 
   // errors
@@ -603,28 +557,8 @@ const SwapV3Page: React.FC = () => {
 
   const parsedCurrency0Id = (parsedQs.currency0 ??
     parsedQs.inputCurrency) as string;
-  const parsedCurrency0 = useCurrency(
-    parsedCurrency0Id === 'ETH'
-      ? chainInfo.nativeCurrencySymbol
-      : parsedCurrency0Id,
-  );
   const parsedCurrency1Id = (parsedQs.currency1 ??
     parsedQs.outputCurrency) as string;
-  useEffect(() => {
-    if (!chainId) return;
-    if (parsedCurrency0) {
-      onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else if (parsedCurrency0 === undefined && !parsedCurrency1Id) {
-      const nativeCurrency = {
-        ...ETHER[chainId],
-        isNative: true,
-        isToken: false,
-        wrapped: WMATIC_EXTENDED[chainId],
-      } as NativeCurrency;
-      redirectWithCurrency(nativeCurrency, true, false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id]);
 
   const handleMaxInput = useCallback(() => {
     maxInputAmount && onUserInput(Field.INPUT, maxInputAmount.toExact());
@@ -674,17 +608,57 @@ const SwapV3Page: React.FC = () => {
     [redirectWithCurrency, currencies, redirectWithSwitch, defaultTokens],
   );
 
+  const parsedCurrency0 = useCurrency(
+    parsedCurrency0Id === 'ETH'
+      ? chainInfo.nativeCurrencySymbol
+      : parsedCurrency0Id,
+  );
   const parsedCurrency1 = useCurrency(
     parsedCurrency1Id === 'ETH'
       ? chainInfo.nativeCurrencySymbol
       : parsedCurrency1Id,
   );
+
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [parsedCurrency0, parsedCurrency1]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [parsedCurrency0, parsedCurrency1],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
+
+  const parsedCurrency0Fetched = !!parsedCurrency0;
+  const parsedCurrency1Fetched = !!parsedCurrency1;
+
   useEffect(() => {
-    if (parsedCurrency1) {
-      onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+    if (!parsedCurrency0Id && !parsedCurrency1Id) {
+      const nativeCurrency = {
+        ...ETHER[chainId],
+        isNative: true,
+        isToken: false,
+        wrapped: WMATIC_EXTENDED[chainId],
+      } as NativeCurrency;
+      redirectWithCurrency(nativeCurrency, true, false);
+    } else {
+      if (parsedCurrency0) {
+        onCurrencySelection(Field.INPUT, parsedCurrency0);
+      }
+      if (parsedCurrency1) {
+        onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency1Id]);
+  }, [
+    parsedCurrency0Id,
+    parsedCurrency1Id,
+    parsedCurrency0Fetched,
+    parsedCurrency1Fetched,
+  ]);
 
   //TODO
   const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
@@ -851,7 +825,7 @@ const SwapV3Page: React.FC = () => {
 
         <Box className='swapButtonWrapper'>
           {!account ? (
-            <Button fullWidth onClick={toggleWalletModal}>
+            <Button fullWidth onClick={() => open()}>
               {t('connectWallet')}
             </Button>
           ) : showNativeConvert ? (
@@ -1008,7 +982,12 @@ const SwapV3Page: React.FC = () => {
                 }
               }}
               id='swap-button'
-              disabled={!isValid || priceImpactTooHigh || !!swapCallbackError}
+              disabled={
+                !isValid ||
+                priceImpactTooHigh ||
+                !!swapCallbackError ||
+                showApproveFlow
+              }
             >
               {swapInputError
                 ? swapInputError

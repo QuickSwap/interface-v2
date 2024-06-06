@@ -26,9 +26,9 @@ export const NetworkSelection: React.FC = () => {
   });
 
   return (
-    <div className='networkSelectionWrapper' ref={networkSelection}>
+    <div className='headerDropdownWrapper' ref={networkSelection}>
       <Box
-        className='networkSelection'
+        className='headerDropdown'
         onClick={() => setOpenNetworkSelection(!openNetworkSelection)}
       >
         {isSupportedNetwork && (

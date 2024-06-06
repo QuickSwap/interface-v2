@@ -1494,6 +1494,15 @@ export const GammaPairs: {
         token1Address: '0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7',
       },
     ],
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359-0xa3fa99a148fa48d14ed51d610c367c61876997f1': [
+      {
+        type: Presets.GAMMA_STABLE,
+        title: 'Stable',
+        address: '0xe0fb098af0544df0124dcd326b15c0df3ca62164',
+        token0Address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+        token1Address: '0xa3fa99a148fa48D14ed51d610c367c61876997f1',
+      },
+    ],
   },
   [ChainId.ZKEVM]: {
     '0x4f9a0e7fd2bf6067db6994cf12e4495df938e6e9-0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035': [
@@ -2306,6 +2315,8 @@ export const IchiVaults: {
     '0xdc58504630972421445CBa4f856ABbA3Ce1BCB8a',
     '0x2FF07791F125BF6CE120D938f862d0385Cf4c835',
     '0xb5a4B8d3c8F88a25801aF460f52fEc639403534f',
+    '0x2ED64d3De2A2c060FF4b31e9B2f9268ADcE7e671',
+    '0x6fD4058ED78608F3C613585EEa222F6F5480e0D5',
   ],
 };
 

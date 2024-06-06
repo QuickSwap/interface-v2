@@ -19,7 +19,6 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
-  updateSelectedWallet,
   updateUserLiquidityHub,
   updateUserZapSlippage,
   updateIsInfiniteApproval,
@@ -28,7 +27,6 @@ import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
   V2_PINNED_PAIRS,
 } from 'constants/v3/addresses';
-import { ConnectionType } from 'connectors';
 import { Percent } from '@uniswap/sdk-core';
 import { INITIAL_ZAP_SLIPPAGE } from './reducer';
 
@@ -365,23 +363,6 @@ export function useUserSingleHopOnly(): [
   );
 
   return [singleHopOnly, setSingleHopOnly];
-}
-
-export function useSelectedWallet(): {
-  selectedWallet: ConnectionType | undefined;
-  updateSelectedWallet: (wallet?: ConnectionType) => void;
-} {
-  const selectedWallet = useSelector(
-    (state: AppState) => state.user.selectedWallet,
-  );
-  const dispatch = useDispatch();
-  const _updateSelectedWallet = useCallback(
-    (wallet?: ConnectionType) => {
-      dispatch(updateSelectedWallet({ wallet }));
-    },
-    [dispatch],
-  );
-  return { selectedWallet, updateSelectedWallet: _updateSelectedWallet };
 }
 
 export function useLiquidityHubManager(): [boolean, () => void] {

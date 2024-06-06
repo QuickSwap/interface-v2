@@ -142,7 +142,7 @@ export const TransactionErrorContent: React.FC<TransactionErrorContentProps> = (
           <h5 className='text-error'>Error!</h5>
           <CloseIcon onClick={onDismiss} />
         </Box>
-        <Box className='txModalContent'>
+        <Box className='txModalContent flex items-center flex-col'>
           <img src={TransactionFailed} alt='Transaction Failed' />
           <p>{message}</p>
         </Box>

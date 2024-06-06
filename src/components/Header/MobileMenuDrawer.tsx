@@ -16,13 +16,16 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
   return (
     <Box className='mobileMenuContainer'>
       <Box className='mobileMenuClosedContainer'>
-        {menuItems.slice(0, 3).map((item, i) => (
-          <HeaderListItem
-            key={'item' + i}
-            item={item}
-            onClick={() => setOpen(false)}
-          />
-        ))}
+        {menuItems
+          .filter((item) => !item.items)
+          .slice(0, 3)
+          .map((item, i) => (
+            <HeaderListItem
+              key={'item' + i}
+              item={item}
+              onClick={() => setOpen(false)}
+            />
+          ))}
       </Box>
       <Box
         className='cursor-pointer'

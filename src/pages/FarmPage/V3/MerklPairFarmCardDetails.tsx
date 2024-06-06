@@ -339,7 +339,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 {formatNumber(farm.poolAPR + farm.almAPR)}%
               </p>
               <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
-                <img src={APRHover} alt='farm APR' height={16} />
+                <img src={APRHover} alt='farm APR' className='farmAprIcon' />
               </TotalAPRTooltip>
             </Box>
           </Box>
@@ -357,12 +357,12 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
             gridGap={16}
           >
             {isQuickswap && qsPositions.length > 0 && (
-              <Box className='flex border-bottom' pb='8px'>
-                <Box
-                  className='flex items-center border-right'
-                  gridGap={6}
-                  pr='8px'
-                >
+              <Box
+                className='flex flex-wrap items-center border-bottom'
+                gridGap={12}
+                pb='8px'
+              >
+                <Box className='flex items-center' gridGap={6}>
                   <small className='secondary'>{t('nftID')}:</small>
                   <Box className='flex'>
                     <CustomMenu
@@ -376,20 +376,15 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     />
                   </Box>
                 </Box>
-                <Box px='8px' className='border-right'>
-                  <RangeBadge removed={false} inRange={!outOfRange} />
-                </Box>
-                <Box pl='8px' className='flex items-center'>
-                  <a
-                    href={`/#/pool/${selectedQSNFTId}`}
-                    target='_blank'
-                    rel='noreferrer'
-                    className='flex no-decoration text-primary'
-                    style={{ height: 20 }}
-                  >
-                    {t('viewPosition')}
-                  </a>
-                </Box>
+                <RangeBadge removed={false} inRange={!outOfRange} />
+                <a
+                  href={`/#/pool/${selectedQSNFTId}`}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='no-decoration text-primary'
+                >
+                  {t('viewPosition')}
+                </a>
               </Box>
             )}
             <Box className='flex justify-between items-center'>

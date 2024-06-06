@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import GammaLPList from './GammaLPList';
 import { getAllGammaPairs } from 'utils';
@@ -14,6 +13,7 @@ import {
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
 import { formatUnits, Interface } from 'ethers/lib/utils';
 import { useGammaData } from 'hooks/v3/useGammaData';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 export default function MyGammaPoolsV3() {
   const { t } = useTranslation();
@@ -21,7 +21,7 @@ export default function MyGammaPoolsV3() {
 
   const showConnectAWallet = Boolean(!account);
 
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   const { isLoading: dataLoading, data: gammaData } = useGammaData();
 
@@ -177,7 +177,7 @@ export default function MyGammaPoolsV3() {
           <p>{t('noLiquidityPositions')}.</p>
           {showConnectAWallet && (
             <Box maxWidth={250} margin='20px auto 0'>
-              <Button fullWidth onClick={toggleWalletModal}>
+              <Button fullWidth onClick={() => open()}>
                 {t('connectWallet')}
               </Button>
             </Box>

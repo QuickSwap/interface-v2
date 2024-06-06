@@ -90,7 +90,7 @@
   "dependencies": {
     "@0xsquid/widget": "1.6.0",
     "@ape.swap/apeswap-lists": "1.18.39",
-    "@arcxmoney/analytics": "^2.0.2",
+    "@arcxmoney/analytics": "^2.1.0",
     "@cryption/df-sdk-core": "0.0.26",
     "@hypelab/sdk-react": "^1.0.1",
     "@ichidao/ichi-vaults-sdk": "^0.0.51",
