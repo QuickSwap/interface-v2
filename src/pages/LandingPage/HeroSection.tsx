@@ -122,11 +122,12 @@ const HeroSection: React.FC = () => {
             height: '100%',
           }}
           onClick={() => {
-            !isSupportedNetwork
-              ? setOpenNetworkSelection(true)
-              : account
-              ? history.push('/swap')
-              : toggleWalletModal();
+            // !isSupportedNetwork
+            //   ? setOpenNetworkSelection(true)
+            //   : account
+            //   ? history.push('/swap')
+            //   : toggleWalletModal();
+            history.push('/swap');
           }}
         >
           {!isSupportedNetwork

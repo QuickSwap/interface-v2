@@ -83,7 +83,7 @@ const CommunityBlock: React.FC = ({}) => {
       title: 'Coinpaprika',
     },
     {
-      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
+      link: 'https://coinmarketcap.com/currencies/quickswap/',
       icon: <img src={CoinmarketCap} alt='CoinmarketCapp' />,
       title: 'CoinMarketCap',
     },

@@ -1,0 +1,82 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.assetModalWrapper {
+  max-width: 450px;
+}
+
+.assetTabsWrapper {
+  display: flex;
+  align-items: center;
+  & p {
+    border-bottom: 2px solid transparent;
+    color: $textSecondary;
+    padding-bottom: 8px;
+    cursor: pointer;
+    &.selectedAssetTab {
+      color: $textPrimary;
+      border-bottom: 2px solid $textPrimary;
+    }
+  }
+}
+
+.assetInfoWrapper {
+  width: 50%;
+  height: 40px;
+  background-color: $secondary1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.assetModalInputWrapper {
+  background-color: $secondary1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  & input {
+    background-color: transparent;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.assetModalLineWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 32px;
+
+  & .assetModalLine {
+    background-color: $textSecondary;
+    opacity: 0.12;
+    height: 1px;
+    width: 100%;
+  }
+  & .assetModalArrow {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $bgPalette;
+
+    & svg {
+      width: 24px;
+      height: 24px;
+      color: $textSecondary;
+    }
+  }
+}
+
+.assetModalButton {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+}

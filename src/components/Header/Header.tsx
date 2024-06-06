@@ -173,10 +173,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       items: [
         {
           id: 'perps-new-page-link',
-          link: '#',
+          link: '/falkor',
           text: 'Perps : Falkor',
           isNew: true,
-          isExternal: true,
         },
         {
           id: 'perps-v1-page-link',
@@ -272,11 +271,11 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'dragons-page-link',
     });
   }
-  menuItems.push({
-    link: '/bridge',
-    text: t('Bridge'),
-    id: 'bridge-page-link',
-  });
+  // menuItems.push({
+  //   link: '/bridge',
+  //   text: t('Bridge'),
+  //   id: 'bridge-page-link',
+  // });
   if (showGamingHub) {
     menuItems.push({
       link: '/gamehub',
