@@ -1,5 +1,6 @@
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config/index';
+import axios from 'axios';
 
 const getAPIURL = (chainId: ChainId, url: string) => {
   const apiBaseURL = process.env.REACT_APP_V3_APR_API_BASE_URL;
@@ -57,5 +58,31 @@ export async function fetchLimitFarmTVL(chainId: ChainId) {
     return await fetch(apiURL).then((v) => v.json());
   } catch (error) {
     return {};
+  }
+}
+
+export async function fetchQuickBurnAmount() {
+  const apiURL = process.env.REACT_APP_QUICK_BURN_AMOUNT_URL;
+
+  try {
+    const response = await axios.get(apiURL as string);
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function fetchQuickBurnApy() {
+  const apiURL = process.env.REACT_APP_QUICK_BURN_APY_URL;
+
+  try {
+    const response = await axios.get(apiURL as string);
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 }
