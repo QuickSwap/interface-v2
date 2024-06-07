@@ -16,10 +16,8 @@ import { useUserZapSlippageTolerance } from 'state/user/hooks';
 // import { TradeState } from 'state/routing/types';
 // import ModalProvider from '../../contexts/ModalContext';
 // import { Pricing } from '../DexPanel/types';
-import { ZapVersion } from '@ape.swap/apeswap-lists';
 
 // Hooks
-import useGetWidoQuote from 'state/zap/providers/wido/useGetWidoQuote';
 import { useSignTransaction } from 'state/transactions/hooks';
 
 // Types
@@ -39,7 +37,7 @@ import { usePair } from 'data/Reserves';
 import { V3TradeState } from 'hooks/v3/useBestV3Trade';
 
 interface ZapLiquidityProps {
-  handleConfirmedTx: (hash: string, pairOut: Pair) => void;
+  handleConfirmedTx: (hash: string, pairOut?: Pair) => void;
   poolAddress: string;
   pid: string;
   zapIntoProductType: ZapType;
@@ -96,20 +94,6 @@ const ZapLiquidity: React.FC<ZapLiquidityProps> = ({
     currencyA: inputCurrency as WrappedTokenInfo,
   });
 
-  const { data: widoQuote, isLoading: isWidoQuoteLoading } = useGetWidoQuote({
-    inputTokenAddress: inputTokenAddress,
-    inputTokenDecimals: inputTokenDecimals,
-    toTokenAddress: outputCurrencyId,
-    zapVersion: ZapVersion.ZapV1,
-    fromChainId: inputCurrencyChainId,
-    toChainId: outputCurrencyChainId,
-  });
-
-  const { to, data, value, isSupported: isWidoSupported = false } =
-    widoQuote ?? {};
-  const isBondsPage = location.pathname.includes('bonds');
-  const shouldUseWido = isWidoSupported && isBondsPage;
-
   const {
     zap,
     inputError: zapInputError,
@@ -163,38 +147,15 @@ const ZapLiquidity: React.FC<ZapLiquidityProps> = ({
   );
 
   const handleZap = useCallback(() => {
-    const zapMethod = shouldUseWido
-      ? signTransaction({
-          dataToSign: { to, data, value },
-          txInfo: { summary: t('zapBond') },
-        })
-      : zapCallback();
-
-    if (shouldUseWido) {
-      console.log('Signing Wido buy tx');
-    }
-
     setZapErrorMessage('');
-    zapMethod
+    zapCallback
       .then((hash: any) => {
-        if (zap) {
-          handleConfirmedTx(hash, zap?.pairOut.pair);
-        }
+        handleConfirmedTx(hash, zap?.pairOut.pair);
       })
       .catch((error: any) => {
         setZapErrorMessage(error.message);
       });
-  }, [
-    data,
-    handleConfirmedTx,
-    shouldUseWido,
-    signTransaction,
-    t,
-    to,
-    value,
-    zap,
-    zapCallback,
-  ]);
+  }, [handleConfirmedTx, zap, zapCallback]);
 
   const handleDismissConfirmation = useCallback(() => {
     // clear zapErrorMessage if user closes the error modal

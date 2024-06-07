@@ -14,6 +14,7 @@ import {
   setZapNewOutputList,
   setZapType,
   typeInput,
+  setOutputValue,
 } from './actions';
 import {
   useTrackedTokenPairs,
@@ -49,6 +50,7 @@ export function useZapActionHandlers(): {
     currency1: string;
     currency2: string;
   }) => void;
+  onSetOutputValue: (outputValue: string | null) => void;
 } {
   const dispatch = useAppDispatch();
 
@@ -77,6 +79,13 @@ export function useZapActionHandlers(): {
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
       dispatch(typeInput({ field, typedValue }));
+    },
+    [dispatch],
+  );
+
+  const onSetOutputValue = useCallback(
+    (outputValue: string | null) => {
+      dispatch(setOutputValue({ outputValue }));
     },
     [dispatch],
   );
@@ -126,6 +135,7 @@ export function useZapActionHandlers(): {
     onSetZapType,
     onInputSelect,
     onOutputSelect,
+    onSetOutputValue,
   };
 }
 

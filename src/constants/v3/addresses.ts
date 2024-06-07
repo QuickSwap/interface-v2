@@ -1,3 +1,4 @@
+import { LiquidityDex } from '@ape.swap/apeswap-lists';
 import { ChainId, WETH } from '@uniswap/sdk';
 import { Token } from '@uniswap/sdk';
 import { Token as TokenV3 } from '@uniswap/sdk-core';
@@ -68,7 +69,11 @@ export const NATIVE_TOKEN_ADDRESS =
   '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const PRICE_GETTER_ADDRESS: AddressMap = {
-  [ChainId.MATIC]: '0x56CC45d405483e38d7f6533184b3435C5269eEf1',
+  [ChainId.MATIC]: '0x6908356faC751dA36F4ec1B4ADBc56d0B3862155',
+};
+
+export const SoulZapTokenManager: AddressMap = {
+  [ChainId.MATIC]: '0x3F15Ee3d7dd7AcFB14625A1E2FBce22912Fa91be',
 };
 
 export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
@@ -87,12 +92,39 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.LAYERX]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
 };
 
-export const V2_FACTORY_BOND: AddressMap = {
-  [ChainId.MATIC]: '0xcf083be4164828f00cae704ec15a36d711491284',
+export const defaultBondDexFactories: {
+  [chainId in ChainId]?: { [index: number]: string };
+} = {
+  [ChainId.MATIC]: {
+    2: '0xcf083be4164828f00cae704ec15a36d711491284',
+    3: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
+    4: '0x411b0facc3489691f28ad58c47006af5e3ab3a28',
+  },
 };
 
-export const V3_FACTORY_BOND: AddressMap = {
-  [ChainId.MATIC]: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
+export const bondDexFactories: {
+  [chainId in ChainId]?: {
+    [dex: string]: { factory: string; protocol: number };
+  };
+} = {
+  [ChainId.MATIC]: {
+    [LiquidityDex.ApeSwapV2]: {
+      factory: '0xcf083be4164828f00cae704ec15a36d711491284',
+      protocol: 2,
+    },
+    [LiquidityDex.QuickswapV2]: {
+      factory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
+      protocol: 2,
+    },
+    [LiquidityDex.UniswapV3]: {
+      factory: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
+      protocol: 3,
+    },
+    [LiquidityDex.Algebra]: {
+      factory: '0x411b0facc3489691f28ad58c47006af5e3ab3a28',
+      protocol: 4,
+    },
+  },
 };
 
 export const V3_CORE_FACTORY_ADDRESSES: AddressMap = {
@@ -1264,6 +1296,26 @@ export const EURO3: { [chainId: number]: Token } = {
   ),
 };
 
+export const SD: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x1d734a02ef1e1f5886e66b0673b71af5b53ffa94',
+    18,
+    'SD',
+    'Stader (PoS)',
+  ),
+};
+
+export const ABOND: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xe6828D65bf5023AE1851D90D8783Cc821ba7eeE1',
+    18,
+    'ABOND',
+    'ApeBond',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1453,6 +1505,7 @@ export const SUGGESTED_BASES: {
     MATIC[ChainId.MANTA],
     NEW_QUICK[ChainId.MANTA],
     MANTA[ChainId.MANTA],
+    STONE[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],

@@ -1,5 +1,11 @@
-import React, { useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import React, { useMemo, useState, useEffect } from 'react';
+import {
+  Box,
+  Select,
+  MenuItem,
+  useMediaQuery,
+  useTheme,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { GlobalConst, GlobalData } from 'constants/index';
@@ -14,16 +20,21 @@ import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { useCurrency } from 'hooks/v3/Tokens';
-import { Home, KeyboardArrowRight } from '@material-ui/icons';
+import { KeyboardArrowLeft } from '@material-ui/icons';
 import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 interface Props {
   searchValue: string;
   farmStatus: string;
+  sortValue: string;
 }
 
-const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
+const AllMerklFarms: React.FC<Props> = ({
+  searchValue,
+  farmStatus,
+  sortValue,
+}) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
@@ -57,8 +68,12 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
   );
   const [farmFilter, setFarmFilter] = useState(farmFilters[0].id);
 
+  const [selectedSort, setSelectedSort] = useState(
+    GlobalConst.utils.v3FarmSortBy.pool,
+  );
   const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
   const [sortDesc, setSortDesc] = useState(false);
+  const [isOld, setIsOld] = useState(true);
   const sortMultiplier = sortDesc ? 1 : -1;
 
   const sortColumns = [
@@ -88,6 +103,25 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     },
   ];
 
+  const sortItems = [
+    {
+      label: t('pool'),
+      value: GlobalConst.utils.v3FarmSortBy.pool,
+    },
+    {
+      label: t('tvl'),
+      value: GlobalConst.utils.v3FarmSortBy.tvl,
+    },
+    {
+      label: t('apr'),
+      value: GlobalConst.utils.v3FarmSortBy.apr,
+    },
+    {
+      label: t('rewards'),
+      value: GlobalConst.utils.v3FarmSortBy.rewards,
+    },
+  ];
+
   const sortByDesktopItems = sortColumns.map((item) => {
     return {
       ...item,
@@ -101,6 +135,10 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       },
     };
   });
+
+  useEffect(() => {
+    setSortBy(sortValue);
+  }, [sortValue]);
 
   const { loading, farms } = useMerklFarms();
   const rewardAddresses = farms.reduce((memo: string[], item: any) => {
@@ -333,34 +371,63 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
     <>
       {poolId && (
         <>
-          <Box className='flex items-center'>
-            <Box
-              className='flex items-center cursor-pointer text-secondary'
-              gridGap={5}
-              onClick={() => history.push('/farm')}
-            >
-              <Home />
-              <small>{t('allFarms')}</small>
+          <Box className='flex items-center justify-between' pt={2} mx={2}>
+            <Box className='flex items-center'>
+              <Box
+                className='flex items-center cursor-pointer back-to-farm'
+                gridGap={3}
+                onClick={() => history.push('/farm')}
+                mr={2}
+              >
+                <KeyboardArrowLeft />
+                <small>{t('Back')}</small>
+              </Box>
+              <Box className='flex items-center' gridGap={8}>
+                <DoubleCurrencyLogo
+                  currency0={currency0 ?? undefined}
+                  currency1={currency1 ?? undefined}
+                  size={24}
+                />
+                <h5 className='weight-500'>
+                  {currency0?.symbol}/{currency1?.symbol}
+                </h5>
+              </Box>
             </Box>
-            <KeyboardArrowRight className='text-secondary' />
-            <small className='text-bold'>
-              {currency0?.symbol}/{currency1?.symbol}
-            </small>
-          </Box>
-          <Box className='flex items-center' gridGap={8} my={3}>
-            <DoubleCurrencyLogo
-              currency0={currency0 ?? undefined}
-              currency1={currency1 ?? undefined}
-              size={24}
-            />
-            <h4 className='weight-500'>
-              {currency0?.symbol}/{currency1?.symbol}
-            </h4>
+            {!isMobile && (
+              <Box className='flex items-center' gridGap={16}>
+                <Box
+                  className='sortSelectBox'
+                  width={isMobile ? '100%' : 'auto'}
+                >
+                  <label>Sort by: </label>
+                  <Select value={selectedSort} className='sortSelect'>
+                    {sortItems.map((item) => (
+                      <MenuItem
+                        key={item.value}
+                        value={item.value}
+                        onClick={() => {
+                          setSelectedSort(item.value);
+                        }}
+                      >
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+                <Box className='flex items-center' gridGap={6}>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <ToggleSwitch
+                    toggled={isOld}
+                    onToggle={() => setIsOld(!isOld)}
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
         </>
       )}
 
-      <Box className={poolId ? 'bg-palette' : ''} borderRadius={10} pt={2}>
+      <Box pt={2}>
         {poolId ? (
           <Box className='flex justify-between items-center' px={2} mb={2}>
             <Box className='flex'>
@@ -373,13 +440,17 @@ const AllMerklFarms: React.FC<Props> = ({ searchValue, farmStatus }) => {
                 />
               )}
             </Box>
-            <Box className='flex items-center' gridGap={6}>
-              <small className='text-secondary'>{t('staked')}</small>
-              <ToggleSwitch
-                toggled={staked}
-                onToggle={() => setStaked(!staked)}
-              />
-            </Box>
+            {isMobile && (
+              <Box className='flex items-center' gridGap={16}>
+                <Box className='flex items-center' gridGap={6}>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <ToggleSwitch
+                    toggled={isOld}
+                    onToggle={() => setIsOld(!isOld)}
+                  />
+                </Box>
+              </Box>
+            )}
           </Box>
         ) : (
           <>

@@ -20,7 +20,6 @@ import {
 } from 'state/swap/hooks';
 import {
   useExpertModeManager,
-  useSelectedWallet,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { Field, SwapDelay } from 'state/swap/actions';
@@ -34,7 +33,6 @@ import {
   useIsProMode,
   useActiveWeb3React,
   useMasaAnalytics,
-  useGetConnection,
   useConnectWallet,
 } from 'hooks';
 import {
@@ -69,6 +67,7 @@ import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { useWalletInfo } from '@web3modal/ethers5/react';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -136,23 +135,6 @@ const Swap: React.FC<{
     currencies[Field.OUTPUT],
     typedValue,
   );
-
-  const [selectedInputCurrency, selectedOutputCurrency] = [
-    useCurrency(wrappedCurrency(currencies[Field.INPUT], chainId)?.address),
-    useCurrency(wrappedCurrency(currencies[Field.OUTPUT], chainId)?.address),
-  ];
-  const selectedTokens: Token[] = useMemo(
-    () =>
-      [selectedInputCurrency, selectedOutputCurrency]?.filter(
-        (c): c is Token => c instanceof Token,
-      ) ?? [],
-    [selectedInputCurrency, selectedOutputCurrency],
-  );
-  const selectedTokensNotInDefault =
-    selectedTokens &&
-    selectedTokens.filter((token: Token) => {
-      return !Boolean(token.address in defaultTokens);
-    });
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
@@ -225,6 +207,8 @@ const Swap: React.FC<{
   useEffect(() => {
     if (approval === ApprovalState.PENDING) {
       setApprovalSubmitted(true);
+    } else if (approval === ApprovalState.APPROVED) {
+      setApprovalSubmitted(false);
     }
   }, [approval, approvalSubmitted]);
 
@@ -264,20 +248,6 @@ const Swap: React.FC<{
     ],
   );
 
-  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
-  useEffect(() => {
-    if (parsedCurrency0) {
-      onCurrencySelection(Field.INPUT, parsedCurrency0);
-    } else if (
-      history.location.pathname !== '/' &&
-      parsedCurrency0 === undefined &&
-      !parsedCurrency1Id
-    ) {
-      redirectWithCurrency(ETHER, true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency0, parsedCurrency1Id, chainIdToUse]);
-
   const handleOtherCurrencySelect = useCallback(
     (outputCurrency: any) => {
       const isSwichRedirect = currencyEquals(
@@ -308,13 +278,45 @@ const Swap: React.FC<{
     ],
   );
 
+  const parsedCurrency0 = useCurrency(parsedCurrency0Id);
   const parsedCurrency1 = useCurrency(parsedCurrency1Id);
+  const parsedCurrency0Fetched = !!parsedCurrency0;
+  const parsedCurrency1Fetched = !!parsedCurrency1;
   useEffect(() => {
-    if (parsedCurrency1) {
-      onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+    if (
+      history.location.pathname !== '/' &&
+      !parsedCurrency0Id &&
+      !parsedCurrency1Id
+    ) {
+      redirectWithCurrency(ETHER[chainIdToUse], true);
+    } else {
+      if (parsedCurrency0) {
+        onCurrencySelection(Field.INPUT, parsedCurrency0);
+      }
+      if (parsedCurrency1) {
+        onCurrencySelection(Field.OUTPUT, parsedCurrency1);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedCurrency1Id]);
+  }, [
+    parsedCurrency0Id,
+    parsedCurrency1Id,
+    parsedCurrency0Fetched,
+    parsedCurrency1Fetched,
+  ]);
+
+  const selectedTokens: Token[] = useMemo(
+    () =>
+      [parsedCurrency0, parsedCurrency1]?.filter(
+        (c): c is Token => c instanceof Token,
+      ) ?? [],
+    [parsedCurrency0, parsedCurrency1],
+  );
+  const selectedTokensNotInDefault =
+    selectedTokens &&
+    selectedTokens.filter((token: Token) => {
+      return !Boolean(token.address in defaultTokens);
+    });
 
   const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
     trade,
@@ -534,8 +536,6 @@ const Swap: React.FC<{
 
   const { fireEvent } = useMasaAnalytics();
   const config = getConfig(chainId);
-  const { selectedWallet } = useSelectedWallet();
-  const getConnection = useGetConnection();
   const fromTokenWrapped = wrappedCurrency(currencies[Field.INPUT], chainId);
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     fromTokenWrapped?.address ?? '',
@@ -545,6 +545,8 @@ const Swap: React.FC<{
     currencies,
     allowedSlippage,
   );
+
+  const { walletInfo } = useWalletInfo();
 
   const handleSwap = useCallback(() => {
     onV2TradeAnalytics(trade);
@@ -605,10 +607,9 @@ const Swap: React.FC<{
           if (
             account &&
             fromTokenWrapped &&
-            selectedWallet &&
+            walletInfo &&
             chainId === ChainId.MATIC
           ) {
-            const connection = getConnection(selectedWallet);
             fireEvent('trade', {
               user_address: account,
               network: config['networkName'],
@@ -616,7 +617,7 @@ const Swap: React.FC<{
               asset_amount: formattedAmounts[Field.INPUT],
               asset_ticker: fromTokenWrapped.symbol ?? '',
               additionalEventData: {
-                wallet: connection.name,
+                wallet: walletInfo.name,
                 asset_usd_amount: (
                   Number(formattedAmounts[Field.INPUT]) * fromTokenUSDPrice
                 ).toString(),
@@ -643,6 +644,8 @@ const Swap: React.FC<{
         });
       });
   }, [
+    onV2TradeAnalytics,
+    trade,
     priceImpactWithoutFee,
     t,
     swapCallback,
@@ -652,16 +655,13 @@ const Swap: React.FC<{
     recipient,
     recipientAddress,
     account,
-    trade,
     fromTokenWrapped,
-    selectedWallet,
+    walletInfo,
     chainId,
-    getConnection,
     fireEvent,
     config,
     formattedAmounts,
     fromTokenUSDPrice,
-    onV2TradeAnalytics,
   ]);
 
   const fetchingBestRoute =
@@ -803,7 +803,7 @@ const Swap: React.FC<{
                 }
               }}
             >
-              {approval === ApprovalState.PENDING ? (
+              {approvalSubmitted && approval !== ApprovalState.APPROVED ? (
                 <Box className='content'>
                   {t('approving')} <CircularProgress size={16} />
                 </Box>
@@ -818,7 +818,7 @@ const Swap: React.FC<{
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
             fullWidth
-            disabled={swapButtonDisabled as boolean}
+            disabled={showApproveFlow || (swapButtonDisabled as boolean)}
             onClick={account && isSupportedNetwork ? onSwap : connectWallet}
           >
             {swapButtonText}

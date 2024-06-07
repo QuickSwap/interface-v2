@@ -15,8 +15,8 @@ import { ChainId } from '@uniswap/sdk';
 export default function Updater(): null {
   const {
     library,
+    currentChainId,
     chainId,
-    connector,
     provider,
     account,
   } = useActiveWeb3React();
@@ -30,7 +30,7 @@ export default function Updater(): null {
     chainId: number | undefined;
     blockNumber: number | null;
   }>({
-    chainId,
+    chainId: currentChainId,
     blockNumber: null,
   });
 
@@ -86,9 +86,8 @@ export default function Updater(): null {
 
   // attach/detach listeners
   useEffect(() => {
-    if (!library || !chainId || !windowVisible) return undefined;
-
-    setState({ chainId, blockNumber: null });
+    setState({ chainId: currentChainId, blockNumber: null });
+    if (!library || !windowVisible) return undefined;
 
     library
       .getBlockNumber()
@@ -102,32 +101,30 @@ export default function Updater(): null {
 
     library.on('block', blockNumberCallback);
 
-    if (connector.provider) {
-      connector.provider.on('chainChanged', () => {
-        setTimeout(() => {
-          document.location.reload();
-        }, 1500);
+    if (library) {
+      library.on('network', (newNetwork) => {
+        if (state.chainId && newNetwork.chainId !== state.chainId) {
+          setTimeout(() => {
+            document.location.reload();
+          }, 1500);
+        }
       });
     }
 
     return () => {
       library.removeListener('block', blockNumberCallback);
-      if (connector.provider) {
-        connector.provider.removeListener('chainChanged', () => {
-          setTimeout(() => {
-            document.location.reload();
-          }, 1500);
+      if (library) {
+        library.removeListener('network', (newNetwork) => {
+          if (state.chainId && newNetwork.chainId !== state.chainId) {
+            setTimeout(() => {
+              document.location.reload();
+            }, 1500);
+          }
         });
       }
     };
-  }, [
-    dispatch,
-    chainId,
-    library,
-    blockNumberCallback,
-    windowVisible,
-    connector,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChainId, chainId, windowVisible]);
 
   const debouncedState = useDebounce(state, 100);
 
@@ -174,7 +171,7 @@ export default function Updater(): null {
       dispatch(updateSoulZap(soulZapInstance));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainId, provider, ethersProvider, account]);
+  }, [chainId, account]);
 
   return null;
 }

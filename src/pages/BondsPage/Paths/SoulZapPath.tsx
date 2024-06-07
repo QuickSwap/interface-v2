@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
 import { useZapState } from 'state/zap/hooks';
 import BigNumber from 'bignumber.js';
-import { PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import { useSoulZapQuote } from 'state/zap/soulZap/useSoulZapQuote';
@@ -34,7 +34,7 @@ const SoulZapPath = ({
 }: {
   purchasePath: PurchasePath;
   onBillId: ((billId: string, transactionHash: string) => void) | undefined;
-  bond: any;
+  bond: Bond;
   inputTokenAddress: string;
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
@@ -128,7 +128,8 @@ const SoulZapPath = ({
                 const { logs } = receipt;
                 const findBillNftLog = logs.find(
                   (log) =>
-                    log.address.toLowerCase() === bondNftAddress?.toLowerCase(),
+                    log.address.toLowerCase() ===
+                    bondNftAddress[chainId]?.toLowerCase(),
                 );
                 const getBillNftIndex =
                   findBillNftLog?.topics[findBillNftLog.topics.length - 1];
@@ -203,7 +204,7 @@ const SoulZapPath = ({
   const [openBuyWarning, setOpenBuyWarning] = useState(false);
 
   const handleValidationBeforeTx = () => {
-    if (parseFloat(bond?.discount as string) < 0) {
+    if ((bond?.discount ?? 0) < 0) {
       setOpenBuyWarning(true);
     } else soulZapCallback();
   };

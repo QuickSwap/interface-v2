@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <g data-name="Group 35682" transform="translate(0 3.129)">
+        <circle data-name="Ellipse 1326" cx="12" cy="12" r="12" transform="translate(0 -3.129)" style="fill:none"/>
+        <g data-name="Layer 2">
+            <g data-name="invisible box">
+                <path data-name="Rectangle 24444" style="fill:none" d="M0 0h16v16H0z" transform="translate(4 .871)"/>
+            </g>
+            <g data-name="icons Q2">
+                <path data-name="Path 17234" d="M17.333 15.333h-.667v-2.5a2.633 2.633 0 0 0-.767-1.9l-1.633-1.6 1.633-1.6a2.633 2.633 0 0 0 .767-1.9v-2.5h.667a.667.667 0 0 0 0-1.333H6.667a.667.667 0 1 0 0 1.333h.667v2.5a2.633 2.633 0 0 0 .767 1.9l1.633 1.6-1.634 1.6a2.633 2.633 0 0 0-.767 1.9v2.5h-.666a.667.667 0 0 0 0 1.333h10.666a.667.667 0 0 0 0-1.333zM9.067 11.9l2.067-2.1a.633.633 0 0 0 0-.933l-2.067-2.1a1.2 1.2 0 0 1-.4-.933v-2.5h6.667v2.5a1.2 1.2 0 0 1-.4.933l-2.067 2.1a.633.633 0 0 0 0 .933l2.067 2.1a1.2 1.2 0 0 1 .4.933v2.1l-2.4-2.433a1.3 1.3 0 0 0-1.867 0l-2.4 2.433v-2.1a1.2 1.2 0 0 1 .4-.933zm4.8 3.433h-3.734l1.867-1.9z" transform="translate(0 -.462)" style="fill:#fff"/>
+            </g>
+        </g>
+    </g>
+</svg>
