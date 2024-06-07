@@ -231,7 +231,7 @@
   "dragonLairTitle": "Stake {{ symbol }} to receive {{ symbol1 }} and earn yield on your tokens over time.",
   "oldDragonLairTitle": "QUICK (old)  is no longer giving rewards. You can withdraw and convert to new QUICK to continue staking in the new Lair",
   "newDragonLairTitle": "Withdraw your new QUICK for now",
-  "dragonSyrup": "Dragon’s Syrup",
+  "dragonSyrup": "Dragon’s QUICK",
   "dragonSyrupTitle": "Stake dQUICK to earn tokens of your choice over time",
   "dragonSyrupPoolUnavailable": "Syrup pools are currently unavailable.",
   "stakeQUICKTitle": "Single Stake — Auto compounding",
