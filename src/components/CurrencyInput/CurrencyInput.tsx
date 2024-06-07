@@ -73,9 +73,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     } else {
       if (!multicallContract || !latestBlockNumber || !account) return;
       getCurrencyBalanceImmediately(
-        multicallContract!,
+        multicallContract,
         chainId,
-        latestBlockNumber!,
+        latestBlockNumber,
         account,
         currency,
       ).then((value) => {
@@ -86,7 +86,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
 
   useEffect(() => {
     setUpdatedSelectedCurrencyBalance(selectedCurrencyBalance);
-  }, [selectedCurrencyBalance]);
+  }, [JSON.stringify(selectedCurrencyBalance)]);
 
   const usdPriceV2 = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
   const currencyV3 =

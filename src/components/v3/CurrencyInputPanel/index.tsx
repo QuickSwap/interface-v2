@@ -110,9 +110,9 @@ export default function CurrencyInputPanel({
     } else {
       if (!multicallContract || !latestBlockNumber || !account) return;
       getCurrencyBalanceImmediately(
-        multicallContract!,
+        multicallContract,
         chainId,
-        latestBlockNumber!,
+        latestBlockNumber,
         account,
         nativeCurrency,
       ).then((value) => {
@@ -125,11 +125,17 @@ export default function CurrencyInputPanel({
     if (updatedBalance == undefined) {
       setUpdatedBalance(balance);
     } else {
-      if (currency?.isNative) return;
+      if (
+        currency?.isNative ||
+        !multicallContract ||
+        !latestBlockNumber ||
+        !account
+      )
+        return;
       getCurrencyBalanceImmediately(
-        multicallContract!,
+        multicallContract,
         chainId,
-        latestBlockNumber!,
+        latestBlockNumber,
         account,
         currency ?? undefined,
       ).then((value) => {
@@ -140,7 +146,7 @@ export default function CurrencyInputPanel({
   useEffect(() => {
     setUpdatedEthBalance(ethBalance);
     setUpdatedBalance(balance);
-  }, [ethBalance, balance]);
+  }, [JSON.stringify(ethBalance), JSON.stringify(balance)]);
 
   const { price: currentPrice } = useUSDCPriceFromAddress(
     currency?.wrapped?.address ?? '',
