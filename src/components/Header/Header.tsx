@@ -3,8 +3,8 @@ import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import { useSwitchNetwork } from '@web3modal/ethers5/react';
-import { useActiveWeb3React } from 'hooks';
+import { useSwitchNetwork, useWalletInfo } from '@web3modal/ethers5/react';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
 import QuickLogoWebP from 'assets/images/quickLogo.webp';
@@ -26,15 +26,21 @@ import MobileHeader from './MobileHeader';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { NetworkSelection } from './NetworkSelection';
 import { OrderlyPoints } from './OrderlyPoints';
+import { shortenAddress, useIsSupportedNetwork } from 'utils';
+import AccountDetailsModal from 'components/AccountDetails/AccountDetailsModal';
 
 const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   onUpdateNewsletter,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { switchNetwork } = useSwitchNetwork();
+  const { walletInfo } = useWalletInfo();
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
   const [showNewsletter, setShowNewsletter] = useState(false);
+  const [showAccountDetailsModal, setShowAccountDetailsModal] = useState(false);
 
   const theme = useTheme();
 
@@ -122,7 +128,38 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   if (showPerpsV2 && showPerps) {
     menuItems.push(perpsTab);
   }
-  const perpsItem = {
+  // const perpsItem = {
+  //   link: '/perps',
+  //   text: 'Perps',
+  //   id: 'perps-page-link',
+  //   isExternal: true,
+  //   externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+  //   onClick: async () => {
+  //     if (chainId !== ChainId.ZKEVM) {
+  //       switchNetwork(ChainId.ZKEVM);
+  //     }
+  //     if (process.env.REACT_APP_PERPS_URL) {
+  //       window.open(process.env.REACT_APP_PERPS_URL, '_self');
+  //     }
+  //   },
+  // };
+  // if (showPerpsV2) {
+  //   if (showPerps) {
+  //     perpsTab.items?.push({
+  //       link: `/falkor`,
+  //       text: 'Perps',
+  //       id: 'perps-page-link',
+  //     });
+  //   } else {
+  //     menuItems.push({
+  //       link: `/falkor`,
+  //       text: 'Perps',
+  //       id: 'perps-page-link',
+  //       isNew: true,
+  //     });
+  //   }
+  // }
+  menuItems.push({
     link: '/perps',
     text: 'Perps',
     id: 'perps-page-link',
@@ -130,66 +167,39 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     externalLink: process?.env?.REACT_APP_PERPS_URL || '',
     onClick: async () => {
       if (chainId !== ChainId.ZKEVM) {
-        switchNetwork(ChainId.ZKEVM);
+        const zkEVMconfig = getConfig(ChainId.ZKEVM);
+        const chainParam = {
+          chainId: ChainId.ZKEVM,
+          chainName: `${zkEVMconfig['networkName']} Network`,
+          rpcUrls: [zkEVMconfig['rpc']],
+          nativeCurrency: zkEVMconfig['nativeCurrency'],
+          blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+        };
       }
       if (process.env.REACT_APP_PERPS_URL) {
         window.open(process.env.REACT_APP_PERPS_URL, '_self');
       }
     },
-  };
-  if (showPerpsV2) {
-    if (showPerps) {
-      perpsTab.items?.push({
-        link: `/falkor`,
-        text: 'Perps',
-        id: 'perps-page-link',
-      });
-    } else {
-      menuItems.push({
-        link: `/falkor`,
-        text: 'Perps',
-        id: 'perps-page-link',
+    items: [
+      {
+        id: 'perps-new-page-link',
+        link: '/falkor',
+        text: 'Perps : Falkor',
         isNew: true,
-      });
-    }
-  }
-  if (showPerps) {
-    menuItems.push({
-      link: '/perps',
-      text: 'Perps',
-      id: 'perps-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-      onClick: async () => {
-        if (chainId !== ChainId.ZKEVM) {
-          const zkEVMconfig = getConfig(ChainId.ZKEVM);
-          const chainParam = {
-            chainId: ChainId.ZKEVM,
-            chainName: `${zkEVMconfig['networkName']} Network`,
-            rpcUrls: [zkEVMconfig['rpc']],
-            nativeCurrency: zkEVMconfig['nativeCurrency'],
-            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-          };
-        }
-        if (process.env.REACT_APP_PERPS_URL) {
-          window.open(process.env.REACT_APP_PERPS_URL, '_self');
-        }
       },
-      items: [
-        {
-          id: 'perps-new-page-link',
-          link: '/falkor',
-          text: 'Perps : Falkor',
-          isNew: true,
+      {
+        id: 'perps-v1-page-link',
+        link: process.env.REACT_APP_PERPS_URL || '#',
+        text: 'Perps V1',
+        onClick: () => {
+          if (process.env.REACT_APP_PERPS_URL) {
+            window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+          }
         },
-        {
-          id: 'perps-v1-page-link',
-          link: '#',
-          text: 'Perps V1',
-        },
-      ],
-    });
-  }
+      },
+    ],
+  });
+
   if (showPool) {
     menuItems.push({
       link: `/pools`,
@@ -205,7 +215,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   };
 
   const partnersTab: HeaderMenuItem = {
-    text: t('partners'),
+    text: t('Partners'),
     id: 'partners',
     link: '/partners',
     items: [
@@ -368,34 +378,24 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Box>
       )}
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
+        <AccountDetailsModal
+          open={showAccountDetailsModal}
+          onClose={() => setShowAccountDetailsModal(false)}
+        />
         <Box style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <Link to={isPerpsPage ? '/falkor' : '/'}>
-            {mobileWindowSize && !isPerpsPage && (
-              <img src={QuickIcon} alt='QuickLogo' className='mobileLogo' />
+          <Link to='/'>
+            {mobileWindowSize && (
+              <img src={QuickIcon} alt='QuickLogo' height={32} />
             )}
-            {!mobileWindowSize &&
-              (isPerpsPage ? (
-                <img
-                  src={QuickPerpsLogo}
-                  alt='QuickPerpsLogo'
-                  className='perpsDesktopLogo'
-                />
-              ) : (
-                <picture>
-                  <source srcSet={QuickLogoWebP} type='image/webp' />
-                  <img
-                    src={QuickLogo}
-                    alt='QuickLogo'
-                    className='desktopLogo'
-                  />
-                </picture>
-              ))}
+            {!mobileWindowSize && (
+              <picture>
+                <source height={32} srcSet={QuickIcon} type='image/webp' />
+                <img src={QuickLogo} alt='QuickLogo' height={32} />
+              </picture>
+            )}
           </Link>
           {!tabletWindowSize && (
-            <Box
-              className={`${isPerpsPage ? 'mainMenuPerps' : 'mainMenu'}`}
-              gridGap={6}
-            >
+            <Box className='mainMenu'>
               {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
                 <HeaderDesktopItem
                   key={`header-desktop-item-${i}`}
@@ -420,14 +420,35 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
             </Box>
           )}
         </Box>
-        {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          {isPerpsPage && <OrderlyPoints />}
-          {!parsedChain && <NetworkSelection />}
-
-          <Box className='web3ModalButton'>
-            <w3m-button balance='hide' />
-          </Box>
+          {isPerpsPage && !mobileWindowSize && <OrderlyPoints />}
+          {account ? (
+            <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <NetworkSelection />
+              <Box
+                id='web3-status-connected'
+                className='accountDetails'
+                onClick={() => setShowAccountDetailsModal(true)}
+                style={{ gap: '8px' }}
+              >
+                {walletInfo?.icon && (
+                  <img src={walletInfo?.icon} width={24} alt='wallet icon' />
+                )}
+                <p>{shortenAddress(account)}</p>
+                <KeyboardArrowDownIcon />
+              </Box>
+            </Box>
+          ) : (
+            <Box
+              className='connectButton bg-primary'
+              onClick={() => {
+                connectWallet();
+                history.push(`/swap?currency0=ETH${swapCurrencyStr}`);
+              }}
+            >
+              Launch App
+            </Box>
+          )}
         </Box>
       </Box>
 
