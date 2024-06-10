@@ -1,13 +1,14 @@
 @use 'styles/variables' as *;
 
 .styledInput {
-  // width: 100%;
+  width: 100%;
   position: relative;
   outline: none;
   border: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  appearance: textfield;
   -webkit-appearance: textfield;
   background: transparent;
   box-shadow: none;
@@ -25,11 +26,13 @@
     -webkit-appearance: none;
   }
 
-  & [type="number"] {
+  & [type='number'] {
+    appearance: textfield;
     -moz-appearance: textfield;
   }
 
-  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
 }
