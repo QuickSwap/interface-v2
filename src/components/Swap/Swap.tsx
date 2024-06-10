@@ -68,6 +68,8 @@ import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { useWalletInfo } from '@web3modal/ethers5/react';
+import { useAppDispatch } from 'state';
+import { updateUserBalance } from 'state/balance/actions';
 
 const Swap: React.FC<{
   currencyBgClass?: string;
@@ -135,7 +137,7 @@ const Swap: React.FC<{
     currencies[Field.OUTPUT],
     typedValue,
   );
-
+  const dispatch = useAppDispatch();
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const tradesByVersion = {
     [Version.v1]: v1Trade,
@@ -583,6 +585,7 @@ const Swap: React.FC<{
           finalizedTransaction(receipt, {
             summary,
           });
+          dispatch(updateUserBalance());
           setSwapState({
             attemptingTxn: false,
             txPending: false,
