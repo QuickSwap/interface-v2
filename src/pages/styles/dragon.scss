@@ -1,64 +1,12 @@
 @use 'styles/variables' as *;
 @use 'styles/breakpoints' as *;
 
-.dragonWrapper {
-  background: $bgPalette;
-  border-radius: 20px;
-  padding: 32px;
-  position: relative;
-  overflow: hidden;
-  @include media("screen", "<phone") {
-    padding: 24px 16px
-  }
-}
-
-.dragonWrapper-container {
-  background: $bgPalette;
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
 .dragonWrapper-heading {
   padding: 24px 32px 16px 32px;
-
 }
 
 .dragonWrapper-tab-container {
   padding: 0px;
-}
-
-.dragonBg {
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: $grey5;
-  max-height: 138px;
-  overflow: hidden;
-  & img {
-    width: 100%;
-  }
-}
-
-.dragonMask {
-  width: 100%;
-  position: absolute;
-  top: 207px;
-}
-
-.dragonMask-small {
-  width: 80%;
-  position: absolute;
-  top: 207px;
-}
-
-.dragonTitle {
-  margin-bottom: 64px;
-  & h5 {
-    // margin-bottom: 16px;
-    color: $textPrimary;
-  }
 }
 
 .dragonAlertWrapper {
@@ -83,7 +31,7 @@
 }
 
 .dragonHeader::before {
-  content: "";
+  content: '';
   position: absolute;
   background-image: url('../../assets/images/DragonBgNew.png');
   background-size: auto 100%;
@@ -96,14 +44,13 @@
   opacity: 0.5;
 }
 
-
 .dragonHeader {
   position: relative;
   border-radius: 16px;
   padding: 22px 24px;
   background-color: #322751;
   &.mobile::before {
-    content: "";
+    content: '';
     position: absolute;
     min-height: 360px;
     background-image: url('../../assets/images/DragonBgNewMobile.png');
@@ -458,6 +405,5 @@
 }
 
 .errorInput {
-  border: 1px solid;
-  border-color: $errorMain
+  border: 1px solid $errorMain;
 }
