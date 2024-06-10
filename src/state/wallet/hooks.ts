@@ -16,7 +16,11 @@ import { isAddress } from 'utils';
 import {
   useSingleContractMultipleData,
   useMultipleContractSingleData,
+  getSingleContractMultipleDataImmediately,
+  getMultipleContractSingleDataImmediately,
 } from 'state/multicall/hooks';
+
+import { Contract } from '@ethersproject/contracts';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -224,4 +228,187 @@ export function useAllTokenBalances(): {
   ]);
   const balances = useTokenBalances(account ?? undefined, allTokensArray);
   return balances ?? {};
+}
+
+export async function getETHBalancesImmediately(
+  multicallContract: Contract,
+  chainId: ChainId,
+  blockNumber: number,
+  uncheckedAddresses?: (string | undefined)[],
+): Promise<{
+  [address: string]: CurrencyAmount | undefined;
+}> {
+  // const multicallContract = useMulticallContract()!;
+  const addresses: string[] = uncheckedAddresses
+    ? uncheckedAddresses
+        .map(isAddress)
+        .filter((a): a is string => a !== false)
+        .sort()
+    : [];
+
+  const results = await getSingleContractMultipleDataImmediately(
+    multicallContract,
+    'getEthBalance',
+    addresses.map((address) => [address]),
+    blockNumber,
+  );
+
+  const ret = addresses.reduce<{ [address: string]: CurrencyAmount }>(
+    (memo, address, i) => {
+      const value = results?.[i]?.result?.[0];
+      if (value) {
+        memo[address] = CurrencyAmount.ether(
+          JSBI.BigInt(value.toString()),
+          chainId,
+        );
+      }
+      return memo;
+    },
+    {},
+  );
+  return ret;
+}
+
+export async function getTokenBalancesImmediately(
+  multicallContract: Contract,
+  blockNumber: number,
+  address?: string,
+  tokens?: (
+    | {
+        chainId: ChainId;
+        address: string;
+        decimals: number;
+        symbol?: string;
+        name?: string;
+      }
+    | undefined
+  )[],
+): Promise<{ [tokenAddress: string]: TokenAmount | undefined }> {
+  return (
+    await getTokenBalancesWithLoadingIndicatorImmediately(
+      multicallContract,
+      blockNumber,
+      address,
+      tokens,
+    )
+  )[0];
+}
+
+export async function getTokenBalancesWithLoadingIndicatorImmediately(
+  contract: Contract,
+  blockNumber: number,
+  address?: string,
+  tokens?: (
+    | {
+        chainId: ChainId;
+        address: string;
+        decimals: number;
+        symbol?: string;
+        name?: string;
+      }
+    | undefined
+  )[],
+): Promise<[{ [tokenAddress: string]: TokenAmount | undefined }, boolean]> {
+  const validatedTokens: any[] =
+    tokens?.filter(
+      (t?: {
+        chainId: ChainId;
+        address: string;
+        decimals: number;
+        symbol?: string;
+        name?: string;
+      }): any => isAddress(t?.address) !== false,
+    ) ?? [];
+
+  const validatedTokenAddresses = validatedTokens.map((vt) => vt.address);
+  const balances = await getMultipleContractSingleDataImmediately(
+    contract,
+    blockNumber,
+    validatedTokenAddresses,
+    ERC20_INTERFACE,
+    'balanceOf',
+    [address],
+  );
+
+  const anyLoading: boolean = balances.some((callState) => callState.loading);
+
+  return [
+    address && validatedTokens.length > 0
+      ? validatedTokens.reduce<{
+          [tokenAddress: string]: TokenAmount | undefined;
+        }>((memo, token, i) => {
+          const value = balances?.[i]?.result?.[0];
+          const amount = value ? JSBI.BigInt(value.toString()) : undefined;
+          if (amount) {
+            memo[token.address] = new TokenAmount(token, amount);
+          }
+          return memo;
+        }, {})
+      : {},
+    anyLoading,
+  ];
+}
+
+export async function getCurrencyBalanceImmediately(
+  multicallContract: Contract,
+  chainId: ChainId,
+  blockNumber: number,
+  account?: string,
+  currency?: Currency,
+): Promise<CurrencyAmount | undefined> {
+  return (
+    await getCurrencyBalancesImmediately(
+      multicallContract,
+      chainId,
+      blockNumber,
+      account,
+      [currency],
+    )
+  )[0];
+}
+
+export async function getCurrencyBalancesImmediately(
+  multicallContract: Contract,
+  chainId: ChainId,
+  blockNumber: number,
+  account?: string,
+  currencies?: (Currency | undefined)[],
+): Promise<(CurrencyAmount | undefined)[]> {
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
+
+  const tokens =
+    currencies
+      ?.filter((currency) => currency !== nativeCurrency)
+      .map((currency) => currency as Token) ?? [];
+
+  const tokenBalances = await getTokenBalancesImmediately(
+    multicallContract,
+    blockNumber,
+    account,
+    tokens,
+  );
+  const containsETH: boolean =
+    currencies?.some((currency) => currency === nativeCurrency) ?? false;
+  const ethBalance = await getETHBalancesImmediately(
+    multicallContract,
+    chainIdToUse,
+    blockNumber,
+    containsETH ? [account] : [],
+  );
+
+  return (
+    currencies?.map((currency) => {
+      if (!account || !currency) return undefined;
+      if (currency === nativeCurrency) return ethBalance[account];
+      if (currency) {
+        const address = (currency as Token).address;
+        if (!address) {
+          return undefined;
+        }
+        return tokenBalances[address];
+      }
+      return undefined;
+    }) ?? []
+  );
 }
