@@ -92,12 +92,8 @@ const DragonsLair = () => {
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
   const APY = useLairDQUICKAPY(isNew, lairInfoToUse);
-  const dQUICKtoQUICK = lairInfoToUse?.dQUICKtoQUICK?.toFixed(4, {
-    groupSeparator: ',',
-  });
-  const QUICKtodQUICK = lairInfoToUse?.QUICKtodQUICK?.toFixed(4, {
-    groupSeparator: ',',
-  });
+  const dQUICKtoQUICK = lairInfoToUse?.dQUICKtoQUICK?.toExact();
+  const QUICKtodQUICK = lairInfoToUse?.QUICKtodQUICK?.toExact();
 
   const userLiquidityUnstaked = useTokenBalance(
     account ?? undefined,
