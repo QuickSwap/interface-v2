@@ -109,8 +109,12 @@ const Footer: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <picture>
-              <source srcSet={QUICKLogoWebP} type='image/webp' />
-              <img src={QUICKLogo} alt='QUICK' />
+              <source
+                className='logo'
+                srcSet={QUICKLogoWebP}
+                type='image/webp'
+              />
+              <img className='logo' src={QUICKLogo} alt='QUICK' />
             </picture>
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>

@@ -443,10 +443,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
               className='connectButton bg-primary'
               onClick={() => {
                 connectWallet();
-                history.push(`/swap?currency0=ETH${swapCurrencyStr}`);
               }}
             >
-              Launch App
+              {t('connectWallet')}
             </Box>
           )}
         </Box>

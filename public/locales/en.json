@@ -947,5 +947,7 @@
   "trigger": "Trigger",
   "oldFarms": "Old Farms",
   "poolManager": "Pool Manager",
-  "notEnoughBalance": "Not Enough Balance"
+  "notEnoughBalance": "Not Enough Balance",
+  "subNewsletter": "Subscribe to Newsletter",
+  "allRights": "All rights reserved."
 }

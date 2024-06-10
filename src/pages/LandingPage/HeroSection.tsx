@@ -131,7 +131,7 @@ const HeroSection: React.FC = () => {
             ? t('switchNetwork')
             : account
             ? t('enterApp')
-            : t('launchApp')}
+            : t('connectWallet')}
         </Button>
       </Box>
     </Box>

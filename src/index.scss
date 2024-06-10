@@ -267,6 +267,9 @@ wcm-modal {
   width: 100%;
   min-height: 250%;
   overflow: hidden;
+  &.isSwap {
+    min-height: 100%;
+  }
   & img {
     width: 100%;
     min-width: 1200px;
