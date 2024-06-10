@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Tab, useMediaQuery } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
-import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
+import { ReactComponent as QUICKV2Icon } from 'assets/images/quickIcon.svg';
 import SyrupIcon from 'assets/images/syrupIcon.png';
 import 'pages/styles/dragon.scss';
 import { useTheme } from '@material-ui/core/styles';
