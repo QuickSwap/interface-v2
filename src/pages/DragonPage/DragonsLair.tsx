@@ -67,7 +67,7 @@ const DragonsLair = () => {
   const dQuickBalance = useTokenBalance(account ?? undefined, dQuickToken);
   const oldQuickToken = OLD_QUICK[chainIdToUse];
   const oldQuickBalance = useTokenBalance(account ?? undefined, oldQuickToken);
-  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
   const [isQUICKRate, setIsQUICKRate] = useState(false);
   const [tabValue, setTabValue] = useState('stake');
   const [stakeAmount, setStakeAmount] = useState('');
