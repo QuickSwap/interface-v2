@@ -97,9 +97,6 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
             <span className='subtext-color'>{t('balance')}:</span>{' '}
             {formatTokenAmount(selectedCurrencyBalance)}
           </small>
-          <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-            ${(usdPrice * Number(amount)).toLocaleString('us')}
-          </small>
         </Box>
         {/* <Box display='flex'>
           {account && currency && showHalfButton && (
@@ -149,7 +146,9 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           {balancePrev}
         </Typography>
         <Typography className='subtext-color' style={{ fontSize: '13px' }}>
-          {balanceAfter}
+          <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+            ${(usdPrice * Number(amount)).toLocaleString('us')}
+          </small>
         </Typography>
       </Box>
     </Box>

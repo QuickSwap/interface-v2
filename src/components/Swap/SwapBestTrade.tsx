@@ -1145,8 +1145,6 @@ const SwapBestTrade: React.FC<{
         setAmount={handleTypeInput}
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
-        balancePrev={'$4942.85'}
-        balanceAfter={'$4942.85'}
       />
       <Box className='exchangeSwap'>
         {/* <ExchangeIcon
@@ -1192,53 +1190,53 @@ const SwapBestTrade: React.FC<{
         setAmount={handleTypeOutput}
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
-        balancePrev={'$4942.85'}
-        balanceAfter={'$4942.85'}
       />
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gridGap: '4px',
-          marginTop: '16px',
-        }}
-      >
-        <img src={chart} alt='chart' />
-        <Typography
-          style={{
-            fontSize: '13px',
-            color: '#fff',
-            fontWeight: 500,
-            marginBottom: '-2px',
+      {paraRate && (
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gridGap: '4px',
+            marginTop: '16px',
           }}
         >
-          1 WBTC = 51218.18 MATIC
-        </Typography>
-      </Box>
-      {/* {paraRate && (
-        <Box className='swapPrice'>
-          <small>{t('price')}:</small>
-          <small>
-            1{' '}
-            {
-              (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
-                ?.symbol
-            }{' '}
-            = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
-            {
-              (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])
-                ?.symbol
-            }{' '}
-            <PriceExchangeIcon
-              onClick={() => {
-                setMainPrice(!mainPrice);
-              }}
-            />
-          </small>
+          <img src={chart} alt='chart' />
+          <Typography
+            style={{
+              fontSize: '13px',
+              color: '#fff',
+              fontWeight: 500,
+              marginBottom: '-2px',
+            }}
+          >
+            <Box className='swapPrice'>
+              <small>
+                1{' '}
+                {
+                  (mainPrice
+                    ? currencies[Field.INPUT]
+                    : currencies[Field.OUTPUT]
+                  )?.symbol
+                }{' '}
+                = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
+                {
+                  (mainPrice
+                    ? currencies[Field.OUTPUT]
+                    : currencies[Field.INPUT]
+                  )?.symbol
+                }{' '}
+                <PriceExchangeIcon
+                  onClick={() => {
+                    setMainPrice(!mainPrice);
+                  }}
+                />
+              </small>
+            </Box>
+          </Typography>
         </Box>
-      )} */}
+      )}
       {!showNativeConvert && !showWrap && isExpertMode && (
         <Box className='recipientInput'>
           <Box className='recipientInputHeader'>
