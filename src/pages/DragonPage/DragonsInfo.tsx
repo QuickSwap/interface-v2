@@ -20,8 +20,8 @@ const DragonsInfo = () => {
   const dQuickToken = DLDQUICK[chainIdToUse];
   const oldQuickToken = OLD_QUICK[chainIdToUse];
   const oldQuickBalance = useTokenBalance(account ?? undefined, oldQuickToken);
-  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
-  const { price: dQuickPrice } = useUSDCPriceFromAddress(dQuickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
+  const { price: dQuickPrice } = useUSDCPriceFromAddress(dQuickToken?.address);
   const { price: oldQuickPrice } = useUSDCPriceFromAddress(
     oldQuickToken ? oldQuickToken.address : undefined,
   );

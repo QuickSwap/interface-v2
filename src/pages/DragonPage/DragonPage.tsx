@@ -32,11 +32,14 @@ const DragonPage: React.FC = () => {
   const APY = useLairDQUICKAPY(true, lairInfoToUse);
   const quickToken = DLQUICK[chainIdToUse];
   const dQuickToken = DLDQUICK[chainIdToUse];
-  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
   const config = getConfig(chainIdToUse);
   const showLair = config['lair']['available'];
   const showOld = config['lair']['oldLair'];
   const showNew = config['lair']['newLair'];
+
+  if(lairInfoToUse == undefined) return;
+
   const totalStaked = numbro(
     formatTokenAmount(lairInfoToUse?.totalQuickBalance),
   ).format({
@@ -135,7 +138,7 @@ const DragonPage: React.FC = () => {
                   <h5 className='text-dragon-white'>
                     {totalStaked.toString().toUpperCase()}
                   </h5>
-                  <small>${totalStakedUSDPrice.toString().toUpperCase()}</small>
+                  <small>${totalStakedUSDPrice?.toString().toUpperCase()}</small>
                 </Box>
               </Box>
               <Box>
@@ -173,7 +176,7 @@ const DragonPage: React.FC = () => {
                   <Box width='50%'>
                     <small>{t('staked')}</small>
                     <h5 className='text-dragon-white'>
-                      {totalStaked.toString().toUpperCase()}
+                      {totalStaked?.toString()?.toUpperCase()}
                     </h5>
                     <small>
                       ${totalStakedUSDPrice.toString().toUpperCase()}
