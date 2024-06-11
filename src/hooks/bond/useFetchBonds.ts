@@ -7,16 +7,9 @@ import {
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
-import {
-  V2_FACTORY_ADDRESSES,
-  V2_FACTORY_BOND,
-  V3_CORE_FACTORY_ADDRESSES,
-  V3_FACTORY_BOND,
-} from 'constants/v3/addresses';
 import { usePriceGetterContract } from '../useContract';
-import { LiquidityProtocol, getLiquidityDexIndex } from 'utils';
-import { ZERO_ADDRESS } from 'constants/v3/misc';
-import { Bond, BondConfig } from 'types/bond';
+import { getPriceGetterCallData } from 'utils';
+import { Bond, BondConfig, BondToken } from 'types/bond';
 
 export const useFetchBonds = () => {
   const { chainId } = useActiveWeb3React();
@@ -63,89 +56,88 @@ export const useFetchBonds = () => {
       .map((item: any) => item.contractAddress[chainId]);
   }, [bonds, chainId]);
 
-  const priceGetterContract = usePriceGetterContract();
-  const lpPriceParams = useMemo(() => {
+  const lpTokens = useMemo(() => {
     if (!bonds) return [];
-    return bonds.map((bond) => {
-      const address =
-        bond && bond.lpToken && bond.lpToken.address
-          ? bond.lpToken.address[chainId]
-          : undefined;
-      const protocol =
-        bond && bond.lpToken && bond.lpToken.liquidityDex
-          ? getLiquidityDexIndex(bond.lpToken.liquidityDex[chainId], true)
-          : LiquidityProtocol.V2;
-      let factoryV2 = V2_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      if (bond && bond.lpToken && bond.lpToken.liquidityDex) {
-        factoryV2 = V2_FACTORY_ADDRESSES[chainId];
-      }
-      const factoryV3 = V3_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      const factoryAlgebra = V3_CORE_FACTORY_ADDRESSES[chainId] ?? ZERO_ADDRESS;
-      const factorySolidly = ZERO_ADDRESS;
-      return [
-        address,
-        protocol,
-        factoryV2,
-        factoryV3,
-        factoryAlgebra,
-        factorySolidly,
-      ];
-    });
+    return bonds
+      .map((bond) => bond.lpToken)
+      .reduce((acc: BondToken[], token) => {
+        const itemIsExisting = !!acc.find((item) => {
+          const itemAddress = item.address[chainId];
+          const tokenAddress = token.address[chainId];
+          const itemLiquidityDex = item.liquidityDex?.[chainId];
+          const tokenLiquidityDex = item.liquidityDex?.[chainId];
+          return (
+            itemAddress &&
+            tokenAddress &&
+            itemAddress.toLowerCase() === tokenAddress.toLowerCase() &&
+            itemLiquidityDex === tokenLiquidityDex
+          );
+        });
+        if (!itemIsExisting) {
+          acc.push(token);
+        }
+        return acc;
+      }, []);
   }, [bonds, chainId]);
+
+  const bondTokens = useMemo(() => {
+    if (!bonds) return [];
+    return bonds
+      .map((bond) => bond.earnToken)
+      .concat(bonds.map((bond) => bond.token))
+      .reduce((acc: BondToken[], token) => {
+        const itemIsExisting = !!acc.find((item) => {
+          const itemAddress = item.address[chainId];
+          const tokenAddress = token.address[chainId];
+          const itemLiquidityDex = item.liquidityDex?.[chainId];
+          const tokenLiquidityDex = item.liquidityDex?.[chainId];
+          return (
+            itemAddress &&
+            tokenAddress &&
+            itemAddress.toLowerCase() === tokenAddress.toLowerCase() &&
+            itemLiquidityDex === tokenLiquidityDex
+          );
+        });
+        if (!itemIsExisting) {
+          acc.push(token);
+        }
+        return acc;
+      }, []);
+  }, [bonds, chainId]);
+
+  const priceGetterContract = usePriceGetterContract();
+  const lpPriceParams = getPriceGetterCallData(lpTokens, chainId, true);
   const lpPriceCalls = useSingleContractMultipleData(
     priceGetterContract,
     'getLPPriceFromFactory',
     lpPriceParams,
   );
-  const lpPrices = bondAddresses.map((address, index) => {
+  const lpPrices = lpTokens.map((token, index) => {
     const call = lpPriceCalls[index];
     const price =
       call && !call.loading && call.result && call.result.length > 0
         ? call.result[0]
         : undefined;
-    return { loading: call && call.loading, price, address };
+    return { loading: call && call.loading, price, token };
   });
 
-  const earnTokenPriceParams = useMemo(() => {
-    if (!bonds) return [];
-    return bonds.map((bond) => {
-      const address =
-        bond && bond.earnToken && bond.earnToken.address
-          ? bond.earnToken.address[chainId]
-          : undefined;
-      const protocol =
-        bond && bond.earnToken && bond.earnToken.liquidityDex
-          ? getLiquidityDexIndex(bond.earnToken.liquidityDex[chainId])
-          : undefined;
-      let factoryV2 = V2_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      if (bond && bond.earnToken && bond.earnToken.liquidityDex) {
-        factoryV2 = V2_FACTORY_ADDRESSES[chainId];
-      }
-      const factoryV3 = V3_FACTORY_BOND[chainId] ?? ZERO_ADDRESS;
-      const factoryAlgebra = V3_CORE_FACTORY_ADDRESSES[chainId] ?? ZERO_ADDRESS;
-      const factorySolidly = ZERO_ADDRESS;
-      return [
-        address,
-        protocol,
-        factoryV2,
-        factoryV3,
-        factoryAlgebra,
-        factorySolidly,
-      ];
-    });
-  }, [bonds, chainId]);
-  const earnTokenPriceCalls = useSingleContractMultipleData(
+  const bondTokenPriceParams = getPriceGetterCallData(
+    bondTokens,
+    chainId,
+    false,
+  );
+  const bondTokenPriceCalls = useSingleContractMultipleData(
     priceGetterContract,
     'getPriceFromFactory',
-    earnTokenPriceParams,
+    bondTokenPriceParams,
   );
-  const earnTokenPrices = bondAddresses.map((address, index) => {
-    const call = earnTokenPriceCalls[index];
+  const bondTokenPrices = bondTokens.map((token, index) => {
+    const call = bondTokenPriceCalls[index];
     const price =
       call && !call.loading && call.result && call.result.length > 0
         ? call.result[0]
         : undefined;
-    return { loading: call && call.loading, address, price };
+    return { loading: call && call.loading, token, price };
   });
 
   const bondInterface = new Interface(BondABI);
@@ -273,23 +265,42 @@ export const useFetchBonds = () => {
           address &&
           item.address.toLowerCase() === address.toLowerCase(),
       );
-      const lpPrice = lpPrices.find(
-        (item) =>
-          item.address &&
-          address &&
-          item.address.toLowerCase() === address.toLowerCase(),
-      );
+      const lpPrice = lpPrices.find((item) => {
+        const lpTokenAddress = item.token.address[chainId];
+        const bondLPTokenAddress = bond.lpToken.address[chainId];
+        return (
+          lpTokenAddress &&
+          bondLPTokenAddress &&
+          lpTokenAddress.toLowerCase() === bondLPTokenAddress.toLowerCase()
+        );
+      });
       const lpPriceNumber =
         lpPrice && lpPrice.price ? Number(formatUnits(lpPrice.price)) : 0;
-      const earnTokenPrice = earnTokenPrices.find(
-        (item) =>
-          item.address &&
-          address &&
-          item.address.toLowerCase() === address.toLowerCase(),
-      );
+      const earnTokenPrice = bondTokenPrices.find((item) => {
+        const earnTokenAddress = item.token.address[chainId];
+        const bondEarnTokenAddress = bond.earnToken.address[chainId];
+        return (
+          earnTokenAddress &&
+          bondEarnTokenAddress &&
+          earnTokenAddress.toLowerCase() === bondEarnTokenAddress.toLowerCase()
+        );
+      });
       const earnTokenPriceNumber =
         earnTokenPrice && earnTokenPrice.price
           ? Number(formatUnits(earnTokenPrice.price))
+          : 0;
+      const tokenPrice = bondTokenPrices.find((item) => {
+        const tokenAddress = item.token.address[chainId];
+        const bondTokenAddress = bond.token.address[chainId];
+        return (
+          tokenAddress &&
+          bondTokenAddress &&
+          tokenAddress.toLowerCase() === bondTokenAddress.toLowerCase()
+        );
+      });
+      const tokenPriceNumber =
+        tokenPrice && tokenPrice.price
+          ? Number(formatUnits(tokenPrice.price))
           : 0;
       const priceUsd =
         trueBillPrice && trueBillPrice.data
@@ -323,6 +334,7 @@ export const useFetchBonds = () => {
         maxTotalPayOut: bondMaxTotalPayOut?.maxTotalPayout,
         lpPrice: lpPriceNumber,
         earnTokenPrice: earnTokenPriceNumber,
+        tokenPrice: tokenPriceNumber,
         discount,
         priceUsd,
         maxPayoutTokens: bondMaxPayOut?.data,
@@ -332,11 +344,11 @@ export const useFetchBonds = () => {
     bondMaxPayouts,
     bondMaxTotalPayouts,
     bondTerms,
+    bondTokenPrices,
     bondTotalPayoutGivens,
     bondTrueBillPrices,
     bonds,
     chainId,
-    earnTokenPrices,
     lpPrices,
   ]);
 

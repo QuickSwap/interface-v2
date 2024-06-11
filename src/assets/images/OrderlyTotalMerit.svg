@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <g data-name="Group 35680" transform="translate(0 3.129)">
+        <circle data-name="Ellipse 1326" cx="12" cy="12" r="12" transform="translate(0 -3.129)" style="fill:none"/>
+        <g data-name="Layer 2">
+            <g data-name="invisible box">
+                <path data-name="Rectangle 24442" transform="translate(2 -1.129)" style="fill:none" d="M0 0h20v20H0z"/>
+            </g>
+            <g data-name="icons Q2">
+                <g data-name="Group 35679">
+                    <path data-name="Path 17231" d="M20.748 4.246a.808.808 0 0 0-1.191 0l-4.508 4.508a6.464 6.464 0 0 0-2.212-.51l2.807-2.807a.808.808 0 0 0 0-1.191.808.808 0 0 0-1.191 0L12.71 5.99l-1.744-1.744a.808.808 0 0 0-1.191 0 .808.808 0 0 0 0 1.191l1.744 1.744-1.574 1.573-4.508-4.508a.808.808 0 0 0-1.191 0 .808.808 0 0 0 0 1.191L8.414 9.6a6.8 6.8 0 1 0 8.166 0l4.168-4.168a.808.808 0 0 0 0-1.191zM17.6 15.049a5.1 5.1 0 1 1-5.1-5.1 5.1 5.1 0 0 1 5.1 5.1z" transform="translate(-.497 -3.626)" style="fill:#fff"/>
+                    <path data-name="Path 17232" d="m22.737 25.679-1.233-.17-.553-1.233a.425.425 0 0 0-.766 0l-.553 1.233-1.233.17a.468.468 0 0 0-.255.766l.893.851-.213 1.318a.468.468 0 0 0 .638.468l1.106-.808 1.106.808a.468.468 0 0 0 .638-.468L22.1 27.3l.893-.851a.468.468 0 0 0-.255-.766z" transform="translate(-8.568 -15.149)" style="fill:#fff"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

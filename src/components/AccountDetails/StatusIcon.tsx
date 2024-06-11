@@ -1,18 +1,15 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
+import { useWalletInfo } from '@web3modal/ethers5/react';
 import { useTranslation } from 'react-i18next';
-import { getWalletKeys } from 'utils';
 
 const StatusIcon: React.FC = () => {
-  const { t } = useTranslation();
-  const { chainId, connector } = useActiveWeb3React();
-  const icon = getWalletKeys(connector, chainId).map(
-    (connection) => connection.iconName,
-  )[0];
+  const { walletInfo } = useWalletInfo();
   return (
     <Box className='flex items-center'>
-      <img src={icon} width={24} alt='wallet icon' />
+      {walletInfo?.icon && (
+        <img src={walletInfo.icon} width={24} alt='wallet icon' />
+      )}
     </Box>
   );
 };

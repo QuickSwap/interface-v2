@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Warning } from '@material-ui/icons';
 import { formatNumber } from 'utils';
+import { Bond } from 'types/bond';
 
 const WarningModal = ({
   open,
@@ -13,7 +14,7 @@ const WarningModal = ({
 }: {
   open: boolean;
   onDismiss?: () => void;
-  bond: any;
+  bond: Bond;
   handlePurchase: () => void;
 }) => {
   const [confirmBuy, setConfirmBuy] = useState(false);

@@ -68,7 +68,7 @@ const CommunityBlock: React.FC = ({}) => {
       title: 'Reddit',
     },
     {
-      link: 'https://www.tiktok.com/@quickswapofficial',
+      link: 'https://quickswap-layer2.medium.com/',
       icon: <Medium />,
       title: 'Medium',
     },
@@ -83,7 +83,7 @@ const CommunityBlock: React.FC = ({}) => {
       title: 'Coinpaprika',
     },
     {
-      link: 'https://coinpaprika.com/exchanges/quickswap-v3/',
+      link: 'https://coinmarketcap.com/currencies/quickswap/',
       icon: <img src={CoinmarketCap} alt='CoinmarketCapp' />,
       title: 'CoinMarketCap',
     },
@@ -166,6 +166,10 @@ const CommunityBlock: React.FC = ({}) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                transition: '.3s ease-in-out',
+                width: '18px',
+                height: '18px',
+                cursor: 'pointer',
               }}
             >
               <CallMadeIcon

@@ -86,11 +86,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       link: '#',
       text: 'Proposal',
     },
-    {
-      id: 'vote-page-link',
-      link: '#',
-      text: 'Vote',
-    },
+    // {
+    //   id: 'vote-page-link',
+    //   link: '#',
+    //   text: 'Vote',
+    // },
   ];
 
   const developers: HeaderMenuItem[] = [

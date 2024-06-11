@@ -61,12 +61,28 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
       )}
       {(oldLair || newLair) && (
         <Box className='tradingSection' pt='20px'>
-          <Typography
-            className='text-uppercase'
-            style={{ fontSize: '11px', fontWeight: 600 }}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            {t('dragonslair')}{' '}
-          </Typography>
+            <Typography
+              className='text-uppercase'
+              style={{ fontSize: '11px', fontWeight: 600 }}
+            >
+              {t('dragonslair')}{' '}
+            </Typography>
+            {account && (
+              <h4
+                style={{ marginBottom: '12px', marginTop: '0' }}
+                onClick={() => setOpenStakeModal(true)}
+              >
+                {t('stake')} {'>'}
+              </h4>
+            )}
+          </Box>
           {loading ? (
             <Skeleton variant='rect' width={100} height={45} />
           ) : (
@@ -81,11 +97,6 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
                 </Typography>
               </Box>
             </Box>
-          )}
-          {account && (
-            <h4 onClick={() => setOpenStakeModal(true)}>
-              {t('stake')} {'>'}
-            </h4>
           )}
         </Box>
       )}

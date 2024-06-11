@@ -4,10 +4,7 @@ import { Button, Box, Typography } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useIsSupportedNetwork } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import {
-  useWalletModalToggle,
-  useOpenNetworkSelection,
-} from 'state/application/hooks';
+import { useOpenNetworkSelection } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config/index';
@@ -17,13 +14,14 @@ import { useNewLairInfo } from 'state/stake/hooks';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 const HeroSection: React.FC = () => {
   const history = useHistory();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
   const { setOpenNetworkSelection } = useOpenNetworkSelection();
   const { t } = useTranslation();
   const config = getConfig(chainIdToUse);
@@ -126,14 +124,14 @@ const HeroSection: React.FC = () => {
               ? setOpenNetworkSelection(true)
               : account
               ? history.push('/swap')
-              : toggleWalletModal();
+              : open();
           }}
         >
           {!isSupportedNetwork
             ? t('switchNetwork')
             : account
-            ? t('enterApp')
-            : t('launchApp')}
+            ? t('launchApp')
+            : t('connectWallet')}
         </Button>
       </Box>
     </Box>

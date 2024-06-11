@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
       title: t('developers'),
       items: [
         { title: t('github'), link: 'https://github.com/QuickSwap' },
-        { title: t('gitbook'), link: 'https://github.com/QuickSwap' },
+        // { title: t('gitbook'), link: 'https://github.com/QuickSwap' },
         { title: t('docs'), link: 'https://docs.quickswap.exchange/' },
       ],
     },
@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
       title: t('governance'),
       items: [
         { title: t('proposals'), link: 'https://snapshot.org/#/quickvote.eth' },
-        { title: t('vote'), link: 'https://snapshot.org/#/quickvote.eth' },
+        // { title: t('vote'), link: 'https://snapshot.org/#/quickvote.eth' },
       ],
     },
   ];
@@ -109,8 +109,12 @@ const Footer: React.FC = () => {
           </Grid>
           <Grid item xs={12} sm={12} md={4}>
             <picture>
-              <source height={40} srcSet={QUICKLogoWebP} type='image/webp' />
-              <img src={QUICKLogo} alt='QUICK' height={40} />
+              <source
+                className='logo'
+                srcSet={QUICKLogoWebP}
+                type='image/webp'
+              />
+              <img className='logo' src={QUICKLogo} alt='QUICK' />
             </picture>
             <Box mt={2} maxWidth='240px'>
               <small className='text-secondary'>{t('socialDescription')}</small>

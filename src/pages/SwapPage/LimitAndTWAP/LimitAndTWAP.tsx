@@ -3,6 +3,7 @@ import {
   TWAP as QuickSwapTWAP,
   Orders as QuickSwapOrders,
 } from '@orbs-network/twap-ui-quickswap';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 import { SwapSide } from '@paraswap/sdk';
 import { useQuery } from '@tanstack/react-query';
 import BN from 'bignumber.js';
@@ -15,7 +16,6 @@ import useGasPrice from 'hooks/useGasPrice';
 import { getBestTradeCurrencyAddress, useParaswap } from 'hooks/useParaswap';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useWalletModalToggle } from 'state/application/hooks';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -41,7 +41,7 @@ function TWAPBase({ limit }: { limit?: boolean }) {
   const gasPrice = useGasPrice();
 
   const allTokens = useAllTokens();
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
   const { onCurrencySelection } = useSwapActionHandlers();
   const { isProMode } = useIsProMode();
   const { redirectWithCurrency } = useSwapRedirects();
@@ -164,7 +164,9 @@ function TWAPBase({ limit }: { limit?: boolean }) {
       <QuickSwapTWAP
         limit={limit}
         isProMode={isProMode}
-        connect={toggleWalletModal}
+        connect={() => {
+          open();
+        }}
         connectedChainId={chainId}
         provider={library?.provider}
         account={account}

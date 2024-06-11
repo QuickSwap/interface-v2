@@ -1,0 +1,65 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.accountModalWrapper {
+  max-width: 450px;
+  @include media('screen', '<phone') {
+    padding: 16px;
+  }
+}
+
+.accountModalStepsWrapper {
+  background-color: $secondary1;
+  padding: 16px;
+  border-radius: 16px;
+  & > div > div:last-child {
+    flex: 1;
+  }
+  .accountModalStep {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.accountModalButton {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.perpsDepositProgress {
+  display: flex;
+  max-width: 236px;
+  width: 100%;
+  align-items: center;
+  & .perpsDepositProgressBar {
+    flex: 1;
+    height: 2px;
+    background-color: $textSecondary;
+    & > div {
+      background-color: $successMain;
+      height: 100%;
+    }
+  }
+  & .perpsDepositIcon {
+    border-radius: 40px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    & img {
+      width: 32px;
+    }
+    &:first-child {
+      border: 2px solid $successMain;
+    }
+    &:last-child {
+      border: 2px solid $textSecondary;
+    }
+  }
+}
