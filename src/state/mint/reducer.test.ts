@@ -6,8 +6,6 @@ import reducer, { MintState } from './reducer';
 describe('mint reducer', () => {
   let store: Store<MintState>;
 
-  
-
   describe('typeInput', () => {
     it('sets typed value', () => {
       store.dispatch(
