@@ -23,7 +23,7 @@ const DragonsInfo = () => {
   const { price: quickPrice } = useUSDCPriceFromAddress(quickToken.address);
   const { price: dQuickPrice } = useUSDCPriceFromAddress(dQuickToken.address);
   const { price: oldQuickPrice } = useUSDCPriceFromAddress(
-    oldQuickToken.address,
+    oldQuickToken ? oldQuickToken.address : undefined,
   );
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = newLairInfo;
