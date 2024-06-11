@@ -105,7 +105,7 @@ function useCallsData(
         );
       };
     }
-  }, [chainId, dispatch, options, serializedCallKeys]);
+  }, [chainId, dispatch, ignore, options, serializedCallKeys]);
 
   return useMemo(
     () =>

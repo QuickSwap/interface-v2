@@ -82,11 +82,16 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         setUpdatedSelectedCurrencyBalance(value);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balanceUpdateSelector.flag]);
 
+  const selectedCurrencyBalanceDependency = JSON.stringify(
+    selectedCurrencyBalance,
+  );
   useEffect(() => {
     setUpdatedSelectedCurrencyBalance(selectedCurrencyBalance);
-  }, [JSON.stringify(selectedCurrencyBalance)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCurrencyBalanceDependency]);
 
   const usdPriceV2 = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
   const currencyV3 =

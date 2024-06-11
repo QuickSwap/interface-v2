@@ -142,11 +142,15 @@ export default function CurrencyInputPanel({
         setUpdatedBalance(value);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balanceUpdateSelector.flag]);
+  const ethBalanceDependency = JSON.stringify(ethBalance);
+  const balanceDependency = JSON.stringify(balance);
   useEffect(() => {
     setUpdatedEthBalance(ethBalance);
     setUpdatedBalance(balance);
-  }, [JSON.stringify(ethBalance), JSON.stringify(balance)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ethBalanceDependency, balanceDependency]);
 
   const { price: currentPrice } = useUSDCPriceFromAddress(
     currency?.wrapped?.address ?? '',
