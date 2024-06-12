@@ -38,32 +38,34 @@ const DragonPage: React.FC = () => {
   const showOld = config['lair']['oldLair'];
   const showNew = config['lair']['newLair'];
 
-  if(lairInfoToUse == undefined) return;
+  // if (lairInfoToUse == undefined) return;
 
-  const totalStaked = numbro(
-    formatTokenAmount(lairInfoToUse?.totalQuickBalance),
-  ).format({
-    average: true,
-    mantissa: 1,
-    spaceSeparated: false,
-    totalLength: 4,
-    trimMantissa: true,
-    optionalMantissa: true,
-    thousandSeparated: false,
-    forceAverage: 'million',
-  });
-  const totalStakedUSDPrice = numbro(
-    Number(lairInfoToUse?.totalQuickBalance.toExact()) * quickPrice,
-  ).format({
-    average: true,
-    mantissa: 1,
-    spaceSeparated: false,
-    totalLength: 4,
-    trimMantissa: true,
-    optionalMantissa: true,
-    thousandSeparated: false,
-    forceAverage: 'million',
-  });
+  const totalStaked = lairInfoToUse
+    ? numbro(formatTokenAmount(lairInfoToUse?.totalQuickBalance)).format({
+        average: true,
+        mantissa: 1,
+        spaceSeparated: false,
+        totalLength: 4,
+        trimMantissa: true,
+        optionalMantissa: true,
+        thousandSeparated: false,
+        forceAverage: 'million',
+      })
+    : 0;
+  const totalStakedUSDPrice = totalStaked
+    ? numbro(
+        Number(lairInfoToUse?.totalQuickBalance.toExact()) * quickPrice,
+      ).format({
+        average: true,
+        mantissa: 1,
+        spaceSeparated: false,
+        totalLength: 4,
+        trimMantissa: true,
+        optionalMantissa: true,
+        thousandSeparated: false,
+        forceAverage: 'million',
+      })
+    : 0;
   const history = useHistory();
 
   const [quickBurnAmount, setQuickBurnAmount] = useState('0');
@@ -138,7 +140,9 @@ const DragonPage: React.FC = () => {
                   <h5 className='text-dragon-white'>
                     {totalStaked.toString().toUpperCase()}
                   </h5>
-                  <small>${totalStakedUSDPrice?.toString().toUpperCase()}</small>
+                  <small>
+                    ${totalStakedUSDPrice?.toString().toUpperCase()}
+                  </small>
                 </Box>
               </Box>
               <Box>

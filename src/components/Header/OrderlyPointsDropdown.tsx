@@ -9,11 +9,9 @@ import { ReactComponent as OrderlyTotalMeritIcon } from 'assets/images/OrderlyTo
 
 const OrderlyPointsDropdown: React.FC = () => {
   const { account } = useActiveWeb3React();
-  const { data, isLoading } = useQuery(`/v1/client/points?address=${account}`, {
+  const { data } = useQuery(`/v1/client/points?address=${account}`, {
     formatter: (data) => data,
   });
-
-  console.log('aaa', data);
 
   return (
     <Box className='orderlyPointsDropdown' gridGap={16}>

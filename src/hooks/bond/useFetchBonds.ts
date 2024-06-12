@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActiveWeb3React } from 'hooks';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import BondABI from 'constants/abis/bond.json';
 import {
   useMultipleContractSingleData,
