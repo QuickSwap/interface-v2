@@ -48,6 +48,7 @@ export function SingleTokenSupplyLiquidity() {
         <SettingsModal
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
+          defaultSlippage={50}
         />
       )}
       <Box className='flex justify-between items-center'>
