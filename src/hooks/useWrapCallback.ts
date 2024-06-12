@@ -131,6 +131,7 @@ export default function useWrapCallback(
     nativeCurrency,
     wrapping,
     addTransaction,
+    dispatch,
     unwrapping,
   ]);
 }

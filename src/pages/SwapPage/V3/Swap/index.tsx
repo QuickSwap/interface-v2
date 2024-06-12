@@ -462,6 +462,7 @@ const SwapV3Page: React.FC = () => {
     tradeToConfirm,
     showConfirm,
     finalizedTransaction,
+    dispatch,
     recipient,
     recipientAddress,
     account,

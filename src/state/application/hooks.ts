@@ -14,12 +14,10 @@ import {
   addBookMarkPair,
   removeBookmarkPair,
   updateTokenDetails,
-  updateMaticPrice,
   updateIsV2,
-  updateSoulZap,
   updateOpenNetworkSelection,
 } from './actions';
-import { ETHPrice, MaticPrice, TokenDetail } from './reducer';
+import { TokenDetail } from './reducer';
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React();
@@ -107,34 +105,6 @@ export function useRemovePopup(): (key: string) => void {
 export function useActivePopups(): AppState['application']['popupList'] {
   const list = useSelector((state: AppState) => state.application.popupList);
   return useMemo(() => list.filter((item) => item.show), [list]);
-}
-
-export function useMaticPrice(): {
-  maticPrice: MaticPrice;
-  updateMaticPrice: ({
-    price,
-    oneDayPrice,
-    maticPriceChange,
-  }: MaticPrice) => void;
-} {
-  const maticPrice = useSelector(
-    (state: AppState) => state.application.maticPrice,
-  );
-
-  const dispatch = useDispatch();
-  const _updateMaticPrice = useCallback(
-    ({ price, oneDayPrice, maticPriceChange }: MaticPrice) => {
-      dispatch(
-        updateMaticPrice({
-          price: price ?? 0,
-          oneDayPrice: oneDayPrice ?? 0,
-          maticPriceChange: maticPriceChange ?? 0,
-        }),
-      );
-    },
-    [dispatch],
-  );
-  return { maticPrice, updateMaticPrice: _updateMaticPrice };
 }
 
 export function useTokenDetails(): {
