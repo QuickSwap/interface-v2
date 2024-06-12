@@ -926,6 +926,7 @@ const SwapBestTrade: React.FC<{
     tradeToConfirm,
     showConfirm,
     finalizedTransaction,
+    dispatch,
     recipient,
     recipientAddress,
     account,
@@ -933,12 +934,12 @@ const SwapBestTrade: React.FC<{
     outputCurrency?.symbol,
     optimalRate,
     fromTokenWrapped,
+    walletInfo,
     chainId,
     fireEvent,
     config,
     formattedAmounts,
     fromTokenUSDPrice,
-    walletInfo,
   ]);
 
   const paraRate = optimalRate

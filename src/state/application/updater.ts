@@ -3,26 +3,24 @@ import { useDispatch } from 'react-redux';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
 import { updateBlockNumber, updateSoulZap } from './actions';
-import { useMaticPrice } from './hooks';
-import { getEthPrice } from 'utils';
-import { getMaticPrice } from 'utils/v3-graph';
 import { useActiveWeb3React } from 'hooks';
 import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { rpcMap } from 'constants/providers';
+import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
 import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
   const {
-    library,
+    library: web3ModalLibrary,
     currentChainId,
     chainId,
     provider,
     account,
   } = useActiveWeb3React();
+  const libraryFromChain = RPC_PROVIDERS[chainId];
+  const library = web3ModalLibrary ?? libraryFromChain;
 
   const dispatch = useDispatch();
-  const { updateMaticPrice } = useMaticPrice();
 
   const windowVisible = useIsWindowVisible();
 
@@ -34,55 +32,22 @@ export default function Updater(): null {
     blockNumber: null,
   });
 
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
   const blockNumberCallback = useCallback(
     (blockNumber: number) => {
       setState((state) => {
-        if (chainId === state.chainId) {
+        if (currentChainId === state.chainId) {
           if (typeof state.blockNumber !== 'number')
-            return { chainId, blockNumber };
+            return { chainId: currentChainId, blockNumber };
           return {
-            chainId,
+            chainId: currentChainId,
             blockNumber,
           };
         }
         return state;
       });
     },
-    [chainId, setState],
+    [currentChainId, setState],
   );
-
-  // this is for refreshing eth price every 10 mins
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 600000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (!chainId || state.chainId !== chainId) return;
-    const fetchMaticPrice = async () => {
-      try {
-        const [
-          maticPrice,
-          maticOneDayPrice,
-          maticPriceChange,
-        ] = await getMaticPrice(chainId);
-        updateMaticPrice({
-          price: maticPrice,
-          oneDayPrice: maticOneDayPrice,
-          maticPriceChange,
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchMaticPrice();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainId, state.chainId]);
 
   // attach/detach listeners
   useEffect(() => {
@@ -101,8 +66,8 @@ export default function Updater(): null {
 
     library.on('block', blockNumberCallback);
 
-    if (library) {
-      library.on('network', (newNetwork) => {
+    if (web3ModalLibrary) {
+      web3ModalLibrary.on('network', (newNetwork) => {
         if (state.chainId && newNetwork.chainId !== state.chainId) {
           setTimeout(() => {
             document.location.reload();
@@ -113,8 +78,8 @@ export default function Updater(): null {
 
     return () => {
       library.removeListener('block', blockNumberCallback);
-      if (library) {
-        library.removeListener('network', (newNetwork) => {
+      if (web3ModalLibrary) {
+        web3ModalLibrary.removeListener('network', (newNetwork) => {
           if (state.chainId && newNetwork.chainId !== state.chainId) {
             setTimeout(() => {
               document.location.reload();
@@ -129,24 +94,14 @@ export default function Updater(): null {
   const debouncedState = useDebounce(state, 100);
 
   useEffect(() => {
-    if (
-      !debouncedState.chainId ||
-      !debouncedState.blockNumber ||
-      !windowVisible
-    )
-      return;
+    if (!chainId || !debouncedState.blockNumber || !windowVisible) return;
     dispatch(
       updateBlockNumber({
-        chainId: debouncedState.chainId,
+        chainId,
         blockNumber: debouncedState.blockNumber,
       }),
     );
-  }, [
-    windowVisible,
-    dispatch,
-    debouncedState.blockNumber,
-    debouncedState.chainId,
-  ]);
+  }, [windowVisible, dispatch, debouncedState.blockNumber, chainId]);
 
   const ethersProvider = useMemo(() => {
     if (chainId) return new JsonRpcProvider(rpcMap?.[chainId]?.[0]);

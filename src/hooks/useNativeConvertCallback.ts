@@ -125,5 +125,6 @@ export default function useNativeConvertCallback(
     balance,
     converting,
     addTransaction,
+    dispatch,
   ]);
 }
