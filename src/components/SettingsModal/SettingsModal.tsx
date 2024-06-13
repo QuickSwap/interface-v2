@@ -37,14 +37,20 @@ enum DeadlineError {
 interface SettingsModalProps {
   open: boolean;
   onClose: () => void;
+  defaultSlippage?: number;
 }
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
+const SettingsModal: React.FC<SettingsModalProps> = ({
+  open,
+  onClose,
+  defaultSlippage = 0,
+}) => {
   const { t } = useTranslation();
   const [
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
+  setUserslippageTolerance(defaultSlippage);
   const [
     slippageManuallySet,
     setSlippageManuallySet,

@@ -3,7 +3,11 @@ import { Contract, ContractReceipt } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
+import {
+  JsonRpcSigner,
+  Web3Provider,
+  JsonRpcProvider,
+} from '@ethersproject/providers';
 import {
   CurrencyAmount,
   ChainId,
@@ -346,23 +350,23 @@ export function isZero(hexNumberString: string): boolean {
 }
 
 export function getSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account: string,
 ): JsonRpcSigner {
   return library.getSigner(account).connectUnchecked();
 }
 
 export function getProviderOrSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
-): Web3Provider | JsonRpcSigner {
+): Web3Provider | JsonRpcProvider | JsonRpcSigner {
   return account ? getSigner(library, account) : library;
 }
 
 export function getContract(
   address: string,
   ABI: any,
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
 ): Contract {
   if (!isAddress(address) || address === AddressZero) {

@@ -483,29 +483,29 @@
   ],
   "shortcuts": [
     {
-      "name":"Swap",
-      "url":"/swap",
-      "description":"Shortcut to swap page"
+      "name": "Swap",
+      "url": "/swap",
+      "description": "Shortcut to swap page"
     },
     {
-      "name":"Pools",
-      "url":"/pools",
-      "description":"Shortcut to pools page"
+      "name": "Pools",
+      "url": "/pools",
+      "description": "Shortcut to pools page"
     },
     {
-      "name":"Farm",
-      "url":"/farm",
-      "description":"Shortcut to Famrs page"
+      "name": "Farm",
+      "url": "/farm",
+      "description": "Shortcut to Famrs page"
     },
     {
-      "name":"Dragon",
-      "url":"/dragons",
-      "description":"Shortcut to Dragons lair page"
+      "name": "Dragon",
+      "url": "/dragons",
+      "description": "Shortcut to Dragons lair page"
     },
     {
-      "name":"Analytics",
-      "url":"/analytics",
-      "description":"Shortcut to analytics page"
+      "name": "Analytics",
+      "url": "/analytics",
+      "description": "Shortcut to analytics page"
     }
   ]
 }
