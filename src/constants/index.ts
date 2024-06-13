@@ -112,6 +112,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.IMX]: 'IMX',
   [ChainId.ASTARZKEVM]: 'astar_zkevm',
   [ChainId.LAYERX]: 'layerX',
+  [ChainId.ETHEREUM]: 'ethereum',
 };
 
 export enum ZapType {
@@ -209,6 +210,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
+  [ChainId.ETHEREUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
 };
 
 export const GlobalConst = {
@@ -361,6 +363,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.ZKTESTNET,
   ChainId.MUMBAI,
   ChainId.DOEGCHAIN_TESTNET,
+  ChainId.ETHEREUM,
 ];
 
 export interface GammaPair {
@@ -2570,6 +2573,7 @@ export const GlobalValue = {
       [ChainId.IMX]: [],
       [ChainId.ASTARZKEVM]: [],
       [ChainId.LAYERX]: [],
+      [ChainId.ETHEREUM]: [],
     },
   },
   marketSDK: {
@@ -2661,6 +2665,11 @@ export const GlobalData = {
       USDT[ChainId.LAYERX],
       DAI[ChainId.LAYERX],
     ],
+    [ChainId.ETHEREUM]: [
+      USDC[ChainId.ETHEREUM],
+      USDT[ChainId.ETHEREUM],
+      DAI[ChainId.ETHEREUM],
+    ],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2726,6 +2735,13 @@ export const GlobalData = {
       DAI[ChainId.LAYERX],
       WBTC[ChainId.LAYERX],
     ],
+    [ChainId.ETHEREUM]: [
+      WETH[ChainId.ETHEREUM],
+      USDC[ChainId.ETHEREUM],
+      USDT[ChainId.ETHEREUM],
+      DAI[ChainId.ETHEREUM],
+      WBTC[ChainId.ETHEREUM],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2761,6 +2777,7 @@ export const GlobalData = {
       [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
     ],
     [ChainId.LAYERX]: [],
+    [ChainId.ETHEREUM]: [],
   },
 };
 
