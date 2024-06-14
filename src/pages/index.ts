@@ -9,3 +9,4 @@ export { default as AnalyticsPairDetails } from './AnalyticsPairDetails';
 export { default as ConvertQUICKPage } from './ConvertQUICKPage';
 export { default as NewsletterPage } from './NewsletterPage';
 export { default as PerpsPage } from './PerpsPage';
+export { default as BridgePage } from './Bridge';
