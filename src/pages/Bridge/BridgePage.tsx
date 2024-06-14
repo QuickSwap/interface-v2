@@ -35,7 +35,7 @@ import layer from 'assets/images/bridge/layer.svg';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { useActiveWeb3React } from 'hooks';
-import { SUPPORTED_CHAINIDS } from 'constants';
+import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 
 interface IChain {
