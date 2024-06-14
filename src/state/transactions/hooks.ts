@@ -51,7 +51,11 @@ export function useTransactionAdder(): (
       if (arcxSDK) {
         await arcxSDK.transaction({
           chainId,
+          account,
           transactionHash: hash,
+          metadata: {
+            action: summary,
+          },
         });
       }
       dispatch(
