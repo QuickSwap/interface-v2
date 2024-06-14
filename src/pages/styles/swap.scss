@@ -104,7 +104,7 @@
 }
 
 .tab {
-  background-color: transparent;
+  background-color: transparent !important;
   padding: 0 16px;
   // height: 46px;
   display: flex;
@@ -117,7 +117,7 @@
 
 .tab:hover {
   cursor: pointer;
-  background: rgba(68, 138, 255, 0.3) !important;
+  // background: rgba(68, 138, 255, 0.3) !important;
   color: white !important;
   border-radius: 0.5rem;
   & div {
