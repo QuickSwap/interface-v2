@@ -67,7 +67,6 @@ import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
-// import Bridge from 'pages/Bridge';
 import '@orderly.network/react/dist/styles.css';
 import './index.scss';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
@@ -79,6 +78,7 @@ import {
   createSoulZapApiClient,
   SoulZapApiClient,
 } from 'utils/soulZapTrpcClient';
+import { BridgePage } from 'pages';
 
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
@@ -188,6 +188,11 @@ const App: React.FC = () => {
                     <Route exact path='/swap/:version?'>
                       <PageLayout>
                         <SwapPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/bridge'>
+                      <PageLayout>
+                        <BridgePage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/leader-board'>
