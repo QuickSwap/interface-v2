@@ -28,6 +28,3 @@ cypress/fixtures/example.json
 
 .vercel
 .npmrc
-
-package-lock.json
-package.json
