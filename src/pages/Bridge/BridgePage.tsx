@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { HypeLabAds, Note } from 'components';
-import React from 'react';
+import React, { useMemo } from 'react';
 import arrowRight from 'assets/images/icons/right-arrow.png';
 import wallet from 'assets/images/icons/wallet.svg';
 import { BridgeBlockItem, SwapBlock } from 'components/Bridge';
@@ -34,6 +34,9 @@ import finance from 'assets/images/bridge/finance.svg';
 import layer from 'assets/images/bridge/layer.svg';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { useActiveWeb3React } from 'hooks';
+import { SUPPORTED_CHAINIDS } from 'constants';
+import { getConfig } from 'config';
 
 interface IChain {
   image: string;
@@ -47,6 +50,19 @@ const CHAIN_NATIVE_BRIDGE = {
 
 const BridgePage: React.FC = ({}) => {
   const { t } = useTranslation();
+  const { currentChainId } = useActiveWeb3React();
+  console.log('🚀 ~ currentChainId:', currentChainId);
+
+  const supportedChains = SUPPORTED_CHAINIDS.filter((chain: any) => {
+    const config = getConfig(chain);
+    return config && config.visible;
+  });
+
+  const currentChain = useMemo(() => {
+    return getConfig(currentChainId);
+  }, [currentChainId]);
+
+  console.log('🚀 ~ currentChain ~ currentChain:', currentChain);
 
   const bridgeData = [
     {
@@ -154,11 +170,24 @@ const BridgePage: React.FC = ({}) => {
                   position: 'relative',
                 }}
               >
-                <img
-                  src={CHAIN_NATIVE_BRIDGE.image}
-                  alt='image'
-                  style={{ width: '50%', marginBottom: '12px' }}
-                />
+                <Box
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <img
+                    src={currentChain?.nativeCurrencyImage}
+                    alt='image'
+                    style={{ width: '40px' }}
+                  />
+                  <Typography style={{ fontSize: '24px', color: '#fff' }}>
+                    {currentChain?.networkName?.toLowerCase()} portal
+                  </Typography>
+                </Box>
                 <Typography
                   style={{
                     fontSize: '12px',
@@ -166,7 +195,7 @@ const BridgePage: React.FC = ({}) => {
                     marginBottom: '28px',
                   }}
                 >
-                  {CHAIN_NATIVE_BRIDGE.name}
+                  {`${currentChain?.networkName}'s Native Bridge`}
                 </Typography>
                 <Box className='flex items-center justify-center'>
                   {CHAIN_NATIVE_BRIDGE.chains.map((item, index) => {
