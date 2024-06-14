@@ -20,6 +20,7 @@ import {
   updateUserLiquidityHub,
   updateUserZapSlippage,
   updateIsInfiniteApproval,
+  updateUserAmlScore,
 } from './actions';
 
 const currentTimestamp = () => new Date().getTime();
@@ -63,6 +64,8 @@ export interface UserState {
   userSingleHopOnly: boolean; // only allow swaps on direct pairs
   userZapSlippage: number;
   isInfiniteApproval: boolean;
+
+  amlScore: number;
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -85,6 +88,7 @@ export const initialState: UserState = {
   userSingleHopOnly: false,
   userZapSlippage: INITIAL_ZAP_SLIPPAGE,
   isInfiniteApproval: false,
+  amlScore: 0,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -185,5 +189,8 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateIsInfiniteApproval, (state, action) => {
       state.isInfiniteApproval = action.payload.isInfiniteApproval;
+    })
+    .addCase(updateUserAmlScore, (state, action) => {
+      state.amlScore = action.payload.score;
     }),
 );

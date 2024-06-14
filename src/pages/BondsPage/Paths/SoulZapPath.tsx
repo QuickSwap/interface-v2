@@ -1,5 +1,8 @@
 import React, { useCallback, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AML_SCORE_THRESHOLD } from 'config';
 import { ApprovalState, useApproveCallbackV3 } from 'hooks/useApproveCallback';
+import { useAmlScore } from 'state/user/hooks';
 import { useZapState } from 'state/zap/hooks';
 import BigNumber from 'bignumber.js';
 import { Bond, PurchasePath } from 'types/bond';
@@ -39,11 +42,14 @@ const SoulZapPath = ({
   onTransactionSubmitted?: (value: boolean) => void;
 }) => {
   // Hooks
+  const history = useHistory();
   const { t } = useTranslation();
   const { chainId, account, provider } = useActiveWeb3React();
   const parsedQuery = useParsedQueryString();
   const { mutate: postBillReference } = usePostBillReference();
   const addTransaction = useTransactionAdder();
+
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 
   // Bond Data
   const {
@@ -204,6 +210,11 @@ const SoulZapPath = ({
   const [openBuyWarning, setOpenBuyWarning] = useState(false);
 
   const handleValidationBeforeTx = () => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+
     if ((bond?.discount ?? 0) < 0) {
       setOpenBuyWarning(true);
     } else soulZapCallback();
@@ -233,7 +244,8 @@ const SoulZapPath = ({
               parseFloat(typedValue) === 0 ||
               loading ||
               notEnoughBalance ||
-              exceedsAvailable
+              exceedsAvailable ||
+              isAmlScoreLoading
             }
             fullWidth
           >
