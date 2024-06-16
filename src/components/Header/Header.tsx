@@ -263,17 +263,17 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       });
     }
   }
-  // if (showSafe) {
-  menuItems.push({
-    link: '/safe',
-    text: 'Safe',
-    id: 'safe-page-link',
-    isExternal: true,
-    target: '_blank',
-    externalLink: process?.env?.REACT_APP_SAFE_URL || '',
-    isNew: true,
-  });
-  // }
+  if (chainId === ChainId.ZKEVM) {
+    menuItems.push({
+      link: '/safe',
+      text: 'Safe',
+      id: 'safe-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_SAFE_URL || '',
+      isNew: true,
+    });
+  }
   if (showLair) {
     menuItems.push({
       link: '/dragons',
