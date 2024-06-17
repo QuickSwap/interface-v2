@@ -195,12 +195,16 @@ export function useUSDCPricesFromAddresses(
   const { isLoading, data: pricesWithoutDUICK } = useQuery({
     queryKey: ['usd-price-tokens', chainId, addressStr, onlyV3],
     queryFn: async () => {
-      const prices = await getUSDPricesFromAddresses(
-        chainId,
-        addressStr,
-        onlyV3,
-      );
-      return prices;
+      try {
+        const prices = await getUSDPricesFromAddresses(
+          chainId,
+          addressStr,
+          onlyV3,
+        );
+        return prices;
+      } catch {
+        return null;
+      }
     },
     refetchInterval: 300000,
   });
@@ -268,15 +272,19 @@ export function useUSDCPriceFromAddress(address?: string, onlyV3?: boolean) {
   const { isLoading, data: tokenPrice } = useQuery({
     queryKey: ['usd-price-token', tokenAddress, onlyV3, chainId],
     queryFn: async () => {
-      const prices = await getUSDPricesFromAddresses(
-        chainId,
-        tokenAddress,
-        onlyV3,
-      );
-      if (prices.length > 0) {
-        return Number(prices[0]?.price ?? 0);
+      try {
+        const prices = await getUSDPricesFromAddresses(
+          chainId,
+          tokenAddress,
+          onlyV3,
+        );
+        if (prices.length > 0) {
+          return Number(prices[0]?.price ?? 0);
+        }
+        return 0;
+      } catch {
+        return 0;
       }
-      return 0;
     },
     refetchInterval: 300000,
   });

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
@@ -51,7 +51,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
-  setUserslippageTolerance(defaultSlippage);
+
+  const userSlippageIsSet = !!userSlippageTolerance;
+
+  useEffect(() => {
+    if (!userSlippageIsSet && defaultSlippage > 0) {
+      setUserslippageTolerance(defaultSlippage);
+    }
+  }, [defaultSlippage, setUserslippageTolerance, userSlippageIsSet]);
+
   const [
     slippageManuallySet,
     setSlippageManuallySet,
