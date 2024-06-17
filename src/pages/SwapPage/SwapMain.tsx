@@ -12,6 +12,7 @@ import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
+import { useUserSlippageTolerance } from 'state/user/hooks';
 import { SlippageWrapper } from './SlippageWrapper';
 const SwapV3Page = lazy(() => import('./V3/Swap'));
 const Swap = lazy(() =>
@@ -51,6 +52,11 @@ const SwapMain: React.FC = () => {
   const showTwapOrder = config['swap']['twapOrder'];
   const showCrossChain = config['swap']['crossChain'];
   const showProMode = config['swap']['proMode'];
+
+  const [
+    userSlippageTolerance,
+    setUserslippageTolerance,
+  ] = useUserSlippageTolerance();
 
   const SwapDropdownTabs = useMemo(() => {
     const tabs = [];
@@ -216,6 +222,7 @@ const SwapMain: React.FC = () => {
         <SettingsModal
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
+          defaultSlippage={userSlippageTolerance}
         />
       )}
       {/* Header */}

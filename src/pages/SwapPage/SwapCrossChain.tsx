@@ -1,6 +1,7 @@
 import { SquidWidget } from '@0xsquid/widget';
 import { ConfigTheme } from '@0xsquid/widget/widget/core/types/config';
 import { Box, Grid } from '@material-ui/core';
+import { useActiveWeb3React } from 'hooks';
 import React, { useEffect } from 'react';
 import { useIsDarkMode } from 'state/user/hooks';
 
@@ -9,6 +10,7 @@ const QUICKSWAP_V3 = 'Quickswap_v3';
 
 const SwapCrossChain: React.FC = () => {
   const darkMode = useIsDarkMode();
+  const { chainId } = useActiveWeb3React();
   const darkModeStyle: ConfigTheme = {
     baseContent: '#f3ecec',
     neutralContent: '#696c80',
@@ -59,10 +61,14 @@ const SwapCrossChain: React.FC = () => {
           config={{
             integratorId: 'quickswap-swap-widget',
             companyName: 'Quickswap',
-            apiUrl: 'https://api.0xsquid.com',
+            apiUrl: 'https://apiplus.squidrouter.com',
+            initialAssets: {
+              from: {
+                chainId: chainId.toString(),
+                address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+              },
+            },
             style: darkMode ? darkModeStyle : lightModeStyle,
-            initialFromChainId: 137,
-            initialToChainId: 43114,
             loadPreviousStateFromLocalStorage: true,
             preferDex: [QUICKSWAP, QUICKSWAP_V3],
           }}
