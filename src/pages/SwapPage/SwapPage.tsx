@@ -2,7 +2,7 @@ import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { HypeLabAds, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import 'pages/styles/swap.scss';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useIsV2 } from 'state/application/hooks';
 import { Field } from 'state/swap/actions';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
@@ -13,6 +13,7 @@ import SwapPageHeader from './SwapPageHeader';
 import SwapProMain from './SwapProMain';
 import { useQuery } from '@tanstack/react-query';
 import { LiquidityHubAd } from './LiquidityHubAd';
+import { getConfig } from 'config/index';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -29,6 +30,19 @@ const SwapPage: React.FC = () => {
   const isTablet = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
+
+  const config = getConfig(chainId);
+  const showSwap = config['swap']['available'];
+
+  if (!showSwap) {
+    location.href = '/';
+  }
+
+  useEffect(() => {
+    if (!showSwap) {
+      location.href = '/';
+    }
+  }, [showSwap]);
 
   const getPairId = async () => {
     if (token1 && token2) {

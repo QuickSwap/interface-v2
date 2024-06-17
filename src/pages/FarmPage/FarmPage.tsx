@@ -22,6 +22,10 @@ const FarmPage: React.FC = () => {
   const config = getConfig(chainId);
   const farmAvailable = config['farm']['available'];
 
+  if (!farmAvailable) {
+    location.href = '/';
+  }
+
   useEffect(() => {
     if (!farmAvailable) {
       history.push('/');
