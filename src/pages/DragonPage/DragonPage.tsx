@@ -15,8 +15,8 @@ import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
 import BurnImage from 'assets/images/fire.png';
-import { formatTokenAmount, useLairDQUICKAPY } from 'utils';
-import numbro from 'numbro';
+import { useLairDQUICKAPY } from 'utils';
+import { formatAmount } from 'utils/numbers';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { fetchQuickBurnAmount, fetchQuickBurnApy } from 'utils/api';
 
@@ -41,30 +41,12 @@ const DragonPage: React.FC = () => {
   // if (lairInfoToUse == undefined) return;
 
   const totalStaked = lairInfoToUse
-    ? numbro(formatTokenAmount(lairInfoToUse?.totalQuickBalance)).format({
-        average: true,
-        mantissa: 1,
-        spaceSeparated: false,
-        totalLength: 4,
-        trimMantissa: true,
-        optionalMantissa: true,
-        thousandSeparated: false,
-        forceAverage: 'million',
-      })
+    ? formatAmount(Number(lairInfoToUse?.totalQuickBalance.toExact()))
     : 0;
   const totalStakedUSDPrice = totalStaked
-    ? numbro(
+    ? formatAmount(
         Number(lairInfoToUse?.totalQuickBalance.toExact()) * quickPrice,
-      ).format({
-        average: true,
-        mantissa: 1,
-        spaceSeparated: false,
-        totalLength: 4,
-        trimMantissa: true,
-        optionalMantissa: true,
-        thousandSeparated: false,
-        forceAverage: 'million',
-      })
+      )
     : 0;
   const history = useHistory();
 
@@ -82,26 +64,8 @@ const DragonPage: React.FC = () => {
   useEffect(() => {
     const fetchQuickBurn = async () => {
       const amount = await fetchQuickBurnAmount();
-      const formattedAmount = numbro(amount).format({
-        average: true,
-        mantissa: 1,
-        spaceSeparated: false,
-        totalLength: 4,
-        trimMantissa: true,
-        optionalMantissa: true,
-        thousandSeparated: false,
-        forceAverage: 'million',
-      });
-      const usdPrice = numbro(amount * quickPrice).format({
-        average: true,
-        mantissa: 1,
-        spaceSeparated: false,
-        totalLength: 4,
-        trimMantissa: true,
-        optionalMantissa: true,
-        thousandSeparated: false,
-        forceAverage: 'thousand',
-      });
+      const formattedAmount = formatAmount(amount);
+      const usdPrice = formatAmount(amount * quickPrice);
       setQuickBurnAmount(formattedAmount);
       setQuickBurnUSD(usdPrice);
     };
