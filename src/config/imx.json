@@ -20,7 +20,7 @@
     "proMode": false,
     "limitOrder": false,
     "liquidityHub": false,
-    "crossChain": false
+    "crossChain": true
   },
   "pools": {
     "available": true

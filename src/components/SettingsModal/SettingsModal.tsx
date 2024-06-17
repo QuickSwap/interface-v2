@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Divider } from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { AlertTriangle } from 'react-feather';
@@ -23,6 +23,7 @@ import 'components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
 import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { isMobile } from 'react-device-detect';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -50,7 +51,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     userSlippageTolerance,
     setUserslippageTolerance,
   ] = useUserSlippageTolerance();
-  setUserslippageTolerance(defaultSlippage);
+
+  const userSlippageIsSet = !!userSlippageTolerance;
+
+  useEffect(() => {
+    if (!userSlippageIsSet && defaultSlippage > 0) {
+      setUserslippageTolerance(defaultSlippage);
+    }
+  }, [defaultSlippage, setUserslippageTolerance, userSlippageIsSet]);
+
   const [
     slippageManuallySet,
     setSlippageManuallySet,
@@ -245,10 +254,37 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <small>1%</small>
             </Box>
+            {!isMobile && (
+              <Box
+                className={`settingsInputWrapper ${
+                  slippageAlert ? 'border-primary' : 'border-secondary1'
+                }`}
+              >
+                {slippageAlert && <AlertTriangle color='#ffa000' size={16} />}
+                <NumericalInput
+                  placeholder={(userSlippageTolerance / 100).toFixed(2)}
+                  value={slippageInput}
+                  fontSize={14}
+                  fontWeight={500}
+                  align='right'
+                  onBlur={() => {
+                    parseCustomSlippage(
+                      (userSlippageTolerance / 100).toFixed(2),
+                    );
+                  }}
+                  onUserInput={(value) => parseCustomSlippage(value)}
+                />
+                <small>%</small>
+              </Box>
+            )}
+          </Box>
+          {isMobile && (
             <Box
               className={`settingsInputWrapper ${
                 slippageAlert ? 'border-primary' : 'border-secondary1'
               }`}
+              mt={2.5}
+              maxWidth={168}
             >
               {slippageAlert && <AlertTriangle color='#ffa000' size={16} />}
               <NumericalInput
@@ -264,7 +300,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               />
               <small>%</small>
             </Box>
-          </Box>
+          )}
           {slippageError && (
             <Box mt={1.5}>
               <small className='text-yellow3'>
