@@ -2854,6 +2854,7 @@ export const ContestPairs: any = {
   [ChainId.DOGECHAIN]: [],
   [ChainId.ZKTESTNET]: [],
   [ChainId.MUMBAI]: [],
+  [ChainId.ETHEREUM]: [],
 };
 
 export const LeaderBoardAnalytics = {

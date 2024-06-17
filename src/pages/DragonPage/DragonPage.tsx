@@ -54,6 +54,10 @@ const DragonPage: React.FC = () => {
   const [quickBurnUSD, setQuickBurnUSD] = useState('0');
   const [quickBurnApy, setQuickBurnApy] = useState('0');
 
+  if (!showLair) {
+    location.href = '/';
+  }
+
   useEffect(() => {
     if (!showLair) {
       history.push('/');
