@@ -68,58 +68,58 @@ const BridgePage: React.FC = ({}) => {
     {
       image: jumper,
       chains: [eth, polygon, image525],
-      externalLink: '#sella',
+      externalLink: 'https://jumper.exchange/exchange',
     },
     {
       image: Rhino,
-      chains: [eth, polygon, image525, Image505],
-      externalLink: '#sella',
+      chains: [eth, polygon, image525, Image505, Image511],
+      externalLink: 'https://app.rhino.fi/bridge',
     },
     {
       image: Symbiosis,
       chains: [eth, polygon, image525, Image505],
-      externalLink: '#sella',
+      externalLink: 'https://app.symbiosis.finance/bridge',
     },
     {
       image: Interport,
       chains: [eth, polygon, image525, Image505],
-      externalLink: '#sella',
+      externalLink: 'https://app.interport.fi/bridge',
     },
     {
       image: Hop,
       chains: [eth, polygon, image525],
       isSmallImage: true,
-      externalLink: '#sella',
+      externalLink: 'https://app.hop.exchange/',
     },
     {
       image: Meson,
       chains: [eth, polygon, image525, Image505],
-      externalLink: '#sella',
+      externalLink: 'https://meson.fi/',
     },
     {
       image: layer,
       chains: [eth, polygon, image525, Image505, Image510],
-      externalLink: '#sella',
+      externalLink: 'https://www.layerswap.io/app',
     },
     {
       image: Orbiter,
       chains: [eth, polygon, image525, Image505, Image511],
-      externalLink: '#sella',
+      externalLink: 'https://www.orbiter.finance/',
     },
     {
       image: finance,
       chains: [eth, polygon, image525],
-      externalLink: '#sella',
+      externalLink: 'https://app.xy.finance/',
     },
     {
       image: Celer,
       chains: [eth, polygon, image525],
-      externalLink: '#sella',
+      externalLink: 'https://cbridge.celer.network/',
     },
     {
       image: rango,
       chains: [eth, polygon, image525],
-      externalLink: '#sella',
+      externalLink: 'https://app.rango.exchange/swap/',
     },
     {
       image: chainge,
@@ -129,7 +129,7 @@ const BridgePage: React.FC = ({}) => {
     {
       image: Owlto,
       chains: [eth, polygon, image525, Image505, Image511],
-      externalLink: '#sella',
+      externalLink: 'https://owlto.finance/',
     },
   ];
 
