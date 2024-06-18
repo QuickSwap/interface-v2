@@ -5,7 +5,6 @@ import HeroBkg from 'assets/images/banner.webp';
 import HeroBkg2 from 'assets/images/banner2.webp';
 import layer from 'assets/images/layer1.png';
 import layer2 from 'assets/images/BottomWave.png';
-import layer3 from 'assets/images/layer3.png';
 
 const Background: React.FC<{ fallback: boolean | undefined }> = ({
   fallback = false,
@@ -26,7 +25,7 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
         <img
           src={HeroBkg2}
           alt='Hero Background'
-          style={{ maxWidth: '1440px', position: 'absolute', left: 0 }}
+          style={{ maxWidth: '1200px', position: 'absolute', left: -200 }}
         />
       )}
       {/* <img

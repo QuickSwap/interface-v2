@@ -222,6 +222,10 @@ const BridgePage: React.FC = ({}) => {
                     justifyContent: 'center',
                     gap: '2px',
                   }}
+                  onClick={() => {
+                    window.open('#', '_blank');
+                    console.log('click tp item');
+                  }}
                 >
                   Bridge now
                   {/* <CallMadeIcon
@@ -252,9 +256,9 @@ const BridgePage: React.FC = ({}) => {
                     marginBottom: '8px',
                   }}
                 >
-                  Select Network
+                  Select Bridge
                 </Typography>
-                <Select
+                {/* <Select
                   style={{
                     backgroundColor: '#22314d',
                     padding: '4px 8px',
@@ -271,7 +275,7 @@ const BridgePage: React.FC = ({}) => {
                   inputProps={{ 'aria-label': 'Without label' }}
                 >
                   <MenuItem value='all'>All</MenuItem>
-                </Select>
+                </Select> */}
               </Box>
 
               <Grid container spacing={2}>
