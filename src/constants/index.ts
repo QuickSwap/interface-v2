@@ -65,6 +65,7 @@ export const AVERAGE_L1_BLOCK_TIME = 12000;
 export const merklAMMs: { [chainId in ChainId]?: string[] } = {
   [ChainId.MATIC]: ['quickswapalgebra'],
   [ChainId.ZKEVM]: ['quickswapalgebra', 'quickswapuni'],
+  [ChainId.LAYERX]: ['quickswapalgebra'],
 };
 
 export const blackListMerklFarms: { [chainId in ChainId]?: string[] } = {
