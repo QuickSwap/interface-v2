@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@material-ui/core';
-import { ReactComponent as Image404 } from 'assets/images/404.svg';
+import { ReactComponent as ImageBanned } from 'assets/images/banned.svg';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -27,11 +27,11 @@ const ForbiddenPage: React.FC = () => {
         }}
       >
         <Box marginTop={'auto'} marginBottom={'auto'} ml={'auto'} mr='auto'>
-          <Box>
-            <Image404 />
+          <Box ml={'auto'} mr='auto'>
+            <ImageBanned style={{ display: 'inline' }} />
           </Box>
           <Box my={2}>
-            <Typography variant='h5'>{t('forbidden')}</Typography>
+            <Typography variant='h5'>{t('banned')}!</Typography>
           </Box>
           <Box
             marginLeft={'auto'}
@@ -42,7 +42,7 @@ const ForbiddenPage: React.FC = () => {
               width: { xs: '100%', md: '600px' },
             }}
           >
-            {t('forbiddenDesc')}
+            {t('bannedDesc')}
           </Box>
           <Box>
             <Button onClick={goBack}>{t('goBack')}</Button>
