@@ -340,7 +340,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             setTxPending(false);
           } catch (error) {
             setTxPending(false);
-            setRemoveErrorMessage(t('errorInTx'));
+            setRemoveErrorMessage(t('removeLiquidityError1'));
           }
 
           ReactGA.event({
@@ -354,7 +354,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           // we only care if the error is something _other_ than the user rejected the tx
           console.error(error);
           setRemoveErrorMessage(
-            error.code === 'ACTION_REJECTED' ? t('txRejected') : t('errorInTx'),
+            error.code === 'ACTION_REJECTED'
+              ? t('txRejected')
+              : t('removeLiquidityError1'),
           );
         });
     }
