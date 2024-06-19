@@ -42,12 +42,6 @@ interface IChain {
   image: string;
 }
 
-const CHAIN_NATIVE_BRIDGE = {
-  image: polygonText,
-  name: 'Polygon’s Native Bridge',
-  chains: [eth, polygon, image525],
-};
-
 const BridgePage: React.FC = ({}) => {
   const { t } = useTranslation();
   const { currentChainId } = useActiveWeb3React();
