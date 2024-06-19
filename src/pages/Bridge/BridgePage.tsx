@@ -180,13 +180,20 @@ const BridgePage: React.FC = ({}) => {
                   }}
                 >
                   <img
-                    src={currentChain?.nativeCurrencyImage}
+                    src={
+                      currentChain?.bridge?.bridgeCoverImg ??
+                      currentChain?.nativeCurrencyImage
+                    }
                     alt='image'
-                    style={{ width: '40px' }}
+                    style={{
+                      width: currentChain?.bridge?.isBigCoverImg
+                        ? '50%'
+                        : 'auto',
+                    }}
                   />
-                  <Typography style={{ fontSize: '24px', color: '#fff' }}>
+                  {/* <Typography style={{ fontSize: '24px', color: '#fff' }}>
                     {currentChain?.networkName?.toLowerCase()} portal
-                  </Typography>
+                  </Typography> */}
                 </Box>
                 <Typography
                   style={{
@@ -198,18 +205,20 @@ const BridgePage: React.FC = ({}) => {
                   {`${currentChain?.networkName}'s Native Bridge`}
                 </Typography>
                 <Box className='flex items-center justify-center'>
-                  {CHAIN_NATIVE_BRIDGE.chains.map((item, index) => {
-                    return (
-                      <img
-                        key={index}
-                        src={item}
-                        alt='item'
-                        width={16}
-                        height={16}
-                        style={{ marginLeft: '-2px' }}
-                      />
-                    );
-                  })}
+                  {currentChain?.bridge?.supportedChains?.map(
+                    (item: string, index: number) => {
+                      return (
+                        <img
+                          key={index}
+                          src={item}
+                          alt='item'
+                          width={16}
+                          height={16}
+                          style={{ marginLeft: '-2px' }}
+                        />
+                      );
+                    },
+                  )}
                 </Box>
                 <ButtonBase
                   style={{
@@ -223,7 +232,8 @@ const BridgePage: React.FC = ({}) => {
                     gap: '2px',
                   }}
                   onClick={() => {
-                    window.open('#', '_blank');
+                    if (!currentChain?.bridgeUrl) return;
+                    window.open(currentChain?.bridgeUrl, '_blank');
                     console.log('click tp item');
                   }}
                 >
