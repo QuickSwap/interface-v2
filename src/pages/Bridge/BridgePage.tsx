@@ -70,6 +70,11 @@ const BridgePage: React.FC = ({}) => {
       externalLink: 'https://app.rhino.fi/bridge',
     },
     {
+      image: layer,
+      chains: [eth, polygon, image525, Image505, Image510],
+      externalLink: 'https://www.layerswap.io/app',
+    },
+    {
       image: Symbiosis,
       chains: [eth, polygon, image525, Image505],
       externalLink: 'https://app.symbiosis.finance/bridge',
@@ -80,20 +85,14 @@ const BridgePage: React.FC = ({}) => {
       externalLink: 'https://app.interport.fi/bridge',
     },
     {
-      image: Hop,
-      chains: [eth, polygon, image525],
-      isSmallImage: true,
-      externalLink: 'https://app.hop.exchange/',
+      image: Owlto,
+      chains: [eth, polygon, image525, Image505, Image511],
+      externalLink: 'https://owlto.finance/',
     },
     {
       image: Meson,
       chains: [eth, polygon, image525, Image505],
       externalLink: 'https://meson.fi/',
-    },
-    {
-      image: layer,
-      chains: [eth, polygon, image525, Image505, Image510],
-      externalLink: 'https://www.layerswap.io/app',
     },
     {
       image: Orbiter,
@@ -116,14 +115,10 @@ const BridgePage: React.FC = ({}) => {
       externalLink: 'https://app.rango.exchange/swap/',
     },
     {
-      image: chainge,
+      image: Hop,
       chains: [eth, polygon, image525],
-      externalLink: '#sella',
-    },
-    {
-      image: Owlto,
-      chains: [eth, polygon, image525, Image505, Image511],
-      externalLink: 'https://owlto.finance/',
+      isSmallImage: true,
+      externalLink: 'https://app.hop.exchange/',
     },
   ];
 
