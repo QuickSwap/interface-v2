@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { ChainId } from '@uniswap/sdk';
 import { CustomModal } from 'components';
 import '../styles/AccountModal.scss';
 import { Box, Button } from '@material-ui/core';
@@ -75,6 +76,8 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, tx }) => {
     return 0;
   }, [currentBlock, tx]);
 
+  const estimateTime = chainId === ChainId.ETHEREUM ? 4 : 20;
+
   return (
     <CustomModal
       open={open}
@@ -101,8 +104,8 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, tx }) => {
           </Box>
           <Box maxWidth={296} width='100%' textAlign='center'>
             <small>
-              Your assets are on the way and should arrive in 20m. We will
-              notify you once it’s done.
+              Your assets are on the way and should arrive in {estimateTime}m.
+              We will notify you once it’s done.
             </small>
           </Box>
         </Box>

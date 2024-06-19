@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChainId } from '@uniswap/sdk';
 import { CurrencyLogo, CustomModal } from 'components';
 import { useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
@@ -57,6 +58,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const currency = useCurrency(token?.address);
   const { account } = useAccount();
   const [depositTx, setDepositTx] = useState<any>(undefined);
+
+  const withdrawalFee = chainId === ChainId.ETHEREUM ? 35 : 1;
 
   return (
     <CustomModal
@@ -236,7 +239,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
         )}
         <Box margin='8px 0 16px'>
           <span className='text-secondary'>
-            {t('fee')} = ${selectedTab === 'deposit' ? '0' : '1'}
+            {t('fee')} = ${selectedTab === 'deposit' ? '0' : withdrawalFee}
           </span>
         </Box>
 

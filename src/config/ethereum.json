@@ -6,7 +6,7 @@
   "chainId": 1,
   "isMainnet": true,
   "visible": true,
-  "networkName": "Ethereum Mainnet",
+  "networkName": "Ethereum",
   "nativeCurrencyImage": "/ETH.png",
   "nativeCurrency": {
     "name": "Ethereum",
