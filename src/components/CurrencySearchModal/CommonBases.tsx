@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box, Checkbox } from '@material-ui/core';
+import { Box, Button, Checkbox, Typography } from '@material-ui/core';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
 import { SUGGESTED_BASES, WMATIC_EXTENDED } from 'constants/v3/addresses';
@@ -13,12 +13,16 @@ interface CommonBasesProps {
   chainId?: ChainId;
   selectedCurrency?: Currency | null;
   onSelect: (currency: Currency) => void;
+  onRemoveFavorite: (currency: Currency) => void;
+  currencies: Currency[];
 }
 
 const CommonBases: React.FC<CommonBasesProps> = ({
   chainId,
   onSelect,
   selectedCurrency,
+  currencies,
+  onRemoveFavorite,
 }) => {
   const { t } = useTranslation();
 
@@ -56,22 +60,49 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           <small>{nativeCurrency.name}</small>
         </Box>
 
-        {(chainId ? SUGGESTED_BASES[chainId] ?? [] : []).map((token: Token) => {
+        {(chainId ? SUGGESTED_BASES[chainId] ?? [] : [])
+          .filter((item) => !currencies.some((c) => c.symbol === item.symbol))
+          .map((token: Token) => {
+            const selected = Boolean(
+              selectedCurrency && currencyEquals(selectedCurrency, token),
+            );
+            return (
+              <Box
+                className='baseWrapper'
+                key={token.symbol}
+                onClick={() => {
+                  if (!selected) {
+                    onSelect(token);
+                  }
+                }}
+              >
+                <CurrencyLogo currency={token} size='24px' />
+                <small>{token.symbol}</small>
+              </Box>
+            );
+          })}
+
+        {currencies.map((token: Currency) => {
           const selected = Boolean(
             selectedCurrency && currencyEquals(selectedCurrency, token),
           );
           return (
-            <Box
-              className='baseWrapper'
-              key={token.address}
-              onClick={() => {
-                if (!selected) {
-                  onSelect(token);
-                }
-              }}
-            >
-              <CurrencyLogo currency={token} size='24px' />
-              <small>{token.symbol}</small>
+            <Box className='baseWrapper' key={token.symbol}>
+              <Box
+                display='flex'
+                alignItems='center'
+                onClick={() => {
+                  if (!selected) {
+                    onSelect(token);
+                  }
+                }}
+              >
+                <CurrencyLogo currency={token} size='24px' />
+                <small>{token.symbol}</small>
+              </Box>
+              <small className='pl-2' onClick={() => onRemoveFavorite(token)}>
+                x
+              </small>
             </Box>
           );
         })}

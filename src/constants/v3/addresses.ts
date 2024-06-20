@@ -1534,6 +1534,49 @@ export const SUGGESTED_BASES: {
   ],
 };
 
+export const TRENDING_LIST: {
+  [ChainId: number]: Token[];
+} = {
+  [ChainId.MATIC]: [
+    ...WETH_ONLY[ChainId.MATIC],
+    USDC[ChainId.MATIC],
+    WBTC[ChainId.MATIC],
+  ],
+  [ChainId.DOGECHAIN]: [
+    USDC[ChainId.DOGECHAIN],
+    USDT[ChainId.DOGECHAIN],
+    WBTC[ChainId.DOGECHAIN],
+  ],
+  [ChainId.ZKTESTNET]: [WETH[ChainId.ZKTESTNET], USDT[ChainId.ZKTESTNET]],
+  [ChainId.ZKEVM]: [
+    WETH[ChainId.ZKEVM],
+    USDT[ChainId.ZKEVM],
+    MATIC[ChainId.ZKEVM],
+    WBTC[ChainId.ZKEVM],
+  ],
+  [ChainId.MANTA]: [
+    WETH[ChainId.MANTA],
+    USDC[ChainId.MANTA],
+    WBTC[ChainId.MANTA],
+    MATIC[ChainId.MANTA],
+  ],
+  [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+  [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
+  [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
+  [ChainId.IMX]: [WETH[ChainId.IMX], USDC[ChainId.IMX], WBTC[ChainId.IMX]],
+  [ChainId.ASTARZKEVM]: [
+    USDC[ChainId.ASTARZKEVM],
+    MATIC[ChainId.ASTARZKEVM],
+    WBTC[ChainId.ASTARZKEVM],
+  ],
+  [ChainId.LAYERX]: [
+    ETHER[ChainId.LAYERX],
+    WETH[ChainId.LAYERX],
+    WBTC[ChainId.LAYERX],
+    USDC[ChainId.LAYERX],
+  ],
+};
+
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
   [ChainId: number]: Token[];
 } = {

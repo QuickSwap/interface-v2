@@ -75,18 +75,22 @@ function TokenTags({ currency }: { currency: Token }) {
 interface CurrenyRowProps {
   currency: Token;
   onSelect: () => void;
+  onChangeFavorite?: (currency: Token, checked: boolean) => void;
   isSelected: boolean;
   otherSelected: boolean;
   style: any;
   isOnSelectedList?: boolean;
   balance: CurrencyAmount | undefined;
   usdPrice: number;
+  isFavorite?: boolean;
 }
 
 const CurrencyRow: React.FC<CurrenyRowProps> = ({
   currency,
   onSelect,
+  onChangeFavorite,
   isSelected,
+  isFavorite = false,
   otherSelected,
   style,
   isOnSelectedList,
@@ -164,85 +168,95 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         style={{ ...style, paddingLeft: '0' }}
         key={key}
         selected={otherSelected || isSelected}
-        onClick={() => {
-          if (!isSelected && !otherSelected) onSelect();
-        }}
       >
         <Box className='currencyRow'>
           {(otherSelected || isSelected) && <TokenSelectedIcon />}
-          <Checkbox
-            checked={true}
-            icon={<StarBorderIcon />}
-            checkedIcon={<StarIcon style={{ color: '#d3e200' }} />}
-          />
-          <CurrencyLogo currency={currency} size='32px' />
-          <Box ml={1} height={32}>
-            <Box className='flex items-center'>
-              <small className='currencySymbol'>{currency.symbol}</small>
-              {isMetamask &&
-                currency !== nativeCurrency &&
-                !(currency as V3Currency).isNative && (
+          {onChangeFavorite && (
+            <Checkbox
+              checked={isFavorite}
+              icon={<StarBorderIcon />}
+              onChange={(e) => onChangeFavorite(currency, e.target.checked)}
+              checkedIcon={<StarIcon style={{ color: '#d3e200' }} />}
+            />
+          )}
+          <Box
+            display='flex'
+            alignItems='center'
+            flex='1 1 100%'
+            onClick={() => {
+              if (!isSelected && !otherSelected) onSelect();
+            }}
+          >
+            <CurrencyLogo currency={currency} size='32px' />
+            <Box ml={1} height={32}>
+              <Box className='flex items-center'>
+                <small className='currencySymbol'>{currency.symbol}</small>
+                {isMetamask &&
+                  currency !== nativeCurrency &&
+                  !(currency as V3Currency).isNative && (
+                    <Box
+                      className='cursor-pointer relative z-10'
+                      ml='2px'
+                      onClick={(event: any) => {
+                        event.stopPropagation();
+                        console.log('go here?');
+                        addTokenToMetamask(
+                          currency.address,
+                          currency.symbol,
+                          currency.decimals,
+                          getTokenLogoURL(currency.address),
+                        );
+                      }}
+                    >
+                      <PlusHelper text={t('addToMetamask')} />
+                    </Box>
+                  )}
+              </Box>
+              {isOnSelectedList ? (
+                <span className='currencyName'>{currency.name}</span>
+              ) : (
+                <Box className='flex items-center'>
+                  <span>
+                    {customAdded ? t('addedByUser') : t('foundByAddress')}
+                  </span>
                   <Box
-                    className='cursor-pointer'
-                    ml='2px'
-                    onClick={(event: any) => {
-                      addTokenToMetamask(
-                        currency.address,
-                        currency.symbol,
-                        currency.decimals,
-                        getTokenLogoURL(currency.address),
-                      );
+                    ml={0.5}
+                    className='text-primary'
+                    onClick={(event) => {
                       event.stopPropagation();
+                      if (customAdded) {
+                        if (chainId && currency instanceof Token)
+                          removeToken(chainId, currency.address);
+                      } else {
+                        if (currency instanceof Token) {
+                          addToken(currency);
+                          setDismissTokenWarning(false);
+                        }
+                      }
                     }}
                   >
-                    <PlusHelper text={t('addToMetamask')} />
+                    <span>
+                      {customAdded ? `(${t('remove')})` : `(${t('add')})`}
+                    </span>
                   </Box>
-                )}
-            </Box>
-            {isOnSelectedList ? (
-              <span className='currencyName'>{currency.name}</span>
-            ) : (
-              <Box className='flex items-center'>
-                <span>
-                  {customAdded ? t('addedByUser') : t('foundByAddress')}
-                </span>
-                <Box
-                  ml={0.5}
-                  className='text-primary'
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    if (customAdded) {
-                      if (chainId && currency instanceof Token)
-                        removeToken(chainId, currency.address);
-                    } else {
-                      if (currency instanceof Token) {
-                        addToken(currency);
-                        setDismissTokenWarning(false);
-                      }
-                    }
-                  }}
-                >
-                  <span>
-                    {customAdded ? `(${t('remove')})` : `(${t('add')})`}
-                  </span>
                 </Box>
-              </Box>
-            )}
-          </Box>
+              )}
+            </Box>
 
-          <Box flex={1}></Box>
-          <TokenTags currency={currency} />
-          <Box textAlign='right'>
-            {balance ? (
-              <>
-                <Balance balance={balance} />
-                <span className='text-secondary'>
-                  ${formatNumber(Number(balance.toExact()) * usdPrice)}
-                </span>
-              </>
-            ) : account ? (
-              <CircularProgress size={24} color='secondary' />
-            ) : null}
+            <Box flex={1}></Box>
+            <TokenTags currency={currency} />
+            <Box textAlign='right'>
+              {balance ? (
+                <>
+                  <Balance balance={balance} />
+                  <span className='text-secondary'>
+                    ${formatNumber(Number(balance.toExact()) * usdPrice)}
+                  </span>
+                </>
+              ) : account ? (
+                <CircularProgress size={24} color='secondary' />
+              ) : null}
+            </Box>
           </Box>
         </Box>
       </ListItem>
