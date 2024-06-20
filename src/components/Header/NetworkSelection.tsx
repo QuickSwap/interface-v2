@@ -43,6 +43,9 @@ export const NetworkSelection: React.FC = () => {
             <img src={config['nativeCurrencyImage']} alt='network Image' />
           </Box>
         )}
+        <small className='network-name'>
+          {isSupportedNetwork ? config['networkName'] : t('wrongNetwork')}
+        </small>
         {openNetworkSelection ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {openNetworkSelection && <NetworkSelectionDropdown />}
