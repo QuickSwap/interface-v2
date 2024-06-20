@@ -13,6 +13,7 @@ import { Box, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
+import Fire from 'assets/images/fire-new.svg';
 import { useAllTokens, useToken, useInActiveTokens } from 'hooks/Tokens';
 import { useInactiveTokenList, useSelectedListInfo } from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
@@ -29,6 +30,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 
 interface CurrencySearchProps {
   isOpen: boolean;
@@ -57,7 +59,30 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
   }, []);
-
+  const [tab, setTab] = useState('all');
+  const tabs = [
+    {
+      id: 'all',
+      text: 'All',
+    },
+    {
+      id: 'trending',
+      text: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <img src={Fire} alt='fire' />
+          Trending
+        </div>
+      ),
+    },
+    {
+      id: 'favorites',
+      text: 'Favorites',
+    },
+    {
+      id: 'inWallet',
+      text: 'In Wallet',
+    },
+  ];
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchQueryInput, setSearchQueryInput] = useDebouncedChangeHandler(
     searchQuery,
@@ -216,9 +241,13 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           selectedCurrency={selectedCurrency}
         />
       )}
-
+      <CustomTabSwitch
+        items={tabs}
+        value={tab}
+        handleTabChange={setTab}
+        height={45}
+      />
       <Divider />
-
       <Box flex={1}>
         <CurrencyList
           chainId={chainIdToUse}

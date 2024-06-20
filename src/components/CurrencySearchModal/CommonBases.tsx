@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
-import { Box } from '@material-ui/core';
+import { Box, Checkbox } from '@material-ui/core';
 import { CurrencyLogo, QuestionHelper } from 'components';
 import { useTranslation } from 'react-i18next';
 import { SUGGESTED_BASES, WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { useIsV2 } from 'state/application/hooks';
 import { NativeCurrency } from '@uniswap/sdk-core';
-
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
+import Fire from 'assets/images/fire-new.svg';
+import { Favorite, FavoriteBorder } from '@material-ui/icons';
 interface CommonBasesProps {
   chainId?: ChainId;
   selectedCurrency?: Currency | null;
@@ -32,12 +34,12 @@ const CommonBases: React.FC<CommonBasesProps> = ({
       } as NativeCurrency);
   return (
     <Box mb={2}>
-      <Box display='flex' my={1.5}>
+      {/* <Box display='flex' my={1.5}>
         <Box mr='6px'>
           <span>{t('commonBase')}</span>
         </Box>
         <QuestionHelper text={t('commonBaseHelper')} />
-      </Box>
+      </Box> */}
       <Box className='flex flex-wrap'>
         <Box
           className='baseWrapper'
@@ -53,6 +55,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
           <CurrencyLogo currency={nativeCurrency} size='24px' />
           <small>{nativeCurrency.name}</small>
         </Box>
+
         {(chainId ? SUGGESTED_BASES[chainId] ?? [] : []).map((token: Token) => {
           const selected = Boolean(
             selectedCurrency && currencyEquals(selectedCurrency, token),

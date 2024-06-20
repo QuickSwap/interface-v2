@@ -1,7 +1,14 @@
 import { ChainId, CurrencyAmount, ETHER, Token } from '@uniswap/sdk';
 import { Currency as V3Currency } from '@uniswap/sdk-core';
 import React, { useState, useCallback, useMemo } from 'react';
-import { Box, Tooltip, CircularProgress, ListItem } from '@material-ui/core';
+import {
+  Box,
+  Tooltip,
+  CircularProgress,
+  ListItem,
+  Checkbox,
+  Divider,
+} from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import { WrappedTokenInfo } from 'state/lists/hooks';
 import { useAddUserToken, useRemoveUserAddedToken } from 'state/user/hooks';
@@ -15,7 +22,9 @@ import { useTranslation } from 'react-i18next';
 import { getIsMetaMaskWallet } from 'connectors/utils';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
-
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+import StarIcon from '@material-ui/icons/Star';
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 //TODO Investigate: shouldnt this key return 'ETH' not 'ETHER'
 function currencyKey(currency: Token): string {
   return currency instanceof Token
@@ -152,7 +161,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
       />
       <ListItem
         button
-        style={style}
+        style={{ ...style, paddingLeft: '0' }}
         key={key}
         selected={otherSelected || isSelected}
         onClick={() => {
@@ -161,6 +170,11 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
       >
         <Box className='currencyRow'>
           {(otherSelected || isSelected) && <TokenSelectedIcon />}
+          <Checkbox
+            checked={true}
+            icon={<StarBorderIcon />}
+            checkedIcon={<StarIcon style={{ color: '#d3e200' }} />}
+          />
           <CurrencyLogo currency={currency} size='32px' />
           <Box ml={1} height={32}>
             <Box className='flex items-center'>
