@@ -1396,3 +1396,12 @@ export const getCurrencyInfo = ({
 export function getPerpsSymbol(symbol: string) {
   return symbol.replace('PERP_', '').replace('_', '/');
 }
+
+export const getDexScreenerChainName = (
+  chainId: ChainId,
+): string | undefined => {
+  const chainsName: { [chainId in ChainId]?: string } = {
+    [ChainId.MATIC]: 'polygon',
+  };
+  return chainsName[chainId];
+};

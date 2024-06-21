@@ -120,6 +120,10 @@ export const bondDexFactories: {
       factory: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
       protocol: 3,
     },
+    [LiquidityDex.SushiSwapV3]: {
+      factory: '0x917933899c6a5F8E37F31E19f92CdBFF7e8FF0e2',
+      protocol: 3,
+    },
     [LiquidityDex.Algebra]: {
       factory: '0x411b0facc3489691f28ad58c47006af5e3ab3a28',
       protocol: 4,
