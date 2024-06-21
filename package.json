@@ -89,7 +89,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@0xsquid/widget": "2.0.0-beta.19",
-    "@ape.swap/apeswap-lists": "1.18.39",
+    "@ape.swap/apeswap-lists": "1.20.4",
     "@arcxmoney/analytics": "^2.0.2",
     "@cryption/df-sdk-core": "0.0.26",
     "@hypelab/sdk-react": "^1.0.1",
