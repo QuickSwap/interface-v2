@@ -213,7 +213,7 @@ export const useFetchBonds = () => {
 
   const { data: dexScreenerLPPrices } = useQuery({
     queryKey: [
-      'dexScreener-prices',
+      'dexScreener-LP-prices',
       dexScreenerLPTokens.map((token) => token.address[chainId]).join('-'),
     ],
     queryFn: async () => {
