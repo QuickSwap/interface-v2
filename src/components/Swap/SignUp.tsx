@@ -20,6 +20,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSubcribe }) => {
         overflow: 'hidden',
         position: 'relative',
         padding: '16px',
+        marginTop: '16px',
       }}
     >
       <img

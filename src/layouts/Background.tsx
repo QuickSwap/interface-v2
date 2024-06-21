@@ -22,7 +22,7 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
           style={{ maxWidth: '1440px', position: 'absolute', right: 0 }}
         />
       )}
-      {showBg2 && (
+      {/* {showBg2 && (
         <img
           src={HeroBkg2}
           alt='Hero Background'
@@ -33,7 +33,7 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
             left: -200,
           }}
         />
-      )}
+      )} */}
       {/* <img
         className={showDefaultBG ? '' : 'hidden'}
         src={defaultHeroBkg}

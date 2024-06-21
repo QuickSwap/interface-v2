@@ -13,7 +13,7 @@ import { Box, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
-import Fire from 'assets/images/fire-new.svg';
+import Fire from 'assets/images/fire.svg';
 import { useAllTokens, useToken, useInActiveTokens } from 'hooks/Tokens';
 import {
   WrappedTokenInfo,

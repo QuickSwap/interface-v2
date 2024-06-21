@@ -1191,52 +1191,6 @@ const SwapBestTrade: React.FC<{
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
-      {paraRate && (
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gridGap: '4px',
-            marginTop: '16px',
-          }}
-        >
-          <img src={chart} alt='chart' />
-          <Typography
-            style={{
-              fontSize: '13px',
-              color: '#fff',
-              fontWeight: 500,
-              marginBottom: '-2px',
-            }}
-          >
-            <Box className='swapPrice'>
-              <small>
-                1{' '}
-                {
-                  (mainPrice
-                    ? currencies[Field.INPUT]
-                    : currencies[Field.OUTPUT]
-                  )?.symbol
-                }{' '}
-                = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
-                {
-                  (mainPrice
-                    ? currencies[Field.OUTPUT]
-                    : currencies[Field.INPUT]
-                  )?.symbol
-                }{' '}
-                <PriceExchangeIcon
-                  onClick={() => {
-                    setMainPrice(!mainPrice);
-                  }}
-                />
-              </small>
-            </Box>
-          </Typography>
-        </Box>
-      )}
       {!showNativeConvert && !showWrap && isExpertMode && (
         <Box className='recipientInput'>
           <Box className='recipientInputHeader'>
@@ -1263,35 +1217,7 @@ const SwapBestTrade: React.FC<{
           )}
         </Box>
       )}
-      <BestTradeAdvancedSwapDetails
-        optimalRate={optimalRate}
-        inputCurrency={inputCurrency}
-        outputCurrency={outputCurrency}
-      />
-      {/* <Box className='subtext-color infoWrapper'>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box>
-            <img src={inforIcon} alt='information' /> {t('slipPage')}
-          </Box>
-          <Box>
-            1%
-            <img src={settingIcon} alt='Setting' />
-          </Box>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box>
-            <img src={inforIcon} alt='information' /> {t('minimumReceived')}
-          </Box>
-          <Box>5463.44 MATIC</Box>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box>
-            <img src={inforIcon} alt='information' /> {t('priceImpact')}
-          </Box>
-          <Box>0.3%</Box>
-        </Box>
-      </Box> */}
-      <Box className='swapButtonWrapper' sx={{ marginBottom: '16px' }}>
+      <Box className='swapButtonWrapper'>
         {showApproveFlow && (
           <Box width='48%'>
             <Button
@@ -1353,6 +1279,80 @@ const SwapBestTrade: React.FC<{
           </Button>
         </Box>
       </Box>
+      {paraRate && (
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gridGap: '4px',
+            marginTop: '16px',
+          }}
+        >
+          <img src={chart} alt='chart' />
+          <Typography
+            style={{
+              fontSize: '13px',
+              color: '#fff',
+              fontWeight: 500,
+              marginBottom: '-2px',
+            }}
+          >
+            <Box className='swapPrice'>
+              <small>
+                1{' '}
+                {
+                  (mainPrice
+                    ? currencies[Field.INPUT]
+                    : currencies[Field.OUTPUT]
+                  )?.symbol
+                }{' '}
+                = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
+                {
+                  (mainPrice
+                    ? currencies[Field.OUTPUT]
+                    : currencies[Field.INPUT]
+                  )?.symbol
+                }{' '}
+                <PriceExchangeIcon
+                  onClick={() => {
+                    setMainPrice(!mainPrice);
+                  }}
+                />
+              </small>
+            </Box>
+          </Typography>
+        </Box>
+      )}
+      <BestTradeAdvancedSwapDetails
+        optimalRate={optimalRate}
+        inputCurrency={inputCurrency}
+        outputCurrency={outputCurrency}
+      />
+      {/* <Box className='subtext-color infoWrapper'>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('slipPage')}
+          </Box>
+          <Box>
+            1%
+            <img src={settingIcon} alt='Setting' />
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('minimumReceived')}
+          </Box>
+          <Box>5463.44 MATIC</Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <img src={inforIcon} alt='information' /> {t('priceImpact')}
+          </Box>
+          <Box>0.3%</Box>
+        </Box>
+      </Box> */}
       <SignUp
         onSubcribe={() => {
           console.log('sub');

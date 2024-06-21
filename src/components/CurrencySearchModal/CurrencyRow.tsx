@@ -170,7 +170,7 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
         selected={otherSelected || isSelected}
       >
         <Box className='currencyRow'>
-          {(otherSelected || isSelected) && <TokenSelectedIcon />}
+          {/* {(otherSelected || isSelected) && <TokenSelectedIcon />} */}
           {onChangeFavorite && (
             <Checkbox
               checked={isFavorite}
