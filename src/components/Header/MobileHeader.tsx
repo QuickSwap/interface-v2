@@ -1,8 +1,8 @@
 import { Box, Button, ButtonBase, Typography } from '@material-ui/core';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { HeaderMenuItem } from './HeaderListItem';
 import { ReactComponent as ThreeDashIcon } from 'assets/images/ThreeDashIcon.svg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import MobileNavItem from './MobileNavItem';
 import CloseIcon from '@material-ui/icons/Close';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
@@ -29,6 +29,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   isMobile,
 }) => {
   const [isActive, setIsActive] = useState(false);
+  const location = useLocation();
+  useEffect(() => {
+    setIsActive(false);
+  }, [location]);
 
   const socialicons = [
     {

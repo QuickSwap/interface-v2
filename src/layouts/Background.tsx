@@ -5,15 +5,15 @@ import HeroBkg from 'assets/images/banner.webp';
 import HeroBkg2 from 'assets/images/banner2.webp';
 import layer from 'assets/images/layer1.png';
 import layer2 from 'assets/images/BottomWave.png';
-import layer3 from 'assets/images/layer3.png';
 
 const Background: React.FC<{ fallback: boolean | undefined }> = ({
   fallback = false,
 }) => {
   const { pathname } = useLocation();
-  const showDefaultBG = fallback || pathname !== '/swap';
+  const showBg2 = pathname === '/swap' || pathname === '/bridge';
+  const showDefaultBG = fallback || !showBg2;
   return (
-    <Box className={`heroBkg ${pathname === '/swap' ? 'isSwap' : ''}`}>
+    <Box className={`heroBkg ${showBg2 ? 'isNewBg' : ''}`}>
       {showDefaultBG && (
         <img
           className={showDefaultBG ? '' : 'hidden'}
@@ -22,26 +22,31 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
           style={{ maxWidth: '1440px', position: 'absolute', right: 0 }}
         />
       )}
-      {pathname === '/swap' && (
+      {/* {showBg2 && (
         <img
           src={HeroBkg2}
           alt='Hero Background'
-          style={{ maxWidth: '1440px', position: 'absolute', left: 0 }}
+          style={{
+            maxWidth: '1200px',
+            position: 'absolute',
+            top: 100,
+            left: -200,
+          }}
         />
-      )}
+      )} */}
       {/* <img
         className={showDefaultBG ? '' : 'hidden'}
         src={defaultHeroBkg}
         alt='Hero Background'
       /> */}
-      {pathname !== '/swap' && (
+      {!showBg2 && (
         <img
           src={layer}
           alt='layer'
           style={{ position: 'absolute', left: 0 }}
         />
       )}
-      {pathname !== '/swap' && (
+      {!showBg2 && (
         <>
           <img
             src={layer2}

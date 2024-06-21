@@ -69,9 +69,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
 
   const menuItemCountToShow = useMemo(() => {
     if (deviceWidth > 1580) {
-      return 7;
+      return 8;
     } else if (deviceWidth > 1500) {
-      return 6;
+      return 7;
     } else if (deviceWidth > 1320) {
       return 5;
     } else if (deviceWidth > 1190) {
@@ -227,11 +227,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         target: '_blank',
         externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
       },
-      // {
-      //   id: 'bridge',
-      //   text: t('bridge'),
-      //   link: '/bridge',
-      // },
     ],
   };
   if (showEarn) {
@@ -268,17 +263,17 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       });
     }
   }
-  // if (showSafe) {
-  menuItems.push({
-    link: '/safe',
-    text: 'Safe',
-    id: 'safe-page-link',
-    isExternal: true,
-    target: '_blank',
-    externalLink: process?.env?.REACT_APP_SAFE_URL || '',
-    isNew: true,
-  });
-  // }
+  if (chainId === ChainId.ZKEVM) {
+    menuItems.push({
+      link: '/safe',
+      text: 'Safe',
+      id: 'safe-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_SAFE_URL || '',
+      isNew: true,
+    });
+  }
   if (showLair) {
     menuItems.push({
       link: '/dragons',
@@ -286,11 +281,11 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'dragons-page-link',
     });
   }
-  // menuItems.push({
-  //   link: '/bridge',
-  //   text: t('Bridge'),
-  //   id: 'bridge-page-link',
-  // });
+  menuItems.push({
+    link: '/bridge',
+    text: t('Bridge'),
+    id: 'bridge-page-link',
+  });
   if (showGamingHub) {
     menuItems.push({
       link: '/gamehub',

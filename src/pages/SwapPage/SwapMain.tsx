@@ -300,13 +300,6 @@ const SwapMain: React.FC = () => {
                   }`}
                   key={tab.id.toString()}
                   borderRadius={isProMode ? 0 : 10}
-                  onClick={() => {
-                    if (tab.id === 'market') {
-                      redirectWithSwapType(SWAP_BEST_TRADE);
-                    } else {
-                      redirectWithSwapType(Number(tab.id));
-                    }
-                  }}
                 >
                   {tab.id === 'market' ? (
                     <>

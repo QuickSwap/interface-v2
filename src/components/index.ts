@@ -63,3 +63,5 @@ export { default as TermsWrapper } from './TermsWrapper';
 export { default as LiquidityHubAnalytics } from './LiquidityHubAnalytics';
 export { default as DualCurrencyPanel } from './DualCurrencyPanel';
 export { default as ChainSelector } from './ChainSelector';
+export { default as Note } from './Note';
+export * from './Bridge';
