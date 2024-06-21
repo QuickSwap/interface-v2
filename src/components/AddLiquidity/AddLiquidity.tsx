@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
+import { AML_SCORE_THRESHOLD } from 'config';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -34,7 +36,11 @@ import {
   useMintState,
 } from 'state/mint/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useIsExpertMode,
+  useUserSlippageTolerance,
+  useAmlScore,
+} from 'state/user/hooks';
 import {
   maxAmountSpend,
   calculateSlippageAmount,
@@ -56,6 +62,7 @@ import { SLIPPAGE_AUTO } from 'state/user/reducer';
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
 }> = ({ currencyBgClass }) => {
+  const history = useHistory();
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -73,6 +80,9 @@ const AddLiquidity: React.FC<{
   let [allowedSlippage] = useUserSlippageTolerance();
   allowedSlippage =
     allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const deadline = useTransactionDeadline();
   const [txHash, setTxHash] = useState('');
   const addTransaction = useTransactionAdder();
@@ -237,6 +247,11 @@ const AddLiquidity: React.FC<{
   }, [currency1Id]);
 
   const onAdd = () => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+
     setAddLiquidityErrorMessage(null);
     setTxHash('');
     if (expertMode) {

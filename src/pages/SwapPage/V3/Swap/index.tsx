@@ -5,6 +5,7 @@ import {
   Token,
   TradeType,
 } from '@uniswap/sdk-core';
+import { AML_SCORE_THRESHOLD } from 'config/index';
 import { ReactComponent as ExchangeIcon } from 'assets/images/ExchangeIcon.svg';
 import CurrencyLogo from 'components/CurrencyLogo';
 import Loader from 'components/Loader';
@@ -46,7 +47,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/v3/hooks';
-import { useExpertModeManager } from 'state/user/hooks';
+import { useExpertModeManager, useAmlScore } from 'state/user/hooks';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { warningSeverity } from 'utils/v3/prices';
@@ -97,6 +98,9 @@ const SwapV3Page: React.FC = () => {
 
   // for expert mode
   const [isExpertMode] = useExpertModeManager();
+
+  // user aml score
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 
   // get version from the url
   const toggledVersion = useToggledVersion();
@@ -973,6 +977,10 @@ const SwapV3Page: React.FC = () => {
             <Button
               fullWidth
               onClick={() => {
+                if (amlScore > AML_SCORE_THRESHOLD) {
+                  history.push('/forbidden');
+                  return;
+                }
                 if (isExpertMode) {
                   handleSwap();
                 } else {
@@ -987,6 +995,7 @@ const SwapV3Page: React.FC = () => {
               }}
               id='swap-button'
               disabled={
+                isAmlScoreLoading ||
                 !isValid ||
                 priceImpactTooHigh ||
                 !!swapCallbackError ||
