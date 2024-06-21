@@ -15,7 +15,11 @@ import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import Fire from 'assets/images/fire-new.svg';
 import { useAllTokens, useToken, useInActiveTokens } from 'hooks/Tokens';
-import { useInactiveTokenList, useSelectedListInfo } from 'state/lists/hooks';
+import {
+  WrappedTokenInfo,
+  useInactiveTokenList,
+  useSelectedListInfo,
+} from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { GlobalConst } from 'constants/index';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -58,6 +62,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const [favoriteCurrencies, setFavoriteCurrencies] = useLocalStorage<
     Currency[]
   >('favoriteCurrencies', []);
+
   // const [favoriteCurrencies, setFavoriteCurrencies] = useState<Currency[]>([]);
   const handleChangeFavorite = (currency: Currency, checked: boolean) => {
     if (checked) {
@@ -285,7 +290,10 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       <CommonBases
         chainId={chainIdToUse}
         onSelect={handleCurrencySelect}
-        currencies={favoriteCurrencies}
+        currencies={favoriteCurrencies.map(
+          (item: WrappedTokenInfo) =>
+            new WrappedTokenInfo(item.tokenInfo, item?.tags || []),
+        )}
         selectedCurrency={selectedCurrency}
         onRemoveFavorite={(c) => handleChangeFavorite(c, false)}
       />

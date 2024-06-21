@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk';
 import { Box, Button, Checkbox, Typography } from '@material-ui/core';
 import { CurrencyLogo, QuestionHelper } from 'components';
