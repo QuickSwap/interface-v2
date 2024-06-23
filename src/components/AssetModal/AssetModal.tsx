@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChainId } from '@uniswap/sdk';
 import { CurrencyLogo, CustomModal } from 'components';
 import { useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
@@ -19,6 +20,8 @@ import { useCurrency } from 'hooks/v3/Tokens';
 import { NumericalInput } from 'components';
 import QuickPerpsIcon from 'assets/images/quickPerpsIcon.svg';
 import { useWalletInfo } from '@web3modal/ethers5/react';
+import { useQuery } from '@orderly.network/hooks';
+import { API } from '@orderly.network/types';
 
 interface AssetModalProps {
   open: boolean;
@@ -57,6 +60,15 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const currency = useCurrency(token?.address);
   const { account } = useAccount();
   const [depositTx, setDepositTx] = useState<any>(undefined);
+  const { data } = useQuery<API.Token[]>(
+    `/v1/public/token/?chain_id=${chainId}`,
+  );
+
+  let withdrawalFee = 1;
+
+  if (data) {
+    withdrawalFee = data[0].chain_details[0].withdrawal_fee;
+  }
 
   return (
     <CustomModal
@@ -236,7 +248,7 @@ const AssetModal: React.FC<AssetModalProps> = ({
         )}
         <Box margin='8px 0 16px'>
           <span className='text-secondary'>
-            {t('fee')} = ${selectedTab === 'deposit' ? '0' : '1'}
+            {t('fee')} = ${selectedTab === 'deposit' ? '0' : withdrawalFee}
           </span>
         </Box>
 

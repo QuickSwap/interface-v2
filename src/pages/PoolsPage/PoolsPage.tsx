@@ -38,6 +38,18 @@ const PoolsPage: React.FC = () => {
     }
   }, [updateIsV2, v2]);
 
+  const showPools = config['pools']['available'];
+
+  if (!showPools) {
+    location.href = '/';
+  }
+
+  useEffect(() => {
+    if (!showPools) {
+      location.href = '/';
+    }
+  }, [showPools]);
+
   return (
     <Box width='100%' mb={3}>
       <Box className='pageHeading'>
