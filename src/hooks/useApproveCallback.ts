@@ -11,6 +11,7 @@ import {
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency,
+  MaxUint256,
 } from '@uniswap/sdk-core';
 import { useCallback, useState, useMemo } from 'react';
 import { useTokenAllowance, useV3TokenAllowance } from './useTokenAllowance';
@@ -113,7 +114,7 @@ export function useApproveCallback(
     }
 
     const approveAmount = isInfiniteApproval
-      ? Infinity
+      ? MaxUint256.toString()
       : amountToApprove.raw.toString();
 
     let useExact = false;
@@ -239,7 +240,7 @@ export function useApproveCallbackV3(
     }
 
     const approveAmount = isInfiniteApproval
-      ? Infinity
+      ? MaxUint256.toString()
       : amountToApprove.quotient.toString();
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
@@ -254,11 +255,17 @@ export function useApproveCallbackV3(
       });
 
     return tokenContract
-      .approve(spender, approveAmount, {
-        gasLimit: isBonusRoute
-          ? calculateGasMarginBonus(estimatedGas)
-          : calculateGasMargin(estimatedGas),
-      })
+      .approve(
+        spender,
+        useExact || !isInfiniteApproval
+          ? amountToApprove.quotient.toString()
+          : approveAmount,
+        {
+          gasLimit: isBonusRoute
+            ? calculateGasMarginBonus(estimatedGas)
+            : calculateGasMargin(estimatedGas),
+        },
+      )
       .then(async (response: TransactionResponse) => {
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,

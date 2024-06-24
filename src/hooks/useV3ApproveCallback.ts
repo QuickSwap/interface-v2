@@ -2,6 +2,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import {
   Currency,
   CurrencyAmount,
+  MaxUint256,
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
@@ -99,7 +100,7 @@ export function useApproveCallback(
     }
 
     const approveAmount = isInfiniteApproval
-      ? Infinity
+      ? MaxUint256.toString()
       : amountToApprove.quotient.toString();
 
     let useExact = false;
@@ -113,6 +114,8 @@ export function useApproveCallback(
           amountToApprove.quotient.toString(),
         );
       });
+
+    console.log('aaa', approveAmount, useExact);
 
     return tokenContract
       .approve(

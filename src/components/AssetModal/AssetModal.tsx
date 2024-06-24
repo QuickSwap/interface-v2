@@ -3,7 +3,7 @@ import { CurrencyLogo, CustomModal } from 'components';
 import { useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import 'components/styles/AssetModal.scss';
-import NotifyModal from '../NotifyModal';
+import { NotifyModal } from './NotifyModal';
 import {
   useAccount,
   useChains,
