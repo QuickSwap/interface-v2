@@ -115,8 +115,6 @@ export function useApproveCallback(
         );
       });
 
-    console.log('aaa', approveAmount, useExact);
-
     return tokenContract
       .approve(
         spender,
