@@ -31,8 +31,6 @@ import {
 import { OptimalRate } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import { useIsInfiniteApproval } from 'state/user/hooks';
-import { useTokenBalance } from 'state/wallet/hooks';
-import { useTokenBalance as useV3TokenBalance } from 'state/wallet/v3/hooks';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -58,8 +56,6 @@ export function useApproveCallback(
     spender,
   );
   const pendingApproval = useHasPendingApproval(token?.address, spender);
-
-  const tokenBalance = useTokenBalance(account, token);
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
@@ -116,12 +112,9 @@ export function useApproveCallback(
       return;
     }
 
-    const approveAmount =
-      isInfiniteApproval &&
-      tokenBalance &&
-      tokenBalance.greaterThan(amountToApprove)
-        ? tokenBalance.raw.toString()
-        : amountToApprove.raw.toString();
+    const approveAmount = isInfiniteApproval
+      ? Infinity
+      : amountToApprove.raw.toString();
 
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
@@ -171,7 +164,6 @@ export function useApproveCallback(
     spender,
     isInfiniteApproval,
     addTransaction,
-    tokenBalance,
   ]);
 
   return [approvalState, approve];
@@ -194,7 +186,6 @@ export function useApproveCallbackV3(
     spender,
   );
   const pendingApproval = useHasPendingApproval(token?.address, spender);
-  const tokenBalance = useV3TokenBalance(account, token);
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
@@ -247,12 +238,9 @@ export function useApproveCallbackV3(
       return;
     }
 
-    const approveAmount =
-      isInfiniteApproval &&
-      tokenBalance &&
-      tokenBalance.greaterThan(amountToApprove)
-        ? tokenBalance.quotient.toString()
-        : amountToApprove.quotient.toString();
+    const approveAmount = isInfiniteApproval
+      ? Infinity
+      : amountToApprove.quotient.toString();
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
       .approve(spender, approveAmount)
@@ -297,7 +285,6 @@ export function useApproveCallbackV3(
     amountToApprove,
     spender,
     isInfiniteApproval,
-    tokenBalance,
     isBonusRoute,
     addTransaction,
   ]);

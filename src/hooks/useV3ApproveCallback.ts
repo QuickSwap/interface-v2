@@ -22,7 +22,6 @@ import { useV3TokenAllowance } from './useTokenAllowance';
 import { calculateGasMargin } from 'utils';
 import { MergedZap } from 'state/zap/actions';
 import { useIsInfiniteApproval } from 'state/user/hooks';
-import { useTokenBalance } from 'state/wallet/v3/hooks';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -69,8 +68,6 @@ export function useApproveCallback(
   const addTransaction = useTransactionAdder();
   const [isInfiniteApproval] = useIsInfiniteApproval();
 
-  const tokenBalance = useTokenBalance(account, token);
-
   const approve = useCallback(async (): Promise<void> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
       console.error('approve was called unnecessarily');
@@ -101,12 +98,9 @@ export function useApproveCallback(
       return;
     }
 
-    const approveAmount =
-      isInfiniteApproval &&
-      tokenBalance &&
-      tokenBalance.greaterThan(amountToApprove)
-        ? tokenBalance.quotient.toString()
-        : amountToApprove.quotient.toString();
+    const approveAmount = isInfiniteApproval
+      ? Infinity
+      : amountToApprove.quotient.toString();
 
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
@@ -157,7 +151,6 @@ export function useApproveCallback(
     amountToApprove,
     spender,
     isInfiniteApproval,
-    tokenBalance,
     addTransaction,
   ]);
 
