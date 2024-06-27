@@ -34,6 +34,7 @@ export const useSoulZapLPApiQuote = (
   const outputTokenPrice = useUSDCPriceFromAddress(
     response?.lpQuote?.token0?.address ?? '',
   );
+
   const swapOutPutEstimate: string | undefined =
     response?.lpQuote?.token0.fromAmountEstimate;
   const estimateOutput = new BigNumber(swapOutPutEstimate ?? '0')
@@ -42,8 +43,7 @@ export const useSoulZapLPApiQuote = (
     ?.div(bond?.tokenPrice ?? 0) // then we divide the lp USD price to get the amount of LP tokens
     ?.toFixed(18);
 
-  console.log('soulZap LP API', outputTokenPrice, estimateOutput);
-
+  const typedValueNotEmpty = !!typedValue && Number(typedValue) > 0;
   // Effects
   useEffect(() => {
     if (loading) {
@@ -51,7 +51,7 @@ export const useSoulZapLPApiQuote = (
     } else {
       onSetOutputValue(estimateOutput ?? '0');
     }
-  }, [estimateOutput, loading, onSetOutputValue]);
+  }, [typedValueNotEmpty, estimateOutput, loading, onSetOutputValue]);
 
   return { loading, response, estimateOutput };
 };

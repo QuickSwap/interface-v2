@@ -70,42 +70,39 @@ const GetLpButton = ({ bond }: { bond: Bond }) => {
           token1={bond?.quoteToken?.address?.[chainId]}
         />
       )}
-      {bond &&
-        billType !== 'reserve' &&
-        (shouldSendToExternalLpUrl ||
-          zapIntoLPVersion === ZapVersion.SoulZap) && (
-          <Button
-            disabled={!account}
-            onClick={() => {
-              if (shouldSendToExternalLpUrl) {
-                return sendToExternalLpUrl();
-              }
-              if (zapIntoLPVersion === ZapVersion.SoulZap) {
-                return setOpenSoulZapAddLiquidity(true);
-              }
-              if (zapIntoLPVersion === ZapVersion.SoulZapApi) {
-                return setOpenSoulZapAPIAddLiquidity(true);
-              }
-            }}
-          >
-            <Box className='flex items-center' gridGap={8}>
-              <p>{t('Get LP')}</p>
-              {bondContractAddress ===
-              '0xdE766645C9b24e87165107714c88400FedA269A3' ? null : !shouldSendToExternalLpUrl ? (
-                <ZapIcon />
-              ) : (
-                <img
-                  src={
-                    dexDisplayAttributesAny[
-                      lpToken?.liquidityDex?.[chainId] ?? LiquidityDex.ApeSwapV2
-                    ].icon ?? ''
-                  }
-                  width={20}
-                />
-              )}
-            </Box>
-          </Button>
-        )}
+      {bond && billType !== 'reserve' && (
+        <Button
+          disabled={!account}
+          onClick={() => {
+            if (shouldSendToExternalLpUrl) {
+              return sendToExternalLpUrl();
+            }
+            if (zapIntoLPVersion === ZapVersion.SoulZap) {
+              return setOpenSoulZapAddLiquidity(true);
+            }
+            if (zapIntoLPVersion === ZapVersion.SoulZapApi) {
+              return setOpenSoulZapAPIAddLiquidity(true);
+            }
+          }}
+        >
+          <Box className='flex items-center' gridGap={8}>
+            <p>{t('Get LP')}</p>
+            {bondContractAddress ===
+            '0xdE766645C9b24e87165107714c88400FedA269A3' ? null : !shouldSendToExternalLpUrl ? (
+              <ZapIcon />
+            ) : (
+              <img
+                src={
+                  dexDisplayAttributesAny[
+                    lpToken?.liquidityDex?.[chainId] ?? LiquidityDex.ApeSwapV2
+                  ].icon ?? ''
+                }
+                width={20}
+              />
+            )}
+          </Box>
+        </Button>
+      )}
     </>
   );
 };

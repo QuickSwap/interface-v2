@@ -81,7 +81,10 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
     account,
     lpCurrency ?? undefined,
   )?.toExact();
-  const bigValue = new BigNumber(consideredValue).toNumber();
+  const bigValue =
+    typedValue && Number(typedValue) > 0
+      ? new BigNumber(consideredValue).toNumber()
+      : 0;
   const outputUSD = bigValue * (bond?.tokenPrice ?? 0);
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
@@ -94,10 +97,6 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
       [Field.OUTPUT]: relevantTokenBalances[1],
     };
   }, [relevantTokenBalances]);
-
-  const hasEnoughBalance = new BigNumber(typedValue).lte(
-    new BigNumber(currencyBalances?.INPUT?.toExact() ?? '0'),
-  );
 
   //Functions
   const handleCurrencySelect = useCallback(
@@ -147,6 +146,7 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
       });
       console.log(gas.toNumber());
       const gasToUse = Math.floor(gas?.toNumber() * 1.4);
+      setPendingTx(true);
       await signer
         .sendTransaction({
           to: zapData.txData.to,
@@ -209,7 +209,6 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
     });
   }, [approveCallback]);
 
-  const splited = bond?.lpToken?.symbol?.split('-');
   const [openZapSlippage, setOpenZapSlippage] = useState(false);
 
   return (
@@ -259,19 +258,13 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
         <p>{t('to')}:</p>
         <Box className='soulZapAddLiquidityInput' my={1.5}>
           <Box className='flex items-center'>
-            <NumericalInput
-              value={bigValue?.toFixed(18)}
-              onUserInput={() => null}
-            />
+            <NumericalInput value={bigValue} onUserInput={() => null} />
             <Box className='soulZapAddLiquidityCurrency' gridGap={8}>
               <DoubleCurrencyLogo
                 currency0={lpTokenACurrency ?? undefined}
                 currency1={lpTokenBCurrency ?? undefined}
                 size={24}
               />
-              <p>
-                {lpTokenBCurrency?.symbol}-{lpTokenACurrency?.symbol}
-              </p>
               <p>{bond?.lpToken?.symbol}</p>
             </Box>
           </Box>
@@ -309,7 +302,9 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
           <Button
             onClick={soulZapCallback}
             fullWidth
-            disabled={loading || pendingTx || !zapData || !lpCurrency}
+            disabled={
+              loading || pendingTx || !typedValue || !zapData || !lpCurrency
+            }
           >
             {t('buy')}
           </Button>
