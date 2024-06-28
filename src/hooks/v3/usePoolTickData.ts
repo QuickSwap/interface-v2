@@ -58,8 +58,6 @@ export function useAllV3Ticks(
     enabled: !!poolAddress && !!currencyA?.chainId,
   });
 
-  console.log('aaa', data);
-
   return {
     isUninitialized: !poolAddress,
     isLoading,
