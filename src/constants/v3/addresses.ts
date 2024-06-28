@@ -1351,6 +1351,16 @@ export const EMPTY: { [chainId: number]: Token } = {
   ),
 };
 
+export const USDO: { [chainId: number]: Token } = {
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xD95086Fe465a2DC59F989B927472a901E2e05ff2',
+    18,
+    'USDO',
+    'USDoge',
+  ),
+};
+
 export const DLQUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: NEW_QUICK[ChainId.MATIC],
   [ChainId.DOGECHAIN]: DD[ChainId.DOGECHAIN],
@@ -1379,8 +1389,7 @@ export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
   ],
   [ChainId.DOGECHAIN]: [
     WETH[ChainId.DOGECHAIN],
-    USDC[ChainId.DOGECHAIN],
-    USDT[ChainId.DOGECHAIN],
+    USDO[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
   ],
@@ -1412,7 +1421,7 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
   ],
   [ChainId.DOGECHAIN]: [
     WMATIC_EXTENDED[ChainId.DOGECHAIN],
-    toV3Token(USDC[ChainId.DOGECHAIN]),
+    toV3Token(USDO[ChainId.DOGECHAIN]),
     toV3Token(DC[ChainId.DOGECHAIN]),
     toV3Token(DD[ChainId.DOGECHAIN]),
   ],
@@ -1483,13 +1492,12 @@ export const SUGGESTED_BASES: {
     USDCE[ChainId.MATIC],
   ],
   [ChainId.DOGECHAIN]: [
-    USDC[ChainId.DOGECHAIN],
-    USDT[ChainId.DOGECHAIN],
     ETHER[ChainId.DOGECHAIN],
     WBTC[ChainId.DOGECHAIN],
     MI[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
+    USDO[ChainId.DOGECHAIN],
   ],
   [ChainId.ZKTESTNET]: [WETH[ChainId.ZKTESTNET], USDT[ChainId.ZKTESTNET]],
   [ChainId.ZKEVM]: [
@@ -1554,8 +1562,7 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
   ],
   [ChainId.DOGECHAIN]: [
     WETH[ChainId.DOGECHAIN],
-    USDC[ChainId.DOGECHAIN],
-    USDT[ChainId.DOGECHAIN],
+    USDO[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
   ],
@@ -1577,8 +1584,7 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
   ],
   [ChainId.DOGECHAIN]: [
     WMATIC_EXTENDED[ChainId.DOGECHAIN],
-    toV3Token(USDC[ChainId.DOGECHAIN]),
-    toV3Token(USDT[ChainId.DOGECHAIN]),
+    toV3Token(USDO[ChainId.DOGECHAIN]),
     toV3Token(ETHER[ChainId.DOGECHAIN]),
     toV3Token(DD[ChainId.DOGECHAIN]),
     toV3Token(DC[ChainId.DOGECHAIN]),
