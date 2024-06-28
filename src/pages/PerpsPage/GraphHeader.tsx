@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
@@ -19,6 +19,7 @@ export const GraphHeader: React.FC<Props> = ({
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
+  const [timeDifference, setTimeDifference] = useState('');
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -52,6 +53,33 @@ export const GraphHeader: React.FC<Props> = ({
         );
       });
   }, [data, search]);
+
+  useEffect(() => {
+    const updateTimeDifference = () => {
+      const currentTime = Date.now();
+      const difference = token?.next_funding_time - currentTime;
+
+      if (difference <= 0) {
+        setTimeDifference('00:00:00');
+      } else {
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / (1000 * 60)) % 60);
+        const seconds = Math.floor((difference / 1000) % 60);
+
+        const formattedTime = `${String(hours).padStart(2, '0')}:${String(
+          minutes,
+        ).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        setTimeDifference(formattedTime);
+      }
+    };
+
+    const interval = setInterval(updateTimeDifference, 1000);
+
+    // Initial call to set the time immediately on component mount
+    updateTimeDifference();
+
+    return () => clearInterval(interval);
+  }, [token?.next_funding_time]);
 
   return (
     <>
@@ -189,7 +217,9 @@ export const GraphHeader: React.FC<Props> = ({
             </Box>
             <Box>
               <p className='span text-secondary'>Funding Rate</p>
-              <p className='span'>{token?.est_funding_rate}%</p>
+              <p className='span'>
+                {token?.est_funding_rate}% in {timeDifference}
+              </p>
             </Box>
             <Box>
               <p className='span text-secondary'>Open Interest</p>
