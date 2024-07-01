@@ -4,6 +4,7 @@ import {
   LiquidityDex,
   BillVersion,
   BillArtCollection,
+  IchiSupportedDex,
 } from '@ape.swap/apeswap-lists';
 
 export interface BondToken {
@@ -16,8 +17,7 @@ export interface BondToken {
   price?: number;
   liquidityDex?: Partial<Record<ChainId, LiquidityDex>>;
   getLpUrl?: Partial<Record<ChainId, string>>;
-  vaultDeployer?: string;
-  router?: string;
+  ichiUnderlyingDex?: IchiSupportedDex;
 }
 
 export interface BondConfig {
@@ -25,7 +25,7 @@ export interface BondConfig {
   chainId: ChainId;
   contractAddress: Partial<Record<ChainId, string>>;
   billVersion: BillVersion;
-  billType: 'liquidity' | 'reserve' | 'launch' | 'migration' | 'cex';
+  billType: string;
   token: BondToken;
   quoteToken: BondToken;
   lpToken: BondToken;

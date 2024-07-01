@@ -19,7 +19,6 @@ import zap from './zap/reducer';
 import liquidityHub from './swap/liquidity-hub/reducer';
 import singleToken from './singleToken/reducer';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { api as dataApi } from './data/slice';
 import userBalance from './balance/reducer';
 
 const PERSISTED_KEYS: string[] = [
@@ -52,12 +51,9 @@ const store = configureStore({
     zap,
     liquidityHub,
     singleToken,
-    [dataApi.reducerPath]: dataApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware({ serializableCheck: false, thunk: true }).concat(
-      dataApi.middleware,
-    ),
+    ...getDefaultMiddleware({ serializableCheck: false, thunk: true }),
     save({ states: PERSISTED_KEYS }),
   ],
   preloadedState: load({ states: PERSISTED_KEYS }),

@@ -2,16 +2,18 @@ import { useEffect } from 'react';
 import BigNumber from 'bignumber.js';
 import { LPType } from '@soulsolidity/soul-zap-trpc-client';
 import { getChainParam } from './utils';
-import { useActiveWeb3React } from 'hooks';
-import { SoulZapApiClient } from 'utils/soulZapTrpcClient';
 import { Bond } from 'types/bond';
+import { SoulZapApiClient } from 'utils/soulZapTrpcClient';
+import { useActiveWeb3React } from 'hooks';
 
-const useFetchBondApiQuote = (
+const useFetchLPApiQuote = (
   inputAddress?: string,
   inputDecimals?: number,
   amount?: string,
-  bond?: Bond,
+  contractAddress?: string,
   slippage?: string,
+  bond?: Bond,
+  //TODO: remove this any
 ): { loading: boolean; zapData: any } => {
   // Hooks
   const { account } = useActiveWeb3React();
@@ -24,8 +26,7 @@ const useFetchBondApiQuote = (
     .times(new BigNumber(10).pow(inputDecimals ?? 18))
     .toString();
 
-  const vault = bond?.lpToken?.address?.[bond.chainId];
-  const bondContractAddress = bond?.contractAddress?.[bond.chainId];
+  const vault = bond?.lpToken?.address?.[bond.chainId] ?? '';
   const chain = getChainParam(bond?.chainId);
   const ichiUnderlyingDex = bond?.lpToken?.ichiUnderlyingDex;
 
@@ -33,19 +34,18 @@ const useFetchBondApiQuote = (
     const fetchZapData = async () => {
       try {
         if (
-          vault &&
           inputDecimals &&
-          bondContractAddress &&
           bigishInputAmount !== 'NaN' &&
           bigishInputAmount !== '0' &&
+          contractAddress &&
           inputAddress &&
           chain &&
           ichiUnderlyingDex
         ) {
           const zapInputData = {
-            chain: chain,
-            recipient: account ?? null,
-            user: account ?? null,
+            chain,
+            recipient: account ?? '',
+            user: account ?? '',
             lpData: {
               lpType: LPType.Ichi,
               fromToken: inputAddress,
@@ -54,34 +54,27 @@ const useFetchBondApiQuote = (
               vault,
               slippage: parseFloat(slippage ?? '0.5'),
             },
-            protocolData: {
-              protocol: 'ApeBond',
-              bond: bondContractAddress,
-              depositer: account ?? null,
-            },
           };
-          console.log(
-            `Fetching soulZap routes for Bond Contract: ${bondContractAddress}`,
-          );
-          console.log('Zap Input Data ', zapInputData);
+          console.log('making soulZap LP call!');
+          console.log('soulZap LP Data', zapInputData);
           //@ts-ignore
           getZapDetailsMutation.mutate(zapInputData);
         }
       } catch (error) {
-        console.error('Error fetching SoulZapApi data:', error);
+        console.error('Error fetching SoulZap data:', error);
       }
     };
     fetchZapData();
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [
     bigishInputAmount,
+    contractAddress,
     account,
     inputAddress,
     inputDecimals,
     slippage,
     ichiUnderlyingDex,
     vault,
-    bondContractAddress,
   ]);
 
   return {
@@ -90,4 +83,4 @@ const useFetchBondApiQuote = (
   };
 };
 
-export default useFetchBondApiQuote;
+export default useFetchLPApiQuote;
