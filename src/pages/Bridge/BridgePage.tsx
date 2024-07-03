@@ -129,7 +129,7 @@ const BridgePage: React.FC = ({}) => {
       </Box>
       <Grid>
         <Grid container justifyContent='center' spacing={2}>
-          <Grid item xs={12} sm={12} md={6} lg={4}>
+          <Grid item xs={12} sm={12} md={6} lg={6}>
             <Box sx={{ marginBottom: '28px' }}>
               <Note
                 title='Important Disclaimer!'

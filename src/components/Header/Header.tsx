@@ -184,13 +184,13 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       {
         id: 'perps-new-page-link',
         link: '/falkor',
-        text: 'Perps : Falkor',
+        text: 'Perps - PoS',
         isNew: true,
       },
       {
         id: 'perps-v1-page-link',
         link: process.env.REACT_APP_PERPS_URL || '#',
-        text: 'Perps V1',
+        text: 'Perps - zkEVM',
         onClick: () => {
           if (process.env.REACT_APP_PERPS_URL) {
             window.open(process.env.REACT_APP_PERPS_URL, '_blank');
@@ -417,9 +417,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Box>
         <Box>
           {isPerpsPage && !mobileWindowSize && <OrderlyPoints />}
-          {account ? (
-            <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <NetworkSelection />
+          <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <NetworkSelection />
+            {!!account && (
               <Box
                 id='web3-status-connected'
                 className='accountDetails'
@@ -432,17 +432,16 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
                 <p>{shortenAddress(account)}</p>
                 <KeyboardArrowDownIcon />
               </Box>
-            </Box>
-          ) : (
-            <Box
-              className='connectButton bg-primary'
-              onClick={() => {
-                connectWallet();
-              }}
-            >
-              {t('connectWallet')}
-            </Box>
-          )}
+            )}
+          </Box>
+          <Box
+            className='connectButton bg-primary'
+            onClick={() => {
+              connectWallet();
+            }}
+          >
+            {t('connectWallet')}
+          </Box>
         </Box>
       </Box>
 

@@ -29,7 +29,7 @@ const BridgeBlockItem: React.FC<BridgeBlockItemProps> = ({
         justifyContent: 'center',
         flexDirection: 'column',
         position: 'relative',
-        height: '104px',
+        height: '150px',
         cursor: 'pointer',
         transition: '.3s ease-in-out',
       }}
