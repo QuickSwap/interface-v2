@@ -129,11 +129,11 @@ const BridgePage: React.FC = ({}) => {
       </Box>
       <Grid>
         <Grid container justifyContent='center' spacing={2}>
-          <Grid item xs={12} sm={12} md={6} lg={4}>
+          <Grid item xs={12} sm={12} md={6} lg={6}>
             <Box sx={{ marginBottom: '28px' }}>
               <Note
                 title='Important Disclaimer!'
-                message='QuickSwap has no affiliation with, is not responsible for and does not make any representation or warranty for any third-party bridge. Users should review Terms of Use or other documentation for third party bridges.'
+                message='QuickSwap has no affiliation with, is not responsible for and does not make any representation or warranty for any bridge. Users should review Terms of Use or other documentation for third party bridges.'
               />
             </Box>
             <Box style={{ marginBottom: '16px' }}>

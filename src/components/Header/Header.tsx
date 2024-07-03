@@ -84,6 +84,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     return 1;
   }, [deviceWidth]);
 
+  const isHome = history.location.pathname === '/';
+  console.log('@@@', isHome);
+
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -125,9 +128,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     items: [],
     isNew: true,
   };
-  if (showPerpsV2 && showPerps) {
-    menuItems.push(perpsTab);
-  }
+  // if (showPerpsV2 && showPerps) {
+  //   menuItems.push(perpsTab);
+  // }
   // const perpsItem = {
   //   link: '/perps',
   //   text: 'Perps',
@@ -143,62 +146,68 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   //     }
   //   },
   // };
-  // if (showPerpsV2) {
-  //   if (showPerps) {
-  //     perpsTab.items?.push({
-  //       link: `/falkor`,
-  //       text: 'Perps',
-  //       id: 'perps-page-link',
-  //     });
-  //   } else {
-  //     menuItems.push({
-  //       link: `/falkor`,
-  //       text: 'Perps',
-  //       id: 'perps-page-link',
-  //       isNew: true,
-  //     });
-  //   }
-  // }
-  menuItems.push({
-    link: '/perps',
-    text: 'Perps',
-    id: 'perps-page-link',
-    isExternal: true,
-    externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-    onClick: async () => {
-      if (chainId !== ChainId.ZKEVM) {
-        const zkEVMconfig = getConfig(ChainId.ZKEVM);
-        const chainParam = {
-          chainId: ChainId.ZKEVM,
-          chainName: `${zkEVMconfig['networkName']} Network`,
-          rpcUrls: [zkEVMconfig['rpc']],
-          nativeCurrency: zkEVMconfig['nativeCurrency'],
-          blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-        };
-      }
-      if (process.env.REACT_APP_PERPS_URL) {
-        window.open(process.env.REACT_APP_PERPS_URL, '_self');
-      }
-    },
-    items: [
-      {
+  if (isHome) {
+    menuItems.push({
+      link: '/perps',
+      text: 'Perps',
+      id: 'perps-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+      onClick: async () => {
+        if (chainId !== ChainId.ZKEVM) {
+          const zkEVMconfig = getConfig(ChainId.ZKEVM);
+          const chainParam = {
+            chainId: ChainId.ZKEVM,
+            chainName: `${zkEVMconfig['networkName']} Network`,
+            rpcUrls: [zkEVMconfig['rpc']],
+            nativeCurrency: zkEVMconfig['nativeCurrency'],
+            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+          };
+        }
+        if (process.env.REACT_APP_PERPS_URL) {
+          window.open(process.env.REACT_APP_PERPS_URL, '_self');
+        }
+      },
+      items: [
+        {
+          id: 'perps-new-page-link',
+          link: '/falkor',
+          text: 'Perps - PoS',
+          isNew: true,
+        },
+        {
+          id: 'perps-v1-page-link',
+          link: process.env.REACT_APP_PERPS_URL || '#',
+          text: 'Perps - zkEVM',
+          onClick: () => {
+            if (process.env.REACT_APP_PERPS_URL) {
+              window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+            }
+          },
+        },
+      ],
+    });
+  } else {
+    if (chainId === ChainId.MATIC) {
+      menuItems.push({
         id: 'perps-new-page-link',
         link: '/falkor',
-        text: 'Perps : Falkor',
+        text: 'Perps - PoS',
         isNew: true,
-      },
-      {
+      });
+    } else if (chainId === ChainId.ZKEVM) {
+      menuItems.push({
         id: 'perps-v1-page-link',
         link: process.env.REACT_APP_PERPS_URL || '#',
-        text: 'Perps V1',
+        text: 'Perps - zkEVM V1',
         onClick: () => {
           if (process.env.REACT_APP_PERPS_URL) {
             window.open(process.env.REACT_APP_PERPS_URL, '_blank');
           }
         },
-      },
-    ],
-  });
+      });
+    }
+  }
 
   if (showPool) {
     menuItems.push({
@@ -417,9 +426,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Box>
         <Box>
           {isPerpsPage && !mobileWindowSize && <OrderlyPoints />}
-          {account ? (
-            <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <NetworkSelection />
+          <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <NetworkSelection />
+            {!!account && (
               <Box
                 id='web3-status-connected'
                 className='accountDetails'
@@ -432,17 +441,16 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
                 <p>{shortenAddress(account)}</p>
                 <KeyboardArrowDownIcon />
               </Box>
-            </Box>
-          ) : (
-            <Box
-              className='connectButton bg-primary'
-              onClick={() => {
-                connectWallet();
-              }}
-            >
-              {t('connectWallet')}
-            </Box>
-          )}
+            )}
+          </Box>
+          <Box
+            className='connectButton bg-primary'
+            onClick={() => {
+              connectWallet();
+            }}
+          >
+            {t('connectWallet')}
+          </Box>
         </Box>
       </Box>
 
