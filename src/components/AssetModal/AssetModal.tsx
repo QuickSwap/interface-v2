@@ -9,6 +9,7 @@ import {
   useChains,
   useCollateral,
   useDeposit,
+  usePositionStream,
   useWithdraw,
 } from '@orderly.network/hooks';
 import { Box, Button } from '@material-ui/core';
@@ -57,6 +58,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const currency = useCurrency(token?.address);
   const { account } = useAccount();
   const [depositTx, setDepositTx] = useState<any>(undefined);
+
+  const [data] = usePositionStream();
+  const unsettledPnl = Number(data?.aggregated?.unsettledPnL ?? 0);
 
   return (
     <CustomModal
@@ -283,7 +287,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
               if (!withdrawAmount) return;
               try {
                 setLoading(true);
-                await account.settle();
+                if (unsettledPnl !== 0) {
+                  await account.settle();
+                }
                 await withdraw({
                   chainId: Number(chainId),
                   amount: withdrawAmount,
@@ -291,7 +297,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   allowCrossChainWithdraw: false,
                 });
                 setLoading(false);
-              } catch {
+              } catch (e) {
+                console.log('Withdraw Error ', e);
                 setLoading(false);
               }
             }}
