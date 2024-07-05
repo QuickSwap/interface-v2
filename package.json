@@ -93,7 +93,7 @@
     "@arcxmoney/analytics": "^2.0.2",
     "@cryption/df-sdk-core": "0.0.26",
     "@hypelab/sdk-react": "^1.0.1",
-    "@ichidao/ichi-vaults-sdk": "^0.0.56",
+    "@ichidao/ichi-vaults-sdk": "^0.0.59",
     "@imtbl/sdk": "^1.36.3",
     "@intract/attribution": "^2.0.0",
     "@masa-finance/analytics-react": "^0.12.4",
