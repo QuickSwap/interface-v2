@@ -5,6 +5,7 @@ import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatNumber, getPerpsSymbol } from 'utils';
 import { SearchInput } from 'components';
 import { LeverageManage } from './LeverageManage';
+import { formatDollarAmount } from 'utils/numbers';
 
 interface Props {
   tokenSymbol: string;
@@ -233,7 +234,9 @@ export const GraphHeader: React.FC<Props> = ({
             </Box>
             <Box>
               <p className='span text-secondary'>Open Interest</p>
-              <p className='span'>{token?.open_interest}</p>
+              <p className='span'>
+                {formatDollarAmount(token?.mark_price * token?.open_interest)}
+              </p>
             </Box>
           </>
         )}
