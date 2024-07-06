@@ -219,7 +219,9 @@ export const GraphHeader: React.FC<Props> = ({
             <Box>
               <p className='span text-secondary'>Funding Rate Long</p>
               <p className='span'>
-                <span className='text-error'>-{token?.est_funding_rate}%</span>{' '}
+                <span className='text-error'>
+                  -{parseFloat(token?.est_funding_rate) * 100}%
+                </span>{' '}
                 in {timeDifference}
               </p>
             </Box>
@@ -227,7 +229,7 @@ export const GraphHeader: React.FC<Props> = ({
               <p className='span text-secondary'>Funding Rate Short</p>
               <p className='span'>
                 <span className='text-success'>
-                  +{token?.est_funding_rate}%
+                  +{parseFloat(token?.est_funding_rate) * 100}%
                 </span>{' '}
                 in {timeDifference}
               </p>
