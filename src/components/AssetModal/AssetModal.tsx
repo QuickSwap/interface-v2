@@ -1,5 +1,4 @@
 import React from 'react';
-import { ChainId } from '@uniswap/sdk';
 import { CurrencyLogo, CustomModal } from 'components';
 import { useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
@@ -71,8 +70,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
     withdrawalFee = data[0].chain_details[0].withdrawal_fee;
   }
 
-  const [data] = usePositionStream();
-  const unsettledPnl = Number(data?.aggregated?.unsettledPnL ?? 0);
+  const [aggregatedData] = usePositionStream();
+  const unsettledPnl = Number(aggregatedData?.aggregated?.unsettledPnL ?? 0);
 
   return (
     <CustomModal
