@@ -4,12 +4,13 @@ import { CurrencyLogo, CustomModal } from 'components';
 import { useMemo, useState } from 'react';
 import { useActiveWeb3React } from 'hooks';
 import 'components/styles/AssetModal.scss';
-import NotifyModal from '../NotifyModal';
+import { NotifyModal } from './NotifyModal';
 import {
   useAccount,
   useChains,
   useCollateral,
   useDeposit,
+  usePositionStream,
   useWithdraw,
 } from '@orderly.network/hooks';
 import { Box, Button } from '@material-ui/core';
@@ -69,6 +70,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
   if (data) {
     withdrawalFee = data[0].chain_details[0].withdrawal_fee;
   }
+
+  const [data] = usePositionStream();
+  const unsettledPnl = Number(data?.aggregated?.unsettledPnL ?? 0);
 
   return (
     <CustomModal
@@ -295,7 +299,9 @@ const AssetModal: React.FC<AssetModalProps> = ({
               if (!withdrawAmount) return;
               try {
                 setLoading(true);
-                await account.settle();
+                if (unsettledPnl !== 0) {
+                  await account.settle();
+                }
                 await withdraw({
                   chainId: Number(chainId),
                   amount: withdrawAmount,
@@ -303,7 +309,8 @@ const AssetModal: React.FC<AssetModalProps> = ({
                   allowCrossChainWithdraw: false,
                 });
                 setLoading(false);
-              } catch {
+              } catch (e) {
+                console.log('Withdraw Error ', e);
                 setLoading(false);
               }
             }}

@@ -3,12 +3,10 @@ import JSBI from 'jsbi';
 import { PoolState, usePool } from './usePools';
 import { useMemo } from 'react';
 import computeSurroundingTicks from 'utils/v3/computeSurroundingTicks';
-import { useAllV3TicksQuery } from 'state/data/enhanced';
-import { AllV3TicksQuery } from 'state/data/generated';
-import { skipToken } from '@reduxjs/toolkit/query/react';
 import { FeeAmount, TICK_SPACINGS } from 'v3lib/utils/v3constants';
 import { Pool } from 'v3lib/entities/pool';
 import { tickToPrice } from 'v3lib/utils/priceTickConversions';
+import { useQuery } from '@tanstack/react-query';
 
 const PRICE_FIXED_DIGITS = 8;
 
@@ -42,27 +40,30 @@ export function useAllV3Ticks(
       : undefined;
 
   //TODO(judo): determine if pagination is necessary for this query
-  const {
-    isLoading,
-    isError,
-    error,
-    isUninitialized,
-    data,
-  } = useAllV3TicksQuery(
-    poolAddress
-      ? { poolAddress: poolAddress?.toLowerCase(), skip: 0 }
-      : skipToken,
-    {
-      pollingInterval: 120_000,
+  const { isLoading, isError, error, data } = useQuery({
+    queryKey: ['v3-pool-ticks', poolAddress],
+    queryFn: async () => {
+      if (!poolAddress || !currencyA?.chainId) return null;
+      const res = await fetch(
+        `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/pool-ticks/?address=${poolAddress}&chainId=${currencyA?.chainId}`,
+      );
+      if (!res.ok) {
+        return null;
+      }
+
+      const data = await res.json();
+
+      return data?.data?.data ?? null;
     },
-  );
+    enabled: !!poolAddress && !!currencyA?.chainId,
+  });
 
   return {
+    isUninitialized: !poolAddress,
     isLoading,
-    isUninitialized,
     isError,
     error,
-    ticks: data?.ticks as AllV3TicksQuery['ticks'],
+    ticks: data ?? [],
   };
 }
 
@@ -119,14 +120,14 @@ export function usePoolActiveLiquidity(
     // find where the active tick would be to partition the array
     // if the active tick is initialized, the pivot will be an element
     // if not, take the previous tick as pivot
-    const pivot = ticks.findIndex(({ tickIdx }) => tickIdx > activeTick) - 1;
+    const pivot = ticks.findIndex((tick: any) => tick.tickIdx > activeTick) - 1;
 
     if (pivot < 0) {
       // consider setting a local error
       console.error('TickData pivot not found');
       return {
-        isLoading,
         isUninitialized,
+        isLoading,
         isError,
         error,
         activeTick,
