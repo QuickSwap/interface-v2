@@ -1,3 +1,4 @@
+import ethereum from './ethereum.json';
 import polygon from './polygon.json';
 import dogechain from './dogechain.json';
 import zktestnet from './zktestnet.json';
@@ -14,6 +15,7 @@ import orderlyFeeTiers from './orderlyFeeTiers.json';
 import { ChainId } from '@uniswap/sdk';
 
 const configs: any = {
+  [ChainId.ETHEREUM]: ethereum,
   [ChainId.MATIC]: polygon,
   [ChainId.DOGECHAIN]: dogechain,
   [ChainId.ZKTESTNET]: zktestnet,
