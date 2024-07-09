@@ -85,7 +85,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   }, [deviceWidth]);
 
   const isHome = history.location.pathname === '/';
-  console.log('@@@', isHome);
 
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
@@ -192,14 +191,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       menuItems.push({
         id: 'perps-new-page-link',
         link: '/falkor',
-        text: 'Perps - PoS',
+        text: 'Perps',
         isNew: true,
       });
     } else if (chainId === ChainId.ZKEVM) {
       menuItems.push({
         id: 'perps-v1-page-link',
         link: process.env.REACT_APP_PERPS_URL || '#',
-        text: 'Perps - zkEVM V1',
+        text: 'Perps',
         onClick: () => {
           if (process.env.REACT_APP_PERPS_URL) {
             window.open(process.env.REACT_APP_PERPS_URL, '_blank');
@@ -428,7 +427,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           {isPerpsPage && !mobileWindowSize && <OrderlyPoints />}
           <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <NetworkSelection />
-            {!!account && (
+            {!!account ? (
               <Box
                 id='web3-status-connected'
                 className='accountDetails'
@@ -441,15 +440,16 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
                 <p>{shortenAddress(account)}</p>
                 <KeyboardArrowDownIcon />
               </Box>
+            ) : (
+              <Box
+                className='connectButton bg-primary'
+                onClick={() => {
+                  connectWallet();
+                }}
+              >
+                {t('connectWallet')}
+              </Box>
             )}
-          </Box>
-          <Box
-            className='connectButton bg-primary'
-            onClick={() => {
-              connectWallet();
-            }}
-          >
-            {t('connectWallet')}
           </Box>
         </Box>
       </Box>

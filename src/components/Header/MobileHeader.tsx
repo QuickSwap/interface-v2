@@ -297,20 +297,35 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               <CloseIcon style={{ color: '#ca0000' }} />
             </ButtonBase>
           ) : (
-            <ButtonBase
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'end',
-                gap: '18px',
-              }}
-              onClick={() => {
-                setIsActive(true);
-              }}
-            >
-              Menu
-              <ThreeDashIcon />
-            </ButtonBase>
+            <>
+              {/* <ButtonBase
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'end',
+                  gap: '18px',
+                }}
+                onClick={() => {
+                  setIsActive(true);
+                }}
+              >
+                Home
+              </ButtonBase> */}
+              <ButtonBase
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'end',
+                  gap: '18px',
+                }}
+                onClick={() => {
+                  setIsActive(true);
+                }}
+              >
+                Menu
+                <ThreeDashIcon />
+              </ButtonBase>
+            </>
           )}
         </Box>
       </Box>
