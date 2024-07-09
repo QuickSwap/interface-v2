@@ -27,7 +27,9 @@ import { getTokenLogoURL } from 'utils/getTokenLogoURL';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 const getLogo = (value: string) => {
-  return getTokenLogoURL(value).find((it) => it !== 'error') as any;
+  try {
+    return getTokenLogoURL(value).find((it) => it !== 'error') as any;
+  } catch (error) {}
 };
 
 const usePriceUSD = (address?: string) => {

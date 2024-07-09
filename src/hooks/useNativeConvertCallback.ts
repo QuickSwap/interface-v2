@@ -8,6 +8,8 @@ import { useActiveWeb3React } from 'hooks';
 import { useNativeConverterContract } from './useContract';
 import { USDC, USDCE } from 'constants/v3/addresses';
 import { calculateGasMargin } from 'utils';
+import { useAppDispatch } from 'state';
+import { updateUserBalance } from 'state/balance/actions';
 
 export enum ConvertType {
   NOT_APPLICABLE,
@@ -41,6 +43,7 @@ export default function useNativeConvertCallback(
   ]);
   const addTransaction = useTransactionAdder();
   const [converting, setConverting] = useState(false);
+  const dispatch = useAppDispatch();
 
   return useMemo(() => {
     if (
@@ -97,6 +100,7 @@ export default function useNativeConvertCallback(
                     )} old USDC to new USDC`,
                   });
                   await txReceipt.wait();
+                  dispatch(updateUserBalance());
                   setConverting(false);
                 } catch (error) {
                   setConverting(false);
@@ -121,5 +125,6 @@ export default function useNativeConvertCallback(
     balance,
     converting,
     addTransaction,
+    dispatch,
   ]);
 }

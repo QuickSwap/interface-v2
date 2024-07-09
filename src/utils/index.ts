@@ -3,7 +3,11 @@ import { Contract, ContractReceipt } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
+import {
+  JsonRpcSigner,
+  Web3Provider,
+  JsonRpcProvider,
+} from '@ethersproject/providers';
 import {
   CurrencyAmount,
   ChainId,
@@ -346,23 +350,23 @@ export function isZero(hexNumberString: string): boolean {
 }
 
 export function getSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account: string,
 ): JsonRpcSigner {
   return library.getSigner(account).connectUnchecked();
 }
 
 export function getProviderOrSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
-): Web3Provider | JsonRpcSigner {
+): Web3Provider | JsonRpcProvider | JsonRpcSigner {
   return account ? getSigner(library, account) : library;
 }
 
 export function getContract(
   address: string,
   ABI: any,
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
 ): Contract {
   if (!isAddress(address) || address === AddressZero) {
@@ -378,7 +382,7 @@ export function getContract(
 
 export function calculateGasMargin(value: BigNumber): BigNumber {
   return value
-    .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
+    .mul(BigNumber.from(10000).add(BigNumber.from(5000)))
     .div(BigNumber.from(10000));
 }
 
@@ -395,7 +399,7 @@ export function calculateGasMarginV3(
     return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
   }
 
-  return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
+  return value.mul(BigNumber.from(10000 + 5000)).div(BigNumber.from(10000));
 }
 
 export function formatDateFromTimeStamp(
@@ -1392,3 +1396,12 @@ export const getCurrencyInfo = ({
 export function getPerpsSymbol(symbol: string) {
   return symbol.replace('PERP_', '').replace('_', '/');
 }
+
+export const getDexScreenerChainName = (
+  chainId: ChainId,
+): string | undefined => {
+  const chainsName: { [chainId in ChainId]?: string } = {
+    [ChainId.MATIC]: 'polygon',
+  };
+  return chainsName[chainId];
+};

@@ -84,6 +84,8 @@ import SignUp from './SignUp';
 import inforIcon from 'assets/images/info-icon.webp';
 import settingIcon from 'assets/images/setting-icon.webp';
 import { useWalletInfo } from '@web3modal/ethers5/react';
+import { useAppDispatch } from 'state';
+import { updateUserBalance } from 'state/balance/actions';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -153,6 +155,7 @@ const SwapBestTrade: React.FC<{
     typedValue,
   );
 
+  const dispatch = useAppDispatch();
   const [swapType, setSwapType] = useState<SwapSide>(SwapSide.SELL);
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
@@ -864,6 +867,7 @@ const SwapBestTrade: React.FC<{
           finalizedTransaction(receipt, {
             summary,
           });
+          dispatch(updateUserBalance());
           setSwapState({
             attemptingTxn: false,
             txPending: false,
@@ -927,6 +931,7 @@ const SwapBestTrade: React.FC<{
     tradeToConfirm,
     showConfirm,
     finalizedTransaction,
+    dispatch,
     recipient,
     recipientAddress,
     account,
@@ -934,12 +939,12 @@ const SwapBestTrade: React.FC<{
     outputCurrency?.symbol,
     optimalRate,
     fromTokenWrapped,
+    walletInfo,
     chainId,
     fireEvent,
     config,
     formattedAmounts,
     fromTokenUSDPrice,
-    walletInfo,
   ]);
 
   const paraRate = optimalRate

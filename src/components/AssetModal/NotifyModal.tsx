@@ -14,7 +14,12 @@ interface NotifyModalProps {
   onClose: () => void;
   tx: any;
 }
-const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, tx }) => {
+
+export const NotifyModal: React.FC<NotifyModalProps> = ({
+  open,
+  onClose,
+  tx,
+}) => {
   const [duration, setDuration] = useState(0);
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
@@ -117,4 +122,3 @@ const NotifyModal: React.FC<NotifyModalProps> = ({ open, onClose, tx }) => {
     </CustomModal>
   );
 };
-export default NotifyModal;

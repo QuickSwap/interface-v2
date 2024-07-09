@@ -6,6 +6,8 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
 import { formatTokenAmount } from 'utils';
+import { useAppDispatch } from 'state';
+import { updateUserBalance } from 'state/balance/actions';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -44,7 +46,7 @@ export default function useWrapCallback(
   const addTransaction = useTransactionAdder();
   const [wrapping, setWrapping] = useState(false);
   const [unwrapping, setUnWrapping] = useState(false);
-
+  const dispatch = useAppDispatch();
   return useMemo(() => {
     if (!wethContract || !chainId || !inputCurrency || !outputCurrency)
       return NOT_APPLICABLE;
@@ -72,6 +74,7 @@ export default function useWrapCallback(
                     } to ${WETH[chainId].symbol}`,
                   });
                   await txReceipt.wait();
+                  dispatch(updateUserBalance());
                   setWrapping(false);
                 } catch (error) {
                   setWrapping(false);
@@ -103,6 +106,7 @@ export default function useWrapCallback(
                     } to ${ETHER[chainId].symbol}`,
                   });
                   await txReceipt.wait();
+                  dispatch(updateUserBalance());
                   setUnWrapping(false);
                 } catch (error) {
                   setUnWrapping(false);
@@ -127,6 +131,7 @@ export default function useWrapCallback(
     nativeCurrency,
     wrapping,
     addTransaction,
+    dispatch,
     unwrapping,
   ]);
 }
