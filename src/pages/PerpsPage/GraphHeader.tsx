@@ -5,7 +5,7 @@ import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatNumber, getPerpsSymbol } from 'utils';
 import { SearchInput } from 'components';
 import { LeverageManage } from './LeverageManage';
-import { formatDollarAmount } from 'utils/numbers';
+import { formatDollarAmount, formatFloat } from 'utils/numbers';
 
 interface Props {
   tokenSymbol: string;
@@ -221,12 +221,12 @@ export const GraphHeader: React.FC<Props> = ({
               <p className='span'>
                 {token?.est_funding_rate * 100 > 0 && (
                   <span className='text-success'>
-                    {token?.est_funding_rate * 100}%
+                    {formatFloat(token?.est_funding_rate * 100, 4)}%
                   </span>
                 )}
                 {token?.est_funding_rate * 100 < 0 && (
                   <span className='text-error'>
-                    {token?.est_funding_rate * 100}%
+                    {formatFloat(token?.est_funding_rate * 100, 4)}%
                   </span>
                 )}{' '}
                 in {timeDifference}
