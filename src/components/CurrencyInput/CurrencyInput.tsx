@@ -1,5 +1,5 @@
-import React from 'react';
-import { Currency, ETHER, currencyEquals } from '@uniswap/sdk';
+import React, { useEffect, useState } from 'react';
+import { Currency, CurrencyAmount, ETHER, currencyEquals } from '@uniswap/sdk';
 import { NativeCurrency } from '@uniswap/sdk-core';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { TokenInfo } from '@uniswap/token-lists';
@@ -14,6 +14,10 @@ import { useTranslation } from 'react-i18next';
 import CurrencySelect from 'components/CurrencySelect';
 import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { useAppSelector } from 'state';
+import { getCurrencyBalanceImmediately } from 'state/wallet/hooks';
+import { useMulticallContract } from 'hooks/useContract';
+import { useBlockNumber } from 'state/application/hooks';
 
 interface CurrencyInputProps {
   title?: string;
@@ -54,6 +58,41 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
     account ?? undefined,
     currency,
   );
+  const balanceUpdateSelector = useAppSelector((state) => state.userBalance);
+  const [
+    updatedSelectedCurrencyBalance,
+    setUpdatedSelectedCurrencyBalance,
+  ] = useState<CurrencyAmount | undefined>(undefined);
+
+  const multicallContract = useMulticallContract();
+  const latestBlockNumber = useBlockNumber();
+
+  useEffect(() => {
+    if (updatedSelectedCurrencyBalance == undefined) {
+      setUpdatedSelectedCurrencyBalance(selectedCurrencyBalance);
+    } else {
+      if (!multicallContract || !latestBlockNumber || !account) return;
+      getCurrencyBalanceImmediately(
+        multicallContract,
+        chainId,
+        latestBlockNumber,
+        account,
+        currency,
+      ).then((value) => {
+        setUpdatedSelectedCurrencyBalance(value);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balanceUpdateSelector.flag]);
+
+  const selectedCurrencyBalanceDependency = JSON.stringify(
+    selectedCurrencyBalance,
+  );
+  useEffect(() => {
+    setUpdatedSelectedCurrencyBalance(selectedCurrencyBalance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCurrencyBalanceDependency]);
+
   const usdPriceV2 = Number(useUSDCPrice(currency)?.toSignificant() ?? 0);
   const currencyV3 =
     chainId && currency
@@ -112,7 +151,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       </Box>
       <Box className='flex justify-between'>
         <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-          {t('balance')}: {formatTokenAmount(selectedCurrencyBalance)}
+          {t('balance')}: {formatTokenAmount(updatedSelectedCurrencyBalance)}
         </small>
         <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
           ${(usdPrice * Number(amount)).toLocaleString('us')}

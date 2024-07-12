@@ -6,14 +6,6 @@ import reducer, { MintState } from './reducer';
 describe('mint reducer', () => {
   let store: Store<MintState>;
 
-  beforeEach(() => {
-    store = createStore(reducer, {
-      independentField: Field.CURRENCY_A,
-      typedValue: '',
-      otherTypedValue: '',
-    });
-  });
-
   describe('typeInput', () => {
     it('sets typed value', () => {
       store.dispatch(

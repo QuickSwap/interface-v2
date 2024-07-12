@@ -8,3 +8,4 @@ export { default as AnalyticsTokenDetails } from './AnalyticsTokenDetails';
 export { default as AnalyticsPairDetails } from './AnalyticsPairDetails';
 export { default as ConvertQUICKPage } from './ConvertQUICKPage';
 export { default as NewsletterPage } from './NewsletterPage';
+export { default as PerpsPage } from './PerpsPage';

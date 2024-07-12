@@ -4,10 +4,7 @@ import { Button, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { useIsSupportedNetwork } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import {
-  useWalletModalToggle,
-  useOpenNetworkSelection,
-} from 'state/application/hooks';
+import { useOpenNetworkSelection } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { getConfig } from 'config/index';
@@ -17,20 +14,22 @@ import { useNewLairInfo } from 'state/stake/hooks';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 const HeroSection: React.FC = () => {
   const history = useHistory();
   const isSupportedNetwork = useIsSupportedNetwork();
   const { chainId, account } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
   const { setOpenNetworkSelection } = useOpenNetworkSelection();
   const { t } = useTranslation();
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
   const v3 = config['v3'];
+  const lairAvailable = config['lair']['newLair'];
 
-  const lairInfo = useNewLairInfo();
+  const lairInfo = useNewLairInfo(!lairAvailable);
   const quickToken = DLQUICK[chainIdToUse];
   const {
     loading: loadingQuickPrice,
@@ -56,10 +55,9 @@ const HeroSection: React.FC = () => {
   }, [lairInfo, quickPrice]);
 
   const loading =
-    (v2 ? loadingV2GlobalData : false) ||
-    (v3 ? loadingV3GlobalData : false) ||
-    loadingQuickPrice ||
-    lairInfo?.loading;
+    ((v2 ? loadingV2GlobalData : false) ||
+      (v3 ? loadingV3GlobalData : false)) &&
+    (loadingQuickPrice || lairInfo?.loading);
 
   return (
     <Box className='heroSection'>
@@ -86,29 +84,7 @@ const HeroSection: React.FC = () => {
           </h1>
         </Box>
       )}
-      <h5>
-        {chainIdToUse === ChainId.MATIC
-          ? t('topAssetExchangePolygon')
-          : chainIdToUse === ChainId.ZKEVM
-          ? t('topAssetExchangePolygonZkEVM')
-          : chainIdToUse === ChainId.MANTA
-          ? t('topAssetExchangeManta')
-          : chainIdToUse === ChainId.IMX
-          ? t('topAssetExchangeImmutable')
-          : chainIdToUse === ChainId.DOGECHAIN
-          ? t('topAssetExchangeDogechain')
-          : chainIdToUse === ChainId.ASTARZKEVM
-          ? t('topAssetExchangeAstar')
-          : chainIdToUse === ChainId.KAVA
-          ? t('topAssetExchangeKava')
-          : chainIdToUse === ChainId.ZKATANA
-          ? t('topAssetExchangeZKatana')
-          : chainIdToUse === ChainId.X1
-          ? t('topAssetExchangeX1Testnet')
-          : chainIdToUse === ChainId.TIMX
-          ? t('topAssetExchangeImmutableTestnet')
-          : t('topAssetExchangePolygon')}
-      </h5>
+      <h5>{t('topAssetExchange', { network: config['networkName'] })}</h5>
       <Box mt={2} width={200} height={48}>
         <Button
           fullWidth
@@ -122,7 +98,7 @@ const HeroSection: React.FC = () => {
               ? setOpenNetworkSelection(true)
               : account
               ? history.push('/swap')
-              : toggleWalletModal();
+              : open();
           }}
         >
           {!isSupportedNetwork

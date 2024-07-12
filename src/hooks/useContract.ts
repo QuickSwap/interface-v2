@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
-import { abi as STAKING_REWARDS_ABI } from '@uniswap/liquidity-staker/build/StakingRewards.json';
+import abi from '@uniswap/liquidity-staker/build/StakingRewards.json';
 import { ChainId, WETH } from '@uniswap/sdk';
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
+import iUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { useMemo } from 'react';
 import {
   ARGENT_WALLET_DETECTOR_ABI,
@@ -24,8 +24,8 @@ import {
 } from 'constants/v1';
 import { getContract } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { abi as LairABI } from 'abis/DragonLair.json';
-import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
+import dragonsLair from 'abis/DragonLair.json';
+import router02 from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import QUICKConversionABI from 'constants/abis/quick-conversion.json';
 import {
   GAMMA_MASTERCHEF_ADDRESSES,
@@ -53,7 +53,6 @@ import NewQuoterABI from 'constants/abis/v3/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
-import GammaUniProxy from 'constants/abis/gamma-uniproxy.json';
 import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
@@ -75,13 +74,21 @@ import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
 import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
+import { RPC_PROVIDERS } from 'constants/providers';
 
+const LairABI = dragonsLair.abi;
+const IUniswapV2Router02ABI = router02.abi;
+const IUniswapV2PairABI = iUniswapV2Pair.abi;
+
+const STAKING_REWARDS_ABI = abi.abi;
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | { [chainId: number]: string } | undefined,
   ABI: any,
   withSignerIfPossible = true,
 ): T | null {
-  const { library, account, chainId } = useActiveWeb3React();
+  const { library: web3ModalLibrary, account, chainId } = useActiveWeb3React();
+  const libraryFromChain = RPC_PROVIDERS[chainId];
+  const library = web3ModalLibrary ?? libraryFromChain;
 
   return useMemo(() => {
     if (!addressOrAddressMap || !ABI || !library || !chainId) return null;

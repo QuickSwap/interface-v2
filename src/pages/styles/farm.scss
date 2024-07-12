@@ -144,4 +144,11 @@ a.button:hover {
     height: 36px;
     border-radius: 10px;
   }
+  &.mobile {
+    max-width: unset;
+  }
+}
+
+.farmAprIcon {
+  height: 16px;
 }

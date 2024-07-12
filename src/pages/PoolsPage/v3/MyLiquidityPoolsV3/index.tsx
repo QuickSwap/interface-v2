@@ -84,10 +84,10 @@ export default function MyLiquidityPoolsV3() {
   const { loading: ichiLoading, count: ichiCount } = useICHIPositionsCount();
 
   const loading =
-    gammaPoolsLoading ||
-    uniPilotPositionsLoading ||
-    steerPoolsLoading ||
-    ichiLoading ||
+    gammaPoolsLoading &&
+    uniPilotPositionsLoading &&
+    steerPoolsLoading &&
+    ichiLoading &&
     defiedgeStrategiesLoading;
 
   const [poolFilter, setPoolFilter] = useState(

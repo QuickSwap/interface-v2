@@ -47,6 +47,7 @@ import { BigNumber } from 'ethers';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { FeeAmount } from 'v3lib/utils';
 import { getConfig } from 'config/index';
+import dayjs from 'dayjs';
 
 export const useEternalFarmsFiltered = (
   farms: any[],
@@ -314,9 +315,9 @@ export const useGetMerklFarms = () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
     const amms = merklAMMs[chainId] ?? ['quickswapuni'];
-    const ammStr = amms.map((amm) => `&AMMs[]=${amm}`).join('');
+    const ammStr = amms.map((amm) => `amms[]=${amm}&`).join('');
     const res = await fetch(
-      `${merklAPIURL}?chainIds[]=${chainId}${ammStr}${
+      `${merklAPIURL}?${ammStr}chainIds[]=${chainId}${
         account ? `&user=${account}` : ''
       }`,
     );
@@ -326,19 +327,32 @@ export const useGetMerklFarms = () => {
         ? data[chainId.toString()]?.pools
         : undefined;
     if (!farmData) return [];
-    return Object.values(farmData).filter(
-      (item: any) =>
-        !blackListMerklFarms.find(
-          (address) =>
-            item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
-        ) && amms.includes(item.ammName.toLowerCase()),
-    ) as any[];
+    const currentTime = dayjs().unix();
+
+    return Object.values(farmData)
+      .filter(
+        (item: any) =>
+          (item?.distributionData ?? []).filter(
+            (item: any) =>
+              item.isLive &&
+              !item.isMock &&
+              (item?.endTimestamp ?? 0) >= currentTime &&
+              (item?.startTimestamp ?? 0) <= currentTime,
+          ).length > 0,
+      )
+      .filter(
+        (item: any) =>
+          !(blackListMerklFarms[chainId] ?? []).find(
+            (address) =>
+              item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
+          ) && amms.includes(item.ammName.toLowerCase()),
+      ) as any[];
   };
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['fetchMerklFarms', chainId, account],
     queryFn: fetchMerklFarms,
-    refetchInterval: 300000,
+    refetchInterval: 60000,
   });
   useEffect(() => {
     setTimeout(() => {
@@ -451,7 +465,7 @@ export const useMerklFarms = () => {
                 0,
               ),
             almAPR: item?.meanAPR ?? 0,
-            label: 'QuickSwap',
+            label: item?.ammName,
           },
         ])
         .map((alm: any) => {
@@ -477,7 +491,7 @@ export const useMerklFarms = () => {
               minTick,
               maxTick,
             );
-            title = (steerVault?.strategy?.strategyConfigData?.name ?? '')
+            title = (steerVault?.strategyName ?? '')
               .toLowerCase()
               .includes('stable')
               ? 'Stable'
@@ -502,7 +516,10 @@ export const useMerklFarms = () => {
                   e.strategy.address.toLowerCase() ===
                   alm.almAddress.toLowerCase(),
               )?.strategy?.fees_apr ?? 0;
-          } else if (alm.label.includes('QuickSwap') && eternalFarmPoolAprs) {
+          } else if (
+            alm.label.toLowerCase().includes('quickswap') &&
+            eternalFarmPoolAprs
+          ) {
             poolAPR = eternalFarmPoolAprs[alm.almAddress.toLowerCase()] ?? 0;
           }
           return {

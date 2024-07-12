@@ -7,72 +7,57 @@ import { useActiveWeb3React } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { useIsSupportedNetwork } from 'utils';
-import {
-  networkConnection,
-  walletConnectConnection,
-  zengoConnectConnection,
-} from 'connectors';
 import KavaImage from 'assets/images/KAVA.png';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import ActiveDotImage from 'assets/images/chainActiveDot.png';
+import { useSwitchNetwork } from '@web3modal/ethers5/react';
 
 const NetworkSelectionDropdown: React.FC = () => {
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
-  const { chainId, connector, account } = useActiveWeb3React();
+  const { chainId, account, currentChainId } = useActiveWeb3React();
+  const { switchNetwork } = useSwitchNetwork();
   const networkTypes = [
-    { id: 'mainnet', text: t('mainnet') },
-    { id: 'testnet', text: t('testnet') },
+    { id: 'mainnet', text: t('mainnets') },
+    { id: 'testnet', text: t('testnets') },
   ];
   const [networkType, setNetworkType] = useState('mainnet');
 
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain) => {
     const config = getConfig(chain);
-    return config && config.isMainnet === (networkType === 'mainnet');
+    return (
+      config &&
+      config.visible &&
+      config.isMainnet === (networkType === 'mainnet')
+    );
   });
   const isSupportedNetwork = useIsSupportedNetwork();
 
   useEffect(() => {
     const localChainId = localStorage.getItem('localChainId');
 
-    if (
-      localChainId &&
-      Number(localChainId) !== chainId &&
-      connector === networkConnection.connector
-    ) {
-      connector.activate(Number(localChainId));
+    if (localChainId && Number(localChainId) !== chainId) {
+      switchNetwork(Number(localChainId));
     } else {
-      connector.activate(chainId);
+      switchNetwork(chainId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const switchNetwork = useCallback(
+  const switchNetworkFunction = useCallback(
     async (chainId: ChainId) => {
-      const config = getConfig(chainId);
-      const chainParam = {
-        chainId,
-        chainName: `${config['networkName']} Network`,
-        rpcUrls: [config['rpc']],
-        nativeCurrency: config['nativeCurrency'],
-        blockExplorerUrls: [config['blockExplorer']],
-      };
-      if (
-        connector === walletConnectConnection.connector ||
-        connector === zengoConnectConnection.connector ||
-        connector === networkConnection.connector
-      ) {
-        await connector.activate(chainId);
-      } else {
-        await connector.activate(chainParam);
-      }
+      await switchNetwork(chainId);
+
       if (arcxSdk && account) {
         await arcxSdk.chain({ chainId, account });
       }
       localStorage.setItem('localChainId', chainId.toString());
+      if (!currentChainId) {
+        window.location.reload();
+      }
     },
-    [account, arcxSdk, connector],
+    [account, arcxSdk, currentChainId, switchNetwork],
   );
 
   return (
@@ -93,7 +78,7 @@ const NetworkSelectionDropdown: React.FC = () => {
             className='networkItemWrapper'
             key={chain}
             onClick={() => {
-              switchNetwork(chain);
+              switchNetworkFunction(chain);
             }}
           >
             <Box className='flex items-center'>
@@ -119,7 +104,7 @@ const NetworkSelectionDropdown: React.FC = () => {
         <Box
           className='networkItemWrapper'
           onClick={() => {
-            window.open('https://dex.kinetix.finance', '_blank');
+            window.open('https://kinetix.finance/home', '_blank');
           }}
         >
           <Box className='flex items-center'>

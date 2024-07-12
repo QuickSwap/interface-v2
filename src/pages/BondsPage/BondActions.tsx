@@ -1,5 +1,5 @@
 import React from 'react';
-import { PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import LPPath from './Paths/LPPath';
 import ApeZapPath from './Paths/ApeZapPath';
 import SoulZapPath from './Paths/SoulZapPath';
@@ -7,9 +7,10 @@ import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useIsSupportedNetwork } from 'utils';
+import SoulZapAPIPath from './Paths/SoulZapAPIPath';
 
 export interface BondActionsProps {
-  bond: any;
+  bond: Bond;
   purchasePath: PurchasePath;
   onBillId: ((billId: string) => void) | undefined;
   inputTokenAddress: string;
@@ -56,6 +57,16 @@ const BondActions: React.FC<BondActionsProps> = ({
       case purchasePath === PurchasePath.SoulZap:
         return (
           <SoulZapPath
+            purchasePath={purchasePath}
+            bond={bond}
+            inputTokenAddress={inputTokenAddress}
+            onBillId={onBillId}
+            onTransactionSubmitted={onTransactionSubmitted}
+          />
+        );
+      case purchasePath === PurchasePath.SoulZapApi:
+        return (
+          <SoulZapAPIPath
             purchasePath={purchasePath}
             bond={bond}
             inputTokenAddress={inputTokenAddress}

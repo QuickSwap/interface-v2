@@ -152,34 +152,25 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
 
   const inputCurrency = getInputCurrency();
 
-  const { address: inputTokenAddress = '', chainId: inputTokenChainId } =
-    inputCurrency ?? {};
+  const { address: inputTokenAddress = '' } = inputCurrency ?? {};
 
-  const isInputCurrencyPrincipal = !!(
-    principalToken &&
-    principalToken.isToken &&
-    inputTokenAddress.toLowerCase() === principalToken.address.toLowerCase()
-  );
-
-  const zapContractAddress = chainId ? ZAP_ADDRESS[chainId] : undefined;
   const getIsZapCurrDropdownEnabled = (): boolean => {
     return (
-      bond?.billType !== 'reserve' &&
-      lpTokenZapVersion !== ZapVersion.External &&
-      !!zapContractAddress
+      bond?.billType !== 'reserve' && lpTokenZapVersion !== ZapVersion.External
     );
   };
 
   const pathSelector = (): PurchasePath => {
     switch (true) {
-      case principalToken?.symbol === 'APE-LP' &&
-        !isInputCurrencyPrincipal &&
-        !!zapContractAddress:
-        return PurchasePath.ApeZap;
-      case !!currencyB:
+      case inputTokenAddress === bond.lpToken.address[chainId]:
         return PurchasePath.LpPurchase;
-      case bond?.lpToken?.liquidityDex?.[chainId] === LiquidityDex.QuickswapV2:
+      case lpTokenZapVersion === ZapVersion.ZapV1:
+        console.error('Apeswap native zap deprecated');
+        return PurchasePath.ApeZap;
+      case lpTokenZapVersion === ZapVersion.SoulZap:
         return PurchasePath.SoulZap;
+      case lpTokenZapVersion === ZapVersion.SoulZapApi:
+        return PurchasePath.SoulZapApi;
       default:
         return PurchasePath.Loading;
     }

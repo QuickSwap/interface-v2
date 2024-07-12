@@ -12,6 +12,7 @@ import {
 } from './actions';
 import { Call, parseCallKey, toCallKey } from './utils';
 import { useBlockNumber } from 'state/application/hooks';
+import { getConfig } from '../../../config/index';
 
 export interface Result extends ReadonlyArray<any> {
   readonly [key: string]: any;
@@ -64,6 +65,11 @@ function useCallsData(
   methodName?: string,
 ): CallResult[] {
   const { chainId } = useActiveWeb3React();
+  const config = getConfig(chainId);
+  const localBlocksPerFetch = config['blocksPerFetch'] ?? 20;
+  if (blocksPerFetch && blocksPerFetch === 1) {
+    blocksPerFetch = localBlocksPerFetch;
+  }
   const callResults = useAppSelector((state) => state.multicallV3.callResults);
   const dispatch = useAppDispatch();
 
@@ -476,4 +482,158 @@ export function useSingleCallResult(
       latestBlockNumber,
     );
   }, [result, contract, fragment, latestBlockNumber]);
+}
+
+export async function getCallsDataImmediately(
+  contract: Contract,
+  blockNumber: number,
+  calls: (Call | undefined)[],
+): Promise<CallResult[]> {
+  try {
+    const { returnData } = await contract.callStatic.multicall(
+      calls
+        .filter((call: Call | undefined) => {
+          return call !== undefined;
+        })
+        .map((obj) => ({
+          target: obj?.address,
+          callData: obj?.callData,
+          gasLimit: obj?.gasRequired ?? 10_000_000,
+        })),
+      { blockTag: blockNumber },
+    );
+    return returnData.map((data: { success: boolean; returnData: string }) => {
+      return {
+        valid: data.success,
+        data: data.returnData,
+        blockNumber,
+      } as CallResult;
+    });
+  } catch (error) {
+    console.error('Failed to fetch chunk', error);
+    return [];
+  }
+}
+
+export async function getSingleContractMultipleDataImmediately(
+  contract: Contract,
+  methodName: string,
+  callInputs: OptionalMethodInputs[],
+  latestBlockNumber: number,
+): Promise<CallState[]> {
+  const fragment = contract.interface?.getFunction(methodName);
+  const calls =
+    contract &&
+    fragment &&
+    callInputs &&
+    callInputs.length > 0 &&
+    callInputs.every((inputs) => isValidMethodArgs(inputs))
+      ? callInputs.map<Call>((inputs) => {
+          return {
+            address: contract.address,
+            callData: contract.interface.encodeFunctionData(fragment, inputs),
+          };
+        })
+      : [];
+
+  const results = await getCallsDataImmediately(
+    contract,
+    latestBlockNumber,
+    calls,
+  );
+
+  return results.map((result) =>
+    toCallState(result, contract.interface, fragment, latestBlockNumber),
+  );
+}
+
+export async function getMultipleContractMultipleDataImmediately(
+  contracts: Contract[],
+  latestBlockNumber: number,
+  methodName: string,
+  callInputsArr: OptionalMethodInputs[][],
+): Promise<CallState[][]> {
+  const multicalls: Call[][] = contracts.map((contract, index) => {
+    const callInputs = callInputsArr[index];
+    const calls: Call[] = [];
+    if (callInputs.length > 0) {
+      for (const inputs of callInputs) {
+        const fragment = contract
+          ? contract.interface.getFunction(methodName)
+          : undefined;
+        const call =
+          contract && fragment && isValidMethodArgs(inputs)
+            ? {
+                address: contract.address,
+                callData: contract.interface.encodeFunctionData(
+                  fragment,
+                  inputs,
+                ),
+              }
+            : undefined;
+        if (call) calls.push(call);
+      }
+    } else {
+      return [];
+    }
+    return calls;
+  });
+  const callResults = await Promise.all(
+    multicalls.map(async (calls, index) => {
+      return await getCallsDataImmediately(
+        contracts[index],
+        latestBlockNumber,
+        calls,
+      );
+    }),
+  );
+
+  return callResults.map((results: CallResult[], index) => {
+    return results.map((result) => {
+      return toCallState(
+        result,
+        contracts[index].contractInterface,
+        contracts[index]
+          ? contracts[index].interface.getFunction(methodName)
+          : undefined,
+        latestBlockNumber,
+      );
+    });
+  });
+}
+
+export async function getMultipleContractSingleDataImmediately(
+  contract: Contract,
+  addresses: (string | undefined)[],
+  contractInterface: Interface,
+  latestBlockNumber: number,
+  methodName: string,
+  callInputs?: OptionalMethodInputs,
+): Promise<CallState[]> {
+  const fragment = contractInterface.getFunction(methodName);
+
+  const callData: string | undefined =
+    fragment && isValidMethodArgs(callInputs)
+      ? contractInterface.encodeFunctionData(fragment, callInputs)
+      : undefined;
+  const calls: (Call | undefined)[] =
+    fragment && addresses && addresses.length > 0 && callData
+      ? addresses.map<Call | undefined>((address) => {
+          return address && callData
+            ? {
+                address,
+                callData,
+              }
+            : undefined;
+        })
+      : [];
+  const results = await getCallsDataImmediately(
+    contract,
+    latestBlockNumber,
+    calls,
+  );
+
+  return results.map((result) =>
+    toCallState(result, contractInterface, fragment, latestBlockNumber),
+  );
 }

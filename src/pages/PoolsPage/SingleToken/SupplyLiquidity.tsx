@@ -48,19 +48,15 @@ export function SingleTokenSupplyLiquidity() {
         <SettingsModal
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
+          defaultSlippage={50}
         />
       )}
       <Box className='flex justify-between items-center'>
         <p className='weight-600'>{t('supplyLiquidity')}</p>
-        <Box className='flex items-center'>
-          <Box className='flex items-center' mr='5px'>
+        <Box className='flex items-center' gridGap={5}>
+          <Box className='flex items-center' gridGap={5}>
             <small className='text-secondary'>{t('poweredBy')}</small>
-            <img
-              src={ICHILogo}
-              alt='ICHI'
-              height={16}
-              style={{ marginLeft: 5 }}
-            />
+            <img src={ICHILogo} alt='ICHI' className='ichiLogo' />
           </Box>
           <small
             className='cursor-pointer text-primary'

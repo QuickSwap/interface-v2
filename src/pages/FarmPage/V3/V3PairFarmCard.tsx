@@ -125,7 +125,11 @@ export const V3PairFarmCard: React.FC<Props> = ({ farm }) => {
                     farmAPR={farm.farmAPR}
                     poolAPR={farm.poolAPR}
                   >
-                    <img src={APRHover} alt='farm APR' height={16} />
+                    <img
+                      src={APRHover}
+                      alt='farm APR'
+                      className='farmAprIcon'
+                    />
                   </TotalAPRTooltip>
                 </Box>
               )}

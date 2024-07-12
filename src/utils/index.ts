@@ -3,7 +3,11 @@ import { Contract, ContractReceipt } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
+import {
+  JsonRpcSigner,
+  Web3Provider,
+  JsonRpcProvider,
+} from '@ethersproject/providers';
 import {
   CurrencyAmount,
   ChainId,
@@ -46,24 +50,26 @@ import {
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
 import {
   DLQUICK,
   EMPTY,
   NATIVE_TOKEN_ADDRESS,
   OLD_QUICK,
+  bondDexFactories,
+  defaultBondDexFactories,
 } from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
-import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
 import { SteerVault } from 'hooks/v3/useSteerData';
-import { LiquidityDex } from '@ape.swap/apeswap-lists';
+import { LiquidityDex, Protocols } from '@ape.swap/apeswap-lists';
 import { DEX } from '@soulsolidity/soulzap-v1';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { FeeAmount } from 'v3lib/utils';
+import { BondToken } from 'types/bond';
+import { ZERO_ADDRESS } from 'constants/v3/misc';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -344,23 +350,23 @@ export function isZero(hexNumberString: string): boolean {
 }
 
 export function getSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account: string,
 ): JsonRpcSigner {
   return library.getSigner(account).connectUnchecked();
 }
 
 export function getProviderOrSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
-): Web3Provider | JsonRpcSigner {
+): Web3Provider | JsonRpcProvider | JsonRpcSigner {
   return account ? getSigner(library, account) : library;
 }
 
 export function getContract(
   address: string,
   ABI: any,
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
 ): Contract {
   if (!isAddress(address) || address === AddressZero) {
@@ -376,7 +382,7 @@ export function getContract(
 
 export function calculateGasMargin(value: BigNumber): BigNumber {
   return value
-    .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
+    .mul(BigNumber.from(10000).add(BigNumber.from(5000)))
     .div(BigNumber.from(10000));
 }
 
@@ -393,7 +399,7 @@ export function calculateGasMarginV3(
     return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
   }
 
-  return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
+  return value.mul(BigNumber.from(10000 + 5000)).div(BigNumber.from(10000));
 }
 
 export function formatDateFromTimeStamp(
@@ -692,13 +698,6 @@ export function returnFullWidthMobile(isMobile: boolean) {
 
 export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
-export function getWalletKeys(connector: Connector): Connection[] {
-  const { ethereum } = window as any;
-  const connections = getConnections();
-
-  return connections.filter((option) => option.connector === connector);
 }
 
 export function getTokenAddress(token: Token | undefined) {
@@ -1155,23 +1154,77 @@ export enum LiquidityProtocol {
   Gamma = 5,
   Steer = 6,
   Solidly = 7,
+  XFAI = 8,
 }
 
-export const getLiquidityDexIndex = (dex?: string, isLP?: boolean) => {
-  if (dex === 'Algebra') {
-    if (isLP) {
-      return LiquidityProtocol.Gamma;
+export function getPriceGetterCallData(
+  tokens: BondToken[],
+  chainId: ChainId,
+  lpTokens: boolean,
+) {
+  return Object.values(tokens).map((token) => {
+    const liquidityDex = token.liquidityDex?.[chainId];
+    let dexFactory;
+    let protocol = 2;
+    let factoryV2 = defaultBondDexFactories?.[chainId]?.[2] ?? ZERO_ADDRESS;
+    let factoryV3 = defaultBondDexFactories?.[chainId]?.[3] ?? ZERO_ADDRESS;
+    let factoryAlgebra =
+      defaultBondDexFactories?.[chainId]?.[4] ?? ZERO_ADDRESS;
+    let factorySolidly =
+      defaultBondDexFactories?.[chainId]?.[7] ?? ZERO_ADDRESS;
+    if (liquidityDex) {
+      dexFactory = bondDexFactories[chainId]?.[liquidityDex as LiquidityDex];
+      protocol = dexFactory?.protocol ?? Protocols.V2;
+      switch (protocol) {
+        case Protocols.V2:
+          factoryV2 = dexFactory?.factory ?? factoryV2;
+          break;
+        case Protocols.V3:
+          factoryV3 = dexFactory?.factory ?? factoryV3;
+          break;
+        case Protocols.Algebra:
+          factoryAlgebra = dexFactory?.factory ?? factoryAlgebra;
+          break;
+        case Protocols.Solidly:
+          factorySolidly = dexFactory?.factory ?? factorySolidly;
+          break;
+      }
     }
-    return LiquidityProtocol.Algebra;
-  }
-  if (dex === 'UniswapV3') {
-    if (isLP) {
-      return LiquidityProtocol.Steer;
+
+    const errMsg = `No default dex factory found for retrieving price. For Protocol: ${protocol}.`;
+    switch (protocol as Protocols) {
+      case Protocols.Both:
+        if (factoryV2 === ZERO_ADDRESS || factoryV3 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+      case Protocols.V2:
+        if (factoryV2 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+      case Protocols.V3:
+        if (factoryV3 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
     }
-    return LiquidityProtocol.V3;
-  }
-  return LiquidityProtocol.V2;
-};
+    if (lpTokens && protocol == Protocols.Algebra) {
+      protocol = Protocols.Gamma;
+    }
+    if (lpTokens && protocol == Protocols.V3) {
+      protocol = Protocols.Steer;
+    }
+    return [
+      token.address[chainId],
+      protocol,
+      factoryV2,
+      factoryV3,
+      factoryAlgebra,
+      factorySolidly,
+    ];
+  });
+}
 
 export function getFixedValue(value: string, decimals?: number) {
   if (!value) return '0';
@@ -1272,8 +1325,9 @@ export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
 };
 
 export const getSteerDexName = (chainId?: ChainId) => {
-  if (chainId === ChainId.MANTA) return 'quickswapv3';
-  return 'quickswap';
+  if (chainId === ChainId.MATIC) return 'quickswap';
+  if (chainId === ChainId.LAYERX) return 'quickswapalgebra';
+  return 'quickswapv3';
 };
 
 export const searchForBillId = (
@@ -1337,4 +1391,17 @@ export const getCurrencyInfo = ({
     decimals,
     chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
   };
+};
+
+export function getPerpsSymbol(symbol: string) {
+  return symbol.replace('PERP_', '').replace('_', '/');
+}
+
+export const getDexScreenerChainName = (
+  chainId: ChainId,
+): string | undefined => {
+  const chainsName: { [chainId in ChainId]?: string } = {
+    [ChainId.MATIC]: 'polygon',
+  };
+  return chainsName[chainId];
 };

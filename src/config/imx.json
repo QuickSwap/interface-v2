@@ -20,7 +20,7 @@
     "proMode": false,
     "limitOrder": false,
     "liquidityHub": false,
-    "crossChain": false
+    "crossChain": true
   },
   "pools": {
     "available": true
@@ -63,11 +63,14 @@
   "perps": {
     "available": false
   },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": false
   },
   "gamma": {
-    "available": false
+    "available": true
   },
   "unipilot": {
     "available": false
@@ -86,5 +89,7 @@
   },
   "ichi": {
     "available": false
-  }
+  },
+  "maxChunks": 50,
+  "blocksPerFetch": 25
 }

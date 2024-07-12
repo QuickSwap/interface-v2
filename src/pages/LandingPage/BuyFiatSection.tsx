@@ -5,6 +5,7 @@ import BuyWithFiat from 'assets/images/featured/BuyWithFiatNoPad.png';
 import { BuyFiatButton } from 'components';
 import { useTranslation } from 'react-i18next';
 import MeldIcon from 'assets/images/meldIcon.png';
+import MeldIconWebP from 'assets/images/meldIcon.webp';
 
 const BuyFiatSection: React.FC = () => {
   const { t } = useTranslation();
@@ -22,7 +23,14 @@ const BuyFiatSection: React.FC = () => {
       </Box>
       <Box className='poweredBySection'>
         {t('poweredBy')}
-        <img className='meldLogo' src={MeldIcon} alt='MELD' />
+        <picture>
+          <source
+            className='meldLogo'
+            srcSet={MeldIconWebP}
+            type='image/webp'
+          />
+          <img className='meldLogo' src={MeldIcon} alt='MELD' />
+        </picture>
       </Box>
     </Box>
   );

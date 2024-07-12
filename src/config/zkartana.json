@@ -7,7 +7,7 @@
   "aprAPINetwork": "zkatana",
   "chainId": 1261120,
   "isMainnet": false,
-  "visible": true,
+  "visible": false,
   "nativeCurrencyImage": "/zkartana.png",
   "nativeCurrency": {
     "name": "Ether",
@@ -62,6 +62,9 @@
     "available": false
   },
   "perps": {
+    "available": false
+  },
+  "perpsV2": {
     "available": false
   },
   "bos": {

@@ -27,7 +27,7 @@
   },
   "farm": {
     "quickswap": false,
-    "merkl": false,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -64,6 +64,9 @@
   "perps": {
     "available": false
   },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": false
   },
@@ -87,5 +90,7 @@
   },
   "ichi": {
     "available": false
-  }
+  },
+  "maxChunks": 70,
+  "blocksPerFetch": 25
 }

@@ -6,7 +6,6 @@ import {
   updateBlockNumber,
   ApplicationModal,
   setOpenModal,
-  updateEthPrice,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -17,7 +16,6 @@ import {
   updateMaticPrice,
   updateIsV2,
   updateIsLpLock,
-  updateUDDomain,
   updateSoulZap,
   updateOpenNetworkSelection,
 } from './actions';
@@ -62,7 +60,6 @@ export interface ApplicationState {
   readonly tokenDetails: TokenDetail[];
   readonly isV2: boolean | undefined;
   readonly isLpLock: boolean | undefined;
-  readonly udDomain: string | undefined;
   readonly soulZap: SoulZap_UniV2_ApeBond | null | undefined;
   readonly openNetworkSelection: boolean;
 }
@@ -81,7 +78,6 @@ const initialState: ApplicationState = {
   tokenDetails: [],
   isV2: undefined,
   isLpLock: undefined,
-  udDomain: undefined,
   soulZap: undefined,
   openNetworkSelection: false,
 };
@@ -125,16 +121,6 @@ export default createReducer(initialState, (builder) =>
         }
       });
     })
-    .addCase(
-      updateEthPrice,
-      (state, { payload: { price, oneDayPrice, ethPriceChange } }) => {
-        state.ethPrice = {
-          price,
-          oneDayPrice,
-          ethPriceChange,
-        };
-      },
-    )
     .addCase(
       updateMaticPrice,
       (state, { payload: { price, oneDayPrice, maticPriceChange } }) => {
@@ -202,9 +188,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateIsLpLock, (state, { payload }) => {
       state.isLpLock = payload;
-    })
-    .addCase(updateUDDomain, (state, { payload }) => {
-      state.udDomain = payload;
     })
     .addCase(updateSoulZap, (state, { payload }) => {
       state.soulZap = payload;

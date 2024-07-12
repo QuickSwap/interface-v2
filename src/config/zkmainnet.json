@@ -64,6 +64,9 @@
   "perps": {
     "available": true
   },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": true
   },
@@ -83,9 +86,11 @@
     "available": false
   },
   "ichi": {
-    "available": false
+    "available": true
   },
   "defiedge": {
     "available": false
-  }
+  },
+  "maxChunks": 70,
+  "blocksPerFetch": 25
 }

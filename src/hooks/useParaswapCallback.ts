@@ -18,7 +18,6 @@ import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { useUserSlippageTolerance } from 'state/user/hooks';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
@@ -55,6 +54,7 @@ const convertToEthersTransaction = (
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useParaswapCallback(
+  allowedSlippage: number,
   priceRoute: OptimalRate | null | undefined,
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
   inputCurrency?: Currency,
@@ -68,11 +68,11 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
-  const [allowedSlippage] = useUserSlippageTolerance();
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
   const liquidutyHubCallback = useLiquidityHubCallback(
+    allowedSlippage,
     priceRoute?.srcToken,
     priceRoute?.destToken,
     inputCurrency,

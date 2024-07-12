@@ -47,7 +47,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const isICHI = !!farm.label.includes('Ichi');
   const isGamma = !!farm.label.includes('Gamma');
   const isDefiEdge = !!farm.label.includes('DefiEdge');
-  const isQuickswap = farm.label === 'QuickSwap';
+  const isQuickswap = farm.label.toLowerCase().includes('quickswap');
   const isSteer = !!farm.label.includes('Steer');
 
   const { loading: loadingICHI, vault: ichiPosition } = useICHIPosition(
@@ -222,8 +222,18 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     farm.rewards.map((reward: any) => reward.address),
   );
 
-  const farmTypeReward =
-    farmType === 'QuickSwap' ? 'QuickswapAlgebra' : farmType;
+  const rewardKey = useMemo(() => {
+    if (isQuickswap) {
+      if (selectedQSNFTId) {
+        return farmType + '_' + selectedQSNFTId;
+      }
+      return farmType;
+    }
+    if (farm?.almAddress) {
+      return farmType + '_' + farm.almAddress.toLowerCase();
+    }
+    return farmType;
+  }, [farm.almAddress, farmType, isQuickswap, selectedQSNFTId]);
 
   const rewardUSD = farm.rewards.reduce(
     (total: number, reward: any) =>
@@ -231,7 +241,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
       (rewardTokenPrices?.find(
         (item) => item.address.toLowerCase() === reward.address.toLowerCase(),
       )?.price ?? 0) *
-        reward.breakdownOfUnclaimed[farmTypeReward],
+        reward.breakdownOfUnclaimed[rewardKey],
     0,
   );
 
@@ -240,7 +250,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const isClaimable =
     farm.rewards.length > 0 &&
     farm.rewards.filter(
-      (reward: any) => reward.breakdownOfUnclaimed[farmTypeReward] > 0,
+      (reward: any) => reward.breakdownOfUnclaimed[rewardKey] > 0,
     ).length > 0 &&
     !claiming;
 
@@ -329,7 +339,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 {formatNumber(farm.poolAPR + farm.almAPR)}%
               </p>
               <TotalAPRTooltip farmAPR={farm.almAPR} poolAPR={farm.poolAPR}>
-                <img src={APRHover} alt='farm APR' height={16} />
+                <img src={APRHover} alt='farm APR' className='farmAprIcon' />
               </TotalAPRTooltip>
             </Box>
           </Box>
@@ -347,12 +357,12 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
             gridGap={16}
           >
             {isQuickswap && qsPositions.length > 0 && (
-              <Box className='flex border-bottom' pb='8px'>
-                <Box
-                  className='flex items-center border-right'
-                  gridGap={6}
-                  pr='8px'
-                >
+              <Box
+                className='flex flex-wrap items-center border-bottom'
+                gridGap={12}
+                pb='8px'
+              >
+                <Box className='flex items-center' gridGap={6}>
                   <small className='secondary'>{t('nftID')}:</small>
                   <Box className='flex'>
                     <CustomMenu
@@ -366,20 +376,15 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     />
                   </Box>
                 </Box>
-                <Box px='8px' className='border-right'>
-                  <RangeBadge removed={false} inRange={!outOfRange} />
-                </Box>
-                <Box pl='8px' className='flex items-center'>
-                  <a
-                    href={`/#/pool/${selectedQSNFTId}`}
-                    target='_blank'
-                    rel='noreferrer'
-                    className='flex no-decoration text-primary'
-                    style={{ height: 20 }}
-                  >
-                    {t('viewPosition')}
-                  </a>
-                </Box>
+                <RangeBadge removed={false} inRange={!outOfRange} />
+                <a
+                  href={`/#/pool/${selectedQSNFTId}`}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='no-decoration text-primary'
+                >
+                  {t('viewPosition')}
+                </a>
               </Box>
             )}
             <Box className='flex justify-between items-center'>
@@ -496,9 +501,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     >
                       <CurrencyLogo currency={token} />
                       <small>
-                        {formatNumber(
-                          reward.breakdownOfUnclaimed[farmTypeReward],
-                        )}{' '}
+                        {formatNumber(reward.breakdownOfUnclaimed[rewardKey])}{' '}
                         {token?.symbol}
                       </small>
                     </Box>

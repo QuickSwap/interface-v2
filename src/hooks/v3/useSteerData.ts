@@ -36,7 +36,7 @@ import { useActiveWeb3React } from 'hooks';
 export interface SteerVault {
   address: string;
   state?: number;
-  strategy: any;
+  strategyName?: string;
   vaultType?: string;
   token0?: Token;
   token1?: Token;
@@ -48,8 +48,8 @@ export interface SteerVault {
   token0Balance?: BigNumber;
   token1Balance?: BigNumber;
   vaultCreator: string;
-  lowerTick?: BigNumber;
-  upperTick?: BigNumber;
+  lowerTick?: number;
+  upperTick?: number;
   poolAddress?: string;
   sqrtPriceX96?: BigNumber;
   tick?: BigNumber;
@@ -99,17 +99,10 @@ export const useSteerVaults = (chainId: ChainId) => {
                   (item: any) => item.vaultAddress === vault.vaultAddress,
                 ),
             );
-            let strategyData;
-            try {
-              const strategyRes = await fetch(
-                `https://ipfs.io/ipfs/${vault.strategyIpfsHash}`,
-              );
-              strategyData = await strategyRes.json();
-            } catch {}
             vaults.push({
               address: vault.vaultAddress,
               poolAddress,
-              strategy: strategyData,
+              strategyName: vault.strategyName,
               apr: vaultAPRs.find(
                 (item: any) =>
                   item.vaultAddress.toLowerCase() ===
@@ -140,8 +133,8 @@ export const useSteerVaults = (chainId: ChainId) => {
   const uniV3PoolInterface = new Interface(UniV3PoolABI);
   const slot0Calls = useMultipleContractSingleData(
     poolAddresses,
-    chainId === ChainId.MANTA ? uniV3PoolInterface : poolInterface,
-    chainId === ChainId.MANTA ? 'slot0' : 'globalState',
+    chainId === ChainId.MATIC ? poolInterface : uniV3PoolInterface,
+    chainId === ChainId.MATIC ? 'globalState' : 'slot0',
     [],
   );
   const slot0Items = slot0Calls.map((call, ind) => {
@@ -189,9 +182,9 @@ export const useSteerVaults = (chainId: ChainId) => {
 
   const vaultDetailCalls = useSingleContractMultipleData(
     peripheryContract,
-    chainId === ChainId.MANTA
-      ? 'vaultDetailsByAddress'
-      : 'algebraVaultDetailsByAddress',
+    chainId === ChainId.MATIC
+      ? 'algebraVaultDetailsByAddress'
+      : 'vaultDetailsByAddress',
     vaultAddresses.map((address) => [address]),
   );
   const vaultDetails: SteerVault[] = vaultDetailCalls.map((call, index) => {
@@ -264,10 +257,10 @@ export const useSteerVaults = (chainId: ChainId) => {
     const token0 = token0V2 ? toV3Token(token0V2) : undefined;
     const token1 = token1V2 ? toV3Token(token1V2) : undefined;
     const feeTier =
-      chainId === ChainId.MANTA
-        ? vaultData && vaultData.length > 12
-          ? vaultData[12]
-          : undefined
+      chainId === ChainId.MATIC
+        ? undefined
+        : vaultData && vaultData.length > 12
+        ? vaultData[12]
         : undefined;
     const totalLPIndex = chainId === ChainId.MANTA ? 13 : 12;
     const totalLPTokensIssued =
@@ -304,7 +297,7 @@ export const useSteerVaults = (chainId: ChainId) => {
         vaultRegistryData && vaultRegistryData.length > 0
           ? Number(vaultRegistryData[0])
           : undefined,
-      strategy: vaultItem?.strategy,
+      strategyName: vaultItem?.strategyName,
       apr: vaultItem?.apr,
       vaultType,
       token0,
@@ -327,13 +320,17 @@ export const useSteerVaults = (chainId: ChainId) => {
         vaultPosition &&
         vaultPosition.lowerTicks &&
         vaultPosition.lowerTicks.length > 0
-          ? vaultPosition.lowerTicks[0]
+          ? Math.min(
+              ...vaultPosition.lowerTicks.map((tick: any) => Number(tick)),
+            )
           : undefined,
       upperTick:
         vaultPosition &&
         vaultPosition.upperTicks &&
         vaultPosition.upperTicks.length > 0
-          ? vaultPosition.upperTicks[0]
+          ? Math.max(
+              ...vaultPosition.upperTicks.map((tick: any) => Number(tick)),
+            )
           : undefined,
     };
   });
@@ -566,12 +563,8 @@ export function useSteerFilteredFarms(
       );
       const pairType =
         vaultInfo &&
-        vaultInfo.strategy &&
-        vaultInfo.strategy.strategyConfigData &&
-        vaultInfo.strategy.strategyConfigData.name &&
-        vaultInfo.strategy.strategyConfigData.name
-          .toLowerCase()
-          .includes('stable')
+        vaultInfo.strategyName &&
+        vaultInfo.strategyName.toLowerCase().includes('stable')
           ? Presets.STEER_STABLE
           : percentageToMultiplier(positionWidthPercent) > 1.2
           ? Presets.STEER_WIDE

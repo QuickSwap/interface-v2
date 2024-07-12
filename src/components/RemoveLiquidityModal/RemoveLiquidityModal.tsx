@@ -39,12 +39,14 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback';
 import { useRouterContract } from 'hooks/useContract';
+import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useTotalSupply } from 'data/TotalSupply';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/RemoveLiquidityModal.scss';
 import { useTranslation } from 'react-i18next';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;
@@ -86,7 +88,11 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
   const deadline = useTransactionDeadline();
   const { onUserInput: _onUserInput } = useBurnActionHandlers();
-  const [allowedSlippage] = useUserSlippageTolerance();
+  const { autoSlippage } = useDerivedSwapInfo();
+
+  let [allowedSlippage] = useUserSlippageTolerance();
+  allowedSlippage =
+    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
 
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
@@ -334,7 +340,7 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             setTxPending(false);
           } catch (error) {
             setTxPending(false);
-            setRemoveErrorMessage(t('errorInTx'));
+            setRemoveErrorMessage(t('removeLiquidityError1'));
           }
 
           ReactGA.event({
@@ -348,7 +354,9 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           // we only care if the error is something _other_ than the user rejected the tx
           console.error(error);
           setRemoveErrorMessage(
-            error.code === 'ACTION_REJECTED' ? t('txRejected') : t('errorInTx'),
+            error.code === 'ACTION_REJECTED'
+              ? t('txRejected')
+              : t('removeLiquidityError1'),
           );
         });
     }

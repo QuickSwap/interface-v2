@@ -20,6 +20,7 @@ export const rpcMap = {
   [ChainId.X1]: 'https://testrpc.x1.tech',
   [ChainId.IMX]: 'https://rpc.immutable.com',
   [ChainId.ASTARZKEVM]: 'https://rpc.startale.com/astar-zkevm',
+  [ChainId.LAYERX]: 'https://rpc.xlayer.tech',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
@@ -86,4 +87,5 @@ export const RPC_PROVIDERS: {
   [ChainId.TIMX]: new AppJsonRpcProvider(ChainId.TIMX),
   [ChainId.IMX]: new AppJsonRpcProvider(ChainId.IMX),
   [ChainId.ASTARZKEVM]: new AppJsonRpcProvider(ChainId.ASTARZKEVM),
+  [ChainId.LAYERX]: new AppJsonRpcProvider(ChainId.LAYERX),
 };

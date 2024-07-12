@@ -1,8 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
+import {
+  useActiveWeb3React,
+  useConnectWallet,
+  useV2LiquidityPools,
+} from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { useWalletModalToggle } from 'state/application/hooks';
 import ToggleVersion from '../ToggleVersion';
 import {
   useUserV2LiquidityLocks,
@@ -10,6 +13,7 @@ import {
 } from 'state/data/liquidityLocker';
 import { Skeleton } from '@material-ui/lab';
 import LockPositionCard from './components';
+import { useIsSupportedNetwork } from 'utils';
 
 export default function MyLiquidityLocks() {
   const { t } = useTranslation();
@@ -31,7 +35,8 @@ export default function MyLiquidityLocks() {
   );
 
   const showConnectAWallet = Boolean(!account);
-  const toggleWalletModal = useWalletModalToggle();
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   return (
     <Box>
@@ -44,7 +49,7 @@ export default function MyLiquidityLocks() {
       <Box textAlign='center'>
         {showConnectAWallet ? (
           <Box maxWidth={250} margin='20px auto 0'>
-            <Button fullWidth onClick={toggleWalletModal}>
+            <Button fullWidth onClick={connectWallet}>
               {t('connectWallet')}
             </Button>
           </Box>
