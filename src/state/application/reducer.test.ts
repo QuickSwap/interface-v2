@@ -12,7 +12,6 @@ import reducer, { ApplicationState } from './reducer';
 describe('application reducer', () => {
   let store: Store<ApplicationState>;
 
-
   describe('addPopup', () => {
     it('adds the popup to list with a generated id', () => {
       store.dispatch(

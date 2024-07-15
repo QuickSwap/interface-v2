@@ -8,8 +8,10 @@ import {
 } from 'state/multicall/v3/hooks';
 import { Interface, formatUnits } from 'ethers/lib/utils';
 import { usePriceGetterContract } from '../useContract';
-import { getPriceGetterCallData } from 'utils';
+import { getDexScreenerChainName, getPriceGetterCallData } from 'utils';
 import { Bond, BondConfig, BondToken } from 'types/bond';
+import { LiquidityDex } from '@ape.swap/apeswap-lists';
+import { ERC20_ABI } from 'constants/abis/erc20';
 
 export const useFetchBonds = () => {
   const { chainId } = useActiveWeb3React();
@@ -60,6 +62,9 @@ export const useFetchBonds = () => {
     if (!bonds) return [];
     return bonds
       .map((bond) => bond.lpToken)
+      .filter(
+        (token) => token?.liquidityDex?.[chainId] !== LiquidityDex.External,
+      )
       .reduce((acc: BondToken[], token) => {
         const itemIsExisting = !!acc.find((item) => {
           const itemAddress = item.address[chainId];
@@ -85,6 +90,9 @@ export const useFetchBonds = () => {
     return bonds
       .map((bond) => bond.earnToken)
       .concat(bonds.map((bond) => bond.token))
+      .filter(
+        (token) => token?.liquidityDex?.[chainId] !== LiquidityDex.External,
+      )
       .reduce((acc: BondToken[], token) => {
         const itemIsExisting = !!acc.find((item) => {
           const itemAddress = item.address[chainId];
@@ -104,6 +112,128 @@ export const useFetchBonds = () => {
         return acc;
       }, []);
   }, [bonds, chainId]);
+
+  const dexScreenerTokens = useMemo(() => {
+    if (!bonds) return [];
+    return bonds
+      .map((bond) => bond.earnToken)
+      .concat(bonds.map((bond) => bond.token))
+      .filter(
+        (token) => token?.liquidityDex?.[chainId] === LiquidityDex.External,
+      )
+      .reduce((acc: BondToken[], token) => {
+        const itemIsExisting = !!acc.find((item) => {
+          const itemAddress = item.address[chainId];
+          const tokenAddress = token.address[chainId];
+          return (
+            itemAddress &&
+            tokenAddress &&
+            itemAddress.toLowerCase() === tokenAddress.toLowerCase()
+          );
+        });
+        if (!itemIsExisting) {
+          acc.push(token);
+        }
+        return acc;
+      }, []);
+  }, [bonds, chainId]);
+
+  const dexScreenerLPTokens = useMemo(() => {
+    if (!bonds) return [];
+    return bonds
+      .map((bond) => bond.lpToken)
+      .filter(
+        (token) => token?.liquidityDex?.[chainId] === LiquidityDex.External,
+      )
+      .reduce((acc: BondToken[], token) => {
+        const itemIsExisting = !!acc.find((item) => {
+          const itemAddress = item.address[chainId];
+          const tokenAddress = token.address[chainId];
+          return (
+            itemAddress &&
+            tokenAddress &&
+            itemAddress.toLowerCase() === tokenAddress.toLowerCase()
+          );
+        });
+        if (!itemIsExisting) {
+          acc.push(token);
+        }
+        return acc;
+      }, []);
+  }, [bonds, chainId]);
+
+  const dexScreenerBaseURL = 'https://api.dexscreener.com/latest/dex';
+  const { data: dexScreenerPrices } = useQuery({
+    queryKey: [
+      'dexScreener-prices',
+      dexScreenerTokens.map((token) => token.address[chainId]).join('-'),
+    ],
+    queryFn: async () => {
+      const tokenPrices = await Promise.all(
+        dexScreenerTokens.map(async (token) => {
+          if (['USDT', 'USDC'].includes(token.symbol)) {
+            return { price: 1, token };
+          } else {
+            const endpoint = `${dexScreenerBaseURL}/tokens/${token.address[chainId]}`;
+            const res = await fetch(endpoint);
+            const data = await res.json();
+            return {
+              price: Number(
+                data.pairs
+                  .filter((pair: any) => {
+                    const tokenAddress = token.address[chainId];
+                    return (
+                      pair.chainId === chainName &&
+                      tokenAddress &&
+                      pair.baseToken.address.toLowerCase() ===
+                        tokenAddress.toLowerCase()
+                    );
+                  })
+                  .sort(
+                    (a: any, b: any) => b?.liquidity?.usd - a?.liquidity?.usd,
+                  )[0]?.priceUsd ?? 0,
+              ),
+              token,
+            };
+          }
+        }),
+      );
+      return tokenPrices;
+    },
+  });
+
+  const chainName = getDexScreenerChainName(chainId);
+
+  const erc20Interface = new Interface(ERC20_ABI);
+  const bondLPTotalSupplyCalls = useMultipleContractSingleData(
+    dexScreenerLPTokens.map((token) => token.address[chainId]),
+    erc20Interface,
+    'totalSupply',
+  );
+
+  const { data: dexScreenerLPPrices } = useQuery({
+    queryKey: [
+      'dexScreener-LP-prices',
+      dexScreenerLPTokens.map((token) => token.address[chainId]).join('-'),
+    ],
+    queryFn: async () => {
+      const tokenPrices = await Promise.all(
+        dexScreenerLPTokens.map(async (token, ind) => {
+          const endpoint = `${dexScreenerBaseURL}/pairs/${chainName}/${token.address[chainId]}`;
+          const res = await fetch(endpoint);
+          const data = await res.json();
+          const liquidity = data.pair.liquidity.usd;
+          const call = bondLPTotalSupplyCalls[ind];
+          const supply =
+            call && !call.loading && call.result && call.result.length > 0
+              ? Number(formatUnits(call.result[0]))
+              : 0;
+          return { price: supply > 0 ? Number(liquidity) / supply : 0, token };
+        }),
+      );
+      return tokenPrices;
+    },
+  });
 
   const priceGetterContract = usePriceGetterContract();
   const lpPriceParams = getPriceGetterCallData(lpTokens, chainId, true);
@@ -274,8 +404,19 @@ export const useFetchBonds = () => {
           lpTokenAddress.toLowerCase() === bondLPTokenAddress.toLowerCase()
         );
       });
+      const dexScreenerLpPrice = (dexScreenerLPPrices ?? []).find((item) => {
+        const lpTokenAddress = item.token.address[chainId];
+        const bondLPTokenAddress = bond.lpToken.address[chainId];
+        return (
+          lpTokenAddress &&
+          bondLPTokenAddress &&
+          lpTokenAddress.toLowerCase() === bondLPTokenAddress.toLowerCase()
+        );
+      })?.price;
       const lpPriceNumber =
-        lpPrice && lpPrice.price ? Number(formatUnits(lpPrice.price)) : 0;
+        lpPrice && lpPrice.price
+          ? Number(formatUnits(lpPrice.price))
+          : dexScreenerLpPrice ?? 0;
       const earnTokenPrice = bondTokenPrices.find((item) => {
         const earnTokenAddress = item.token.address[chainId];
         const bondEarnTokenAddress = bond.earnToken.address[chainId];
@@ -285,10 +426,22 @@ export const useFetchBonds = () => {
           earnTokenAddress.toLowerCase() === bondEarnTokenAddress.toLowerCase()
         );
       });
+      const dexScreenerEarnTokenPrice = (dexScreenerPrices ?? []).find(
+        (item) => {
+          const earnTokenAddress = item.token.address[chainId];
+          const bondEarnTokenAddress = bond.earnToken.address[chainId];
+          return (
+            earnTokenAddress &&
+            bondEarnTokenAddress &&
+            earnTokenAddress.toLowerCase() ===
+              bondEarnTokenAddress.toLowerCase()
+          );
+        },
+      )?.price;
       const earnTokenPriceNumber =
         earnTokenPrice && earnTokenPrice.price
           ? Number(formatUnits(earnTokenPrice.price))
-          : 0;
+          : dexScreenerEarnTokenPrice ?? 0;
       const tokenPrice = bondTokenPrices.find((item) => {
         const tokenAddress = item.token.address[chainId];
         const bondTokenAddress = bond.token.address[chainId];
@@ -298,10 +451,19 @@ export const useFetchBonds = () => {
           tokenAddress.toLowerCase() === bondTokenAddress.toLowerCase()
         );
       });
+      const dexScreenerTokenPrice = (dexScreenerPrices ?? []).find((item) => {
+        const tokenAddress = item.token.address[chainId];
+        const bondTokenAddress = bond.token.address[chainId];
+        return (
+          tokenAddress &&
+          bondTokenAddress &&
+          tokenAddress.toLowerCase() === bondTokenAddress.toLowerCase()
+        );
+      })?.price;
       const tokenPriceNumber =
         tokenPrice && tokenPrice.price
           ? Number(formatUnits(tokenPrice.price))
-          : 0;
+          : dexScreenerTokenPrice ?? 0;
       const priceUsd =
         trueBillPrice && trueBillPrice.data
           ? Number(formatUnits(trueBillPrice.data.toString())) * lpPriceNumber
@@ -349,6 +511,8 @@ export const useFetchBonds = () => {
     bondTrueBillPrices,
     bonds,
     chainId,
+    dexScreenerLPPrices,
+    dexScreenerPrices,
     lpPrices,
   ]);
 

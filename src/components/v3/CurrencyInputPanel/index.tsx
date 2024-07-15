@@ -1,11 +1,12 @@
-import React from 'react';
-import { ETHER, Pair } from '@uniswap/sdk';
+import React, { useEffect } from 'react';
+import { Pair } from '@uniswap/sdk';
+import { Ether } from '@uniswap/sdk-core';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
-import { useCurrencyBalance } from 'state/wallet/hooks';
+import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
@@ -13,6 +14,10 @@ import { useTranslation } from 'react-i18next';
 import './index.scss';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { useAppSelector } from 'state';
+import { getCurrencyBalanceImmediately } from 'state/wallet/v3/hooks';
+import { useMulticall2Contract } from 'hooks/useContract';
+import { useBlockNumber } from 'state/application/hooks';
 
 interface CurrencyInputPanelProps {
   value: string;
@@ -83,13 +88,69 @@ export default function CurrencyInputPanel({
   const [modalOpen, setModalOpen] = useState(false);
   const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
-
-  const nativeCurrency = chainId ? ETHER[chainId] : undefined;
+  const nativeCurrency = chainId ? Ether.onChain(chainId) : undefined;
   const ethBalance = useCurrencyBalance(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
     currency?.isNative ? nativeCurrency : currency ?? undefined,
   );
+  const balanceUpdateSelector = useAppSelector((state) => state.userBalance);
+  const [updatedEthBalance, setUpdatedEthBalance] = useState<
+    CurrencyAmount<Currency> | undefined
+  >(undefined);
+  const [updatedBalance, setUpdatedBalance] = useState<
+    CurrencyAmount<Currency> | undefined
+  >(undefined);
+
+  const multicallContract = useMulticall2Contract();
+  const latestBlockNumber = useBlockNumber();
+  useEffect(() => {
+    if (updatedEthBalance == undefined) {
+      setUpdatedEthBalance(ethBalance);
+    } else {
+      if (!multicallContract || !latestBlockNumber || !account) return;
+      getCurrencyBalanceImmediately(
+        multicallContract,
+        chainId,
+        latestBlockNumber,
+        account,
+        nativeCurrency,
+      ).then((value) => {
+        setUpdatedEthBalance(value);
+        if (currency?.isNative) {
+          setUpdatedBalance(value);
+        }
+      });
+    }
+    if (updatedBalance == undefined) {
+      setUpdatedBalance(balance);
+    } else {
+      if (
+        currency?.isNative ||
+        !multicallContract ||
+        !latestBlockNumber ||
+        !account
+      )
+        return;
+      getCurrencyBalanceImmediately(
+        multicallContract,
+        chainId,
+        latestBlockNumber,
+        account,
+        currency ?? undefined,
+      ).then((value) => {
+        setUpdatedBalance(value);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balanceUpdateSelector.flag]);
+  const ethBalanceDependency = JSON.stringify(ethBalance);
+  const balanceDependency = JSON.stringify(balance);
+  useEffect(() => {
+    setUpdatedEthBalance(ethBalance);
+    setUpdatedBalance(balance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ethBalanceDependency, balanceDependency]);
 
   const { price: currentPrice } = useUSDCPriceFromAddress(
     currency?.wrapped?.address ?? '',
@@ -174,9 +235,10 @@ export default function CurrencyInputPanel({
           <Box display='flex'>
             <small className='text-secondary'>
               {t('balance')}:{' '}
-              {(showETH && ethBalance
-                ? Number(ethBalance.toSignificant(5))
-                : 0) + (balance ? Number(balance.toSignificant(5)) : 0)}
+              {(showETH && updatedEthBalance
+                ? Number(updatedEthBalance.toSignificant(5))
+                : 0) +
+                (updatedBalance ? Number(updatedBalance.toSignificant(5)) : 0)}
             </small>
 
             {account && currency && showHalfButton && (

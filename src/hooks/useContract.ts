@@ -72,6 +72,7 @@ import STEER_DUAL_STAKING_ABI from 'constants/abis/steer-staking-dual.json';
 import SteerPeripheryABI from 'constants/abis/steer-periphery.json';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
 import SteerVaultRegistryABI from 'constants/abis/steer-vault-registry.json';
+import { RPC_PROVIDERS } from 'constants/providers';
 
 const LairABI = dragonsLair.abi;
 const IUniswapV2Router02ABI = router02.abi;
@@ -83,7 +84,9 @@ export function useContract<T extends Contract = Contract>(
   ABI: any,
   withSignerIfPossible = true,
 ): T | null {
-  const { library, account, chainId } = useActiveWeb3React();
+  const { library: web3ModalLibrary, account, chainId } = useActiveWeb3React();
+  const libraryFromChain = RPC_PROVIDERS[chainId];
+  const library = web3ModalLibrary ?? libraryFromChain;
 
   return useMemo(() => {
     if (!addressOrAddressMap || !ABI || !library || !chainId) return null;

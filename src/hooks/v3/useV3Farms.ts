@@ -47,6 +47,7 @@ import { BigNumber } from 'ethers';
 import { useLastTransactionHash } from 'state/transactions/hooks';
 import { FeeAmount } from 'v3lib/utils';
 import { getConfig } from 'config/index';
+import dayjs from 'dayjs';
 
 export const useEternalFarmsFiltered = (
   farms: any[],
@@ -326,13 +327,26 @@ export const useGetMerklFarms = () => {
         ? data[chainId.toString()]?.pools
         : undefined;
     if (!farmData) return [];
-    return Object.values(farmData).filter(
-      (item: any) =>
-        !(blackListMerklFarms[chainId] ?? []).find(
-          (address) =>
-            item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
-        ) && amms.includes(item.ammName.toLowerCase()),
-    ) as any[];
+    const currentTime = dayjs().unix();
+
+    return Object.values(farmData)
+      .filter(
+        (item: any) =>
+          (item?.distributionData ?? []).filter(
+            (item: any) =>
+              item.isLive &&
+              !item.isMock &&
+              (item?.endTimestamp ?? 0) >= currentTime &&
+              (item?.startTimestamp ?? 0) <= currentTime,
+          ).length > 0,
+      )
+      .filter(
+        (item: any) =>
+          !(blackListMerklFarms[chainId] ?? []).find(
+            (address) =>
+              item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
+          ) && amms.includes(item.ammName.toLowerCase()),
+      ) as any[];
   };
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({

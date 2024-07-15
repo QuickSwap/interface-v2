@@ -24,18 +24,15 @@ const useFetchBondApiQuote = (
     .times(new BigNumber(10).pow(inputDecimals ?? 18))
     .toString();
 
-  const toToken0 = bond?.token?.address?.[bond.chainId];
   const vault = bond?.lpToken?.address?.[bond.chainId];
   const bondContractAddress = bond?.contractAddress?.[bond.chainId];
   const chain = getChainParam(bond?.chainId);
-  const router = bond?.lpToken?.router;
-  const vaultDeployer = bond?.lpToken?.vaultDeployer;
+  const ichiUnderlyingDex = bond?.lpToken?.ichiUnderlyingDex;
 
   useEffect(() => {
     const fetchZapData = async () => {
       try {
         if (
-          toToken0 &&
           vault &&
           inputDecimals &&
           bondContractAddress &&
@@ -43,33 +40,30 @@ const useFetchBondApiQuote = (
           bigishInputAmount !== '0' &&
           inputAddress &&
           chain &&
-          router &&
-          vaultDeployer
+          ichiUnderlyingDex
         ) {
           const zapInputData = {
             chain: chain,
-            recipient: account,
-            user: account,
+            recipient: account ?? null,
+            user: account ?? null,
             lpData: {
               lpType: LPType.Ichi,
               fromToken: inputAddress,
               fromAmount: bigishInputAmount,
-              toToken0,
-              router,
+              underlyingDex: ichiUnderlyingDex,
               vault,
-              vaultDeployer,
               slippage: parseFloat(slippage ?? '0.5'),
             },
             protocolData: {
               protocol: 'ApeBond',
               bond: bondContractAddress,
-              depositer: account,
+              depositer: account ?? null,
             },
           };
           console.log(
             `Fetching soulZap routes for Bond Contract: ${bondContractAddress}`,
           );
-          console.log(zapInputData);
+          console.log('Zap Input Data ', zapInputData);
           //@ts-ignore
           getZapDetailsMutation.mutate(zapInputData);
         }
@@ -85,7 +79,7 @@ const useFetchBondApiQuote = (
     inputAddress,
     inputDecimals,
     slippage,
-    toToken0,
+    ichiUnderlyingDex,
     vault,
     bondContractAddress,
   ]);

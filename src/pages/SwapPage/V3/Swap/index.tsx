@@ -72,6 +72,8 @@ import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
 import { useWalletInfo, useWeb3Modal } from '@web3modal/ethers5/react';
+import { useAppDispatch } from 'state';
+import { updateUserBalance } from 'state/balance/actions';
 
 const SwapV3Page: React.FC = () => {
   const { t } = useTranslation();
@@ -132,7 +134,7 @@ const SwapV3Page: React.FC = () => {
   );
 
   const showNativeConvert = convertType !== ConvertType.NOT_APPLICABLE;
-
+  const dispatch = useAppDispatch();
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
   const { address: recipientAddress } = useENSAddress(recipient);
 
@@ -387,6 +389,7 @@ const SwapV3Page: React.FC = () => {
           finalizedTransaction(receipt, {
             summary,
           });
+          dispatch(updateUserBalance());
           setSwapState({
             attemptingTxn: false,
             txPending: false,
@@ -459,6 +462,7 @@ const SwapV3Page: React.FC = () => {
     tradeToConfirm,
     showConfirm,
     finalizedTransaction,
+    dispatch,
     recipient,
     recipientAddress,
     account,
