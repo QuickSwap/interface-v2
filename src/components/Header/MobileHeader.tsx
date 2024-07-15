@@ -134,7 +134,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         style={{
           width: '100%',
           height: isActive ? '100vh' : '0px',
-          backgroundColor: isMobile ? '#374769;' : '#12131a',
+          backgroundColor: '#12131a',
           opacity: isMobile && !isActive ? 0.32 : 1,
           position: 'fixed',
           left: 0,
