@@ -2599,6 +2599,7 @@ export const paraswapTaxBuy: { [key: string]: number } = {
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
   '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 200,
+  '0x119fd89e56e3845b520644dcedf4a86cd0b66aa6': 300,
 };
 
 export const paraswapTaxSell: { [key: string]: number } = {
@@ -2608,6 +2609,7 @@ export const paraswapTaxSell: { [key: string]: number } = {
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
   '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 600,
+  '0x119fd89e56e3845b520644dcedf4a86cd0b66aa6': 300,
 };
 
 export const GlobalData = {

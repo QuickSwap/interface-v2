@@ -14,7 +14,7 @@ import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
-import { USDC, USDO, USDT } from 'constants/v3/addresses';
+import { NEW_QUICK, USDC, USDO, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -109,6 +109,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       return `&currency1=${USDT[chainId].address}`;
     if (chainId === ChainId.DOGECHAIN)
       return `&currency1=${USDO[chainId].address}`;
+    if (NEW_QUICK[chainId]) return `&currency1=${NEW_QUICK[chainId].address}`;
     if (USDC[chainId]) return `&currency1=${USDC[chainId].address}`;
     return '';
   }, [chainId]);
