@@ -342,32 +342,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     id: 'perps-page-link',
                     isExternal: true,
                     externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-                    onClick: async () => {
-                      if (chainId !== ChainId.ZKEVM) {
-                        const zkEVMconfig = getConfig(ChainId.ZKEVM);
-                        const chainParam = {
-                          chainId: ChainId.ZKEVM,
-                          chainName: `${zkEVMconfig['networkName']} Network`,
-                          rpcUrls: [zkEVMconfig['rpc']],
-                          nativeCurrency: zkEVMconfig['nativeCurrency'],
-                          blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-                        };
-                      }
-                      if (process.env.REACT_APP_PERPS_URL) {
-                        window.open(process.env.REACT_APP_PERPS_URL, '_self');
-                      }
-                    },
                     items: [
                       {
                         id: 'perps-new-page-link',
                         link: '/falkor',
-                        text: 'Perps : Falkor',
+                        text: 'Perps - PoS',
                         isNew: true,
                       },
                       {
                         id: 'perps-v1-page-link',
                         link: process.env.REACT_APP_PERPS_URL || '#',
-                        text: 'Perps V1',
+                        text: 'Perps - zkEVM',
                         onClick: () => {
                           if (process.env.REACT_APP_PERPS_URL) {
                             window.open(
@@ -382,7 +367,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 />
               </Box>
               <Box>
-                <Link to='/pool'>{t('pool')}</Link>
+                <Link to='/pools'>{t('pool')}</Link>
               </Box>
               <ButtonBase
                 style={{
