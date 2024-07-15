@@ -1,0 +1,8 @@
+.bridge_block_item {
+    &:hover {
+        background-color: #22314da6 !important;
+    }
+    @media screen and (max-width: "1280px") {
+        height: 104px !important;
+    }
+}
