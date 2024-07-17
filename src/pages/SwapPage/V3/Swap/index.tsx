@@ -687,7 +687,7 @@ const SwapV3Page: React.FC = () => {
         onDismiss={handleDismissTokenWarning}
       />
       <Box className='swap'>
-        <SwapHeader allowedSlippage={allowedSlippage} dynamicFee={dynamicFee} />
+        {/* <SwapHeader allowedSlippage={allowedSlippage} dynamicFee={dynamicFee} /> */}
 
         <ConfirmSwapModal
           isOpen={showConfirm}
