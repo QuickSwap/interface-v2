@@ -235,56 +235,6 @@ const SwapMain: React.FC = () => {
         </Box>
       </Box>
       <Box
-        className={`flex flex-wrap items-center justify-between ${
-          isProMode ? ' proModeWrapper' : ''
-        }`}
-      >
-        <Box display='flex' width={1}>
-          {!isProMode ? (
-            <>
-              <Box display='flex' className='tabContainer'>
-                {/* {showCrossChain && (
-                  <Box
-                    className={`tab ${
-                      selectedIndex === SWAP_CROSS_CHAIN ? 'activeTab' : ''
-                    }`}
-                    onClick={() => {
-                      setSelectedIndex(SWAP_CROSS_CHAIN);
-                      setAnchorEl(null);
-                      redirectWithSwapType(SWAP_CROSS_CHAIN);
-                    }}
-                  >
-                    <Box pr={1}>
-                      <CrossChainIcon
-                        className='cross-chain-icon'
-                        scale={1.5}
-                      />
-                    </Box>
-                    <Box className='trade-btn'>{t('crossChain')}</Box>
-                  </Box>
-                )} */}
-              </Box>
-            </>
-          ) : (
-            <>
-              {SwapDropdownTabs.map((option) => (
-                <Box
-                  key={option.key}
-                  style={{ textAlign: 'center' }}
-                  className={swapTabClass(option.key)}
-                  onClick={() => {
-                    redirectWithSwapType(option.key);
-                  }}
-                >
-                  <p>{t(option.name)}</p>
-                </Box>
-              ))}
-            </>
-          )}
-        </Box>
-      </Box>
-      {/* Tabs */}
-      <Box
         sx={{
           display: 'flex',
           alignItems: 'center',

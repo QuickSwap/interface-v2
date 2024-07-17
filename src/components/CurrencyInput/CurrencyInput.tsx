@@ -131,24 +131,26 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         >
           {title || `${t('youPay')}:`}
         </p>
-        <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
-          <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-            <span className='subtext-color'>{t('balance')}:</span>{' '}
-            {formatTokenAmount(selectedCurrencyBalance)}
-          </small>
+        <Box className='flex'>
+          <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
+            <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+              <span className='subtext-color'>{t('balance')}:</span>{' '}
+              {formatTokenAmount(selectedCurrencyBalance)}
+            </small>
+          </Box>
+          <Box display='flex' ml={1}>
+            {account && currency && showHalfButton && (
+              <Box className='maxWrapper' onClick={onHalf}>
+                <small>50%</small>
+              </Box>
+            )}
+            {account && currency && showMaxButton && (
+              <Box className='maxWrapper' marginLeft='10px' onClick={onMax}>
+                <small>{t('max')}</small>
+              </Box>
+            )}
+          </Box>
         </Box>
-        {/* <Box display='flex'>
-          {account && currency && showHalfButton && (
-            <Box className='maxWrapper' onClick={onHalf}>
-              <small>50%</small>
-            </Box>
-          )}
-          {account && currency && showMaxButton && (
-            <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
-              <small>{t('max')}</small>
-            </Box>
-          )}
-        </Box> */}
       </Box>
       <Box
         mb={2}

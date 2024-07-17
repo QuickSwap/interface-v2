@@ -223,25 +223,25 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     items: [],
   };
 
-  const partnersTab: HeaderMenuItem = {
-    text: t('Partners'),
-    id: 'partners',
-    link: '/partners',
-    items: [
-      {
-        link: '/dappOS',
-        text: 'DappOS',
-        id: 'dappos-page-link',
-        isExternal: true,
-        target: '_blank',
-        externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-      },
-    ],
-  };
+  // const partnersTab: HeaderMenuItem = {
+  //   text: t('Partners'),
+  //   id: 'partners',
+  //   link: '/partners',
+  //   items: [
+  //     {
+  //       link: '/dappOS',
+  //       text: 'DappOS',
+  //       id: 'dappos-page-link',
+  //       isExternal: true,
+  //       target: '_blank',
+  //       externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  //     },
+  //   ],
+  // };
+  // menuItems.push(partnersTab);
   if (showEarn) {
     menuItems.push(earnTab);
   }
-  menuItems.push(partnersTab);
   if (showFarm) {
     if (showEarn) {
       earnTab.items?.push({
@@ -331,6 +331,15 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'convert-quick',
     });
   }
+
+  menuItems.push({
+    link: '/dappOS',
+    text: 'DappOS',
+    id: 'dappos-page-link',
+    isExternal: true,
+    target: '_blank',
+    externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  });
 
   if (showLending) {
     menuItems.push({
