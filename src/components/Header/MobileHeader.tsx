@@ -37,7 +37,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
-
+  console.log('@@@', menuItems);
   useEffect(() => {
     setIsActive(false);
   }, [location]);
@@ -152,18 +152,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             Products
           </Typography>
           <Box style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {menuItems
-              .filter(
-                (val) =>
-                  ![
-                    'contest-page-link',
-                    'convert-quick',
-                    'dappos-page-link',
-                  ].includes(val.id),
-              )
-              .map((item, i) => {
-                return <MobileNavItem key={i} navItem={item} />;
-              })}
+            {menuItems.map((item, i) => {
+              return <MobileNavItem key={i} navItem={item} />;
+            })}
           </Box>
         </Box>
         <Box style={{ paddingTop: '12px', borderBottom: '1px solid #242938' }}>
