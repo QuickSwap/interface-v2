@@ -53,6 +53,7 @@
   "seeAllPairs": "See all pairs",
   "features": "Features",
   "joinCommunity": "Join the ever-growing dragon community",
+  "bestTradeTooltip": "QuickSwap automatically aggregates pools from V2 and V3 or routes through the Liquidity Hub to ensure you receive the best possible trade.",
   "day": "day",
   "days": "days",
   "stakingLPTokens": "Staking LP Tokens",
