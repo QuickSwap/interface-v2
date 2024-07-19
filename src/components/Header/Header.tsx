@@ -3,7 +3,8 @@ import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, useMediaQuery } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { useTheme } from '@material-ui/core/styles';
-import { useActiveWeb3React } from 'hooks';
+import { useSwitchNetwork, useWalletInfo } from '@web3modal/ethers5/react';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import QuickIcon from 'assets/images/quickIcon.svg';
 import QuickLogo from 'assets/images/quickLogo.png';
 import QuickLogoWebP from 'assets/images/quickLogo.webp';
@@ -19,18 +20,25 @@ import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
 import { HeaderDesktopItem } from './HeaderDesktopItem';
+import MobileHeader from './MobileHeader';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { NetworkSelection } from './NetworkSelection';
-import { useSwitchNetwork } from '@web3modal/ethers5/react';
 import { OrderlyPoints } from './OrderlyPoints';
+import { shortenAddress, useIsSupportedNetwork } from 'utils';
+import AccountDetailsModal from 'components/AccountDetails/AccountDetailsModal';
 
 const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   onUpdateNewsletter,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { switchNetwork } = useSwitchNetwork();
+  const { walletInfo } = useWalletInfo();
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
   const [showNewsletter, setShowNewsletter] = useState(false);
+  const [showAccountDetailsModal, setShowAccountDetailsModal] = useState(false);
 
   const theme = useTheme();
 
@@ -59,9 +67,9 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
 
   const menuItemCountToShow = useMemo(() => {
     if (deviceWidth > 1580) {
-      return 7;
+      return 8;
     } else if (deviceWidth > 1500) {
-      return 6;
+      return 7;
     } else if (deviceWidth > 1320) {
       return 5;
     } else if (deviceWidth > 1190) {
@@ -73,6 +81,8 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     }
     return 1;
   }, [deviceWidth]);
+
+  const isHome = history.location.pathname === '/';
 
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
@@ -118,47 +128,87 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     items: [],
     isNew: true,
   };
-  if (showPerpsV2 && showPerps) {
-    menuItems.push(perpsTab);
-  }
-  const perpsItem = {
-    link: '/perps',
-    text: 'Perps',
-    id: 'perps-page-link',
-    isExternal: true,
-    externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-    onClick: async () => {
-      if (chainId !== ChainId.ZKEVM) {
-        switchNetwork(ChainId.ZKEVM);
-      }
-      if (process.env.REACT_APP_PERPS_URL) {
-        window.open(process.env.REACT_APP_PERPS_URL, '_self');
-      }
-    },
-  };
-  if (showPerpsV2) {
-    if (showPerps) {
-      perpsTab.items?.push({
-        link: `/falkor`,
-        text: 'Perps',
-        id: 'perps-page-link',
-      });
-    } else {
+  // if (showPerpsV2 && showPerps) {
+  //   menuItems.push(perpsTab);
+  // }
+  // const perpsItem = {
+  //   link: '/perps',
+  //   text: 'Perps',
+  //   id: 'perps-page-link',
+  //   isExternal: true,
+  //   externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+  //   onClick: async () => {
+  //     if (chainId !== ChainId.ZKEVM) {
+  //       switchNetwork(ChainId.ZKEVM);
+  //     }
+  //     if (process.env.REACT_APP_PERPS_URL) {
+  //       window.open(process.env.REACT_APP_PERPS_URL, '_self');
+  //     }
+  //   },
+  // };
+  if (isHome) {
+    menuItems.push({
+      link: '/perps',
+      text: 'Perps',
+      id: 'perps-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+      onClick: async () => {
+        if (chainId !== ChainId.ZKEVM) {
+          const zkEVMconfig = getConfig(ChainId.ZKEVM);
+          const chainParam = {
+            chainId: ChainId.ZKEVM,
+            chainName: `${zkEVMconfig['networkName']} Network`,
+            rpcUrls: [zkEVMconfig['rpc']],
+            nativeCurrency: zkEVMconfig['nativeCurrency'],
+            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
+          };
+        }
+        if (process.env.REACT_APP_PERPS_URL) {
+          window.open(process.env.REACT_APP_PERPS_URL, '_self');
+        }
+      },
+      items: [
+        {
+          id: 'perps-new-page-link',
+          link: '/falkor',
+          text: 'Perps - PoS',
+          isNew: true,
+        },
+        {
+          id: 'perps-v1-page-link',
+          link: process.env.REACT_APP_PERPS_URL || '#',
+          text: 'Perps - zkEVM',
+          onClick: () => {
+            if (process.env.REACT_APP_PERPS_URL) {
+              window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+            }
+          },
+        },
+      ],
+    });
+  } else {
+    if (chainId === ChainId.MATIC) {
       menuItems.push({
-        link: `/falkor`,
+        id: 'perps-new-page-link',
+        link: '/falkor',
         text: 'Perps',
-        id: 'perps-page-link',
         isNew: true,
       });
+    } else if (chainId === ChainId.ZKEVM) {
+      menuItems.push({
+        id: 'perps-v1-page-link',
+        link: process.env.REACT_APP_PERPS_URL || '#',
+        text: 'Perps',
+        onClick: () => {
+          if (process.env.REACT_APP_PERPS_URL) {
+            window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+          }
+        },
+      });
     }
   }
-  if (showPerps) {
-    if (showPerpsV2) {
-      perpsTab.items?.push(perpsItem);
-    } else {
-      menuItems.push(perpsItem);
-    }
-  }
+
   if (showPool) {
     menuItems.push({
       link: `/pools`,
@@ -171,8 +221,24 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     id: 'earn-tab',
     link: '/',
     items: [],
-    isNew: true,
   };
+
+  // const partnersTab: HeaderMenuItem = {
+  //   text: t('Partners'),
+  //   id: 'partners',
+  //   link: '/partners',
+  //   items: [
+  //     {
+  //       link: '/dappOS',
+  //       text: 'DappOS',
+  //       id: 'dappos-page-link',
+  //       isExternal: true,
+  //       target: '_blank',
+  //       externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  //     },
+  //   ],
+  // };
+  // menuItems.push(partnersTab);
   if (showEarn) {
     menuItems.push(earnTab);
   }
@@ -206,7 +272,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       });
     }
   }
-  if (showSafe) {
+  if (chainId === ChainId.ZKEVM) {
     menuItems.push({
       link: '/safe',
       text: 'Safe',
@@ -224,6 +290,11 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'dragons-page-link',
     });
   }
+  menuItems.push({
+    link: '/bridge',
+    text: t('Bridge'),
+    id: 'bridge-page-link',
+  });
   if (showGamingHub) {
     menuItems.push({
       link: '/gamehub',
@@ -260,17 +331,16 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'convert-quick',
     });
   }
-  if (showDappOS) {
-    menuItems.push({
-      link: '/dappos',
-      text: 'DappOS',
-      id: 'dappos-page-link',
-      isExternal: true,
-      target: '_blank',
-      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-      isNew: true,
-    });
-  }
+
+  menuItems.push({
+    link: '/dappOS',
+    text: 'DappOS',
+    id: 'dappos-page-link',
+    isExternal: true,
+    target: '_blank',
+    externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  });
+
   if (showLending) {
     menuItems.push({
       link: '/lend',
@@ -321,34 +391,24 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         </Box>
       )}
       <Box className={`menuBar ${tabletWindowSize ? '' : headerClass}`}>
-        <Box gridGap={isPerpsPage ? 16 : 0}>
-          <Link to={isPerpsPage ? '/falkor' : '/'}>
-            {mobileWindowSize && !isPerpsPage && (
-              <img src={QuickIcon} alt='QuickLogo' className='mobileLogo' />
+        <AccountDetailsModal
+          open={showAccountDetailsModal}
+          onClose={() => setShowAccountDetailsModal(false)}
+        />
+        <Box style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <Link to='/'>
+            {mobileWindowSize && (
+              <img src={QuickIcon} alt='QuickLogo' height={32} />
             )}
-            {!mobileWindowSize &&
-              (isPerpsPage ? (
-                <img
-                  src={QuickPerpsLogo}
-                  alt='QuickPerpsLogo'
-                  className='perpsDesktopLogo'
-                />
-              ) : (
-                <picture>
-                  <source srcSet={QuickLogoWebP} type='image/webp' />
-                  <img
-                    src={QuickLogo}
-                    alt='QuickLogo'
-                    className='desktopLogo'
-                  />
-                </picture>
-              ))}
+            {!mobileWindowSize && (
+              <picture>
+                <source height={32} srcSet={QuickIcon} type='image/webp' />
+                <img src={QuickLogo} alt='QuickLogo' height={32} />
+              </picture>
+            )}
           </Link>
           {!tabletWindowSize && (
-            <Box
-              className={`${isPerpsPage ? 'mainMenuPerps' : 'mainMenu'}`}
-              gridGap={6}
-            >
+            <Box className='mainMenu'>
               {menuItems.slice(0, menuItemCountToShow).map((val, i) => (
                 <HeaderDesktopItem
                   key={`header-desktop-item-${i}`}
@@ -373,17 +433,44 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
             </Box>
           )}
         </Box>
-
-        {tabletWindowSize && <MobileMenuDrawer menuItems={menuItems} />}
         <Box>
-          {isPerpsPage && <OrderlyPoints />}
-          {!parsedChain && <NetworkSelection />}
-
-          <Box className='web3ModalButton'>
-            <w3m-button balance='hide' />
+          {isPerpsPage && !mobileWindowSize && <OrderlyPoints />}
+          <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <NetworkSelection />
+            {!!account ? (
+              <Box
+                id='web3-status-connected'
+                className='accountDetails'
+                onClick={() => setShowAccountDetailsModal(true)}
+                style={{ gap: '8px' }}
+              >
+                {walletInfo?.icon && (
+                  <img src={walletInfo?.icon} width={24} alt='wallet icon' />
+                )}
+                <p>{shortenAddress(account)}</p>
+                <KeyboardArrowDownIcon />
+              </Box>
+            ) : (
+              <Box
+                className='connectButton bg-primary'
+                onClick={() => {
+                  connectWallet();
+                }}
+              >
+                {t('connectWallet')}
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
+
+      {(mobileWindowSize || tabletWindowSize) && (
+        <MobileHeader
+          isMobile={mobileWindowSize}
+          isTablet={tabletWindowSize}
+          menuItems={menuItems}
+        />
+      )}
     </Box>
   );
 };

@@ -35,3 +35,37 @@
     text-align: right;
   }
 }
+
+.swapBox {
+  padding: 16px;
+  z-index: 1;
+  position: relative;
+  text-align: left;
+  & > p {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  & > div {
+    display: flex;
+    align-items: center;
+    & .inputWrapper {
+      flex: 1;
+      position: relative;
+      padding-left: 8px;
+      & input {
+        color: #fff;
+      }
+    }
+    & .maxWrapper {
+      border-radius: 5px; 
+      border: solid 1px #448aff;
+      padding: 0px 6px;
+      line-height: 1.2;
+      cursor: pointer;
+      & small {
+        color: $primary;
+        font-size: 10px;
+      }
+    }
+  }
+}

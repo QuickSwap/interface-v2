@@ -1,14 +1,25 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
 
 .exchangeSwap {
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: -16px auto;
+  margin: -11px auto;
   z-index: 2;
   position: relative;
+  // border: 2px solid #141827;
+}
+
+.infoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #3a4769;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
 }
 
 .box-success {
@@ -33,7 +44,6 @@
   display: flex;
   justify-content: space-between;
   background: $grey9;
-  padding: 8px 16px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   & small {
@@ -55,7 +65,7 @@
 .swapButtonWrapper {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 10px;
   width: 100%;
   & button {
     border-radius: 10px;
@@ -73,7 +83,7 @@
       align-items: center;
       & > div {
         color: white;
-        margin-left: 6px
+        margin-left: 6px;
       }
     }
   }
@@ -96,14 +106,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 8px 16px 0;
-  & small {
-    color: $grey19;
-  }
+  // margin: 8px 16px 0;
+ 
   & .swapSlippage {
     cursor: pointer;
     & small {
-      color: $primary;
+      color: $grey19;
     }
     & svg {
       margin-left: 8px;
@@ -113,7 +121,7 @@
     display: flex;
     align-items: center;
     & > div {
-      margin-left: 4px
+      margin-left: 4px;
     }
   }
 }
@@ -126,7 +134,7 @@
     & p {
       font-size: 16px;
       line-height: 28px;
-      margin-right: 4px
+      margin-right: 4px;
     }
   }
 }
