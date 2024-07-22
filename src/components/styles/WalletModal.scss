@@ -1,5 +1,5 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
 
 .walletModalWrapper {
   max-height: 95vh;
@@ -93,7 +93,7 @@
 .optionCardIconfiy {
   margin: 12px;
 
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     margin: 8px;
   }
 
@@ -113,7 +113,7 @@
     margin: auto;
     border-radius: 24px;
 
-    @include media('screen', '<tablet') {
+    @include media("screen", "<tablet") {
       width: 80px;
       height: 80px;
     }
