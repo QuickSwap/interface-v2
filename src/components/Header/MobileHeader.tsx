@@ -165,7 +165,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               marginBottom: '12px',
             }}
           >
-            Govermance
+            Governance
           </Typography>
           <Box style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {govermance.map((item, index) => {
