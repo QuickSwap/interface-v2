@@ -113,116 +113,11 @@ export function SelectPair({
     getContentAnchorEl: null,
   };
 
-  const depositType = [
-    {
-      isSingle: false,
-      title: 'Double Sided',
-      value: 'double',
-      icon: '/icons/pools/single-deposit.svg',
-    },
-    {
-      isSingle: true,
-      title: 'Single Sided',
-      value: 'single',
-      isNew: true,
-      poweredBy: {
-        logo: '/ichi-logo.png',
-      },
-      icon: '/icons/pools/multiple-deposit.svg',
-    },
-  ];
-
   return (
     <Box className='deposit_type'>
-      {/* <small className='weight-600'>{t('selectPair')}</small> */}
-      <p>1. {t('selectDepositType')}</p>
-      <Box mt={1.5} mb={1.5} gridGap={16} className='flex items-center'>
-        {depositType.map((item, index) => {
-          const isSelected = item.value === selectedDepositType;
-          return (
-            <Box
-              key={index}
-              onClick={() => {
-                setSelectedDepositType(item.value);
-              }}
-              style={{
-                width: '100%',
-                height: '105px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                backgroundColor: '#282d3d',
-                borderRadius: '12px',
-                position: 'relative',
-                gap: '8px',
-                cursor: 'pointer',
-              }}
-            >
-              <img src={item.icon} alt='deposit icon' />
-              <Box
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: '14px',
-                    color: '#c7cad9c',
-                  }}
-                >
-                  {item.title}
-                </p>
-                {item.isNew && <img src={Fire} alt='fire' />}
-              </Box>
-
-              {item.poweredBy && (
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <p
-                    style={{
-                      textTransform: 'uppercase',
-                      color: '#636780',
-                      fontSize: '8px',
-                    }}
-                  >
-                    Powered by
-                  </p>
-                  <img
-                    src={item.poweredBy.logo}
-                    alt='poweredby'
-                    style={{ width: '20%' }}
-                  />
-                </Box>
-              )}
-              {isSelected && (
-                <Box
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    left: 0,
-                    top: 0,
-                    border: 'solid 1.6px rgba(68, 138, 255, 0.8)',
-
-                    borderRadius: '12px',
-                    pointerEvents: 'none',
-                  }}
-                ></Box>
-              )}
-            </Box>
-          );
-        })}
-        {/* <Box flex={1}>
+      <small className='weight-600'>{t('selectPair')}</small>
+      <Box display='flex'>
+        <Box flex={1}>
           <V3CurrencySelect
             currency={baseCurrency ?? undefined}
             otherCurrency={quoteCurrency ?? undefined}
@@ -238,10 +133,7 @@ export function SelectPair({
             otherCurrency={baseCurrency ?? undefined}
             handleCurrencySelect={handleCurrencyBSelect}
           />
-        </Box> */}
-        {/* <Box>
-          <p>{t('selectDepositType')}</p>
-        </Box> */}
+        </Box>
       </Box>
     </Box>
   );

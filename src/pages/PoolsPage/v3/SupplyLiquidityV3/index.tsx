@@ -54,6 +54,7 @@ import SelectFeeTier from './containers/SelectFeeTier';
 import SelectVault from './containers/SelectVault';
 import DepositAmount from './containers/DepositAmount';
 import token from '../../../../assets/tokenLogo/0xfa9343c3897324496a05fc75abed6bac29f8a40f.png';
+import { SelectDepositType } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectDepositType';
 
 const tokenList = [
   {
@@ -407,19 +408,18 @@ export function SupplyLiquidityV3() {
         </Box>
       </Box>
       <Box mt={2}>
-        {account && isSupportedNetwork ? (
-          <SelectPair
-            selectedDepositType={selectedDepositType}
-            setSelectedDepositType={setSelectedDepositType}
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            mintInfo={mintInfo}
-            handleCurrencyASelect={handleCurrencyASelect}
-            handleCurrencyBSelect={handleCurrencyBSelect}
-            handlePopularPairSelection={resetState}
-            priceFormat={priceFormat}
-          />
-        ) : (
+        <SelectDepositType
+          selectedDepositType={selectedDepositType}
+          setSelectedDepositType={setSelectedDepositType}
+          baseCurrency={baseCurrency}
+          quoteCurrency={quoteCurrency}
+          mintInfo={mintInfo}
+          handleCurrencyASelect={handleCurrencyASelect}
+          handleCurrencyBSelect={handleCurrencyBSelect}
+          handlePopularPairSelection={resetState}
+          priceFormat={priceFormat}
+        />
+        {(!account || !isSupportedNetwork) && (
           <Button
             className='v3-supply-liquidity-button'
             onClick={connectWallet}
@@ -531,10 +531,53 @@ export function SupplyLiquidityV3() {
               </Typography>
             </Box>
           </Box>
+          <ButtonBase
+            style={{
+              width: '100%',
+              height: '48px',
+              backgroundColor: '#448aff',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '8px',
+            }}
+          >
+            Approve WBTC
+          </ButtonBase>
+
+          <ButtonBase
+            disabled
+            style={{
+              width: '100%',
+              height: '48px',
+              backgroundColor: '#404556',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '8px',
+            }}
+          >
+            Add Liquidity
+          </ButtonBase>
         </Box>
       )}
       {selectedDepositType === 'double' && (
         <Box mt={4} position='relative'>
+          {account && isSupportedNetwork && (
+            <SelectPair
+              selectedDepositType={selectedDepositType}
+              setSelectedDepositType={setSelectedDepositType}
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              mintInfo={mintInfo}
+              handleCurrencyASelect={handleCurrencyASelect}
+              handleCurrencyBSelect={handleCurrencyBSelect}
+              handlePopularPairSelection={resetState}
+              priceFormat={priceFormat}
+            />
+          )}
           {(!baseCurrency ||
             !quoteCurrency ||
             !account ||
@@ -591,36 +634,6 @@ export function SupplyLiquidityV3() {
           </Box>
         </Box>
       )}
-      <ButtonBase
-        style={{
-          width: '100%',
-          height: '48px',
-          backgroundColor: '#448aff',
-          borderRadius: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '8px',
-        }}
-      >
-        Approve WBTC
-      </ButtonBase>
-
-      <ButtonBase
-        disabled
-        style={{
-          width: '100%',
-          height: '48px',
-          backgroundColor: '#404556',
-          borderRadius: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '8px',
-        }}
-      >
-        Add Liquidity
-      </ButtonBase>
     </Box>
   );
 }

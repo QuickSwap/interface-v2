@@ -1,0 +1,22 @@
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
+
+.v3PairPlusIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid $textSecondary;
+    color: $textSecondary;
+}
+.deposit_type {
+    .MuiInputBase-root {
+        background-color: #282d3d !important;
+        padding: 4px 8px;
+        border-radius: 20px;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
