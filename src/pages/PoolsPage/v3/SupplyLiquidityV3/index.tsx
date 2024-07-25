@@ -80,7 +80,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   select: {
-    width: 'auto',
+    width: '100%',
     fontSize: '12px',
     '&:focus': {
       backgroundColor: 'transparent',
@@ -430,13 +430,20 @@ export function SupplyLiquidityV3() {
       </Box>
       {selectedDepositType === 'single' && (
         <Box>
-          <Box>
+          <Box
+            sx={{
+              bgcolor: '#282d3d',
+              padding: '4px 10px',
+              borderRadius: 20,
+            }}
+          >
             <Select
               value={depositToken}
               onChange={handleChange}
               disableUnderline
               IconComponent={KeyboardArrowDownIcon}
               MenuProps={menuProps}
+              fullWidth
               classes={{
                 select: classes.select,
                 icon: classes.selectIcon,
