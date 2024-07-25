@@ -54,6 +54,7 @@ import {
   DAIE,
   SD,
   ABOND,
+  DSRUN,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -2328,6 +2329,7 @@ export const IchiVaults: {
     '0x2ED64d3De2A2c060FF4b31e9B2f9268ADcE7e671',
     '0x6fD4058ED78608F3C613585EEa222F6F5480e0D5',
     '0x3c306334b3728F5E50c1eDfA8338ffe96C875812',
+    '0xECD259DEdDc93B9881debDC67c7c4b553794Fd3c',
   ],
   [ChainId.ZKEVM]: [
     '0x423382e084f1d1d180bec638bc64cc6408896c3c',
@@ -2548,6 +2550,7 @@ export const GlobalValue = {
         CRS[ChainId.MATIC],
         SD[ChainId.MATIC],
         ABOND[ChainId.MATIC],
+        DSRUN[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],

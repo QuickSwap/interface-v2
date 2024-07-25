@@ -383,12 +383,14 @@ export const STEER_PERIPHERY: AddressMap = {
   [ChainId.MATIC]: '0x29E1888F7DD0757f2873E494463Ec389dab38D27',
   [ChainId.MANTA]: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921',
   [ChainId.ASTARZKEVM]: '0x37Cff062D52Dd6E9E39Df619CCd30c037a36bB83',
+  [ChainId.LAYERX]: '0xab36D30C1A1C683037Bd7AAC67f29B2e3ECC6576',
 };
 
 export const STEER_VAULT_REGISTRY: AddressMap = {
   [ChainId.MATIC]: '0x24825B3C44742600D3995d1D3760cceE999A7f0b',
   [ChainId.MANTA]: '0x38a07152ee64C7067fEeBA904D72ABc9a9DA0C77',
   [ChainId.ASTARZKEVM]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
+  [ChainId.LAYERX]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
 };
 
 export const MERKL_DISTRIBUTOR = '0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae';
@@ -1327,6 +1329,16 @@ export const ABOND: { [chainId: number]: Token } = {
   ),
 };
 
+export const DSRUN: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xFf76c0B48363A7C7307868a81548d340049b0023',
+    18,
+    'DSRUN',
+    'DerbyStarsRUN',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1553,49 +1565,6 @@ export const SUGGESTED_BASES: {
   ],
 };
 
-export const TRENDING_LIST: {
-  [ChainId: number]: Token[];
-} = {
-  [ChainId.MATIC]: [
-    ...WETH_ONLY[ChainId.MATIC],
-    USDC[ChainId.MATIC],
-    WBTC[ChainId.MATIC],
-  ],
-  [ChainId.DOGECHAIN]: [
-    USDC[ChainId.DOGECHAIN],
-    USDT[ChainId.DOGECHAIN],
-    WBTC[ChainId.DOGECHAIN],
-  ],
-  [ChainId.ZKTESTNET]: [WETH[ChainId.ZKTESTNET], USDT[ChainId.ZKTESTNET]],
-  [ChainId.ZKEVM]: [
-    WETH[ChainId.ZKEVM],
-    USDT[ChainId.ZKEVM],
-    MATIC[ChainId.ZKEVM],
-    WBTC[ChainId.ZKEVM],
-  ],
-  [ChainId.MANTA]: [
-    WETH[ChainId.MANTA],
-    USDC[ChainId.MANTA],
-    WBTC[ChainId.MANTA],
-    MATIC[ChainId.MANTA],
-  ],
-  [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
-  [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
-  [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
-  [ChainId.IMX]: [WETH[ChainId.IMX], USDC[ChainId.IMX], WBTC[ChainId.IMX]],
-  [ChainId.ASTARZKEVM]: [
-    USDC[ChainId.ASTARZKEVM],
-    MATIC[ChainId.ASTARZKEVM],
-    WBTC[ChainId.ASTARZKEVM],
-  ],
-  [ChainId.LAYERX]: [
-    ETHER[ChainId.LAYERX],
-    WETH[ChainId.LAYERX],
-    WBTC[ChainId.LAYERX],
-    USDC[ChainId.LAYERX],
-  ],
-};
-
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
   [ChainId: number]: Token[];
 } = {
@@ -1753,34 +1722,3 @@ export class ExtendedEther extends V3Currency {
     );
   }
 }
-
-export const wrappedTokenAddresses = {
-  1: '0xC02aaa39b223FE8D0A0e5C4F27eAD9083C756Cc2', // Ethereum Mainnet (WETH)
-  3: '0xc778417E063141139Fce010982780140Aa0cD5Ab', // Ropsten Testnet (WETH)
-  4: '0xc778417E063141139Fce010982780140Aa0cD5Ab', // Rinkeby Testnet (WETH)
-  5: '0xc778417E063141139Fce010982780140Aa0cD5Ab', // Goerli Testnet (WETH)
-  42: '0xd0A1E359811322d97991E03f863a0C30C2cF029C', // Kovan Testnet (WETH)
-  56: '0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // Binance Smart Chain Mainnet (WBNB)
-  97: '0xae13d989dac2f0debff460ac112a837c89baa7cd', // Binance Smart Chain Testnet (WBNB)
-  137: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // Polygon Mainnet (WMATIC)
-  80001: '0x9c3c9283d3e44854697cd22d3faa240cfb032889', // Mumbai Testnet (WMATIC)
-  43114: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Avalanche Mainnet (WAVAX)
-  1101: '0xa2036f0538221a77A3937F1379699f44945018d0', // Polygon zkEVM Mainnet (WETH)
-  344: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Manta Pacific L2 Rollup (WETH)
-  132: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Immutable zkEVM Mainnet (WETH)
-  592: '0x9fB83c0635De2E815fd1c21b3a292277540C2e8d', // Astar zkEVM (WASTR)
-  2000: '0x5c21a9226A2E5cd2c30bDB3A5D53E1c2325Ff55a', // DogeChain (wDOGE)
-  2010: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // X Layer (WETH)
-  2222: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', // Kava - Kinetix (WKAVA)
-};
-
-export const nativeTokenSymbols = {
-  137: 'MATIC', // Polygon Mainnet
-  1101: 'ETH', // Polygon zkEVM
-  344: 'MANTA', // Manta Pacific L2 Rollup (Assumed)
-  132: 'IMX', // Immutable zkEVM Mainnet (Assumed)
-  592: 'ASTR', // Astar zkEVM
-  2000: 'DOGE', // DogeChain
-  2010: 'XLAYER', // X Layer (Assumed)
-  2222: 'KAVA', // Kava - Kinetix
-};

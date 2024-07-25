@@ -1,17 +1,13 @@
-@use "styles/variables" as *;
-@use "styles/breakpoints" as *;
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
 .heroSection {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
   position: relative;
-  text-align: left;
+  text-align: center;
   z-index: 2;
-  @media screen and (max-width: "900px") {
-    padding-top: 220px;
-    align-items: center;
-  }
   & h3 {
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -32,88 +28,6 @@
     align-items: center;
     justify-content: center;
   }
-
-  .cover_title {
-    max-width: 40%;
-    margin-bottom: 20px;
-    @media screen and (max-width: "900px") {
-      width: 100%;
-      max-width: 100%;
-      margin-bottom: 24px;
-      padding: 0 20px;
-    }
-  }
-  .cover_sub_title {
-    max-width: 40%;
-    margin-bottom: 20px;
-    @media screen and (max-width: "900px") {
-      width: 100%;
-      max-width: 100%;
-      padding: 0 40px;
-      margin-bottom: 40px;
-    }
-  }
-  .title {
-    font-size: 50px;
-    font-weight: 600;
-    line-height: 1.16;
-    @media screen and (max-width: "900px") {
-      width: 100%;
-      font-size: 32px;
-      text-align: center;
-    }
-  }
-  .subTitle {
-    font-size: 18px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.67;
-    @media screen and (max-width: "900px") {
-      width: 100%;
-      font-size: 14px;
-      text-align: center;
-    }
-  }
-}
-
-.available_chain_list {
-  flex-direction: row;
-  gap: 16px;
-  @media screen and (max-width: "900px") {
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-  }
-
-  .chain_list {
-    @media screen and (max-width: "900px") {
-      flex-direction: column;
-      align-items: start !important;
-    }
-  }
-}
-
-.quick_statistics {
-  align-items: center;
-  @media screen and (max-width: "900px") {
-    align-items: start;
-  }
-
-  .title {
-    font-size: 32px;
-    @media screen and (max-width: "900px") {
-      font-size: 24px;
-    }
-  }
-  .desc {
-    text-align: center;
-    font-size: 18px;
-    @media screen and (max-width: "900px") {
-      text-align: left;
-      font-size: 16px;
-    }
-  }
 }
 
 .tradingInfo {
@@ -121,9 +35,7 @@
   position: relative;
   z-index: 2;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 24px;
-  @include media("screen", "<desktop") {
+  @include media('screen', '<desktop') {
     flex-wrap: wrap;
   }
 }
@@ -142,7 +54,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     margin: 32px 0 64px;
   }
   .allRewardPairs {
@@ -158,127 +70,44 @@
 }
 .featureHeading {
   margin: auto;
-  align-items: center;
-  @media screen and (max-width: "900px") {
-    align-items: start;
-  }
+  text-align: center;
   & h3 {
     color: $grey7;
     margin-bottom: 32px;
   }
-
-  .title {
-    font-size: 32px;
-    @media screen and (max-width: "900px") {
-      font-size: 24px;
-    }
-  }
-  .desc {
-    text-align: center;
-    font-size: 18px;
-    @media screen and (max-width: "900px") {
-      text-align: left;
-      font-size: 16px;
-    }
-  }
 }
-
-.feat_block {
-  width: 204px;
-  height: 318px;
-  padding: 24px;
-  background-color: #9b9b9b0f;
-  transition: 0.3s ease-in-out;
-  position: relative;
-
-  &:hover {
-    // background-color: #9b9b9b4b;
-    box-shadow: 1px 3px 30px 0px rgba(145, 145, 145, 0.75);
-    -webkit-box-shadow: 1px 3px 30px 0px rgba(145, 145, 145, 0.75);
-    -moz-box-shadow: 1px 3px 30px 0px rgba(145, 145, 145, 0.75);
-    transform: translateY(-5px);
-  }
-
-  @media screen and (max-width: "900px") {
-    width: 100%;
-    height: 200px;
-  }
-  .cover_title {
-    flex-direction: column;
-    gap: 26px;
-    @media screen and (max-width: "900px") {
-      flex-direction: row;
-      gap: 24px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-    p {
-      margin-bottom: 12px;
-      @media screen and (max-width: "900px") {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  .link_action {
-    position: absolute;
-    left: 24px;
-    bottom: 24px;
-    @media screen and (max-width: "900px") {
-      bottom: 28px;
-    }
-  }
-}
-
 .featureDivider {
   width: 32px;
   height: 2px;
   background: $successLight;
   margin: auto;
 }
-.cover_feat_block {
-  gap: 24px;
-  @media screen and (max-width: "900px") {
-    gap: 16px;
-  }
-}
 .featureContainer {
-  & > div {
+  & > div.MuiGrid-root {
     margin-top: 32px;
     & > div {
       & img {
-        width: 32px;
-        height: 32px;
+        width: 150px;
+        max-width: 240px;
       }
       & > div {
-        // width: calc(100% - 270px);
+        width: calc(100% - 270px);
       }
-      @include media("screen", "<phone") {
+      @include media('screen', '<phone') {
         flex-direction: column;
+        & img,
         & > div {
           width: 100%;
           text-align: center;
         }
       }
     }
-
-    a {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      text-decoration: none;
-      font-size: 14px;
-      color: #ccd8e7;
-    }
   }
   & .featureText {
+    margin-left: 8px;
     & h3 {
       color: white;
       margin-bottom: 8;
-    }
-    p {
-      font-size: 14px;
-      text-align: left;
     }
   }
 }
@@ -290,57 +119,6 @@
     align-items: center;
     justify-content: center;
     margin-top: 48px;
-    .cover_community_content {
-      padding: 35px 75px;
-      @media screen and (max-width: "900px") {
-        padding: 48px 24px;
-      }
-
-      .cover_content {
-        max-width: 80%;
-        @media screen and (max-width: "900px") {
-          max-width: 100%;
-        }
-
-        .title {
-          text-align: left;
-          font-size: 32px;
-          @media screen and (max-width: "900px") {
-            text-align: center;
-            font-size: 24px;
-          }
-        }
-
-        .desc {
-          text-align: left;
-          font-size: 16px;
-          @media screen and (max-width: "900px") {
-            text-align: center;
-          }
-        }
-      }
-    }
-
-    .email_form {
-      width: 318px;
-      @media screen and (max-width: "900px") {
-        width: 100%;
-        margin-bottom: 40px;
-      }
-
-      button {
-        &:hover {
-          transform: translateX(5px);
-        }
-      }
-    }
-
-    .cover_social_list {
-      @media screen and (max-width: "900px") {
-        justify-content: center;
-      }
-    }
-
     & > div {
       padding: 16px;
       text-align: center;
@@ -364,10 +142,6 @@
         height: 64px;
         margin-bottom: 8px;
         filter: grayscale(1);
-        @media screen and (max-width: "900px") {
-          width: 48px;
-          height: 48px;
-        }
       }
       &.svgFill svg path {
         fill: $textPrimary;
@@ -420,7 +194,7 @@
     height: 32px;
     cursor: pointer;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     display: none;
   }
 }
@@ -434,7 +208,7 @@
   & > div {
     width: 100%;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     & .MuiGrid-item {
       width: 100%;
       margin-bottom: 32px;
@@ -446,7 +220,7 @@
 .swapInfo {
   text-align: left;
   margin-bottom: 60px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     order: -1;
   }
   & h3 {
@@ -455,36 +229,24 @@
 }
 
 .tradingSection {
-  background: #9b9b9b0f;
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  width: 204px;
-  // max-width: 288px;
-  // min-width: 220px;
-  height: 107px;
-  // display: flex;
-  // flex-direction: column;
-  // align-items: center;
-  // justify-content: center;
-  padding: 28px 24px;
+  background: $bgColor;
+  width: calc(25% - 24px);
+  max-width: 288px;
+  min-width: 220px;
+  height: 133px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   border-radius: 20px;
-  transition: 0.3s ease-in-out;
-  cursor: pointer;
-
-  &:hover {
-    background: #9b9b9b5b;
-  }
-
-  @include media("screen", "<desktop") {
-    width: 187px;
-  }
+  margin: 12px;
   & h6 {
-    // padding-top: 2px;
+    padding-top: 2px;
   }
   & p {
     font-size: 12px;
     color: $textSecondary;
-    margin-bottom: 12px;
+    padding-top: 12px;
   }
   & h4 {
     font-size: 12px;
@@ -492,11 +254,8 @@
     margin-top: 3px;
     color: $primary;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     height: unset;
-  }
-  & h3 {
-    font-size: 20px;
   }
 }
 
@@ -506,10 +265,10 @@
   border-radius: 48px;
   overflow: hidden;
   position: relative;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     height: auto;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 24px;
     border-radius: 24px;
   }
@@ -530,7 +289,7 @@
       width: 129px;
       max-width: 320px;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       flex-direction: column;
       padding: 0;
     }
@@ -542,7 +301,7 @@
       font-size: 22px;
       margin-bottom: 12px;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       flex-direction: column;
       margin-right: 0;
       margin-bottom: 32px;
@@ -573,11 +332,11 @@
   & .buyFiatWrapper {
     width: 408px;
     position: relative;
-    @include media("screen", "<tablet") {
+    @include media('screen', '<tablet') {
       width: calc(100% - 64px);
       margin-bottom: 32px;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       width: calc(100% - 40px);
     }
     & .buyContent {
@@ -628,13 +387,13 @@
     right: 0;
     opacity: 0.4;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     flex-direction: column;
     & > div:first-child {
       text-align: center;
     }
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 24px;
   }
 }
@@ -670,7 +429,7 @@
       font-weight: 500;
     }
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     margin: 16px 0 0;
     width: 100%;
     max-width: 430px;
