@@ -55,6 +55,7 @@ import SelectVault from './containers/SelectVault';
 import DepositAmount from './containers/DepositAmount';
 import token from '../../../../assets/tokenLogo/0xfa9343c3897324496a05fc75abed6bac29f8a40f.png';
 import { SelectDepositType } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectDepositType';
+import V3CurrencySelect from 'components/v3/CurrencySelect';
 
 const tokenList = [
   {
@@ -369,6 +370,14 @@ export function SupplyLiquidityV3() {
       ? gammaPairs.find((pair) => pair.type === preset)
       : undefined;
 
+  console.log(
+    'baseCurrency',
+    baseCurrency,
+    quoteCurrency,
+    account,
+    isSupportedNetwork,
+  );
+
   return (
     <Box>
       {openSettingsModal && (
@@ -430,14 +439,8 @@ export function SupplyLiquidityV3() {
       </Box>
       {selectedDepositType === 'single' && (
         <Box>
-          <Box
-            sx={{
-              bgcolor: '#282d3d',
-              padding: '4px 10px',
-              borderRadius: 20,
-            }}
-          >
-            <Select
+          <Box>
+            {/* <Select
               value={depositToken}
               onChange={handleChange}
               disableUnderline
@@ -463,7 +466,12 @@ export function SupplyLiquidityV3() {
                   </Box>
                 </MenuItem>
               ))}
-            </Select>
+            </Select> */}
+            <V3CurrencySelect
+              currency={baseCurrency ?? undefined}
+              otherCurrency={quoteCurrency ?? undefined}
+              handleCurrencySelect={handleCurrencyASelect}
+            />
           </Box>
           <Box sx={{ padding: '12px 0' }}>
             <SelectVault />
@@ -564,7 +572,7 @@ export function SupplyLiquidityV3() {
         </Box>
       )}
       {selectedDepositType === 'double' && (
-        <Box mt={4} position='relative'>
+        <Box>
           {account && isSupportedNetwork && (
             <SelectPair
               selectedDepositType={selectedDepositType}
@@ -578,59 +586,61 @@ export function SupplyLiquidityV3() {
               priceFormat={priceFormat}
             />
           )}
-          {(!baseCurrency ||
-            !quoteCurrency ||
-            !account ||
-            !isSupportedNetwork) && (
-            <Box className='v3-supply-liquidity-overlay' />
-          )}
-          {mintInfo.noLiquidity &&
-            baseCurrency &&
-            quoteCurrency &&
-            liquidityRangeType ===
-              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
-              <Box mb={2}>
-                <InitialPrice
+          <Box mt={4} position='relative'>
+            {(!baseCurrency ||
+              !quoteCurrency ||
+              !account ||
+              !isSupportedNetwork) && (
+              <Box className='v3-supply-liquidity-overlay' />
+            )}
+            {mintInfo.noLiquidity &&
+              baseCurrency &&
+              quoteCurrency &&
+              liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+                <Box mb={2}>
+                  <InitialPrice
+                    currencyA={baseCurrency ?? undefined}
+                    currencyB={currencyB ?? undefined}
+                    mintInfo={mintInfo}
+                    priceFormat={priceFormat}
+                  />
+                </Box>
+              )}
+            <SelectFeeTier mintInfo={mintInfo} />
+            <SelectRange
+              currencyA={baseCurrency}
+              currencyB={quoteCurrency}
+              mintInfo={mintInfo}
+              priceFormat={priceFormat}
+            />
+            <Box mt={4} position='relative'>
+              <small className='weight-600'>{t('depositAmounts')}</small>
+              {gammaPair?.withdrawOnly && (
+                <Box className='v3-deposit-disable-banner'>
+                  <p>{t('withdrawOnlyVault')}</p>
+                </Box>
+              )}
+              <Box my={2}>
+                <EnterAmounts
                   currencyA={baseCurrency ?? undefined}
                   currencyB={currencyB ?? undefined}
                   mintInfo={mintInfo}
                   priceFormat={priceFormat}
                 />
               </Box>
-            )}
-          <SelectFeeTier mintInfo={mintInfo} />
-          <SelectRange
-            currencyA={baseCurrency}
-            currencyB={quoteCurrency}
-            mintInfo={mintInfo}
-            priceFormat={priceFormat}
-          />
-          <Box mt={4} position='relative'>
-            <small className='weight-600'>{t('depositAmounts')}</small>
-            {gammaPair?.withdrawOnly && (
-              <Box className='v3-deposit-disable-banner'>
-                <p>{t('withdrawOnlyVault')}</p>
-              </Box>
-            )}
-            <Box my={2}>
-              <EnterAmounts
-                currencyA={baseCurrency ?? undefined}
-                currencyB={currencyB ?? undefined}
+              <AddLiquidityButton
+                baseCurrency={baseCurrency ?? undefined}
+                quoteCurrency={quoteCurrency ?? undefined}
                 mintInfo={mintInfo}
-                priceFormat={priceFormat}
+                handleAddLiquidity={() => {
+                  resetState();
+                  onFieldAInput('');
+                  onFieldBInput('');
+                }}
+                title={expertMode ? t('addLiquidity') : t('preview')}
               />
             </Box>
-            <AddLiquidityButton
-              baseCurrency={baseCurrency ?? undefined}
-              quoteCurrency={quoteCurrency ?? undefined}
-              mintInfo={mintInfo}
-              handleAddLiquidity={() => {
-                resetState();
-                onFieldAInput('');
-                onFieldBInput('');
-              }}
-              title={expertMode ? t('addLiquidity') : t('preview')}
-            />
           </Box>
         </Box>
       )}

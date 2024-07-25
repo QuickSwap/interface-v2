@@ -86,32 +86,9 @@ export function SelectPair({
   handleCurrencySwap,
   handleCurrencyASelect,
   handleCurrencyBSelect,
-  selectedDepositType,
-  setSelectedDepositType,
 }: ISelectPair) {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [depositToken, setDepositToken] = useState('wbtc');
-
-  const handleChange = () => {
-    console.log('asdasdasd');
-  };
-
-  const menuProps = {
-    classes: {
-      list: classes.list,
-      paper: classes.paper,
-    },
-    // anchorOrigin: {
-    //   vertical: 'bottom',
-    //   horizontal: 'center',
-    // },
-    // transformOrigin: {
-    //   vertical: 'top',
-    //   horizontal: 'center',
-    // },
-    getContentAnchorEl: null,
-  };
 
   return (
     <Box className='deposit_type'>
