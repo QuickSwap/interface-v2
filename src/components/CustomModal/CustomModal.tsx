@@ -29,10 +29,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
       BackdropProps={
         hideBackdrop
           ? undefined
-          : {
-              timeout: 500,
-              classes: { root: 'customModalBackdrop' },
-            }
+          : { timeout: 500, classes: { root: 'customModalBackdrop' } }
       }
     >
       <Fade in={open}>

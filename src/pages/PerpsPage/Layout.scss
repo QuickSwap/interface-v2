@@ -179,7 +179,7 @@
     margin-right: -4px;
     margin-top: 4px;
     & .MuiSlider-rail {
-      // background-color: transparent;
+      background-color: transparent;
     }
     & .MuiSlider-track {
       background-color: $textSecondary;
@@ -274,7 +274,7 @@
 
 .orderTableActionButton {
   height: 30px;
-  // background-color: transparent;
+  background-color: transparent;
   border: 1px solid $textPrimary;
   display: flex;
   align-items: center;
@@ -367,7 +367,7 @@
 .accountPanelButton {
   border: 1px solid $primary;
   border-radius: 5px;
-  // background-color: transparent;
+  background-color: transparent;
   padding: 2px 8px;
   min-width: unset;
   &:hover {
@@ -425,7 +425,7 @@
       & button {
         height: 24px;
         &.MuiButton-outlined {
-          // background-color: transparent;
+          background-color: transparent;
           border: 1px solid $primary;
           & span {
             color: $primary;

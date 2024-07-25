@@ -1,8 +1,8 @@
-@use "styles/variables" as *;
-@use "styles/fonts" as *;
-@use "styles/colors" as *;
-@use "styles/breakpoints" as *;
-@use "styles/mui-overrides" as *;
+@use 'styles/variables' as *;
+@use 'styles/fonts' as *;
+@use 'styles/colors' as *;
+@use 'styles/breakpoints' as *;
+@use 'styles/mui-overrides' as *;
 
 :root {
   --orderly-color-primary: 182 79 255;
@@ -64,7 +64,7 @@
 body {
   margin: 0;
 
-  iframe[style*="z-index: 2147483647"] {
+  iframe[style*='z-index: 2147483647'] {
     display: none !important;
   }
 }
@@ -78,20 +78,20 @@ wcm-modal {
   &::after {
     display: inline-block;
     animation: ellipsis 1.25s infinite;
-    content: ".";
+    content: '.';
     width: 1em;
     text-align: left;
   }
 
   @keyframes ellipsis {
     0% {
-      content: ".";
+      content: '.';
     }
     33% {
-      content: "..";
+      content: '..';
     }
     66% {
-      content: "...";
+      content: '...';
     }
   }
 }
@@ -120,7 +120,7 @@ wcm-modal {
 }
 
 [data-reach-dialog-content] {
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     transform: translateY(-90px) !important;
     max-height: calc(100vh - 120px) !important;
     min-height: calc(100vh - 120px) !important;
@@ -130,9 +130,9 @@ wcm-modal {
 
 .wrapper {
   padding: 24px;
-  // background: $bgPalette;
+  background: $bgPalette;
   border-radius: 20px;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 16px 12px;
   }
 }
@@ -190,7 +190,7 @@ wcm-modal {
       }
     }
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     & .MuiGrid-item {
       width: 100%;
       margin-bottom: 32px;
@@ -200,28 +200,28 @@ wcm-modal {
 }
 
 .page {
-  background-color: #141827;
+  background-color: $bgColor;
   width: 100%;
   min-height: 100vh;
 }
 
 .pageWrapper {
-  max-width: 1344px;
+  max-width: 1312px;
   position: relative;
   z-index: 11;
   display: flex;
   align-items: center;
   flex-direction: column;
   margin: 0 auto;
-  padding: 152px 0;
-  @include media("screen", "<tablet") {
+  padding: 152px 32px 0;
+  @include media('screen', '<tablet') {
     padding: 190px 12px 0;
   }
 }
 
 .pageProModeWrapper {
   padding-top: 128px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding-top: 0;
   }
 }
@@ -234,20 +234,20 @@ wcm-modal {
   flex-direction: column;
   margin: 24px auto;
   padding: 128px 32px 0;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding: 172px 12px 0;
   }
 }
 
 .pageWrapper-no-max-no-news {
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding-top: 64px !important;
   }
 }
 
 .pageWrapper-proMode {
   padding: 128px 0 0;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding: 190px 0 0;
   }
 }
@@ -265,17 +265,10 @@ wcm-modal {
   left: 0;
   z-index: 1;
   width: 100%;
-  min-height: 250%;
   overflow: hidden;
-  &.isNewBg {
-    min-height: 100%;
-  }
   & img {
     width: 100%;
     min-width: 1200px;
-    @media screen and (max-width: "600px") {
-      min-width: 600px;
-    }
   }
 }
 
@@ -603,7 +596,7 @@ wcm-modal {
     font-size: 13px;
     line-height: 14px;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     top: 180px;
   }
 }

@@ -1,8 +1,0 @@
-<svg data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-    <g data-name="invisible box">
-        <path data-name="Rectangle 25471" style="fill:none" d="M0 0h16v16H0z"/>
-    </g>
-    <g data-name="icons Q2">
-        <path data-name="Path 20149" d="M17 8.667h-.667v-2A.667.667 0 0 0 15.667 6H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h11a.667.667 0 0 0 .667-.667v-8A.667.667 0 0 0 17 8.667zM6 7.333h9v1.334H6.033a.7.7 0 0 1-.7-.567A.667.667 0 0 1 6 7.333zm10.333 4h-4a.667.667 0 0 0-.667.667v2.667a.667.667 0 0 0 .667.667h4v1.333H6A.667.667 0 0 1 5.333 16v-6h11zm-2 2a.667.667 0 1 1-.667-.667.667.667 0 0 1 .667.667z" transform="translate(-2.667 -4)" style="fill:#ccd8e8"/>
-    </g>
-</svg>

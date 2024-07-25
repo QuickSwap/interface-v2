@@ -1,4 +1,4 @@
-@use "styles/variables" as *;
+@use 'styles/variables' as *;
 
 .footer {
   border-top: 1px solid $divider;
@@ -14,10 +14,7 @@
   overflow: hidden;
   padding: 0 24px;
   & img {
-    height: 20px;
-    &.logo {
-      height: 40px;
-    }
+    height: 40px;
   }
 }
 
@@ -29,12 +26,12 @@
   border-top: 1px solid $divider;
   display: flex;
   padding: 16px 0;
+  justify-content: space-between;
   align-items: center;
-  color: #6880a3;
 }
 
 .copyright-mobile {
-  // justify-content: space-between;
+  justify-content: space-between;
   margin-bottom: 64px;
   border-bottom: 1px solid $divider;
 }
@@ -56,9 +53,7 @@ a.footer-link {
   margin-top: 6px;
   display: flex;
   justify-content: space-between;
-  padding-left: 16px;
-  height: 40px;
-  padding-bottom: 4px;
+  padding: 2px 2px 2px 6px;
   & input {
     background-color: transparent;
     border: none;
@@ -68,7 +63,7 @@ a.footer-link {
     flex: 1;
   }
   & button {
-    // background: linear-gradient(90deg, $blue9 0%, $purple3 100%);
+    background: linear-gradient(90deg, $blue9 0%, $purple3 100%);
     & span {
       font-size: 11px;
     }

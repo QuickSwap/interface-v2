@@ -23,7 +23,7 @@ export const SlippageWrapper: React.FC = () => {
   }, [swapSlippage]);
 
   return (
-    <small className='subtext-color'>
+    <small className='text-secondary'>
       {allowedSlippage === SLIPPAGE_AUTO ? 'Auto' : allowedSlippage / 100 + '%'}{' '}
       {t('slippage')}
     </small>

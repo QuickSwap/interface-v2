@@ -1,26 +1,28 @@
-@use "styles/variables" as *;
-@use "styles/breakpoints" as *;
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
 .currencySearchWrapper {
-  padding: 16px;
+  padding: 32px 24px 0;
   height: 90vh;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  background: #1f263d;
+  background: $bgColor;
   backdrop-filter: blur(9.9px);
+  border: 1px solid $grey2;
   overflow: hidden;
   .currencySearchHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 6px;
     & svg {
       fill: #686c80;
       cursor: pointer;
     }
     & h6 {
       color: $textPrimary;
-      font-weight: 600;
+      font-weight: 600,
     }
   }
   @include media("screen", "<phone") {
@@ -48,7 +50,7 @@
   border-radius: 12px;
   outline: none;
   border: solid 2px $grey14;
-  background-color: #2d3655;
+  background-color: $bgColor;
   & svg {
     margin-right: 12px;
   }
@@ -70,19 +72,18 @@
   margin-top: 16px;
   & .MuiListItem-root {
     padding: 6px;
-    &.Mui-selected,
-    &:hover {
+    &.Mui-selected, &:hover {
       background: none;
     }
   }
 }
 .baseWrapper {
-  border-radius: 10px;
+  border-radius: 18px;
   display: flex;
   padding: 6px 10px;
   margin: 4px 8px 4px 0;
   align-items: center;
-  background-color: #2d3655;
+  background-color: $secondary1;
   &:hover {
     cursor: pointer;
   }
@@ -128,18 +129,14 @@ title {
 }
 .currencySymbol {
   color: $textPrimary;
-  line-height: 1;
+  line-height: 1,
 }
 .currencyName {
   color: $textSecondary;
 }
 .popoverWrapper {
   z-index: 100;
-  box-shadow:
-    0px 0px 1px $grey16,
-    0px 4px 8px $grey17,
-    0px 16px 24px $grey17,
-    0px 24px 32px $grey16;
+  box-shadow: 0px 0px 1px $grey16, 0px 4px 8px $grey17, 0px 16px 24px $grey17, 0px 24px 32px $grey16;
   color: black;
   border-radius: 12px;
   padding: 16px;
@@ -151,10 +148,9 @@ title {
     display: flex;
     flex-direction: column;
     margin-top: 8px;
-    & a,
-    & button {
+    & a, & button {
       font-size: 16px;
-      font-weight: 400;
+      font-weight: 400
     }
     & a {
       text-decoration: none;
@@ -183,7 +179,7 @@ title {
     align-items: center;
     justify-content: center;
     border: 1px solid $divider;
-    margin-right: 8px;
+    margin-right: 8px
   }
 }
 .styledListUrlText {
@@ -219,7 +215,7 @@ title {
       &:first-child {
         align-items: center;
         & p {
-          margin-right: 8px;
+          margin-right: 8px
         }
       }
       &:nth-child(2) {

@@ -3,7 +3,6 @@
   "v2": false,
   "rpc": "https://rpc.immutable.com",
   "blockExplorer": "https://explorer.immutable.com",
-  "bridgeUrl": "https://toolkit.immutable.com/bridge/",
   "networkName": "Immutable zkEVM Mainnet",
   "aprAPINetwork": "imx",
   "chainId": 13371,
@@ -14,10 +13,6 @@
     "name": "IMX",
     "symbol": "IMX",
     "decimals": 18
-  },
-  "bridge": {
-    "bridgeCoverImg": "/bridge/immutable_cover_img.svg",
-    "supportedChains": ["/bridge/eth.svg", "/bridge/zkevm.webp"]
   },
   "swap": {
     "available": true,
