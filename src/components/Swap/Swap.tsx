@@ -128,7 +128,6 @@ const Swap: React.FC<{
   const toggledVersion = useToggledVersion();
   const finalizedTransaction = useTransactionFinalizer();
   const [isExpertMode] = useExpertModeManager();
-
   const {
     wrapType,
     execute: onWrap,
@@ -729,6 +728,32 @@ const Swap: React.FC<{
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
       />
+      {trade && trade.executionPrice && (
+        <Box className='swapPrice'>
+          <small>{t('price')}:</small>
+          <small>
+            1{' '}
+            {
+              (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
+                ?.symbol
+            }{' '}
+            ={' '}
+            {(mainPrice
+              ? trade.executionPrice
+              : trade.executionPrice.invert()
+            ).toSignificant(6)}{' '}
+            {
+              (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])
+                ?.symbol
+            }{' '}
+            <PriceExchangeIcon
+              onClick={() => {
+                setMainPrice(!mainPrice);
+              }}
+            />
+          </small>
+        </Box>
+      )}
       {!showWrap && isExpertMode && (
         <Box className='recipientInput'>
           <Box className='recipientInputHeader'>
@@ -754,6 +779,13 @@ const Swap: React.FC<{
             />
           )}
         </Box>
+      )}
+      {!showWrap && fetchingBestRoute ? (
+        <Box mt={2} className='flex justify-center'>
+          <p>{t('fetchingBestRoute')}...</p>
+        </Box>
+      ) : (
+        <AdvancedSwapDetails trade={trade} />
       )}
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
@@ -797,39 +829,6 @@ const Swap: React.FC<{
           </Button>
         </Box>
       </Box>
-      {trade && trade.executionPrice && (
-        <Box className='swapPrice' sx={{ marginTop: '10px' }}>
-          <small>{t('price')}:</small>
-          <small>
-            1{' '}
-            {
-              (mainPrice ? currencies[Field.INPUT] : currencies[Field.OUTPUT])
-                ?.symbol
-            }{' '}
-            ={' '}
-            {(mainPrice
-              ? trade.executionPrice
-              : trade.executionPrice.invert()
-            ).toSignificant(6)}{' '}
-            {
-              (mainPrice ? currencies[Field.OUTPUT] : currencies[Field.INPUT])
-                ?.symbol
-            }{' '}
-            <PriceExchangeIcon
-              onClick={() => {
-                setMainPrice(!mainPrice);
-              }}
-            />
-          </small>
-        </Box>
-      )}
-      {!showWrap && fetchingBestRoute ? (
-        <Box mt={2} className='flex justify-center'>
-          <p>{t('fetchingBestRoute')}...</p>
-        </Box>
-      ) : (
-        <AdvancedSwapDetails trade={trade} />
-      )}
     </Box>
   );
 };

@@ -9,7 +9,6 @@ import { Provider } from 'react-redux';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 import { OrderlyConfigProvider } from '@orderly.network/hooks';
-
 const PerpsPage = lazy(() => import('./pages/PerpsPage'));
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
@@ -78,7 +77,6 @@ import {
   createSoulZapApiClient,
   SoulZapApiClient,
 } from 'utils/soulZapTrpcClient';
-import { BridgePage } from 'pages';
 
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
@@ -188,11 +186,6 @@ const App: React.FC = () => {
                     <Route exact path='/swap/:version?'>
                       <PageLayout>
                         <SwapPage />
-                      </PageLayout>
-                    </Route>
-                    <Route exact path='/bridge'>
-                      <PageLayout>
-                        <BridgePage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/leader-board'>

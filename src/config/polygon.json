@@ -3,7 +3,6 @@
   "v2": true,
   "rpc": "https://polygon-rpc.com/",
   "blockExplorer": "https://polygonscan.com",
-  "bridgeUrl": "https://portal.polygon.technology/bridge",
   "chainId": 137,
   "isMainnet": true,
   "visible": true,
@@ -13,15 +12,6 @@
     "name": "Matic Token",
     "symbol": "MATIC",
     "decimals": 18
-  },
-  "bridge": {
-    "bridgeCoverImg": "/bridge/polygon_cover_img.webp",
-    "supportedChains": [
-      "/bridge/eth.svg",
-      "/bridge/polygon.svg",
-      "/bridge/zkevm.webp"
-    ],
-    "isBigCoverImg": true
   },
   "swap": {
     "available": true,
@@ -72,6 +62,9 @@
     "available": false
   },
   "perps": {
+    "available": false
+  },
+  "hydra": {
     "available": false
   },
   "perpsV2": {

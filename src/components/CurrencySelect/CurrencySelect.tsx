@@ -4,7 +4,6 @@ import { Box } from '@material-ui/core';
 import { CurrencySearchModal, CurrencyLogo } from 'components';
 import 'components/styles/CurrencyInput.scss';
 import { useTranslation } from 'react-i18next';
-import { KeyboardArrowDown } from '@material-ui/icons';
 
 interface CurrencySelectProps {
   title?: string;
@@ -41,11 +40,8 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
       >
         {currency ? (
           <Box className='flex items-center'>
-            <CurrencyLogo currency={currency} size={'18px'} />
-            <p style={{ fontSize: '16px' }} className='token-symbol-container'>
-              {currency?.symbol}
-            </p>
-            <KeyboardArrowDown />
+            <CurrencyLogo currency={currency} size={'28px'} />
+            <p className='token-symbol-container'>{currency?.symbol}</p>
           </Box>
         ) : (
           <p>{t('selectToken')}</p>
