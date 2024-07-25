@@ -3,14 +3,54 @@ import { color } from 'd3';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import token from '../../../../../../assets/tokenLogo/0xfa9343c3897324496a05fc75abed6bac29f8a40f.png';
+import { useActiveWeb3React } from 'hooks';
+import { useICHIVaults } from 'hooks/useICHIData';
+import { WETH } from '@uniswap/sdk';
+import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+import { useSingleTokenVault } from 'state/singleToken/hooks';
+import SingleTokenPoolCard from 'pages/PoolsPage/SingleToken/components/SingleTokenPoolCard';
+import Loader from 'components/Loader';
 
 interface SelectVaultProps {
   onChoose?: () => void;
+  currency?: any;
 }
 
-const SelectVault: React.FC<SelectVaultProps> = ({ onChoose }) => {
-  const [selectedVault, setSelectedVault] = useState('wbtc_usdt');
+const SelectVault: React.FC<SelectVaultProps> = ({ onChoose, currency }) => {
   const { t } = useTranslation();
+  const { chainId } = useActiveWeb3React();
+  const tokenAddress = currency
+    ? currency.isNative
+      ? WETH[chainId].address
+      : currency.address
+    : '';
+  const { loading, data: allVaults } = useICHIVaults();
+  const vaults = allVaults?.filter((vault) => {
+    const token0Address = vault.token0?.address ?? '';
+    const token1Address = vault.token1?.address ?? '';
+    return (
+      (token0Address.toLowerCase() === tokenAddress.toLowerCase() &&
+        vault.allowToken0) ||
+      (token1Address.toLowerCase() === tokenAddress.toLowerCase() &&
+        vault.allowToken1)
+    );
+  });
+
+  const { selectVault, selectedVault } = useSingleTokenVault();
+
+  const allTokenAddresses = allVaults.reduce((memo: string[], vault) => {
+    if (vault.token0 && !memo.includes(vault.token0.address.toLowerCase())) {
+      memo.push(vault.token0.address.toLowerCase());
+    }
+    if (vault.token1 && !memo.includes(vault.token1.address.toLowerCase())) {
+      memo.push(vault.token1.address.toLowerCase());
+    }
+    return memo;
+  }, []);
+  const {
+    loading: loadingUSDPrices,
+    prices: usdPrices,
+  } = useUSDCPricesFromAddresses(allTokenAddresses);
 
   const vaultList = [
     {
@@ -43,98 +83,55 @@ const SelectVault: React.FC<SelectVaultProps> = ({ onChoose }) => {
     <div className='select_vault'>
       <p style={{ marginBottom: '12px' }}>2. {t('selectVault')}</p>
 
-      <Grid
-        container
-        style={{
-          marginBottom: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 78px 0 20px',
-        }}
-      >
-        <Grid>
-          <Typography style={{ color: '#696c80', fontSize: '14px' }}>
-            Pool
-          </Typography>
-        </Grid>
-        <Grid>
-          <Typography style={{ color: '#696c80', fontSize: '14px' }}>
-            APR
-          </Typography>
-        </Grid>
-      </Grid>
-
-      {vaultList.map((item, index) => {
-        const isSelected = item.value === selectedVault;
-        return (
-          <Grid
-            key={index}
-            container
-            style={{
-              backgroundColor: '#282d3d',
-              padding: '20px 21px 20px 17px',
-              border: 'solid 1px rgba(68, 138, 255, 0.8);',
-              marginBottom: '12px',
-              borderRadius: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              setSelectedVault(item.value);
-            }}
-          >
-            <Grid
-              item
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
+      {loading ? (
+        <Box py={2} className='flex justify-center items-center'>
+          <Loader />
+        </Box>
+      ) : vaults && vaults.length > 0 ? (
+        <Box className='singleTokenPoolsWrapper'>
+          <Box className='flex items-center' padding='0 16px'>
+            <Box width='80%'>
+              <small className='text-secondary'>{t('pool')}</small>
+            </Box>
+            <Box width='20%'>
+              <small className='text-secondary'>{t('apr')}</small>
+            </Box>
+          </Box>
+          {vaults.map((vault) => (
+            <SingleTokenPoolCard
+              key={vault.address}
+              vault={vault}
+              usdPrices={usdPrices}
+              loadingUSDPrices={loadingUSDPrices}
+              onClick={() => {
+                if (
+                  selectedVault &&
+                  vault.address.toLowerCase() ===
+                    selectedVault.address.toLowerCase()
+                ) {
+                  selectVault(undefined);
+                } else {
+                  selectVault(vault);
+                }
               }}
-            >
-              {isSelected ? (
-                <img src='/icons/pools/selected.svg' alt='' />
-              ) : (
-                <img src='/icons/pools/unselect.svg' alt='' />
-              )}
-              <img src={item.icon} alt='icon' width={20} />
-              <img
-                src={item.icon2}
-                alt='icon'
-                width={20}
-                style={{ marginLeft: '-18px' }}
-              />
-              <Typography>{item.name}</Typography>
-              <Box
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                  backgroundColor: '#404557',
-                  borderRadius: '6px',
-                  padding: '2px 8px',
-                  fontSize: '12px',
-                }}
-              >
-                {item.feePercent}% Fee
-              </Box>
-            </Grid>
-            <Grid item>
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gridGap: '4px' }}
-              >
-                <Typography style={{ color: '#0fc679' }}>
-                  {item.apr}%
-                </Typography>
-                <img src='/icons/pools/star.webp' alt='star' width={20} />
-              </Box>
-            </Grid>
-          </Grid>
-        );
-      })}
+              selected={
+                !!selectedVault &&
+                vault.address.toLowerCase() ===
+                  selectedVault.address.toLowerCase()
+              }
+              unselected={
+                !!selectedVault &&
+                vault.address.toLowerCase() !==
+                  selectedVault.address.toLowerCase()
+              }
+            />
+          ))}
+        </Box>
+      ) : (
+        <Box className='singleTokenSelectPoolWarning'>
+          {currency ? t('nopoolFound') : t('availablePoolsWillShowHere')}
+        </Box>
+      )}
     </div>
   );
 };

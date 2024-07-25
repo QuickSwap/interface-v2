@@ -56,6 +56,12 @@ import DepositAmount from './containers/DepositAmount';
 import token from '../../../../assets/tokenLogo/0xfa9343c3897324496a05fc75abed6bac29f8a40f.png';
 import { SelectDepositType } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectDepositType';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
+import {
+  useSingleTokenCurrency,
+  useSingleTokenVault,
+} from 'state/singleToken/hooks';
+import SingleTokenEnterAmount from 'pages/PoolsPage/SingleToken/components/EnterAmount';
+import SingleTokenDepositButton from 'pages/PoolsPage/SingleToken/components/DepositButton';
 
 const tokenList = [
   {
@@ -188,7 +194,7 @@ export function SupplyLiquidityV3() {
     onRightRangeInput('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencyIdA, currencyIdB]);
-  const [depositToken, setDepositToken] = useState('wbtc');
+  const depositToken = useSingleTokenCurrency();
   const handleChange = () => {
     console.log('asdasdasd');
   };
@@ -320,6 +326,7 @@ export function SupplyLiquidityV3() {
     },
     [redirectWithCurrency, currencyIdAParam, chainInfo, redirectWithSwitch],
   );
+  const { selectedVault, selectVault } = useSingleTokenVault();
 
   useEffect(() => {
     if (currencyIdBParam) {
@@ -378,6 +385,15 @@ export function SupplyLiquidityV3() {
     isSupportedNetwork,
   );
 
+  const { redirectWithCurrencySingleToken } = usePoolsRedirect();
+
+  const handleCurrencySelectSingle = useCallback(
+    (currencyNew: Currency) => {
+      redirectWithCurrencySingleToken(currencyNew);
+      selectVault(undefined);
+    },
+    [redirectWithCurrencySingleToken, selectVault],
+  );
   return (
     <Box>
       {openSettingsModal && (
@@ -468,107 +484,20 @@ export function SupplyLiquidityV3() {
               ))}
             </Select> */}
             <V3CurrencySelect
-              currency={baseCurrency ?? undefined}
-              otherCurrency={quoteCurrency ?? undefined}
-              handleCurrencySelect={handleCurrencyASelect}
+              currency={depositToken ?? undefined}
+              handleCurrencySelect={handleCurrencySelectSingle}
             />
           </Box>
           <Box sx={{ padding: '12px 0' }}>
-            <SelectVault />
+            <SelectVault currency={depositToken} />
           </Box>
           <Box>
-            <DepositAmount />
+            <SingleTokenEnterAmount />
           </Box>
-          <Box
-            style={{
-              padding: '12px 0',
-            }}
-          >
-            <Box
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                marginBottom: '16px',
-              }}
-            >
-              <Typography>Your share in the vault:</Typography>
-              <Typography>0.15%</Typography>
-            </Box>
 
-            <Box
-              style={{
-                padding: '16px',
-                backgroundColor: 'rgba(199, 202, 217, 0.16)',
-                border: 'solid 1px #c7cad9',
-                borderRadius: '10px',
-                display: 'flex',
-                gap: '8px',
-                alignItems: 'flex-start',
-                marginBottom: '8px',
-              }}
-            >
-              <img
-                src='/icons/pools/QS_Info.svg'
-                alt=''
-                style={{ marginTop: '4px' }}
-              />
-              <Typography>{t('theFinalPosition')}</Typography>
-            </Box>
-
-            <Box
-              style={{
-                padding: '16px',
-                backgroundColor: 'rgba(235, 147, 47, 0.16)',
-                border: 'solid 1px #eb932f',
-                borderRadius: '10px',
-                display: 'flex',
-                gap: '8px',
-                alignItems: 'flex-start',
-                marginBottom: '24px',
-              }}
-            >
-              <img
-                src='/icons/pools/warning.svg'
-                alt=''
-                style={{ marginTop: '4px' }}
-              />
-              <Typography style={{ color: '#eb932f' }}>
-                {t('singleTokenWarning')}
-              </Typography>
-            </Box>
+          <Box mt={2}>
+            <SingleTokenDepositButton />
           </Box>
-          <ButtonBase
-            style={{
-              width: '100%',
-              height: '48px',
-              backgroundColor: '#448aff',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '8px',
-            }}
-          >
-            Approve WBTC
-          </ButtonBase>
-
-          <ButtonBase
-            disabled
-            style={{
-              width: '100%',
-              height: '48px',
-              backgroundColor: '#404556',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '8px',
-            }}
-          >
-            Add Liquidity
-          </ButtonBase>
         </Box>
       )}
       {selectedDepositType === 'double' && (
