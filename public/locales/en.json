@@ -598,7 +598,7 @@
   "cantFetchPrices": "Can't fetch prices",
   "submittedAddingLiquidity": "Submitted Adding Liquidity",
   "liquidityAddedSuccessfully": "Liquidity Added successfully",
-  "depositAmounts": "Deposit Amounts",
+  "depositAmount": "Deposit Amount",
   "setInitialPrice": "Set Initial Price",
   "selectPair": "Select a pair",
   "initialPrice": "Initial Price",
@@ -961,5 +961,6 @@
   "notEnoughBalance": "Not Enough Balance",
   "subNewsletter": "Subscribe to Newsletter",
   "allRights": "All rights reserved.",
-  "selectDepositType": "Select Deposit Type."
+  "selectDepositType": "Select Deposit Type.",
+  "theFinalPosition": "The final position may consist with both tokens. Learn more about the strategy here."
 }

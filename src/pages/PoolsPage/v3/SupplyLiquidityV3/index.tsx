@@ -12,6 +12,7 @@ import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
 import { SelectRange } from './containers/SelectRange';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import { Currency } from '@uniswap/sdk-core';
 
@@ -31,7 +32,15 @@ import { AddLiquidityButton } from './containers/AddLiquidityButton';
 import { getGammaPairsForTokens, useIsSupportedNetwork } from 'utils';
 import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
-import { Box, Button } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  ButtonBase,
+  MenuItem,
+  Select,
+  Typography,
+  makeStyles,
+} from '@material-ui/core';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
@@ -42,8 +51,72 @@ import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import SelectFeeTier from './containers/SelectFeeTier';
+import SelectVault from './containers/SelectVault';
+import DepositAmount from './containers/DepositAmount';
+import token from '../../../../assets/tokenLogo/0xfa9343c3897324496a05fc75abed6bac29f8a40f.png';
+
+const tokenList = [
+  {
+    value: 'wbtc',
+    name: 'WBTC',
+    icon: token,
+  },
+];
+
+const useStyles = makeStyles(() => ({
+  formControl: {
+    '& .MuiInputBase-root': {
+      width: '100%',
+      borderColor: '#6EC177',
+      borderWidth: '1px',
+      borderStyle: 'solid',
+      borderRadius: '100px',
+      minWidth: '120px',
+      justifyContent: 'center',
+      backgroundColor: '#282d3d',
+    },
+    '& .MuiSelect-select.MuiSelect-select': {
+      paddingRight: '0px',
+    },
+  },
+  select: {
+    width: 'auto',
+    fontSize: '12px',
+    '&:focus': {
+      backgroundColor: 'transparent',
+    },
+  },
+  selectIcon: {
+    position: 'relative',
+    color: '#6a6c80',
+    fontSize: '14px',
+  },
+  paper: {
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  list: {
+    paddingTop: 0,
+    paddingBottom: 0,
+    '& li': {
+      fontWeight: 200,
+      paddingTop: 8,
+      paddingBottom: 8,
+      fontSize: '12px',
+    },
+    '& li.Mui-selected': {
+      color: 'white',
+      background: '#282d3d',
+    },
+    '& li.Mui-selected:hover': {
+      background: '#282d3da7',
+    },
+  },
+}));
 
 export function SupplyLiquidityV3() {
+  const classes = useStyles();
+
   const { t } = useTranslation();
   const history = useHistory();
   const params: any = useParams();
@@ -85,9 +158,26 @@ export function SupplyLiquidityV3() {
   const dispatch = useAppDispatch();
 
   const expertMode = useIsExpertMode();
+  const [selectedDepositType, setSelectedDepositType] = useState('single');
 
   const [priceFormat, setPriceFormat] = useState(PriceFormats.TOKEN);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
+
+  const menuProps = {
+    classes: {
+      list: classes.list,
+      paper: classes.paper,
+    },
+    // anchorOrigin: {
+    //   vertical: 'bottom',
+    //   horizontal: 'center',
+    // },
+    // transformOrigin: {
+    //   vertical: 'top',
+    //   horizontal: 'center',
+    // },
+    getContentAnchorEl: null,
+  };
 
   useEffect(() => {
     onFieldAInput('');
@@ -96,6 +186,10 @@ export function SupplyLiquidityV3() {
     onRightRangeInput('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencyIdA, currencyIdB]);
+  const [depositToken, setDepositToken] = useState('wbtc');
+  const handleChange = () => {
+    console.log('asdasdasd');
+  };
 
   const baseCurrency = useCurrency(currencyIdA);
   const currencyB = useCurrency(currencyIdB);
@@ -315,6 +409,8 @@ export function SupplyLiquidityV3() {
       <Box mt={2}>
         {account && isSupportedNetwork ? (
           <SelectPair
+            selectedDepositType={selectedDepositType}
+            setSelectedDepositType={setSelectedDepositType}
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
             mintInfo={mintInfo}
@@ -332,62 +428,192 @@ export function SupplyLiquidityV3() {
           </Button>
         )}
       </Box>
-      <Box mt={4} position='relative'>
-        {(!baseCurrency ||
-          !quoteCurrency ||
-          !account ||
-          !isSupportedNetwork) && (
-          <Box className='v3-supply-liquidity-overlay' />
-        )}
-        {mintInfo.noLiquidity &&
-          baseCurrency &&
-          quoteCurrency &&
-          liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
-            <Box mb={2}>
-              <InitialPrice
+      {selectedDepositType === 'single' && (
+        <Box>
+          <Box>
+            <Select
+              value={depositToken}
+              onChange={handleChange}
+              disableUnderline
+              IconComponent={KeyboardArrowDownIcon}
+              MenuProps={menuProps}
+              classes={{
+                select: classes.select,
+                icon: classes.selectIcon,
+              }}
+            >
+              {tokenList.map((item, index) => (
+                <MenuItem key={item.value} value={item.value}>
+                  <Box
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <img src={item.icon} alt='icon ' width={20} />
+                    {item.name}
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box sx={{ padding: '12px 0' }}>
+            <SelectVault />
+          </Box>
+          <Box>
+            <DepositAmount />
+          </Box>
+          <Box
+            style={{
+              padding: '12px 0',
+            }}
+          >
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                marginBottom: '16px',
+              }}
+            >
+              <Typography>Your share in the vault:</Typography>
+              <Typography>0.15%</Typography>
+            </Box>
+
+            <Box
+              style={{
+                padding: '16px',
+                backgroundColor: 'rgba(199, 202, 217, 0.16)',
+                border: 'solid 1px #c7cad9',
+                borderRadius: '10px',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'flex-start',
+                marginBottom: '8px',
+              }}
+            >
+              <img
+                src='/icons/pools/QS_Info.svg'
+                alt=''
+                style={{ marginTop: '4px' }}
+              />
+              <Typography>{t('theFinalPosition')}</Typography>
+            </Box>
+
+            <Box
+              style={{
+                padding: '16px',
+                backgroundColor: 'rgba(235, 147, 47, 0.16)',
+                border: 'solid 1px #eb932f',
+                borderRadius: '10px',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'flex-start',
+                marginBottom: '24px',
+              }}
+            >
+              <img
+                src='/icons/pools/warning.svg'
+                alt=''
+                style={{ marginTop: '4px' }}
+              />
+              <Typography style={{ color: '#eb932f' }}>
+                {t('singleTokenWarning')}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      )}
+      {selectedDepositType === 'double' && (
+        <Box mt={4} position='relative'>
+          {(!baseCurrency ||
+            !quoteCurrency ||
+            !account ||
+            !isSupportedNetwork) && (
+            <Box className='v3-supply-liquidity-overlay' />
+          )}
+          {mintInfo.noLiquidity &&
+            baseCurrency &&
+            quoteCurrency &&
+            liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+              <Box mb={2}>
+                <InitialPrice
+                  currencyA={baseCurrency ?? undefined}
+                  currencyB={currencyB ?? undefined}
+                  mintInfo={mintInfo}
+                  priceFormat={priceFormat}
+                />
+              </Box>
+            )}
+          <SelectFeeTier mintInfo={mintInfo} />
+          <SelectRange
+            currencyA={baseCurrency}
+            currencyB={quoteCurrency}
+            mintInfo={mintInfo}
+            priceFormat={priceFormat}
+          />
+          <Box mt={4} position='relative'>
+            <small className='weight-600'>{t('depositAmounts')}</small>
+            {gammaPair?.withdrawOnly && (
+              <Box className='v3-deposit-disable-banner'>
+                <p>{t('withdrawOnlyVault')}</p>
+              </Box>
+            )}
+            <Box my={2}>
+              <EnterAmounts
                 currencyA={baseCurrency ?? undefined}
                 currencyB={currencyB ?? undefined}
                 mintInfo={mintInfo}
                 priceFormat={priceFormat}
               />
             </Box>
-          )}
-        <SelectFeeTier mintInfo={mintInfo} />
-        <SelectRange
-          currencyA={baseCurrency}
-          currencyB={quoteCurrency}
-          mintInfo={mintInfo}
-          priceFormat={priceFormat}
-        />
-        <Box mt={4} position='relative'>
-          <small className='weight-600'>{t('depositAmounts')}</small>
-          {gammaPair?.withdrawOnly && (
-            <Box className='v3-deposit-disable-banner'>
-              <p>{t('withdrawOnlyVault')}</p>
-            </Box>
-          )}
-          <Box my={2}>
-            <EnterAmounts
-              currencyA={baseCurrency ?? undefined}
-              currencyB={currencyB ?? undefined}
+            <AddLiquidityButton
+              baseCurrency={baseCurrency ?? undefined}
+              quoteCurrency={quoteCurrency ?? undefined}
               mintInfo={mintInfo}
-              priceFormat={priceFormat}
+              handleAddLiquidity={() => {
+                resetState();
+                onFieldAInput('');
+                onFieldBInput('');
+              }}
+              title={expertMode ? t('addLiquidity') : t('preview')}
             />
           </Box>
-          <AddLiquidityButton
-            baseCurrency={baseCurrency ?? undefined}
-            quoteCurrency={quoteCurrency ?? undefined}
-            mintInfo={mintInfo}
-            handleAddLiquidity={() => {
-              resetState();
-              onFieldAInput('');
-              onFieldBInput('');
-            }}
-            title={expertMode ? t('addLiquidity') : t('preview')}
-          />
         </Box>
-      </Box>
+      )}
+      <ButtonBase
+        style={{
+          width: '100%',
+          height: '48px',
+          backgroundColor: '#448aff',
+          borderRadius: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '8px',
+        }}
+      >
+        Approve WBTC
+      </ButtonBase>
+
+      <ButtonBase
+        disabled
+        style={{
+          width: '100%',
+          height: '48px',
+          backgroundColor: '#404556',
+          borderRadius: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '8px',
+        }}
+      >
+        Add Liquidity
+      </ButtonBase>
     </Box>
   );
 }
