@@ -8,7 +8,6 @@ import Collapse from '@mui/material/Collapse';
 import NewTag from 'assets/images/NewTag.png';
 
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { NewSparkleTag } from './NewSparkleTag';
 
 export interface HeaderMenuItem {
   text: string;
@@ -25,13 +24,11 @@ export interface HeaderMenuItem {
 export const HeaderListItem: React.FC<{
   item: HeaderMenuItem;
   onClick?: () => void;
-  classNames?: string;
 }> = ({
   item,
   onClick = () => {
     return false;
   },
-  classNames,
 }) => {
   const { pathname } = useLocation();
   const history = useHistory();
@@ -61,7 +58,7 @@ export const HeaderListItem: React.FC<{
         disablePadding
         className={`menu-list-item ${
           pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
-        } ${classNames}`}
+        }`}
       >
         <ListItemButton onClick={handleClick} className='menu-list-item'>
           <ListItemText
@@ -72,7 +69,11 @@ export const HeaderListItem: React.FC<{
             <div className='flex menu-list-item'>
               <div className='my-auto'>{item.text}</div>
               <div className='mobile-new-tag'>
-                {item.isNew && <NewSparkleTag />}
+                {item.isNew ? (
+                  <img src={NewTag} alt='new menu' width={46} />
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </ListItemText>
@@ -101,7 +102,6 @@ export const HeaderListItem: React.FC<{
                 key={`sub-menu-item-${i}`}
                 item={d}
                 onClick={onClick}
-                classNames='sub_menu_item'
               />
             ))}
           </List>

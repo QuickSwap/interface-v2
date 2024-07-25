@@ -127,7 +127,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, name }) => {
   const displayNewsletter = false;
 
   return (
-    <Box className='page overflow-hidden'>
+    <Box className='page'>
       {openPassModal && <PasswordModal />}
       {showBetaBanner && <BetaWarningBanner />}
       {displayNewsletter && <NewsletterSignupPanel />}

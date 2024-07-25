@@ -1,12 +1,11 @@
-@use "styles/variables" as *;
-@use "styles/breakpoints" as *;
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
 .header {
   top: 0px;
   position: fixed;
   width: 100%;
   z-index: 12;
-  color: white;
 }
 
 .network-name {
@@ -15,7 +14,12 @@
 
 .newsletterBar {
   position: relative;
-  background: linear-gradient(90deg, $black2 -11.2%, $purple4 41.95%, $primary 100%);
+  background: linear-gradient(
+    90deg,
+    $black2 -11.2%,
+    $purple4 41.95%,
+    $primary 100%
+  );
   z-index: 5;
   display: flex;
   min-height: 40px;
@@ -38,7 +42,7 @@
     right: 12px;
     display: flex;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     padding: 6px 28px;
     flex-direction: column;
     & button {
@@ -69,9 +73,6 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  -webkit-backdrop-filter: blur(30px);
-  backdrop-filter: blur(30px);
-  background-color: #12131a66;
   & a {
     display: flex;
   }
@@ -105,21 +106,21 @@
       }
     }
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     align-items: center;
     position: relative;
     min-height: 64px;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 0 16px;
     position: relative;
     min-height: 64px;
   }
 }
 .mainMenu {
-  // position: absolute;
-  // left: 50%;
-  // transform: translateX(-50%);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .mainMenuPerps {
   flex: 1;
@@ -140,7 +141,7 @@
     padding: 0 20px;
     overflow: hidden;
     border-radius: 10px;
-    color: $white1;
+    color: $textSecondary;
     & small {
       white-space: nowrap;
     }
@@ -226,7 +227,7 @@
   left: 0;
   border-radius: 10px;
   top: 32px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     width: 100%;
     left: unset;
     top: unset;
@@ -239,14 +240,13 @@
 }
 .accountDetails {
   border: solid 1px $grey2;
-  padding: 0 8px;
+  padding: 0 16px;
   height: 36px;
   cursor: pointer;
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: solid 1px rgba(255, 255, 255, 0.04);
   & p {
     font-size: 14px;
     font-weight: 600;
@@ -257,12 +257,12 @@
   }
 }
 .connectButton {
-  width: 125px;
+  width: 152px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
   color: white;
@@ -404,7 +404,7 @@
 
 .headerDropdownWrapper {
   position: relative;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     position: unset;
   }
 }
@@ -472,7 +472,7 @@
 
 @media (max-width: 959px) {
   .header {
-    background-color: rgba(18, 19, 26, 0.49);
+    background-color: #121319;
   }
 
   .networkSelection {
@@ -481,7 +481,7 @@
   }
 
   .accountDetails {
-    // border: none;
+    border: none;
     border-radius: 12px;
     background-color: #1b1e29;
   }
@@ -493,64 +493,13 @@
   }
 }
 
-#basic-menu {
-  .MuiPaper-root {
-    background-color: rgba(18, 19, 26) !important;
-  }
-}
-
 .menu-list-item {
   max-height: 48px;
   height: 48px;
-  overflow: hidden;
-  position: relative;
 
   &.active {
     color: #448aff;
     // background-color: #252833;
-  }
-
-  .menuItemSparkle {
-    position: absolute;
-    transition: all 0.5s;
-  }
-  .menuItemSparkleTop {
-    top: -10px;
-    left: 0;
-    // margin-left: -10px;
-  }
-  .menuItemSparkleBottom {
-    bottom: -10px;
-    left: 0;
-    // margin-left: -12px;
-  }
-  .menuItemSparkleLeft {
-    left: -10px;
-    top: 20px;
-  }
-  .menuItemSparkleRight {
-    right: -10px;
-    top: 20px;
-  }
-
-  &:hover {
-    color: $textPrimary;
-    background: $secondary1;
-    .menuItemSparkleTop {
-      top: 2px;
-    }
-    .menuItemSparkleBottom {
-      bottom: 2px;
-    }
-    .menuItemSparkleLeft {
-      left: 8px;
-    }
-    .menuItemSparkleRight {
-      right: 8px;
-    }
-    & .subMenu {
-      display: block;
-    }
   }
 }
 

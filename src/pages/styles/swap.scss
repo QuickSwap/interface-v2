@@ -1,5 +1,5 @@
-@use "styles/variables" as *;
-@use "styles/breakpoints" as *;
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
 
 .limitOrderPanel {
   & > div {
@@ -11,15 +11,15 @@
   background: $bgPalette;
   border-radius: 16px;
   width: calc(50% - 16px);
-  @include media("screen", "<desktop") {
+  @include media('screen', '<desktop') {
     width: 100%;
     margin-bottom: 16px;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     width: calc(50% - 16px);
     margin: 0;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     width: 100%;
     margin-top: 16px;
     margin-bottom: 16px;
@@ -104,9 +104,9 @@
 }
 
 .tab {
-  background-color: transparent !important;
+  background-color: transparent;
   padding: 0 16px;
-  // height: 46px;
+  height: 46px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -117,7 +117,7 @@
 
 .tab:hover {
   cursor: pointer;
-  // background: rgba(68, 138, 255, 0.3) !important;
+  background: rgba(68, 138, 255, 0.3) !important;
   color: white !important;
   border-radius: 0.5rem;
   & div {
@@ -127,7 +127,7 @@
 
 .activeTab {
   border-radius: 0.5rem;
-  // background: #fff;
+  background: #fff;
   color: #282d3d;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .splitPane {
-  & [data-type="Resizer"] {
+  & [data-type='Resizer'] {
     margin: 8px 0 0;
   }
 }
@@ -285,7 +285,7 @@
       }
     }
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     flex: none;
   }
 }
@@ -392,10 +392,10 @@ div.buy {
 .btn-swap-widget-disabled {
   cursor: not-allowed;
   background-color: #282d3d;
-  color: "grey" !important;
+  color: 'grey' !important;
 
   &:hover {
-    color: "grey" !important;
+    color: 'grey' !important;
     background: #282d3d !important;
   }
 }
@@ -406,54 +406,31 @@ div.buy {
 }
 
 .swapLimitTabs {
-  // background-color: $secondary2;
+  background-color: $secondary2;
   display: flex;
-  justify-content: flex-start;
-  #swap-button {
-    padding: 8px 0;
-    .MuiButton-label {
-      font-size: 14px;
-    }
-  }
+  justify-content: space-between;
 }
 
 .swapLimitTab {
-  // width: 33%;
-  // height: 40px;
-  padding: 0px 12px;
+  width: 33%;
+  height: 40px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   & small {
-    color: rgba(255, 255, 255, 0.5);
-    // height: 100%;
-    // padding-top: 9px;
-    // padding-left: 6px;
-    // padding-right: 6px;
-  }
-  #swap-button {
-    .MuiButton-label {
-      color: rgba(255, 255, 255, 0.5);
-      // display: -webkit-inline-box;
-    }
-    .MuiButton-endIcon {
-      margin: 0;
-    }
+    color: $textSecondary;
+    height: 100%;
+    padding-top: 9px;
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
 
 .activeSwapLimitTab {
-  background-color: #1e263d;
   & small {
-    color: #448aff;
-    // border-bottom: 2px solid #448aff;
-  }
-  #swap-button {
-    .MuiButton-label {
-      // display: -webkit-inline-box;
-      color: #448aff;
-    }
+    color: #fff;
+    border-bottom: 2px solid #448aff;
   }
 }
 

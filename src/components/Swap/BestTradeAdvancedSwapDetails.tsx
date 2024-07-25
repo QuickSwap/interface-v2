@@ -16,8 +16,6 @@ import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import { useAutoSlippageToleranceBestTrade } from 'hooks/useAutoSlippageTolerance';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
-import { InfomationHelper } from 'components/QuestionHelper';
-import { ReactComponent as SettingsIcon } from 'assets/images/icons/cog-fill.svg';
 
 interface TradeSummaryProps {
   optimalRate: OptimalRate;
@@ -50,27 +48,17 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
         .multiply(optimalRate.srcAmount).quotient;
 
   return (
-    <Box
-      mt={1.5}
-      sx={{
-        border: '1px solid #3a4769',
-        borderRadius: '12px',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gridGap: '8px',
-      }}
-    >
-      {/* {openSettingsModal && (
+    <Box mt={1.5}>
+      {openSettingsModal && (
         <SettingsModal
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
         />
-      )} */}
-      <Box className='summaryRow subtext-color'>
+      )}
+      <Box className='summaryRow'>
         <Box>
-          <InfomationHelper text={t('slippageHelper')} />
-          <small>{t('slippage')}</small>
+          <small>{t('maxSlippage')}:</small>
+          <QuestionHelper text={t('slippageHelper')} />
         </Box>
         <Box
           onClick={() => setOpenSettingsModal(true)}
@@ -82,13 +70,13 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
               : Number(allowedSlippage.toSignificant())}
             %
           </small>
-          <SettingsIcon />
+          <EditIcon />
         </Box>
       </Box>
-      <Box className='summaryRow subtext-color'>
+      <Box className='summaryRow'>
         <Box>
-          <InfomationHelper text={t('txLimitHelper')} />
-          <small>{isExactIn ? t('minReceived') : t('maxSold')}</small>
+          <small>{isExactIn ? t('minReceived') : t('maxSold')}:</small>
+          <QuestionHelper text={t('txLimitHelper')} />
         </Box>
         <Box>
           <small>
@@ -98,12 +86,13 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
             ).toLocaleString('us')}{' '}
             {currency.symbol}
           </small>
+          <CurrencyLogo currency={currency} size='16px' />
         </Box>
       </Box>
-      <Box className='summaryRow subtext-color'>
+      <Box className='summaryRow'>
         <Box>
-          <InfomationHelper text={t('priceImpactHelper')} />
-          <small>{t('priceimpact')}</small>
+          <small>{t('priceimpact')}:</small>
+          <QuestionHelper text={t('priceImpactHelper')} />
         </Box>
         <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
       </Box>
