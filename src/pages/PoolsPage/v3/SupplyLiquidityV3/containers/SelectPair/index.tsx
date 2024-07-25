@@ -7,6 +7,8 @@ import { Box } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
 import { useTranslation } from 'react-i18next';
+import { Value } from 'sass';
+import { PoweredBy } from '@orbs-network/twap-ui/dist/components';
 
 interface ISelectPair {
   baseCurrency: Currency | null | undefined;
@@ -30,11 +32,27 @@ export function SelectPair({
 }: ISelectPair) {
   const { t } = useTranslation();
 
+  const depositType = [
+    {
+      title: 'Double Sided',
+      Value: 'doubleSided',
+    },
+    {
+      title: 'Single Sided',
+      Value: 'doubleSided',
+      isNew: true,
+      poweredBy: {
+        logo: '/ichi-logo.png',
+      },
+    },
+  ];
+
   return (
     <Box>
-      <small className='weight-600'>{t('selectPair')}</small>
+      {/* <small className='weight-600'>{t('selectPair')}</small> */}
+      <p>{t('selectDepositType')}</p>
       <Box mt={1.5} className='flex items-center'>
-        <Box flex={1}>
+        {/* <Box flex={1}>
           <V3CurrencySelect
             currency={baseCurrency ?? undefined}
             otherCurrency={quoteCurrency ?? undefined}
@@ -50,6 +68,9 @@ export function SelectPair({
             otherCurrency={baseCurrency ?? undefined}
             handleCurrencySelect={handleCurrencyBSelect}
           />
+        </Box> */}
+        <Box>
+          <p>{t('selectDepositType')}</p>
         </Box>
       </Box>
     </Box>

@@ -58,7 +58,7 @@
   --orderly-font-size-3xl: 30px;
   --orderly-font-size-4xl: 36px;
   --orderly-color-divider: 42 46 52;
-  --orderly-font-family: 'Manrope', sans-serif;
+  --orderly-font-family: "Manrope", sans-serif;
 }
 
 body {
@@ -129,9 +129,9 @@ wcm-modal {
 }
 
 .wrapper {
-  padding: 24px;
+  // padding: 24px;
   // background: $bgPalette;
-  border-radius: 20px;
+  // border-radius: 20px;
   @include media("screen", "<phone") {
     padding: 16px 12px;
   }
