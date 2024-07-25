@@ -86,12 +86,17 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showLeaderboard = config['leaderboard']['available'];
   const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
+  const showHydra = config['hydra']['available'];
   const showPerpsV2 = config['perpsV2']['available'];
   const showBOS = config['bos']['available'];
   const showBonds = config['bonds']['available'];
   const showDappOS = config['dappos']['available'];
   const showEarn = showFarm && showBonds;
   const menuItems: Array<HeaderMenuItem> = [];
+  const isPerpsDropdown =
+    (showPerpsV2 && showPerps) ||
+    (showHydra && showPerps) ||
+    (showPerpsV2 && showHydra);
 
   const swapCurrencyStr = useMemo(() => {
     if (!chainId) return '';
@@ -118,12 +123,12 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     items: [],
     isNew: true,
   };
-  if (showPerpsV2 && showPerps) {
+  if (isPerpsDropdown) {
     menuItems.push(perpsTab);
   }
   const perpsItem = {
     link: '/perps',
-    text: 'Perps',
+    text: 'Perps V1',
     id: 'perps-page-link',
     isExternal: true,
     externalLink: process?.env?.REACT_APP_PERPS_URL || '',
@@ -132,7 +137,22 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
         switchNetwork(ChainId.ZKEVM);
       }
       if (process.env.REACT_APP_PERPS_URL) {
-        window.open(process.env.REACT_APP_PERPS_URL, '_self');
+        window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+      }
+    },
+  };
+  const hydraItem = {
+    link: '/hydra',
+    text: 'Hydra',
+    id: 'hydra-page-link',
+    isExternal: true,
+    externalLink: process?.env?.REACT_APP_HYDRA_URL || '',
+    onClick: async () => {
+      if (chainId !== ChainId.ZKEVM) {
+        switchNetwork(ChainId.ZKEVM);
+      }
+      if (process.env.REACT_APP_HYDRA_URL) {
+        window.open(process.env.REACT_APP_HYDRA_URL, '_blank');
       }
     },
   };
@@ -152,8 +172,15 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       });
     }
   }
+  if (showHydra) {
+    if (showPerps || showPerpsV2) {
+      perpsTab.items?.push(hydraItem);
+    } else {
+      menuItems.push(hydraItem);
+    }
+  }
   if (showPerps) {
-    if (showPerpsV2) {
+    if (showHydra || showPerpsV2) {
       perpsTab.items?.push(perpsItem);
     } else {
       menuItems.push(perpsItem);

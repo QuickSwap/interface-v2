@@ -383,12 +383,14 @@ export const STEER_PERIPHERY: AddressMap = {
   [ChainId.MATIC]: '0x29E1888F7DD0757f2873E494463Ec389dab38D27',
   [ChainId.MANTA]: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921',
   [ChainId.ASTARZKEVM]: '0x37Cff062D52Dd6E9E39Df619CCd30c037a36bB83',
+  [ChainId.LAYERX]: '0xab36D30C1A1C683037Bd7AAC67f29B2e3ECC6576',
 };
 
 export const STEER_VAULT_REGISTRY: AddressMap = {
   [ChainId.MATIC]: '0x24825B3C44742600D3995d1D3760cceE999A7f0b',
   [ChainId.MANTA]: '0x38a07152ee64C7067fEeBA904D72ABc9a9DA0C77',
   [ChainId.ASTARZKEVM]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
+  [ChainId.LAYERX]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
 };
 
 export const MERKL_DISTRIBUTOR = '0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae';
@@ -1324,6 +1326,16 @@ export const ABOND: { [chainId: number]: Token } = {
     18,
     'ABOND',
     'ApeBond',
+  ),
+};
+
+export const DSRUN: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xFf76c0B48363A7C7307868a81548d340049b0023',
+    18,
+    'DSRUN',
+    'DerbyStarsRUN',
   ),
 };
 

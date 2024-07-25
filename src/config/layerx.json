@@ -64,6 +64,9 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": false
+  },
   "perpsV2": {
     "available": false
   },
@@ -83,7 +86,7 @@
     "available": false
   },
   "steer": {
-    "available": false
+    "available": true
   },
   "dappos": {
     "available": false
