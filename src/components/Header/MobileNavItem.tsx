@@ -62,6 +62,7 @@ const MobileNavItem: React.FC<MobileNavItemProps> = ({ navItem }) => {
                       height: '48px',
                       display: 'flex',
                       alignItems: 'center',
+                      width: '100%',
                       gap: '4px',
                     }}
                   >
@@ -89,6 +90,7 @@ const MobileNavItem: React.FC<MobileNavItemProps> = ({ navItem }) => {
             style={{
               color: '#c7cad9',
               textDecoration: 'none',
+              width: '100%',
             }}
           >
             {navItem.text}

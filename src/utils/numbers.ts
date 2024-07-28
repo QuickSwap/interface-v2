@@ -70,6 +70,21 @@ export const formatAmount = (num: number | undefined, digits = 3) => {
   });
 };
 
+export const formatFloat = (num: number | undefined, digits = 3) => {
+  if (num === 0) return '0';
+  if (!num) return '-';
+
+  return numbro(num).format({
+    average: true,
+    mantissa: num > 1000 ? 2 : digits,
+    abbreviations: {
+      thousand: 'K',
+      million: 'M',
+      billion: 'B',
+    },
+  });
+};
+
 export const formatAmountTokens = (num: number | undefined, average?: any) => {
   if (num === 0) return '0';
   if (!num) return '-';

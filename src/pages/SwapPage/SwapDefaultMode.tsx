@@ -49,7 +49,7 @@ const SwapDefaultMode: React.FC<{
           <Box className='wrapper'>
             <SwapMain />
           </Box>
-          <Box className='wrapper' mt={2}>
+          {/* <Box className='wrapper' mt={2}>
             {token1 && (
               <SwapTokenDetailsHorizontal token={token1} isTablet={isTablet} />
             )}
@@ -70,15 +70,15 @@ const SwapDefaultMode: React.FC<{
               <LiquidityPools token1={token1} token2={token2} />
             </Box>
           )}
-          {/* <Box mt={2}>
+          <Box mt={2}>
             <SwapNewsletterSignup />
-          </Box> */}
+          </Box>
           <Box className='wrapper' mt={2}>
             <SwapBuySellMiniWidget />
           </Box>
           <Box mt={2}>
             <SwapNewsWidget />
-          </Box>
+          </Box> */}
         </>
       ) : (
         <Grid>

@@ -1,8 +1,14 @@
-import { Box, Button, Menu, MenuItem, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { ReactComponent as SettingsIcon } from 'assets/images/icons/cog-fill.svg';
-import { ReactComponent as CrossChainIcon } from 'assets/images/crossChainIcon.svg';
-import { SettingsModal, ToggleSwitch } from 'components';
+import { SettingsModal } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
@@ -13,7 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useIsV2 } from 'state/application/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
-import { SlippageWrapper } from './SlippageWrapper';
+import '../styles/swap-main.scss';
+
 const SwapV3Page = lazy(() => import('./V3/Swap'));
 const Swap = lazy(() =>
   import('components').then((module) => ({ default: module.Swap })),
@@ -61,7 +68,11 @@ const SwapMain: React.FC = () => {
   const SwapDropdownTabs = useMemo(() => {
     const tabs = [];
     if (showBestTrade) {
-      tabs.push({ name: 'bestTrade', key: SWAP_BEST_TRADE });
+      tabs.push({
+        name: 'bestTrade',
+        key: SWAP_BEST_TRADE,
+        tooltipContent: 'bestTradeTooltip',
+      });
     }
     if (v2) {
       tabs.push({ name: 'marketV2', key: SWAP_NORMAL });
@@ -89,6 +100,7 @@ const SwapMain: React.FC = () => {
     if (!dropdownTab) return 'bestTrade';
     return dropdownTab.name;
   }, [SwapDropdownTabs, swapType]);
+  console.log('🚀 ~ dropDownMenuText ~ dropDownMenuText:', dropDownMenuText);
 
   const [selectedIndex, setSelectedIndex] = React.useState(
     Number(swapType?.toString() ?? '0'),
@@ -235,56 +247,6 @@ const SwapMain: React.FC = () => {
         </Box>
       </Box>
       <Box
-        className={`flex flex-wrap items-center justify-between ${
-          isProMode ? ' proModeWrapper' : ''
-        }`}
-      >
-        <Box display='flex' width={1}>
-          {!isProMode ? (
-            <>
-              <Box display='flex' className='tabContainer'>
-                {/* {showCrossChain && (
-                  <Box
-                    className={`tab ${
-                      selectedIndex === SWAP_CROSS_CHAIN ? 'activeTab' : ''
-                    }`}
-                    onClick={() => {
-                      setSelectedIndex(SWAP_CROSS_CHAIN);
-                      setAnchorEl(null);
-                      redirectWithSwapType(SWAP_CROSS_CHAIN);
-                    }}
-                  >
-                    <Box pr={1}>
-                      <CrossChainIcon
-                        className='cross-chain-icon'
-                        scale={1.5}
-                      />
-                    </Box>
-                    <Box className='trade-btn'>{t('crossChain')}</Box>
-                  </Box>
-                )} */}
-              </Box>
-            </>
-          ) : (
-            <>
-              {SwapDropdownTabs.map((option) => (
-                <Box
-                  key={option.key}
-                  style={{ textAlign: 'center' }}
-                  className={swapTabClass(option.key)}
-                  onClick={() => {
-                    redirectWithSwapType(option.key);
-                  }}
-                >
-                  <p>{t(option.name)}</p>
-                </Box>
-              ))}
-            </>
-          )}
-        </Box>
-      </Box>
-      {/* Tabs */}
-      <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -334,6 +296,35 @@ const SwapMain: React.FC = () => {
                           }`}
                         >
                           {t(dropDownMenuText)}
+                          {dropDownMenuText === 'bestTrade' && (
+                            <Tooltip
+                              style={{ margin: '0 4px' }}
+                              title={
+                                <Box
+                                  sx={{
+                                    padding: '16px',
+                                    fontSize: '12px',
+                                    color: '#c7cad9',
+                                    bgcolor: '#0000003d',
+                                    border:
+                                      'solid 1px rgba(255, 255, 255, 0.04)',
+                                    boxShadow: '0 0 16px 0 rgba(0, 0, 0, 0.24)',
+                                    borderRadius: '12px',
+                                  }}
+                                  style={{ backdropFilter: 'blur(40px)' }}
+                                >
+                                  {t('bestTradeTooltip')}
+                                </Box>
+                              }
+                            >
+                              <img
+                                src='/info.svg'
+                                alt='question'
+                                width={12}
+                                height={12}
+                              />
+                            </Tooltip>
+                          )}
                         </Button>
                       )}
                       <Menu
@@ -363,6 +354,7 @@ const SwapMain: React.FC = () => {
                             }
                           >
                             {t(option.name)}
+
                             {option.key === selectedIndex && (
                               <Box ml={5} className='selectedMenuDot' />
                             )}

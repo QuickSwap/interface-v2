@@ -653,6 +653,13 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
     'QUICK',
     'QuickSwap',
   ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xb12c13e66AdE1F72f71834f2FC5082Db8C091358',
+    18,
+    'QUICK',
+    'QuickSwap',
+  ),
 };
 
 export const OLD_DQUICK: { [chainId: number]: Token } = {

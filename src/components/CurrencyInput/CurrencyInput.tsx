@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import CurrencySelect from 'components/CurrencySelect';
 import { default as useUSDCPriceV3 } from 'hooks/v3/useUSDCPrice';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
+import { fontSizes } from 'components/Dropdown/types';
 import { useAppSelector } from 'state';
 import { getCurrencyBalanceImmediately } from 'state/wallet/hooks';
 import { useMulticallContract } from 'hooks/useContract';
@@ -130,24 +131,26 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         >
           {title || `${t('youPay')}:`}
         </p>
-        <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
-          <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
-            <span className='subtext-color'>{t('balance')}:</span>{' '}
-            {formatTokenAmount(selectedCurrencyBalance)}
-          </small>
+        <Box className='flex'>
+          <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
+            <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+              <span className='subtext-color'>{t('balance')}:</span>{' '}
+              {formatTokenAmount(selectedCurrencyBalance)}
+            </small>
+          </Box>
+          <Box display='flex' ml={1}>
+            {account && currency && showHalfButton && (
+              <Box className='maxWrapper' onClick={onHalf}>
+                <small>50%</small>
+              </Box>
+            )}
+            {account && currency && showMaxButton && (
+              <Box className='maxWrapper' marginLeft='10px' onClick={onMax}>
+                <small>{t('max')}</small>
+              </Box>
+            )}
+          </Box>
         </Box>
-        {/* <Box display='flex'>
-          {account && currency && showHalfButton && (
-            <Box className='maxWrapper' onClick={onHalf}>
-              <small>50%</small>
-            </Box>
-          )}
-          {account && currency && showMaxButton && (
-            <Box className='maxWrapper' marginLeft='20px' onClick={onMax}>
-              <small>{t('max')}</small>
-            </Box>
-          )}
-        </Box> */}
       </Box>
       <Box
         mb={2}
@@ -172,9 +175,16 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           handleCurrencySelect={handleCurrencySelect}
         />
       </Box>
-      <Box className='flex items-center justify-between' width='100%'>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Typography className='subtext-color' style={{ fontSize: '13px' }}>
-          {t('balance')}: {formatTokenAmount(updatedSelectedCurrencyBalance)}
+          {balancePrev}
         </Typography>
         <Typography className='subtext-color' style={{ fontSize: '13px' }}>
           <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
@@ -182,6 +192,14 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
           </small>
         </Typography>
       </Box>
+      {/* <Box className='flex justify-between'>
+        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+          {t('balance')}: {formatTokenAmount(updatedSelectedCurrencyBalance)}
+        </small>
+        <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+          ${(usdPrice * Number(amount)).toLocaleString('us')}
+        </small>
+      </Box> */}
     </Box>
   );
 };

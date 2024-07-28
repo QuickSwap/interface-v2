@@ -16,6 +16,12 @@ import { ReactComponent as Announcement } from 'assets/images/social/announcemen
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as Medium } from 'assets/images/social/Medium.svg';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
+import { HeaderDesktopItem } from 'components/Header/HeaderDesktopItem';
+import { useActiveWeb3React } from 'hooks';
+import { ChainId } from '@uniswap/sdk';
+import { getConfig } from 'config/index';
+import { USDC, USDT } from 'constants/v3/addresses';
+import { useTranslation } from 'react-i18next';
 
 interface MobileHeaderProps {
   menuItems: HeaderMenuItem[];
@@ -30,6 +36,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 }) => {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
+  const { chainId, account } = useActiveWeb3React();
+  console.log('@@@', menuItems);
   useEffect(() => {
     setIsActive(false);
   }, [location]);
@@ -110,6 +118,16 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     },
   ];
 
+  const swapCurrencyStr = useMemo(() => {
+    if (!chainId) return '';
+    if (chainId === ChainId.ZKTESTNET)
+      return `&currency1=${USDT[chainId].address}`;
+    if (USDC[chainId]) return `&currency1=${USDC[chainId].address}`;
+    return '';
+  }, [chainId]);
+
+  const { t } = useTranslation();
+
   return (
     <>
       <Box
@@ -117,6 +135,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           width: '100%',
           height: isActive ? '100vh' : '0px',
           backgroundColor: '#12131a',
+          opacity: isMobile && !isActive ? 0.6 : 1,
           position: 'fixed',
           left: 0,
           top: '64px',
@@ -133,18 +152,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             Products
           </Typography>
           <Box style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {menuItems
-              .filter(
-                (val) =>
-                  ![
-                    'contest-page-link',
-                    'convert-quick',
-                    'dappos-page-link',
-                  ].includes(val.id),
-              )
-              .map((item, i) => {
-                return <MobileNavItem key={i} navItem={item} />;
-              })}
+            {menuItems.map((item, i) => {
+              return <MobileNavItem key={i} navItem={item} />;
+            })}
           </Box>
         </Box>
         <Box style={{ paddingTop: '12px', borderBottom: '1px solid #242938' }}>
@@ -155,7 +165,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               marginBottom: '12px',
             }}
           >
-            Govermance
+            Governance
           </Typography>
           <Box style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {govermance.map((item, index) => {
@@ -275,7 +285,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             height: '64px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'end',
             backgroundColor: 'rgb(18 19 26 / 49%)',
             backdropFilter: 'blur(30px)',
             padding: '0 42px',
@@ -297,20 +306,90 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               <CloseIcon style={{ color: '#ca0000' }} />
             </ButtonBase>
           ) : (
-            <ButtonBase
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'end',
-                gap: '18px',
-              }}
-              onClick={() => {
-                setIsActive(true);
-              }}
+            <Box
+              justifyContent='space-between'
+              alignItems='center'
+              className='flex gap-3'
+              width='100%'
             >
-              Menu
-              <ThreeDashIcon />
-            </ButtonBase>
+              <Box>
+                <Link to={`/swap?currency0=ETH${swapCurrencyStr}`}>
+                  {t('swap')}
+                </Link>
+              </Box>
+              <Box>
+                <HeaderDesktopItem
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  item={{
+                    link: '/perps',
+                    text: 'Perps',
+                    id: 'perps-page-link',
+                    isExternal: true,
+                    externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+                    items: [
+                      {
+                        id: 'perps-new-page-link',
+                        link: '/falkor',
+                        text: 'Perps - PoS',
+                        isNew: true,
+                      },
+                      {
+                        id: 'perps-v1-page-link',
+                        link: process.env.REACT_APP_PERPS_URL || '#',
+                        text: 'Perps - zkEVM',
+                        onClick: () => {
+                          if (process.env.REACT_APP_PERPS_URL) {
+                            window.open(
+                              process.env.REACT_APP_PERPS_URL,
+                              '_blank',
+                            );
+                          }
+                        },
+                      },
+                      {
+                        link: '/hydra',
+                        text: 'Hydra',
+                        id: 'hydra-page-link',
+                        isExternal: true,
+                        externalLink: process?.env?.REACT_APP_HYDRA_URL || '',
+                        onClick: async () => {
+                          if (process.env.REACT_APP_HYDRA_URL) {
+                            window.open(
+                              process.env.REACT_APP_HYDRA_URL,
+                              '_blank',
+                            );
+                          }
+                        },
+                      },
+                    ],
+                  }}
+                />
+              </Box>
+              <Box>
+                <Link to='/pools'>{t('pool')}</Link>
+              </Box>
+              <ButtonBase
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'end',
+                  gap: '18px',
+                }}
+                onClick={() => {
+                  setIsActive(true);
+                }}
+              >
+                Menu
+                <ThreeDashIcon />
+              </ButtonBase>
+            </Box>
           )}
         </Box>
       </Box>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import { useLocation } from 'react-router-dom';
 import HeroBkg from 'assets/images/banner.webp';
-import HeroBkg2 from 'assets/images/banner2.webp';
+// import HeroBkg2 from 'assets/images/banner2.webp';
 import layer from 'assets/images/layer1.png';
 import layer2 from 'assets/images/BottomWave.png';
 
@@ -10,8 +10,9 @@ const Background: React.FC<{ fallback: boolean | undefined }> = ({
   fallback = false,
 }) => {
   const { pathname } = useLocation();
+
   const showBg2 = pathname === '/swap' || pathname === '/bridge';
-  const showDefaultBG = fallback || !showBg2;
+  const showDefaultBG = pathname === '/';
   return (
     <Box className={`heroBkg ${showBg2 ? 'isNewBg' : ''}`}>
       {showDefaultBG && (

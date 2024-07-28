@@ -14,7 +14,7 @@ import 'components/styles/Header.scss';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config/index';
 import useDeviceWidth from 'hooks/useDeviceWidth';
-import { USDC, USDO, USDT } from 'constants/v3/addresses';
+import { NEW_QUICK, USDC, USDO, USDT } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { MobileMenuDrawer } from './MobileMenuDrawer';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -114,6 +114,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       return `&currency1=${USDT[chainId].address}`;
     if (chainId === ChainId.DOGECHAIN)
       return `&currency1=${USDO[chainId].address}`;
+    if (NEW_QUICK[chainId]) return `&currency1=${NEW_QUICK[chainId].address}`;
     if (USDC[chainId]) return `&currency1=${USDC[chainId].address}`;
     return '';
   }, [chainId]);
@@ -125,31 +126,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'swap-page-link',
     });
   }
-  // const perpsTab: HeaderMenuItem = {
-  //   text: t('Perps'),
-  //   id: 'earn-tab',
-  //   link: '/',
-  //   items: [],
-  //   isNew: true,
-  // };
-  // if (isPerpsDropdown) {
-  //   menuItems.push(perpsTab);
-  // }
-  // const perpsItem = {
-  //   link: '/perps',
-  //   text: 'Perps V1',
-  //   id: 'perps-page-link',
-  //   isExternal: true,
-  //   externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-  //   onClick: async () => {
-  //     if (chainId !== ChainId.ZKEVM) {
-  //       switchNetwork(ChainId.ZKEVM);
-  //     }
-  //     if (process.env.REACT_APP_PERPS_URL) {
-  //       window.open(process.env.REACT_APP_PERPS_URL, '_blank');
-  //     }
-  //   },
-  // };
+
   const hydraItem = {
     link: '/hydra',
     text: 'Hydra',
@@ -165,13 +142,31 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       }
     },
   };
-  // if (showHydra) {
-  //   if (showPerps || showPerpsV2) {
-  //     perpsTab.items?.push(hydraItem);
-  //   } else {
-  //     menuItems.push(hydraItem);
-  //   }
+  // const perpsTab: HeaderMenuItem = {
+  //   text: t('Perps'),
+  //   id: 'earn-tab',
+  //   link: '/',
+  //   items: [],
+  //   isNew: true,
+  // };
+  // if (showPerpsV2 && showPerps) {
+  //   menuItems.push(perpsTab);
   // }
+  // const perpsItem = {
+  //   link: '/perps',
+  //   text: 'Perps',
+  //   id: 'perps-page-link',
+  //   isExternal: true,
+  //   externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+  //   onClick: async () => {
+  //     if (chainId !== ChainId.ZKEVM) {
+  //       switchNetwork(ChainId.ZKEVM);
+  //     }
+  //     if (process.env.REACT_APP_PERPS_URL) {
+  //       window.open(process.env.REACT_APP_PERPS_URL, '_self');
+  //     }
+  //   },
+  // };
   if (isHome) {
     menuItems.push({
       link: '/perps',
@@ -219,14 +214,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       menuItems.push({
         id: 'perps-new-page-link',
         link: '/falkor',
-        text: 'Perps - PoS',
+        text: 'Perps',
         isNew: true,
       });
     } else if (chainId === ChainId.ZKEVM) {
       menuItems.push({
         id: 'perps-v1-page-link',
         link: process.env.REACT_APP_PERPS_URL || '#',
-        text: 'Perps - zkEVM V1',
+        text: 'Perps',
         onClick: () => {
           if (process.env.REACT_APP_PERPS_URL) {
             window.open(process.env.REACT_APP_PERPS_URL, '_blank');
@@ -250,25 +245,25 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     items: [],
   };
 
-  const partnersTab: HeaderMenuItem = {
-    text: t('Partners'),
-    id: 'partners',
-    link: '/partners',
-    items: [
-      {
-        link: '/dappOS',
-        text: 'DappOS',
-        id: 'dappos-page-link',
-        isExternal: true,
-        target: '_blank',
-        externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-      },
-    ],
-  };
+  // const partnersTab: HeaderMenuItem = {
+  //   text: t('Partners'),
+  //   id: 'partners',
+  //   link: '/partners',
+  //   items: [
+  //     {
+  //       link: '/dappOS',
+  //       text: 'DappOS',
+  //       id: 'dappos-page-link',
+  //       isExternal: true,
+  //       target: '_blank',
+  //       externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  //     },
+  //   ],
+  // };
+  // menuItems.push(partnersTab);
   if (showEarn) {
     menuItems.push(earnTab);
   }
-  menuItems.push(partnersTab);
   if (showFarm) {
     if (showEarn) {
       earnTab.items?.push({
@@ -358,6 +353,15 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'convert-quick',
     });
   }
+
+  menuItems.push({
+    link: '/dappOS',
+    text: 'DappOS',
+    id: 'dappos-page-link',
+    isExternal: true,
+    target: '_blank',
+    externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+  });
 
   if (showLending) {
     menuItems.push({
@@ -455,7 +459,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
           {isPerpsPage && !mobileWindowSize && <OrderlyPoints />}
           <Box style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <NetworkSelection />
-            {!!account && (
+            {!!account ? (
               <Box
                 id='web3-status-connected'
                 className='accountDetails'
@@ -468,15 +472,16 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
                 <p>{shortenAddress(account)}</p>
                 <KeyboardArrowDownIcon />
               </Box>
+            ) : (
+              <Box
+                className='connectButton bg-primary'
+                onClick={() => {
+                  connectWallet();
+                }}
+              >
+                {t('connectWallet')}
+              </Box>
             )}
-          </Box>
-          <Box
-            className='connectButton bg-primary'
-            onClick={() => {
-              connectWallet();
-            }}
-          >
-            {t('connectWallet')}
           </Box>
         </Box>
       </Box>
