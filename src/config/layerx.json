@@ -69,6 +69,9 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": true
+  },
   "perpsV2": {
     "available": false
   },
