@@ -3,6 +3,7 @@
   "v2": false,
   "rpc": "https://pacific-rpc.manta.network/http",
   "blockExplorer": "https://pacific-explorer.manta.network",
+  "bridgeUrl": "https://pacific-bridge.manta.network/",
   "networkName": "Manta Pacific L2 Rollup",
   "aprAPINetwork": "manta",
   "chainId": 169,
@@ -13,6 +14,10 @@
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/manta_cover_img.svg",
+    "supportedChains": ["/bridge/eth.svg", "/bridge/mata.webp"]
   },
   "swap": {
     "available": true,
@@ -62,9 +67,6 @@
     "available": false
   },
   "perps": {
-    "available": false
-  },
-  "hydra": {
     "available": false
   },
   "perpsV2": {

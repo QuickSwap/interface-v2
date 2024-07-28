@@ -3,6 +3,7 @@
   "v2": false,
   "rpc": "https://rpc.startale.com/astar-zkevm",
   "blockExplorer": "https://astar-zkevm.explorer.startale.com",
+  "bridgeUrl": "https://portal.astar.network/astar-zkevm/bridge/ethereum",
   "networkName": "Astar zkEVM",
   "aprAPINetwork": "astarzkevm",
   "chainId": 3776,
@@ -13,6 +14,10 @@
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/astar.webp",
+    "supportedChains": ["/bridge/eth.svg", "/bridge/astar.webp"]
   },
   "swap": {
     "available": true,
@@ -62,9 +67,6 @@
     "available": false
   },
   "perps": {
-    "available": false
-  },
-  "hydra": {
     "available": false
   },
   "perpsV2": {

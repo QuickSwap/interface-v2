@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatNumber, getPerpsSymbol } from 'utils';
 import { SearchInput } from 'components';
 import { LeverageManage } from './LeverageManage';
-import { formatDollarAmount, formatFloat } from 'utils/numbers';
 
 interface Props {
   tokenSymbol: string;
@@ -20,7 +19,6 @@ export const GraphHeader: React.FC<Props> = ({
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null,
   );
-  const [timeDifference, setTimeDifference] = useState('');
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -54,33 +52,6 @@ export const GraphHeader: React.FC<Props> = ({
         );
       });
   }, [data, search]);
-
-  useEffect(() => {
-    const updateTimeDifference = () => {
-      const currentTime = Date.now();
-      const difference = token?.next_funding_time - currentTime;
-
-      if (difference <= 0) {
-        setTimeDifference('00:00:00');
-      } else {
-        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((difference / (1000 * 60)) % 60);
-        const seconds = Math.floor((difference / 1000) % 60);
-
-        const formattedTime = `${String(hours).padStart(2, '0')}:${String(
-          minutes,
-        ).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        setTimeDifference(formattedTime);
-      }
-    };
-
-    const interval = setInterval(updateTimeDifference, 1000);
-
-    // Initial call to set the time immediately on component mount
-    updateTimeDifference();
-
-    return () => clearInterval(interval);
-  }, [token?.next_funding_time]);
 
   return (
     <>
@@ -218,25 +189,11 @@ export const GraphHeader: React.FC<Props> = ({
             </Box>
             <Box>
               <p className='span text-secondary'>Funding Rate</p>
-              <p className='span'>
-                {token?.est_funding_rate * 100 > 0 && (
-                  <span className='text-success'>
-                    {formatFloat(token?.est_funding_rate * 100, 4)}%
-                  </span>
-                )}
-                {token?.est_funding_rate * 100 < 0 && (
-                  <span className='text-error'>
-                    {formatFloat(token?.est_funding_rate * 100, 4)}%
-                  </span>
-                )}{' '}
-                in {timeDifference}
-              </p>
+              <p className='span'>{token?.est_funding_rate}%</p>
             </Box>
             <Box>
               <p className='span text-secondary'>Open Interest</p>
-              <p className='span'>
-                {formatDollarAmount(token?.mark_price * token?.open_interest)}
-              </p>
+              <p className='span'>{token?.open_interest}</p>
             </Box>
           </>
         )}
