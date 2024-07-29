@@ -483,10 +483,12 @@ export function SupplyLiquidityV3() {
                 </MenuItem>
               ))}
             </Select> */}
-            <V3CurrencySelect
-              currency={depositToken ?? undefined}
-              handleCurrencySelect={handleCurrencySelectSingle}
-            />
+            {account && isSupportedNetwork && (
+              <V3CurrencySelect
+                currency={depositToken ?? undefined}
+                handleCurrencySelect={handleCurrencySelectSingle}
+              />
+            )}
           </Box>
           <Box sx={{ padding: '12px 0' }}>
             <SelectVault currency={depositToken} />
