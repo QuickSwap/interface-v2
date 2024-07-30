@@ -5,9 +5,6 @@ import { useActiveWeb3React } from 'hooks';
 import React, { useEffect } from 'react';
 import { useIsDarkMode } from 'state/user/hooks';
 
-const QUICKSWAP = 'Quickswap';
-const QUICKSWAP_V3 = 'Quickswap_v3';
-
 const SwapCrossChain: React.FC = () => {
   const darkMode = useIsDarkMode();
   const { chainId } = useActiveWeb3React();
@@ -70,7 +67,7 @@ const SwapCrossChain: React.FC = () => {
             },
             style: darkMode ? darkModeStyle : lightModeStyle,
             loadPreviousStateFromLocalStorage: true,
-            preferDex: [QUICKSWAP, QUICKSWAP_V3],
+            preferDex: ['QUICKSWAP V3', 'Quickswap V2'],
           }}
         />
       </Box>
