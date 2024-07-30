@@ -286,7 +286,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             display: 'flex',
             alignItems: 'center',
             backgroundColor: 'rgb(18 19 26 / 49%)',
-            backdropFilter: 'blur(30px)',
+            // backdropFilter: 'blur(30px)',
             padding: '0 42px',
           }}
         >
