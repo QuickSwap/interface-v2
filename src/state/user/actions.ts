@@ -63,3 +63,6 @@ export const updateUserZapSlippage = createAction<{
 export const updateIsInfiniteApproval = createAction<{
   isInfiniteApproval: boolean;
 }>('user/updateIsInfiniteApproval');
+export const updateUserAmlScore = createAction<{
+  score: number;
+}>('user/updateUserAmlScore');
