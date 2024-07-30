@@ -1,13 +1,13 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
 
 .v3PairPlusIcon {
-    width: 32px;
-    height: 32px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid $textSecondary;
-    color: $textSecondary;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid $textSecondary;
+  color: $textSecondary;
 }

@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { DoubleCurrencyLogo } from 'components';
 import { ICHIVault, useICHIVaultAPR } from 'hooks/useICHIData';
 import React from 'react';
@@ -57,7 +57,12 @@ const SingleTokenPoolCard: React.FC<{
         {isLoading || loadingUSDPrices ? (
           <Loader />
         ) : (
-          <p className='small'>{formatNumber(apr)}%</p>
+          <Box sx={{ display: 'flex', alignItems: 'center', gridGap: '4px' }}>
+            <Typography style={{ color: '#0fc679' }}>
+              {formatNumber(apr)}%
+            </Typography>
+            <img src='/icons/pools/star.webp' alt='star' width={20} />
+          </Box>
         )}
       </Box>
     </Box>

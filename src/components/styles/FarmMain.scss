@@ -1,5 +1,5 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
 
 .sortSelectBox {
     label {
@@ -46,6 +46,8 @@
 }
 
 .pageHeading {
+    margin-bottom: 32px;
+
     .version-toggle-container {
         height: 28px;
         display: flex;

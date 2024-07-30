@@ -4,7 +4,7 @@ import { CurrencyLogo, DoubleCurrencyLogo, NumericalInput } from 'components';
 import { formatUnits } from 'ethers/lib/utils';
 import { useActiveWeb3React } from 'hooks';
 import { useICHIVaultDepositData } from 'hooks/useICHIData';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useSingleTokenCurrency,
@@ -14,10 +14,21 @@ import {
 import { formatNumber } from 'utils';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
-const SingleTokenEnterAmount: React.FC = () => {
+interface SingleTokenEnterAmountProps {
+  currency?: any;
+}
+
+const SingleTokenEnterAmount: React.FC<SingleTokenEnterAmountProps> = ({
+  currency: orgCurrency,
+}) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const currency = useSingleTokenCurrency();
+  const singleCurrency = useSingleTokenCurrency();
+
+  const currency = useMemo(() => {
+    return orgCurrency || singleCurrency;
+  }, [orgCurrency, singleCurrency]);
+
   const { selectedVault } = useSingleTokenVault();
   const { typedValue, typeInput } = useSingleTokenTypeInput();
   const { price: usdPrice } = useUSDCPriceFromAddress(
