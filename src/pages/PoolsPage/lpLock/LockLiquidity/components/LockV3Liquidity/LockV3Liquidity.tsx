@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   TransactionErrorContent,
   TransactionConfirmationModal,
   ConfirmationModalContent,
 } from 'components';
 import { useTranslation } from 'react-i18next';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId, JSBI } from '@uniswap/sdk';
 import { ethers } from 'ethers';
 import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { useActiveWeb3React } from 'hooks';
@@ -30,21 +30,19 @@ import { calculateGasMargin } from 'utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import './index.scss';
+import { useETHBalances } from 'state/wallet/v3/hooks';
+import { useGetFeesAndWhitelistedWallet } from 'hooks/lpLock/useGetFeesAndWhitelisted';
 dayjs.extend(utc);
 
 const LockV3Liquidity: React.FC = () => {
   const { t } = useTranslation();
   const { account, chainId, library } = useActiveWeb3React();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   // inputs
   const [unlockDate, setUnlockDate] = useState(dayjs().add(90, 'days'));
   const [selectedExtendDate, setSelectedExtendDate] = useState('3M');
   const [tokenId, setTokenId] = useState('');
-  const [amount, setAmount] = useState('');
   const [lockErrorMessage, setLockErrorMessage] = useState('');
-  const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
-  const [errorMsg, setErrorMsg] = useState('');
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [txHash, setTxHash] = useState('');
@@ -57,8 +55,45 @@ const LockV3Liquidity: React.FC = () => {
   );
 
   const tokenLockerContract = useTokenLockerContract(chainId);
+  const ethBalanceData = useETHBalances(account ? [account] : []);
+  const ethBalance = account ? ethBalanceData?.[account] : undefined;
   const nftPosManContractAddress =
     NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+
+  const {
+    data: feeData,
+    isLoading: isLoadingFeeData,
+  } = useGetFeesAndWhitelistedWallet(nftPosManContractAddress);
+
+  const errorMsg = useMemo(() => {
+    if (
+      !nftPosManContractAddress ||
+      !library ||
+      !tokenLockerContract ||
+      !tokenId ||
+      tokenId == ''
+    ) {
+      return t('missingdependencies');
+    }
+    if (isLoadingFeeData) return;
+    if (feeData?.isWhitelisted) return;
+    if (
+      feeData?.fee &&
+      ethBalance?.numerator &&
+      JSBI.greaterThan(JSBI.BigInt(feeData.fee), ethBalance?.numerator)
+    )
+      return "You don't have enough Matic for fee.";
+  }, [
+    ethBalance?.numerator,
+    feeData?.fee,
+    feeData?.isWhitelisted,
+    isLoadingFeeData,
+    library,
+    nftPosManContractAddress,
+    t,
+    tokenId,
+    tokenLockerContract,
+  ]);
 
   const [approval, approveCallback] = useApproveCallbackTokenId(
     tokenId != '' ? tokenId : undefined,
@@ -85,16 +120,6 @@ const LockV3Liquidity: React.FC = () => {
     setSelectedExtendDate(`${years}Y`);
   };
 
-  useEffect(() => {
-    async function getFeesInEth(address: string) {
-      setFeesInEth(await tokenLockerContract?.getFeesInETH(address));
-    }
-    if (nftPosManContractAddress) {
-      getFeesInEth(nftPosManContractAddress);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nftPosManContractAddress]);
-
   const onAttemptToApprove = async () => {
     setApproving(true);
     try {
@@ -107,16 +132,7 @@ const LockV3Liquidity: React.FC = () => {
 
   // @Hassaan: Implement lock logic here
   const onLock = async () => {
-    if (
-      !nftPosManContractAddress ||
-      !library ||
-      !tokenLockerContract ||
-      !tokenId ||
-      tokenId == ''
-    ) {
-      setErrorMsg(t('missingdependencies'));
-      throw new Error(t('missingdependencies'));
-    }
+    if (!tokenLockerContract) return;
     try {
       setAttemptingTxn(true);
       const gasEstimate = await tokenLockerContract?.estimateGas.lockNFT(
@@ -128,7 +144,7 @@ const LockV3Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero,
         {
-          value: feesInEth,
+          value: feeData?.fee,
         },
       );
       const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
@@ -141,7 +157,7 @@ const LockV3Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero,
         {
-          value: feesInEth,
+          value: feeData?.fee,
           gasLimit: gasEstimateWithMargin,
         },
       );
@@ -302,10 +318,20 @@ const LockV3Liquidity: React.FC = () => {
           </Box>
         </Box>
       </Box>
+      {errorMsg && (
+        <Box my={2} className='border-error text-center' borderRadius={8} p={1}>
+          <p className='text-error'>{errorMsg}</p>
+        </Box>
+      )}
       <Box className='swapButtonWrapper'>
         <Button
           fullWidth
-          disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+          disabled={
+            approving ||
+            approval !== ApprovalState.NOT_APPROVED ||
+            isLoadingFeeData ||
+            !!errorMsg
+          }
           onClick={onAttemptToApprove}
         >
           {approving ? 'Approving...' : 'Approve'}
@@ -314,7 +340,11 @@ const LockV3Liquidity: React.FC = () => {
       <Box mt={2} className='swapButtonWrapper'>
         <Button
           fullWidth
-          disabled={approval !== ApprovalState.APPROVED}
+          disabled={
+            approval !== ApprovalState.APPROVED ||
+            isLoadingFeeData ||
+            !!errorMsg
+          }
           onClick={() => {
             setLockErrorMessage('');
             setShowConfirm(true);

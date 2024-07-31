@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
   TransactionErrorContent,
   TransactionConfirmationModal,
@@ -7,16 +7,11 @@ import {
 } from 'components';
 import { Contract } from '@ethersproject/contracts';
 import { useTranslation } from 'react-i18next';
-import { Token, ChainId } from '@uniswap/sdk';
-import {
-  useActiveWeb3React,
-  useConnectWallet,
-  useV2LiquidityPools,
-} from 'hooks';
+import { ChainId, JSBI } from '@uniswap/sdk';
+import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import {
   calculateGasMargin,
-  useIsSupportedNetwork,
   formatTokenAmount,
   getExactTokenAmount,
 } from 'utils';
@@ -39,11 +34,12 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { BigNumber, ethers, utils } from 'ethers';
 import './index.scss';
+import { useGetFeesAndWhitelistedWallet } from 'hooks/lpLock/useGetFeesAndWhitelisted';
+import { useETHBalances } from 'state/wallet/v3/hooks';
 dayjs.extend(utc);
 
 const LockV2Liquidity: React.FC = () => {
   const { t } = useTranslation();
-  const isSupportedNetwork = useIsSupportedNetwork();
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
@@ -55,8 +51,10 @@ const LockV2Liquidity: React.FC = () => {
   const [selectedAmountPercentage, setSelectedAmountPercentage] = useState('');
   const [errorAmount, setErrorAmount] = useState(false);
   const [lockErrorMessage, setLockErrorMessage] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [feesInEth, setFeesInEth] = useState(ethers.BigNumber.from(0));
+  const {
+    data: feeData,
+    isLoading: isLoadingFeeData,
+  } = useGetFeesAndWhitelistedWallet(lpTokenAddress);
 
   const {
     loading: v2IsLoading,
@@ -79,6 +77,8 @@ const LockV2Liquidity: React.FC = () => {
     lpToken?.liquidityToken,
   );
   const tokenLockerContract = useTokenLockerContract(chainId);
+  const ethBalanceData = useETHBalances(account ? [account] : []);
+  const ethBalance = account ? ethBalanceData?.[account] : undefined;
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [txHash, setTxHash] = useState('');
@@ -153,27 +153,43 @@ const LockV2Liquidity: React.FC = () => {
     setSelectedExtendDate(`${years}Y`);
   };
 
-  useEffect(() => {
-    async function getFeesInEth(address: string) {
-      setFeesInEth(await tokenLockerContract?.getFeesInETH(address));
+  const errorMsg = useMemo(() => {
+    if (
+      !pairContract ||
+      !lpToken ||
+      !library ||
+      !deadline ||
+      v2IsLoading ||
+      !tokenLockerContract
+    ) {
+      return t('missingdependencies');
     }
-    if (lpTokenAddress) {
-      getFeesInEth(lpTokenAddress);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lpTokenAddress]);
+    if (!parsedAmount) return t('missingliquidity');
+    if (isLoadingFeeData) return;
+    if (feeData?.isWhitelisted) return;
+    if (
+      feeData?.fee &&
+      ethBalance?.numerator &&
+      JSBI.greaterThan(JSBI.BigInt(feeData.fee), ethBalance?.numerator)
+    )
+      return "You don't have enough Matic for fee.";
+  }, [
+    deadline,
+    ethBalance?.numerator,
+    feeData?.fee,
+    feeData?.isWhitelisted,
+    isLoadingFeeData,
+    library,
+    lpToken,
+    pairContract,
+    parsedAmount,
+    t,
+    tokenLockerContract,
+    v2IsLoading,
+  ]);
 
   // @Hassaan: Approval already works
   const onAttemptToApprove = async () => {
-    if (!pairContract || !lpToken || !library || !deadline) {
-      setErrorMsg(t('missingdependencies'));
-      return;
-    }
-    const liquidityAmount = parsedAmount;
-    if (!liquidityAmount) {
-      setErrorMsg(t('missingliquidity'));
-      return;
-    }
     setApproving(true);
     try {
       await approveCallback();
@@ -184,24 +200,7 @@ const LockV2Liquidity: React.FC = () => {
   };
 
   const onLock = async () => {
-    if (
-      !pairContract ||
-      !lpToken ||
-      !library ||
-      !deadline ||
-      v2IsLoading ||
-      !tokenLockerContract
-    ) {
-      setErrorMsg(t('missingdependencies'));
-      throw new Error(t('missingdependencies'));
-    }
-    const liquidityAmount = parsedAmount;
-
-    if (!liquidityAmount) {
-      setErrorMsg(t('missingliquidity'));
-      throw new Error(t('missingliquidity'));
-    }
-
+    if (!parsedAmount || !tokenLockerContract) return;
     try {
       setAttemptingTxn(true);
       const gasEstimate = await tokenLockerContract?.estimateGas.lockToken(
@@ -221,7 +220,7 @@ const LockV2Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero,
         {
-          value: feesInEth,
+          value: feeData?.fee,
           gasLimit: gasEstimateWithMargin,
         },
       );
@@ -457,10 +456,20 @@ const LockV2Liquidity: React.FC = () => {
           </Box>
         </Box>
       </Box>
+      {errorMsg && (
+        <Box my={2} className='border-error text-center' borderRadius={8} p={1}>
+          <p className='text-error'>{errorMsg}</p>
+        </Box>
+      )}
       <Box className='swapButtonWrapper'>
         <Button
           fullWidth
-          disabled={approving || approval !== ApprovalState.NOT_APPROVED}
+          disabled={
+            approving ||
+            approval !== ApprovalState.NOT_APPROVED ||
+            isLoadingFeeData ||
+            !!errorMsg
+          }
           onClick={onAttemptToApprove}
         >
           {approving ? 'Approving...' : 'Approve'}
@@ -469,7 +478,11 @@ const LockV2Liquidity: React.FC = () => {
       <Box mt={2} className='swapButtonWrapper'>
         <Button
           fullWidth
-          disabled={approval !== ApprovalState.APPROVED}
+          disabled={
+            approval !== ApprovalState.APPROVED ||
+            isLoadingFeeData ||
+            !!errorMsg
+          }
           onClick={() => {
             setLockErrorMessage('');
             setShowConfirm(true);
