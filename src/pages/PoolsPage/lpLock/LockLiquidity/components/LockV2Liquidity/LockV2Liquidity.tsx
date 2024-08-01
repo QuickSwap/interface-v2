@@ -12,6 +12,7 @@ import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
 import {
   calculateGasMargin,
+  formatNumber,
   formatTokenAmount,
   getExactTokenAmount,
 } from 'utils';
@@ -36,6 +37,7 @@ import { BigNumber, ethers, utils } from 'ethers';
 import './index.scss';
 import { useGetFeesAndWhitelistedWallet } from 'hooks/lpLock/useGetFeesAndWhitelisted';
 import { useETHBalances } from 'state/wallet/v3/hooks';
+import { formatUnits } from 'ethers/lib/utils';
 dayjs.extend(utc);
 
 const LockV2Liquidity: React.FC = () => {
@@ -172,7 +174,9 @@ const LockV2Liquidity: React.FC = () => {
       ethBalance?.numerator &&
       JSBI.greaterThan(JSBI.BigInt(feeData.fee), ethBalance?.numerator)
     )
-      return "You don't have enough Matic for fee.";
+      return `${formatNumber(
+        formatUnits(feeData.fee),
+      )} Matic is required for fee. You don't have enough Matic.`;
   }, [
     deadline,
     ethBalance?.numerator,

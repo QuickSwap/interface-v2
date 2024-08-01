@@ -26,12 +26,13 @@ import {
 import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useTokenLockerContract } from 'hooks/useContract';
 import { updateUserLiquidityLock } from 'state/data/liquidityLocker';
-import { calculateGasMargin } from 'utils';
+import { calculateGasMargin, formatNumber } from 'utils';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import './index.scss';
 import { useETHBalances } from 'state/wallet/v3/hooks';
 import { useGetFeesAndWhitelistedWallet } from 'hooks/lpLock/useGetFeesAndWhitelisted';
+import { formatUnits } from 'ethers/lib/utils';
 dayjs.extend(utc);
 
 const LockV3Liquidity: React.FC = () => {
@@ -82,7 +83,9 @@ const LockV3Liquidity: React.FC = () => {
       ethBalance?.numerator &&
       JSBI.greaterThan(JSBI.BigInt(feeData.fee), ethBalance?.numerator)
     )
-      return "You don't have enough Matic for fee.";
+      return `${formatNumber(
+        formatUnits(feeData.fee),
+      )} Matic is required for fee. You don't have enough Matic.`;
   }, [
     ethBalance?.numerator,
     feeData?.fee,
