@@ -37,7 +37,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
   const { chainId, account } = useActiveWeb3React();
-  console.log('@@@', menuItems);
+
   useEffect(() => {
     setIsActive(false);
   }, [location]);
