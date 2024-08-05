@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-  <g id="Group_14424" data-name="Group 14424" transform="translate(-32 -32)">
-    <path id="Subtraction_6" data-name="Subtraction 6" d="M35.934,28.578H21.812v-.605l2.91-2.82c.285-.29.285-.369.285-.809V7.982L16.926,28.515h-1.1L6.419,7.982v13.76a1.882,1.882,0,0,0,.522,1.578l3.779,4.59v.6H0v-.6l3.781-4.59a1.85,1.85,0,0,0,.488-1.578V5.83a1.4,1.4,0,0,0-.453-1.176L.453.605V0H10.888l8.071,17.69L26.052,0H36V.605L33.128,3.358a.838.838,0,0,0-.321.805V24.411a.841.841,0,0,0,.321.809l2.806,2.753v.6Z" transform="translate(46 50)" fill="#fff"/>
-    <rect id="Rectangle_17858" data-name="Rectangle 17858" width="64" height="64" transform="translate(32 32)" fill="none"/>
-  </g>
+<svg data-name="Group 34891" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+    <path data-name="Rectangle 17858" style="fill:none" d="M0 0h48v48H0z"/>
+    <path data-name="Subtraction 6" d="M29.945 23.815H18.177v-.5l2.425-2.35c.238-.242.238-.308.238-.674V6.652l-6.735 17.11h-.917L5.349 6.652v11.466a1.568 1.568 0 0 0 .435 1.315l3.149 3.825v.5H0v-.5l3.151-3.825a1.541 1.541 0 0 0 .407-1.315V4.858a1.167 1.167 0 0 0-.377-.98L.377.5V0h8.7L15.8 14.742 21.71 0H30v.5l-2.393 2.3a.7.7 0 0 0-.268.671v16.871a.7.7 0 0 0 .268.674l2.338 2.294v.5z" transform="translate(9.447 12)" style="fill:#f6f6f9"/>
 </svg>
