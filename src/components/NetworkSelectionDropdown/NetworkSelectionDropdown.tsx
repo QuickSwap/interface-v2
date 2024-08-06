@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { ChainId } from '@uniswap/sdk';
 import { useIsSupportedNetwork } from 'utils';
 import KavaImage from 'assets/images/KAVA.png';
+import FlareImage from 'assets/images/flare.webp';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import ActiveDotImage from 'assets/images/chainActiveDot.png';
@@ -101,17 +102,38 @@ const NetworkSelectionDropdown: React.FC = () => {
         );
       })}
       {networkType === 'mainnet' && (
-        <Box
-          className='networkItemWrapper'
-          onClick={() => {
-            window.open('https://kinetix.finance/home', '_blank');
-          }}
-        >
-          <Box className='flex items-center'>
-            <img src={KavaImage} alt='network Image' className='networkIcon' />
-            <small className='weight-600'>Kava - Kinetix</small>
+        <>
+          <Box
+            className='networkItemWrapper'
+            onClick={() => {
+              window.open('https://kinetix.finance/home', '_blank');
+            }}
+          >
+            <Box className='flex items-center'>
+              <img
+                src={KavaImage}
+                alt='network Image'
+                className='networkIcon'
+              />
+              <small className='weight-600'>Kava - Kinetix</small>
+            </Box>
           </Box>
-        </Box>
+          <Box
+            className='networkItemWrapper'
+            onClick={() => {
+              window.open('https://sparkdex.ai/apps/swap', '_blank');
+            }}
+          >
+            <Box className='flex items-center'>
+              <img
+                src={FlareImage}
+                alt='network Image'
+                className='networkIcon'
+              />
+              <small className='weight-600'>Flare - SparkDex</small>
+            </Box>
+          </Box>
+        </>
       )}
     </Box>
   );
