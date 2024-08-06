@@ -88,6 +88,9 @@
   "ichi": {
     "available": false
   },
+  "lpLock": {
+    "available": false
+  },
   "defiedge": {
     "available": false
   },

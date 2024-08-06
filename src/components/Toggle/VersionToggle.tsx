@@ -17,6 +17,7 @@ const VersionToggle: React.FC = () => {
   const config = getConfig(chainId);
   const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const singleTokenEnabled = config['ichi']['available'];
+  const lpLockEnabled = config['lpLock']['available'];
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
@@ -103,7 +104,7 @@ const VersionToggle: React.FC = () => {
           <small>{t('singleToken')}</small>
         </Box>
       )}
-      {isPoolPage && (
+      {isPoolPage && lpLockEnabled && (
         <Box
           className={isLpLock ? 'version-toggle-active' : ''}
           onClick={() => {

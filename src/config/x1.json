@@ -90,5 +90,8 @@
   },
   "ichi": {
     "available": false
+  },
+  "lpLock": {
+    "available": false
   }
 }

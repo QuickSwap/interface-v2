@@ -90,5 +90,8 @@
   },
   "defiedge": {
     "available": false
+  },
+  "lpLock": {
+    "available": false
   }
 }
