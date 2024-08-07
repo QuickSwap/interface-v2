@@ -94,6 +94,9 @@
   "ichi": {
     "available": false
   },
+  "lpLock": {
+    "available": false
+  },
   "maxChunks": 20,
   "blocksPerFetch": 25,
   "poolInitCodeHash": "0xbce37a54eab2fcd71913a0d40723e04238970e7fc1159bfd58ad5b79531697e7"

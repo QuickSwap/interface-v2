@@ -1,0 +1,52 @@
+@use 'styles/variables' as *;
+
+.selectWrapper {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid $secondary3;
+  overflow: hidden;
+}
+
+.inputWrapper {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid $secondary3;
+  overflow: hidden;
+  padding: 12px 10px 12px 10px;
+}
+
+.errorInput {
+  border-color: $errorMain
+}
+
+.modalWrapper {
+  max-width: 720px;
+}
+
+.claimButton {
+  border-radius: 10px;
+  height: 40px;
+}
+
+.percentageWrapper {
+  padding: 4px 10px 5px 10px;
+  border-radius: 10px;
+  background-color: $secondary2;
+  cursor: pointer;
+  & small {
+    color: $primary;
+    font-weight: 600
+  }
+}
+
+.selectedPercentageWrapper {
+  border: 1px solid $primary;
+}
+
+.linkButton {
+  display:flex;
+  align-items: center;
+  & small {
+    margin-right: 4px;
+  }
+}
