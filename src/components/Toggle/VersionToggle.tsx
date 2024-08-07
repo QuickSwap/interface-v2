@@ -12,6 +12,8 @@ const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
+  const v2Available = config['v2'];
+  const v3Available = config['v3'];
   const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const singleTokenEnabled = config['ichi']['available'];
   const { updateIsV2 } = useIsV2();
@@ -58,23 +60,27 @@ const VersionToggle: React.FC = () => {
 
   return (
     <Box className='version-toggle-container'>
-      <Box
-        className={version === 'v2' ? 'version-toggle-active' : ''}
-        onClick={() => {
-          redirectWithVersion('v2');
-        }}
-      >
-        <small>{t('V2')}</small>
-      </Box>
+      {v2Available && (
+        <Box
+          className={version === 'v2' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('v2');
+          }}
+        >
+          <small>{t('V2')}</small>
+        </Box>
+      )}
 
-      <Box
-        className={version === 'v3' ? 'version-toggle-active' : ''}
-        onClick={() => {
-          redirectWithVersion('v3');
-        }}
-      >
-        <small>{t('V3')}</small>
-      </Box>
+      {v3Available && (
+        <Box
+          className={version === 'v3' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('v3');
+          }}
+        >
+          <small>{t('V3')}</small>
+        </Box>
+      )}
 
       {isPoolPage && singleTokenEnabled && (
         <Box
