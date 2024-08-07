@@ -54,6 +54,7 @@ import {
   DAIE,
   SD,
   ABOND,
+  DSRUN,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 
@@ -2328,6 +2329,8 @@ export const IchiVaults: {
     '0x2ED64d3De2A2c060FF4b31e9B2f9268ADcE7e671',
     '0x6fD4058ED78608F3C613585EEa222F6F5480e0D5',
     '0x3c306334b3728F5E50c1eDfA8338ffe96C875812',
+    '0xECD259DEdDc93B9881debDC67c7c4b553794Fd3c',
+    '0x20268C918a6873aBB44d7f53A4Eb92a968Bb255b',
   ],
   [ChainId.ZKEVM]: [
     '0x423382e084f1d1d180bec638bc64cc6408896c3c',
@@ -2548,6 +2551,7 @@ export const GlobalValue = {
         CRS[ChainId.MATIC],
         SD[ChainId.MATIC],
         ABOND[ChainId.MATIC],
+        DSRUN[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
@@ -2599,6 +2603,7 @@ export const paraswapTaxBuy: { [key: string]: number } = {
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
   '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 200,
+  '0x119fd89e56e3845b520644dcedf4a86cd0b66aa6': 300,
 };
 
 export const paraswapTaxSell: { [key: string]: number } = {
@@ -2608,6 +2613,7 @@ export const paraswapTaxSell: { [key: string]: number } = {
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
   '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 600,
+  '0x119fd89e56e3845b520644dcedf4a86cd0b66aa6': 300,
 };
 
 export const GlobalData = {
