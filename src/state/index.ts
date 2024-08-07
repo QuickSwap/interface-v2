@@ -26,8 +26,6 @@ const PERSISTED_KEYS: string[] = [
   'transactions',
   'lists',
   'farms',
-  'cntFarms',
-  'dualFarms',
   'syrups',
 ];
 
