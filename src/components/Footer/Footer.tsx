@@ -133,6 +133,7 @@ const Footer: React.FC = () => {
                 />
                 <button
                   onClick={handleSignup}
+                  disabled={isLoading}
                   style={{
                     border: 'none',
                     outline: 'none',
@@ -142,15 +143,22 @@ const Footer: React.FC = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <CallMadeIcon
-                    style={{
-                      transform: 'rotate(45deg)',
-                      width: '18px',
-                      height: '18px',
-                      color: '#448aff',
-                      marginTop: '4px',
-                    }}
-                  />
+                  {isLoading ? (
+                    <CircularProgress
+                      size='20px'
+                      style={{ color: 'white', marginRight: 5 }}
+                    />
+                  ) : (
+                    <CallMadeIcon
+                      style={{
+                        transform: 'rotate(45deg)',
+                        width: '18px',
+                        height: '18px',
+                        color: '#448aff',
+                        marginTop: '4px',
+                      }}
+                    />
+                  )}
                 </button>
               </Box>
               {data && (

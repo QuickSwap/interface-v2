@@ -199,12 +199,12 @@ const CurrencyRow: React.FC<CurrenyRowProps> = ({
                       ml='2px'
                       onClick={(event: any) => {
                         event.stopPropagation();
-                        console.log('go here?');
+                        // console.log(getTokenLogoURL(currency.address));
                         addTokenToMetamask(
                           currency.address,
                           currency.symbol,
                           currency.decimals,
-                          getTokenLogoURL(currency.address),
+                          '',
                         );
                       }}
                     >
