@@ -1,13 +1,14 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Grid,
   IconButton,
   InputBase,
-  Paper,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
+import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
@@ -29,7 +30,12 @@ import CallMadeIcon from '@material-ui/icons/CallMade';
 import layer3 from 'assets/images/layer3.png';
 
 const CommunityBlock: React.FC = ({}) => {
+  const [email, setEmail] = useState('');
   const { t } = useTranslation();
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
+  const handleSignup = async () => {
+    await mutate(email);
+  };
 
   const socialicons = [
     {
@@ -142,7 +148,6 @@ const CommunityBlock: React.FC = ({}) => {
           </Typography>
           <Box
             className='email_form'
-            component='form'
             style={{
               padding: '15px 20px',
               display: 'flex',
@@ -157,8 +162,11 @@ const CommunityBlock: React.FC = ({}) => {
               style={{ flex: 1, fontSize: '16px', color: '#fff' }}
               placeholder='Enter Email'
               inputProps={{ 'aria-label': 'Enter Email' }}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <button
+              onClick={handleSignup}
+              disabled={isLoading}
               style={{
                 border: 'none',
                 outline: 'none',
@@ -167,22 +175,38 @@ const CommunityBlock: React.FC = ({}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: '.3s ease-in-out',
-                width: '18px',
-                height: '18px',
+                paddingBottom: '4px',
                 cursor: 'pointer',
               }}
             >
-              <CallMadeIcon
-                style={{
-                  transform: 'rotate(45deg)',
-                  width: '18px',
-                  height: '18px',
-                  color: '#448aff',
-                  marginTop: '4px',
-                }}
-              />
+              {isLoading ? (
+                <CircularProgress
+                  size='20px'
+                  style={{ color: 'white', marginRight: 5 }}
+                />
+              ) : (
+                <CallMadeIcon
+                  style={{
+                    transform: 'rotate(45deg)',
+                    width: '18px',
+                    height: '18px',
+                    color: '#448aff',
+                    marginTop: '4px',
+                  }}
+                />
+              )}
             </button>
           </Box>
+          {data && (
+            <Box mt={1} textAlign='left'>
+              {data.data && (
+                <span className='text-success'>{t('subscribeSuccess')}</span>
+              )}
+              {data.error && (
+                <span className='text-error'>{t('subscribeError')}</span>
+              )}
+            </Box>
+          )}
         </Box>
       </Grid>
       <Grid item sm={12} md={6}>
