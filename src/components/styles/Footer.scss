@@ -56,9 +56,8 @@ a.footer-link {
   margin-top: 6px;
   display: flex;
   justify-content: space-between;
-  padding-left: 16px;
+  padding: 0px 16px 4px 16px;
   height: 40px;
-  padding-bottom: 4px;
   & input {
     background-color: transparent;
     border: none;
