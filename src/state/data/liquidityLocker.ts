@@ -142,6 +142,7 @@ export const useUserV2LiquidityLocks = (
     (item: UniswapSdkPair) => item.liquidityToken.address,
   );
   const { data, loading, error } = useUserLPLocks(account);
+  console.log('bbb', data);
   const v2LpLocks = (data ?? []).filter((item: LockInterface) => {
     return (
       item.event.chainId == '0x89' &&
@@ -154,13 +155,24 @@ export const useUserV2LiquidityLocks = (
 
 export const useUserV3LiquidityLocks = (account?: string) => {
   const { data, loading, error } = useUserLPLocks(account);
-  const v3LpLocks = (data ?? []).filter((item: LockInterface) => {
-    return (
-      item.event.chainId == '0x89' &&
-      item.liquidityContract?.tokenAddress ==
-        NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id]
+  const v3LpLocks = (data ?? [])
+    .filter((item: LockInterface) => {
+      return (
+        item.event.chainId == '0x89' &&
+        item.liquidityContract?.tokenAddress ==
+          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id]
+      );
+    })
+    .filter(
+      (item, ind, self) =>
+        self.findIndex(
+          (item1) =>
+            item.event.lockContractAddress ===
+              item1.event.lockContractAddress &&
+            item.event.lockDepositId === item1.event.lockDepositId &&
+            item.event.unlockTime === item1.event.unlockTime,
+        ) === ind,
     );
-  });
 
   return { data: v3LpLocks, loading, error };
 };
