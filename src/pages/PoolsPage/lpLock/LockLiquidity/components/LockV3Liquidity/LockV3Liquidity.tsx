@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ChainId, JSBI } from '@uniswap/sdk';
 import { ethers } from 'ethers';
-import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
+import { RESTRICTED_TOKENS, V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { useActiveWeb3React } from 'hooks';
 import {
   Box,
@@ -51,8 +51,19 @@ const LockV3Liquidity: React.FC = () => {
   const [approving, setApproving] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
 
-  const { positions: positions, loading: positionsLoading } = useV3Positions(
+  const { positions: allPositions, loading: positionsLoading } = useV3Positions(
     account,
+    true,
+  );
+
+  const restrictedTokens = (RESTRICTED_TOKENS[chainId] ?? []).map((address) =>
+    address.toLowerCase(),
+  );
+
+  const positions = allPositions?.filter(
+    (pos) =>
+      !restrictedTokens.includes(pos.token0.toLowerCase()) ||
+      !restrictedTokens.includes(pos.token1.toLowerCase()),
   );
 
   const tokenLockerContract = useTokenLockerContract(chainId);

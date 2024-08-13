@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { usePairContract, useTokenLockerContract } from 'hooks/useContract';
-import { V2_FACTORY_ADDRESSES } from 'constants/lockers';
+import { RESTRICTED_TOKENS, V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { updateUserLiquidityLock } from 'state/data/liquidityLocker';
 import { tryParseAmount } from 'state/swap/hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -63,11 +63,21 @@ const LockV2Liquidity: React.FC = () => {
     pairs: allV2PairsWithLiquidity,
   } = useV2LiquidityPools(account ?? undefined);
 
+  const restrictedTokens = (
+    RESTRICTED_TOKENS[chainIdToUse] ?? []
+  ).map((address) => address.toLowerCase());
+
+  const filteredPairs = allV2PairsWithLiquidity.filter(
+    (pair) =>
+      !restrictedTokens.includes(pair.token0.address.toLowerCase()) ||
+      !restrictedTokens.includes(pair.token1.address.toLowerCase()),
+  );
+
   const lpToken = useMemo(() => {
-    return allV2PairsWithLiquidity.find(
+    return filteredPairs.find(
       (item) => item.liquidityToken.address === lpTokenAddress,
     );
-  }, [allV2PairsWithLiquidity, lpTokenAddress]);
+  }, [filteredPairs, lpTokenAddress]);
 
   const userPoolBalance = useTokenBalance(
     account ?? undefined,
@@ -309,7 +319,7 @@ const LockV2Liquidity: React.FC = () => {
               <MenuItem value=''>
                 <em>None</em>
               </MenuItem>
-              {allV2PairsWithLiquidity.map((pair) => (
+              {filteredPairs.map((pair) => (
                 <MenuItem
                   key={pair.liquidityToken.address}
                   value={pair.liquidityToken.address}

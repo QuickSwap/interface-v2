@@ -63,6 +63,8 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
     lockTokenAddress,
   );
 
+  console.log('aaa', lock);
+
   // @Hassaan: claim logic here
   const claim = useCallback(async () => {
     try {
@@ -453,9 +455,9 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
         </Box>
         <Box className='cardRow'>
           <small>{t('lockupPeriod')}:</small>
-          <small>{`${dayjs
-            .unix(lock.event.timeStamp)
-            .format('DD MMM YYYY')} - ${dayjs
+          <small>{`${dayjs(lock.liquidityContract.createdAt).format(
+            'DD MMM YYYY, h:mm a',
+          )} - ${dayjs
             .unix(lock.event.unlockTime)
             .format('DD MMM YYYY, h:mm a')}`}</small>
         </Box>

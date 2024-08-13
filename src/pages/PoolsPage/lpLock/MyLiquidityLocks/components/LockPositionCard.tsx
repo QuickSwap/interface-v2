@@ -6,11 +6,12 @@ import LockPositionCardDetails from './LockPositionCardDetails';
 import 'components/styles/LockPositionCard.scss';
 import { useTranslation } from 'react-i18next';
 import { LockInterface } from 'state/data/liquidityLocker';
+import { useCurrency } from 'hooks/v3/Tokens';
 
 const LockPositionCard: React.FC<{ lock: LockInterface }> = ({ lock }) => {
   const { t } = useTranslation();
-  const currency0 = lock.pair;
-  const currency1 = lock.token;
+  const currency0 = useCurrency(lock.liquidityContract.token0);
+  const currency1 = useCurrency(lock.liquidityContract.token1);
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -21,15 +22,15 @@ const LockPositionCard: React.FC<{ lock: LockInterface }> = ({ lock }) => {
     >
       <Box className='lockPositionCardTop'>
         <Box className='flex items-center'>
-          {/* <DoubleCurrencyLogo
-            currency0={currency0}
-            currency1={currency1}
+          <DoubleCurrencyLogo
+            currency0={currency0 ?? undefined}
+            currency1={currency1 ?? undefined}
             size={28}
-          /> */}
+          />
           <p className='weight-600' style={{ marginLeft: 16 }}>
             {!currency0 || !currency1
               ? 'Loading'
-              : `${currency0.tokenSymbol}/${currency1.tokenSymbol}`}
+              : `${currency0.symbol}/${currency1.symbol}`}
           </p>
         </Box>
 

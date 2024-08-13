@@ -142,7 +142,6 @@ export const useUserV2LiquidityLocks = (
     (item: UniswapSdkPair) => item.liquidityToken.address,
   );
   const { data, loading, error } = useUserLPLocks(account);
-  console.log('bbb', data);
   const v2LpLocks = (data ?? []).filter((item: LockInterface) => {
     return (
       item.event.chainId == '0x89' &&
