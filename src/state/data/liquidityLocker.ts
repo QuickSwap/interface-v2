@@ -142,12 +142,23 @@ export const useUserV2LiquidityLocks = (
     (item: UniswapSdkPair) => item.liquidityToken.address,
   );
   const { data, loading, error } = useUserLPLocks(account);
-  const v2LpLocks = (data ?? []).filter((item: LockInterface) => {
-    return (
-      item.event.chainId == '0x89' &&
-      addressArray.includes(item.liquidityContract?.tokenAddress)
+  const v2LpLocks = (data ?? [])
+    .filter((item: LockInterface) => {
+      return (
+        item.event.chainId == '0x89' &&
+        addressArray.includes(item.liquidityContract?.tokenAddress)
+      );
+    })
+    .filter(
+      (item, ind, self) =>
+        self.findIndex(
+          (item1) =>
+            item.event.lockContractAddress ===
+              item1.event.lockContractAddress &&
+            item.event.lockDepositId === item1.event.lockDepositId &&
+            item.event.unlockTime === item1.event.unlockTime,
+        ) === ind,
     );
-  });
 
   return { data: v2LpLocks, loading, error };
 };
