@@ -63,8 +63,6 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
     lockTokenAddress,
   );
 
-  console.log('aaa', lock);
-
   // @Hassaan: claim logic here
   const claim = useCallback(async () => {
     try {

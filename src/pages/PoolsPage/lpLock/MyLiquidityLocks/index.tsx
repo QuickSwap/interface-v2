@@ -62,9 +62,24 @@ export default function MyLiquidityLocks() {
             ) : v3Locks && v3Locks.length > 0 ? (
               <Box>
                 {v3Locks.map((lock) => (
-                  <Box key={lock.pair.tokenAddress} mt={2}>
+                  <Box
+                    key={
+                      lock.event.lockContractAddress +
+                      '_' +
+                      lock.event.lockDepositId +
+                      '_' +
+                      lock.event.unlockTime
+                    }
+                    mt={2}
+                  >
                     <LockPositionCard
-                      key={lock.pair.tokenAddress}
+                      key={
+                        lock.event.lockContractAddress +
+                        '_' +
+                        lock.event.lockDepositId +
+                        '_' +
+                        lock.event.unlockTime
+                      }
                       lock={lock}
                     />
                   </Box>
@@ -85,9 +100,24 @@ export default function MyLiquidityLocks() {
             ) : v2Locks && v2Locks.length > 0 ? (
               <Box>
                 {v2Locks.map((lock) => (
-                  <Box key={lock.pair.tokenAddress} mt={2}>
+                  <Box
+                    key={
+                      lock.event.lockContractAddress +
+                      '_' +
+                      lock.event.lockDepositId +
+                      '_' +
+                      lock.event.unlockTime
+                    }
+                    mt={2}
+                  >
                     <LockPositionCard
-                      key={lock.pair.tokenAddress}
+                      key={
+                        lock.event.lockContractAddress +
+                        '_' +
+                        lock.event.lockDepositId +
+                        '_' +
+                        lock.event.unlockTime
+                      }
                       lock={lock}
                     />
                   </Box>
