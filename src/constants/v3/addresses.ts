@@ -1574,7 +1574,7 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
     //USDC[ChainId.MATIC],
     //USDT[ChainId.MATIC],
     //OLD_QUICK[ChainId.MATIC],
-    //NEW_QUICK[ChainId.MATIC],
+    NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
     //WBTC[ChainId.MATIC],
     USDCE[ChainId.MATIC],
