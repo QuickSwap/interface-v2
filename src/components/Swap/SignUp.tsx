@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import bg from 'assets/images/subcribe-bg.png';
-import { Box, ButtonBase, InputBase, Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import bg from 'assets/images/subcribe-bg.png';
+import {
+  Box,
+  ButtonBase,
+  CircularProgress,
+  InputBase,
+  Typography,
+} from '@material-ui/core';
+import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 interface SignUpProps {
   onSubcribe: () => void;
@@ -9,13 +16,17 @@ interface SignUpProps {
 
 const SignUp: React.FC<SignUpProps> = ({ onSubcribe }) => {
   const { t } = useTranslation();
-  const [value, setValue] = useState<string>('');
+  const [email, setEmail] = useState('');
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
+  const handleSubscribe = async () => {
+    await mutate(email);
+  };
 
   return (
     <Box
       sx={{
         width: '100%',
-        height: '140px',
+        minHeight: '140px',
         borderRadius: '10px',
         overflow: 'hidden',
         position: 'relative',
@@ -63,17 +74,35 @@ const SignUp: React.FC<SignUpProps> = ({ onSubcribe }) => {
         <InputBase
           style={{ width: '100%' }}
           placeholder='Enter your email'
-          value={value}
+          value={email}
           onChange={(e) => {
-            setValue(e.target.value);
+            setEmail(e.target.value);
           }}
         />
-        <ButtonBase
-          style={{ padding: '0 16px', color: 'rgba(255, 255, 255, 0.32)' }}
-        >
-          Subscribe
-        </ButtonBase>
+        {isLoading ? (
+          <CircularProgress
+            size='20px'
+            style={{ color: 'white', marginRight: 5 }}
+          />
+        ) : (
+          <ButtonBase
+            style={{ padding: '0 16px', color: 'rgba(255, 255, 255, 0.32)' }}
+            onClick={handleSubscribe}
+          >
+            Subscribe
+          </ButtonBase>
+        )}
       </Box>
+      {data && (
+        <Box mt={1} textAlign='center'>
+          {data.data && (
+            <span className='text-success'>{t('subscribeSuccess')}</span>
+          )}
+          {data.error && (
+            <span className='text-error'>{t('subscribeError')}</span>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
