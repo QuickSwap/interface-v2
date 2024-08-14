@@ -1380,6 +1380,16 @@ export const USDO: { [chainId: number]: Token } = {
   ),
 };
 
+export const VDA: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x683565196C3EAb450003C964D4bad1fd3068D4cC',
+    18,
+    'VDA',
+    'Verida',
+  ),
+};
+
 export const DLQUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: NEW_QUICK[ChainId.MATIC],
   [ChainId.DOGECHAIN]: DD[ChainId.DOGECHAIN],
