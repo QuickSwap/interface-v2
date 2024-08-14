@@ -1,18 +1,7 @@
-import {
-  Box,
-  ButtonBase,
-  Grid,
-  MenuItem,
-  Select,
-  Typography,
-} from '@material-ui/core';
+import { Box, ButtonBase, Grid, Typography } from '@material-ui/core';
 import { HypeLabAds, Note } from 'components';
 import React, { useMemo } from 'react';
-import arrowRight from 'assets/images/icons/right-arrow.png';
-import wallet from 'assets/images/icons/wallet.svg';
-import { BridgeBlockItem, SwapBlock } from 'components/Bridge';
-import { useTranslation } from 'react-i18next';
-import polygonText from 'assets/images/bridge/polygon_text_img.webp';
+import { BridgeBlockItem } from 'components/Bridge';
 import eth from 'assets/images/bridge/eth.svg';
 import jumper from 'assets/images/bridge/jumper.svg';
 import Rhino from 'assets/images/bridge/Rhino.svg';
@@ -20,7 +9,6 @@ import Symbiosis from 'assets/images/bridge/Symbiosis.webp';
 import Hop from 'assets/images/bridge/Hop.svg';
 import Meson from 'assets/images/bridge/Meson.webp';
 import Interport from 'assets/images/bridge/Interport.svg';
-import chainge from 'assets/images/bridge/chainge.webp';
 import Owlto from 'assets/images/bridge/Owlto.webp';
 import rango from 'assets/images/bridge/rango.svg';
 import Celer from 'assets/images/bridge/Celer.webp';
@@ -33,19 +21,13 @@ import Image511 from 'assets/images/bridge/Image511.webp';
 import finance from 'assets/images/bridge/finance.svg';
 import layer from 'assets/images/bridge/layer.svg';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { useActiveWeb3React } from 'hooks';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
 
-interface IChain {
-  image: string;
-}
-
 const BridgePage: React.FC = ({}) => {
-  const { t } = useTranslation();
-  const { currentChainId } = useActiveWeb3React();
-  console.log('🚀 ~ currentChainId:', currentChainId);
+  const { chainId } = useActiveWeb3React();
+  console.log('🚀 ~ currentChainId:', chainId);
 
   const supportedChains = SUPPORTED_CHAINIDS.filter((chain: any) => {
     const config = getConfig(chain);
@@ -53,8 +35,8 @@ const BridgePage: React.FC = ({}) => {
   });
 
   const currentChain = useMemo(() => {
-    return getConfig(currentChainId);
-  }, [currentChainId]);
+    return getConfig(chainId);
+  }, [chainId]);
 
   console.log('🚀 ~ currentChain ~ currentChain:', currentChain);
 
@@ -223,13 +205,9 @@ const BridgePage: React.FC = ({}) => {
                   onClick={() => {
                     if (!currentChain?.bridgeUrl) return;
                     window.open(currentChain?.bridgeUrl, '_blank');
-                    console.log('click tp item');
                   }}
                 >
                   Bridge now
-                  {/* <CallMadeIcon
-                    style={{ transform: 'rotate(45deg)', fontSize: '12px' }}
-                  /> */}
                   <ArrowForwardIcon style={{ fontSize: '14px' }} />
                 </ButtonBase>
               </Box>
@@ -284,7 +262,6 @@ const BridgePage: React.FC = ({}) => {
                       <BridgeBlockItem
                         onClick={() => {
                           window.open(item.externalLink, '_blank');
-                          console.log('click tp item');
                         }}
                         image={item.image}
                         chains={item.chains}
@@ -294,64 +271,6 @@ const BridgePage: React.FC = ({}) => {
                 })}
               </Grid>
             </Box>
-            {/* <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '16px',
-              }}
-            >
-              <Typography
-                style={{
-                  fontSize: '20px',
-                  color: '#fff',
-                  fontWeight: 500,
-                }}
-              >
-                Bridge
-              </Typography>
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gridGap: '8px' }}
-              >
-                <Box
-                  sx={{
-                    bgcolor: '#1e263d',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gridGap: '4px',
-                  }}
-                >
-                  <Typography style={{ fontSize: '12px', color: '#fff' }}>
-                    3rd party bridges
-                  </Typography>
-                  <img src={arrowRight} alt='arrow' />
-                </Box>
-                <Box
-                  sx={{
-                    bgcolor: '#1e263d',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gridGap: '4px',
-                  }}
-                >
-                  <img src={wallet} alt='arrow' />
-                  <Typography style={{ fontSize: '12px', color: '#fff' }}>
-                    : 0e58…324b
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-            <SwapBlock
-              onConfirm={() => {
-                console.log('asda');
-              }}
-            /> */}
           </Grid>
         </Grid>
       </Grid>

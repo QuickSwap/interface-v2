@@ -33,18 +33,6 @@ export interface SyrupListInfo {
   readonly logoURI?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CNTFarmListInfo extends FarmListInfo {}
-
-export interface DualFarmListInfo {
-  readonly name: string;
-  readonly timestamp: string;
-  readonly active: DualStakingRaw[];
-  readonly closed: DualStakingRaw[];
-  readonly version: Version;
-  readonly logoURI?: string;
-}
-
 export interface LairInfo {
   loading: boolean;
   lairAddress: string;
