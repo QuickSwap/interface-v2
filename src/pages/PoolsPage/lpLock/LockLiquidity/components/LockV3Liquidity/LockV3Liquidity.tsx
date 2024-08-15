@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   TransactionErrorContent,
   TransactionConfirmationModal,
   ConfirmationModalContent,
 } from 'components';
 import { useTranslation } from 'react-i18next';
-import { ChainId, JSBI } from '@uniswap/sdk';
+import { JSBI } from '@uniswap/sdk';
 import { ethers } from 'ethers';
 import { RESTRICTED_TOKENS, V2_FACTORY_ADDRESSES } from 'constants/lockers';
 import { useActiveWeb3React } from 'hooks';

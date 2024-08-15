@@ -51,10 +51,12 @@ export interface Token {
   tokenId: string;
   tokenLocked: string;
   tokenName: string;
-  tokenImage: string;
+  tokenImage?: string;
   tokenSymbol: string;
   tokenTotalSupply: string;
   updatedAt: string;
+  token0?: string;
+  token1?: string;
 }
 
 export interface LiquidityContract {
@@ -95,8 +97,8 @@ export interface Pair {
 export interface LockInterface {
   event: Event;
   token: Token;
-  liquidityContract: LiquidityContract;
-  pair: Pair;
+  liquidityContract?: LiquidityContract;
+  pair?: Pair;
 }
 
 axios.defaults.baseURL = TEAM_FINANCE_BACKEND_URL;
@@ -139,7 +141,7 @@ export const useUserV2LiquidityLocks = (account?: string) => {
   const v2LpLocks = (data ?? [])
     .filter((item: LockInterface) => {
       return (
-        Number(item.event.chainId) === chainId && item.event.tokenId === '0'
+        Number(item.event.chainId) === chainId && !Number(item.event.tokenId)
       );
     })
     .filter(

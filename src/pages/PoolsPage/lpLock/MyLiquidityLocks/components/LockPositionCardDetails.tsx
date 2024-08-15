@@ -19,6 +19,7 @@ import utc from 'dayjs/plugin/utc';
 import { BigNumber, utils } from 'ethers';
 import { calculateGasMargin } from 'utils';
 import './index.scss';
+import { useCurrency } from 'hooks/Tokens';
 dayjs.extend(utc);
 
 const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
@@ -27,10 +28,14 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const currency0 = useCurrency((lock?.liquidityContract ?? lock.token).token0);
+  const currency1 = useCurrency((lock?.liquidityContract ?? lock.token).token1);
+  const lockTokenDecimals = (lock.liquidityContract ?? lock.token)
+    .tokenDecimals;
 
   const liquidityLocked = utils.formatUnits(
     lock.event.lockAmount,
-    lock.liquidityContract.tokenDecimals,
+    lockTokenDecimals,
   );
 
   const isLocked = dayjs.unix(lock.event.unlockTime) > dayjs();
@@ -67,10 +72,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
   const claim = useCallback(async () => {
     try {
       if (!account || !lockDepositId || !tokenLockerContract || !amount) return;
-      const formattedAmount = utils.parseUnits(
-        amount,
-        lock.liquidityContract.tokenDecimals,
-      );
+      const formattedAmount = utils.parseUnits(amount, lockTokenDecimals);
       const gasEstimate = await tokenLockerContract?.estimateGas.withdrawTokens(
         lockDepositId,
         formattedAmount,
@@ -93,7 +95,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
   }, [
     account,
     amount,
-    lock.liquidityContract.tokenDecimals,
+    lockTokenDecimals,
     lockDepositId,
     lockTokenAddress,
     t,
@@ -142,7 +144,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
     setAmount(
       utils.formatUnits(
         formattedLiquidityLocked.mul(BigNumber.from(percentage)).div(100),
-        lock.liquidityContract.tokenDecimals,
+        lockTokenDecimals,
       ),
     );
   };
@@ -176,16 +178,13 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
 
   const selectedAmountPercentage = useMemo(() => {
     const formattedLiquidityLocked = BigNumber.from(lock.event.lockAmount);
-    const formatedAmount = utils.parseUnits(
-      amount,
-      lock.liquidityContract.tokenDecimals,
-    );
+    const formatedAmount = utils.parseUnits(amount, lockTokenDecimals);
 
     return formatedAmount
       .mul(100)
       .div(formattedLiquidityLocked)
       .toString();
-  }, [amount, lock.event.lockAmount, lock.liquidityContract.tokenDecimals]);
+  }, [amount, lock.event.lockAmount, lockTokenDecimals]);
 
   function modalHeaderClaim() {
     return (
@@ -206,7 +205,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
         {errorAmount && (
           <small className='text-error'>
             {t('insufficientBalance', {
-              symbol: `${lock.pair.tokenSymbol}/${lock.token.tokenSymbol}`,
+              symbol: `${currency0?.symbol}/${currency1?.symbol}`,
             })}
           </small>
         )}
@@ -453,9 +452,9 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
         </Box>
         <Box className='cardRow'>
           <small>{t('lockupPeriod')}:</small>
-          <small>{`${dayjs(lock.liquidityContract.createdAt).format(
-            'DD MMM YYYY, h:mm a',
-          )} - ${dayjs
+          <small>{`${dayjs(
+            (lock.liquidityContract ?? lock.token).createdAt,
+          ).format('DD MMM YYYY, h:mm a')} - ${dayjs
             .unix(lock.event.unlockTime)
             .format('DD MMM YYYY, h:mm a')}`}</small>
         </Box>

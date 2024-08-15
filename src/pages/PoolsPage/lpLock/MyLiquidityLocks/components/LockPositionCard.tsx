@@ -10,8 +10,8 @@ import { useCurrency } from 'hooks/v3/Tokens';
 
 const LockPositionCard: React.FC<{ lock: LockInterface }> = ({ lock }) => {
   const { t } = useTranslation();
-  const currency0 = useCurrency(lock.liquidityContract.token0);
-  const currency1 = useCurrency(lock.liquidityContract.token1);
+  const currency0 = useCurrency((lock?.liquidityContract ?? lock.token).token0);
+  const currency1 = useCurrency((lock?.liquidityContract ?? lock.token).token1);
   const [showMore, setShowMore] = useState(false);
 
   return (

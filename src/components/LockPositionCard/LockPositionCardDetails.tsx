@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useActiveWeb3React } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { LockInterface } from 'state/data/liquidityLocker';
 
@@ -16,7 +15,7 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
 
   const liquidityLocked = utils.formatUnits(
     lock.event.lockAmount,
-    lock.liquidityContract.tokenDecimals,
+    (lock.liquidityContract ?? lock.token).tokenDecimals,
   );
 
   const isLocked = dayjs.unix(lock.event.unlockTime) > dayjs();

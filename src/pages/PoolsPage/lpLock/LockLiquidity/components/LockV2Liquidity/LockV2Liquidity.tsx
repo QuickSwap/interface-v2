@@ -246,7 +246,10 @@ const LockV2Liquidity: React.FC = () => {
       const receipt = await response.wait();
       console.log(receipt);
       const depositId = await tokenLockerContract?.depositId();
-      await updateUserLiquidityLock(V2_FACTORY_ADDRESSES[chainId], depositId);
+      await updateUserLiquidityLock(
+        V2_FACTORY_ADDRESSES[chainId],
+        Number(depositId),
+      );
       setTxPending(false);
     } catch (error) {
       setAttemptingTxn(false);
