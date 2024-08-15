@@ -452,9 +452,9 @@ const LockPositionCardDetails: React.FC<{ lock: LockInterface }> = ({
         </Box>
         <Box className='cardRow'>
           <small>{t('lockupPeriod')}:</small>
-          <small>{`${dayjs(
-            (lock.liquidityContract ?? lock.token).createdAt,
-          ).format('DD MMM YYYY, h:mm a')} - ${dayjs
+          <small>{`${dayjs(lock.event.createdAt).format(
+            'DD MMM YYYY, h:mm a',
+          )} - ${dayjs
             .unix(lock.event.unlockTime)
             .format('DD MMM YYYY, h:mm a')}`}</small>
         </Box>
