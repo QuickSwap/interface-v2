@@ -4,6 +4,7 @@ import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useLastTransactionHash } from 'state/transactions/hooks';
+import { useActiveWeb3React } from 'hooks';
 const TEAM_FINANCE_BACKEND_URL =
   'https://team-finance-backend-dev-origdfl2wq-uc.a.run.app/api';
 const API_KEY = process.env.TEAM_FINANCE_BACKEND_API_KEY ?? 'yolobolo';
@@ -134,19 +135,13 @@ const useUserLPLocks = (account?: string) => {
   return { data, loading, error };
 };
 
-export const useUserV2LiquidityLocks = (
-  liquidityTokenList: UniswapSdkPair[],
-  account?: string,
-) => {
-  const addressArray = liquidityTokenList.map(
-    (item: UniswapSdkPair) => item.liquidityToken.address,
-  );
+export const useUserV2LiquidityLocks = (account?: string) => {
+  const { chainId } = useActiveWeb3React();
   const { data, loading, error } = useUserLPLocks(account);
   const v2LpLocks = (data ?? [])
     .filter((item: LockInterface) => {
       return (
-        item.event.chainId == '0x89' &&
-        addressArray.includes(item.liquidityContract?.tokenAddress)
+        Number(item.event.chainId) === chainId && item.event.tokenId === '0'
       );
     })
     .filter(
@@ -164,12 +159,13 @@ export const useUserV2LiquidityLocks = (
 };
 
 export const useUserV3LiquidityLocks = (account?: string) => {
+  const { chainId } = useActiveWeb3React();
   const { data, loading, error } = useUserLPLocks(account);
   const v3LpLocks = (data ?? [])
     .filter((item: LockInterface) => {
       return (
-        item.event.chainId == '0x89' &&
-        item.liquidityContract?.tokenAddress ==
+        Number(item.event.chainId) === chainId &&
+        item.liquidityContract?.tokenAddress ===
           NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id]
       );
     })

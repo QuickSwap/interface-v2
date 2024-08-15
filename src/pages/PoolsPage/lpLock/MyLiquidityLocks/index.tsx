@@ -1,10 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Button } from '@material-ui/core';
-import {
-  useActiveWeb3React,
-  useConnectWallet,
-  useV2LiquidityPools,
-} from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import ToggleVersion from '../ToggleVersion';
 import {
@@ -19,15 +15,7 @@ export default function MyLiquidityLocks() {
   const { t } = useTranslation();
   const [isV3, setIsV3] = useState(false);
   const { account } = useActiveWeb3React();
-  const {
-    loading: v2IsLoading,
-    pairs: allV2PairsWithLiquidity,
-  } = useV2LiquidityPools(account ?? undefined);
-  const pairs = useMemo(() => allV2PairsWithLiquidity, [
-    allV2PairsWithLiquidity,
-  ]);
   const { data: v2Locks, loading: v2LockIsLoading } = useUserV2LiquidityLocks(
-    pairs,
     account,
   );
   const { data: v3Locks, loading: v3LockIsLoading } = useUserV3LiquidityLocks(
@@ -93,7 +81,7 @@ export default function MyLiquidityLocks() {
           </Box>
         ) : (
           <Box mt={3}>
-            {v2LockIsLoading || v2IsLoading ? (
+            {v2LockIsLoading ? (
               <Box width={1}>
                 <Skeleton width='100%' height={50} />
               </Box>
