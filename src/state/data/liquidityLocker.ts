@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { ChainId, Pair as UniswapSdkPair } from '@uniswap/sdk';
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESSES } from 'constants/v3/addresses';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -8,7 +7,6 @@ import { useActiveWeb3React } from 'hooks';
 const TEAM_FINANCE_BACKEND_URL =
   'https://team-finance-backend-dev-origdfl2wq-uc.a.run.app/api';
 const API_KEY = process.env.TEAM_FINANCE_BACKEND_API_KEY ?? 'yolobolo';
-const chain_id = ChainId.MATIC;
 
 export interface Event {
   chainId: string;
@@ -166,7 +164,7 @@ export const useUserV3LiquidityLocks = (account?: string) => {
       return (
         Number(item.event.chainId) === chainId &&
         item.liquidityContract?.tokenAddress ===
-          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chain_id]
+          NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
       );
     })
     .filter(
