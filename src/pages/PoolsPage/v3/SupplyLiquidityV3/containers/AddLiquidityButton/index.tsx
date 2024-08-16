@@ -1,4 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AML_SCORE_THRESHOLD } from 'config';
 import {
   useDefiedgeStrategyContract,
   useGammaUNIProxyContract,
@@ -10,7 +12,11 @@ import {
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useIsExpertMode,
+  useUserSlippageTolerance,
+  useAmlScore,
+} from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
@@ -76,6 +82,7 @@ export function AddLiquidityButton({
   title,
   setRejected,
 }: IAddLiquidityButton) {
+  const history = useHistory();
   const { t } = useTranslation();
   const { chainId, library, account } = useActiveWeb3React();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -112,6 +119,8 @@ export function AddLiquidityButton({
   const isNetworkFailed = useIsNetworkFailedImmediate();
 
   const [allowedSlippage] = useUserSlippageTolerance();
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const allowedSlippagePercent: Percent = useMemo(() => {
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
@@ -282,6 +291,11 @@ export function AddLiquidityButton({
     if (!chainId || !library || !account || !wethContract || !amountToWrap)
       return;
 
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+
     setWrappingETH(true);
     try {
       const wrapEstimateGas = await wethContract.estimateGas.deposit({
@@ -315,6 +329,11 @@ export function AddLiquidityButton({
     if (!chainId || !library || !account) return;
 
     if (!baseCurrency || !quoteCurrency) {
+      return;
+    }
+
+    if (amlScore > 1) {
+      history.push('/forbidden');
       return;
     }
 
@@ -1019,7 +1038,7 @@ export function AddLiquidityButton({
       )}
       <Button
         className='v3-supply-liquidity-button'
-        disabled={!isReady}
+        disabled={!isReady || isAmlScoreLoading}
         onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
       >
         {mintInfo.presetRange?.type === Presets.OUT_OF_RANGE
