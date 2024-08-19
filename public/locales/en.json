@@ -703,6 +703,8 @@
   "goBack": "Go Back",
   "pageNotFound": "Page not found",
   "pageNotFoundDesc": "Oh dear dragon friend, it seems like the treasure you seek is not to be found. We encourage you to spread your wings and fly back to start your quest a new.",
+  "banned": "Banned",
+  "bannedDesc": "We're sorry, but your access to this website has been restricted. If you believe this is an error or have any questions, please contact our support team or assistance.",
   "perpsBannerText": "QuickPerps is a decentralised Perpetual Exchange designed to provide a range of trading features and deep liquidity for blue chip crypto assets. <alink>View</alink>",
   "selectFeeTier": "Select Fee Tier",
   "availableForStablePair": "Only available for stable pairs.",
