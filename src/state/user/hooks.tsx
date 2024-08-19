@@ -1,6 +1,6 @@
 import { ChainId, JSBI, Pair, Token } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens } from 'hooks/Tokens';
@@ -22,6 +22,7 @@ import {
   updateUserLiquidityHub,
   updateUserZapSlippage,
   updateIsInfiniteApproval,
+  updateUserAmlScore,
 } from './actions';
 import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
@@ -467,3 +468,43 @@ export function useIsInfiniteApproval(): [
 
 //   return [userDeadline, setUserDeadline];
 // }
+
+export function useAmlScore() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { account } = useActiveWeb3React();
+  const amlScore = useSelector<AppState, AppState['user']['amlScore']>(
+    (state) => state.user.amlScore,
+  );
+  const [score, setScore] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAmlScore = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/qr-screen?address=${account}`,
+        );
+        if (res.ok) {
+          const ret = await res.json();
+          const newScore = ret.score;
+          setScore(newScore);
+          dispatch(updateUserAmlScore({ score: newScore }));
+        }
+        setIsLoading(false);
+      } catch (e) {
+        setIsLoading(false);
+      }
+    };
+    if (!account) {
+      setScore(0);
+      dispatch(updateUserAmlScore({ score: 0 }));
+    } else if (amlScore > 0) {
+      setScore(amlScore);
+    } else {
+      fetchAmlScore();
+    }
+  }, [account, amlScore, dispatch]);
+
+  return { score, isLoading };
+}

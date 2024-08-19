@@ -12,6 +12,7 @@ import {
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress } from '@material-ui/core';
+import { AML_SCORE_THRESHOLD } from 'config/index';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -21,6 +22,7 @@ import {
 import {
   useExpertModeManager,
   useUserSlippageTolerance,
+  useAmlScore,
 } from 'state/user/hooks';
 import { Field, SwapDelay } from 'state/swap/actions';
 import {
@@ -153,6 +155,8 @@ const Swap: React.FC<{
   let [allowedSlippage] = useUserSlippageTolerance();
   allowedSlippage =
     allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const [approving, setApproving] = useState(false);
   const [approval, approveCallback] = useApproveCallbackFromTrade(
     trade,
@@ -496,7 +500,11 @@ const Swap: React.FC<{
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
   );
 
-  const onSwap = () => {
+  const onSwap = useCallback(() => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
     if (showWrap && onWrap) {
       onWrap();
     } else if (isExpertMode) {
@@ -510,7 +518,7 @@ const Swap: React.FC<{
         txHash: undefined,
       });
     }
-  };
+  }, [history, amlScore, showWrap, isExpertMode]);
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
@@ -822,7 +830,11 @@ const Swap: React.FC<{
         <Box width={showApproveFlow ? '48%' : '100%'}>
           <Button
             fullWidth
-            disabled={showApproveFlow || (swapButtonDisabled as boolean)}
+            disabled={
+              isAmlScoreLoading ||
+              showApproveFlow ||
+              (swapButtonDisabled as boolean)
+            }
             onClick={account && isSupportedNetwork ? onSwap : connectWallet}
           >
             {swapButtonText}
