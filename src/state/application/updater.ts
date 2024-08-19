@@ -104,7 +104,7 @@ export default function Updater(): null {
   }, [windowVisible, dispatch, debouncedState.blockNumber, chainId]);
 
   const ethersProvider = useMemo(() => {
-    if (chainId) return new JsonRpcProvider(rpcMap?.[chainId]?.[0]);
+    if (chainId) return new JsonRpcProvider(rpcMap?.[chainId]);
   }, [chainId]);
 
   const soulZapSupportChainId = [ChainId.MATIC];
