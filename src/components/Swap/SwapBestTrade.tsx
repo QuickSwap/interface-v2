@@ -789,28 +789,6 @@ const SwapBestTrade: React.FC<{
     [onUserInput],
   );
 
-  const onParaswap = useCallback(() => {
-    if (amlScore > AML_SCORE_THRESHOLD) {
-      history.push('/forbidden');
-      return;
-    }
-    if (showNativeConvert && onConvert) {
-      onConvert();
-    } else if (showWrap && onWrap) {
-      onWrap();
-    } else if (isExpertMode) {
-      handleParaswap();
-    } else {
-      setSwapState({
-        tradeToConfirm: undefined,
-        attemptingTxn: false,
-        swapErrorMessage: undefined,
-        showConfirm: true,
-        txHash: undefined,
-      });
-    }
-  }, [history, amlScore, showNativeConvert, isExpertMode, showWrap]);
-
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
       tradeToConfirm: undefined,
@@ -948,6 +926,37 @@ const SwapBestTrade: React.FC<{
     config,
     formattedAmounts,
     fromTokenUSDPrice,
+  ]);
+
+  const onParaswap = useCallback(() => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+    if (showNativeConvert && onConvert) {
+      onConvert();
+    } else if (showWrap && onWrap) {
+      onWrap();
+    } else if (isExpertMode) {
+      handleParaswap();
+    } else {
+      setSwapState({
+        tradeToConfirm: undefined,
+        attemptingTxn: false,
+        swapErrorMessage: undefined,
+        showConfirm: true,
+        txHash: undefined,
+      });
+    }
+  }, [
+    amlScore,
+    showNativeConvert,
+    onConvert,
+    showWrap,
+    onWrap,
+    isExpertMode,
+    history,
+    handleParaswap,
   ]);
 
   const paraRate = optimalRate

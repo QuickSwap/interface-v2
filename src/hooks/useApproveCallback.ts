@@ -23,8 +23,12 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { calculateGasMargin, calculateGasMarginBonus } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useTokenContract } from './useContract';
 import {
+  useTokenContract,
+  useV3NFTPositionManagerContract,
+} from './useContract';
+import {
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   PARASWAP_PROXY_ROUTER_ADDRESS,
   V2_ROUTER_ADDRESS,
   SWAP_ROUTER_ADDRESS,
@@ -32,12 +36,26 @@ import {
 import { OptimalRate } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import { useIsInfiniteApproval } from 'state/user/hooks';
+import { useSingleCallResult } from 'state/multicall/v3/hooks';
 
 export enum ApprovalState {
   UNKNOWN,
   NOT_APPROVED,
   PENDING,
   APPROVED,
+}
+
+export function useNftPosManTokenIdApprovedAddress(
+  tokenId?: string,
+): string | undefined {
+  const contract = useV3NFTPositionManagerContract(false);
+  const inputs = useMemo(() => [tokenId], [tokenId]);
+  const approvalAddress = useSingleCallResult(contract, 'getApproved', inputs)
+    .result;
+  return useMemo(
+    () => (tokenId && approvalAddress ? approvalAddress[0] : undefined),
+    [approvalAddress, tokenId],
+  );
 }
 
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
@@ -170,6 +188,103 @@ export function useApproveCallback(
   return [approvalState, approve];
 }
 
+// returns a variable indicating the state of the approval and a function which approves if necessary or early returns
+export function useApproveCallbackTokenId(
+  tokenId?: string,
+  spender?: string,
+): [ApprovalState, () => Promise<void>] {
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const nativeCurrency = ETHER[chainIdToUse];
+  const nftPosManAddress = NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainIdToUse];
+  const currentApprovedAddress = useNftPosManTokenIdApprovedAddress(
+    tokenId ?? undefined,
+  );
+  const pendingApproval = useHasPendingApproval(nftPosManAddress, spender);
+
+  // check the current approval status
+  const approvalState: ApprovalState = useMemo(() => {
+    if (!tokenId || !spender) return ApprovalState.UNKNOWN;
+    if (!currentApprovedAddress) return ApprovalState.UNKNOWN;
+
+    // amountToApprove will be defined if currentAllowance is
+    return currentApprovedAddress.toLowerCase() != spender.toLowerCase()
+      ? pendingApproval
+        ? ApprovalState.PENDING
+        : ApprovalState.NOT_APPROVED
+      : ApprovalState.APPROVED;
+  }, [tokenId, currentApprovedAddress, pendingApproval, spender]);
+
+  const nftPosManContract = useV3NFTPositionManagerContract();
+  const addTransaction = useTransactionAdder();
+
+  const approve = useCallback(async (): Promise<void> => {
+    console.log(approvalState);
+    if (approvalState !== ApprovalState.NOT_APPROVED) {
+      console.error('approve was called unnecessarily');
+      return;
+    }
+
+    if (!nftPosManContract) {
+      console.error('No NFT Position Manager Contract');
+      return;
+    }
+
+    if (!tokenId) {
+      console.error('missing tokenId to approve');
+      return;
+    }
+
+    if (!spender) {
+      console.error('no spender');
+      return;
+    }
+
+    // let useExact = false;
+    const estimatedGas = await nftPosManContract.estimateGas.approve(
+      spender,
+      tokenId,
+    );
+    // .catch(() => {
+    //   // general fallback for tokens who restrict approval amounts
+    //   useExact = true;
+    //   return tokenContract.estimateGas.approve(
+    //     spender,
+    //     amountToApprove.raw.toString(),
+    //   );
+    // });
+
+    return nftPosManContract
+      .approve(spender, tokenId, {
+        gasLimit: calculateGasMargin(estimatedGas),
+      })
+      .then(async (response: TransactionResponse) => {
+        addTransaction(response, {
+          summary: 'Approve ALGB-POS-' + tokenId,
+          approval: { tokenAddress: nftPosManAddress, spender: spender },
+        });
+        try {
+          await response.wait();
+        } catch (e) {
+          console.debug('Failed to approve token', e);
+          throw e;
+        }
+      })
+      .catch((error: Error) => {
+        console.debug('Failed to approve token', error);
+        throw error;
+      });
+  }, [
+    approvalState,
+    nftPosManContract,
+    tokenId,
+    spender,
+    addTransaction,
+    nftPosManAddress,
+  ]);
+
+  return [approvalState, approve];
+}
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns
 export function useApproveCallbackV3(
   amountToApprove?: CurrencyAmountV3<Currency>,

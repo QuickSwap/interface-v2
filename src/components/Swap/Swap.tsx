@@ -500,26 +500,6 @@ const Swap: React.FC<{
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
   );
 
-  const onSwap = useCallback(() => {
-    if (amlScore > AML_SCORE_THRESHOLD) {
-      history.push('/forbidden');
-      return;
-    }
-    if (showWrap && onWrap) {
-      onWrap();
-    } else if (isExpertMode) {
-      handleSwap();
-    } else {
-      setSwapState({
-        tradeToConfirm: trade,
-        attemptingTxn: false,
-        swapErrorMessage: undefined,
-        showConfirm: true,
-        txHash: undefined,
-      });
-    }
-  }, [history, amlScore, showWrap, isExpertMode]);
-
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
       tradeToConfirm: trade,
@@ -675,6 +655,26 @@ const Swap: React.FC<{
     formattedAmounts,
     fromTokenUSDPrice,
   ]);
+
+  const onSwap = useCallback(() => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+    if (showWrap && onWrap) {
+      onWrap();
+    } else if (isExpertMode) {
+      handleSwap();
+    } else {
+      setSwapState({
+        tradeToConfirm: trade,
+        attemptingTxn: false,
+        swapErrorMessage: undefined,
+        showConfirm: true,
+        txHash: undefined,
+      });
+    }
+  }, [amlScore, showWrap, onWrap, isExpertMode, history, handleSwap, trade]);
 
   const fetchingBestRoute =
     swapDelay === SwapDelay.USER_INPUT ||
