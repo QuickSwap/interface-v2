@@ -99,6 +99,9 @@
   "ichi": {
     "available": false
   },
+  "lpLock": {
+    "available": false
+  },
   "maxChunks": 70,
   "blocksPerFetch": 25
 }

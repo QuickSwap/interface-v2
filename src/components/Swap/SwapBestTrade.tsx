@@ -13,6 +13,7 @@ import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress, Typography } from '@material-ui/core';
+import { AML_SCORE_THRESHOLD } from 'config/index';
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -22,6 +23,7 @@ import {
 import {
   useExpertModeManager,
   useUserSlippageTolerance,
+  useAmlScore,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
 import { useHistory } from 'react-router-dom';
@@ -81,8 +83,6 @@ import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import arrowDown from 'assets/images/icons/arrow-down.png';
 import chart from 'assets/images/icons/chart.svg';
 import SignUp from './SignUp';
-import inforIcon from 'assets/images/info-icon.webp';
-import settingIcon from 'assets/images/setting-icon.webp';
 import { useWalletInfo } from '@web3modal/ethers5/react';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
@@ -171,6 +171,8 @@ const SwapBestTrade: React.FC<{
   let [allowedSlippage] = useUserSlippageTolerance();
   allowedSlippage =
     allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const pct = basisPointsToPercent(allowedSlippage);
   const [approving, setApproving] = useState(false);
   const [nativeConvertApproving, setNativeConvertApproving] = useState(false);
@@ -790,24 +792,6 @@ const SwapBestTrade: React.FC<{
     [onUserInput],
   );
 
-  const onParaswap = () => {
-    if (showNativeConvert && onConvert) {
-      onConvert();
-    } else if (showWrap && onWrap) {
-      onWrap();
-    } else if (isExpertMode) {
-      handleParaswap();
-    } else {
-      setSwapState({
-        tradeToConfirm: undefined,
-        attemptingTxn: false,
-        swapErrorMessage: undefined,
-        showConfirm: true,
-        txHash: undefined,
-      });
-    }
-  };
-
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
       tradeToConfirm: undefined,
@@ -945,6 +929,37 @@ const SwapBestTrade: React.FC<{
     config,
     formattedAmounts,
     fromTokenUSDPrice,
+  ]);
+
+  const onParaswap = useCallback(() => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+    if (showNativeConvert && onConvert) {
+      onConvert();
+    } else if (showWrap && onWrap) {
+      onWrap();
+    } else if (isExpertMode) {
+      handleParaswap();
+    } else {
+      setSwapState({
+        tradeToConfirm: undefined,
+        attemptingTxn: false,
+        swapErrorMessage: undefined,
+        showConfirm: true,
+        txHash: undefined,
+      });
+    }
+  }, [
+    amlScore,
+    showNativeConvert,
+    onConvert,
+    showWrap,
+    onWrap,
+    isExpertMode,
+    history,
+    handleParaswap,
   ]);
 
   const paraRate = optimalRate
@@ -1273,9 +1288,10 @@ const SwapBestTrade: React.FC<{
           <Button
             fullWidth
             disabled={
-              ((showNativeConvert
-                ? false
-                : bonusRouteLoading || optimalRateError) ||
+              (isAmlScoreLoading ||
+                (showNativeConvert
+                  ? false
+                  : bonusRouteLoading || optimalRateError) ||
                 swapButtonDisabled) as boolean
             }
             onClick={account && isSupportedNetwork ? onParaswap : connectWallet}

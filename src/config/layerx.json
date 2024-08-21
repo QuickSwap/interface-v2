@@ -70,7 +70,7 @@
     "available": false
   },
   "hydra": {
-    "available": true
+    "available": false
   },
   "perpsV2": {
     "available": false
@@ -91,12 +91,15 @@
     "available": false
   },
   "steer": {
-    "available": false
+    "available": true
   },
   "dappos": {
     "available": false
   },
   "ichi": {
+    "available": false
+  },
+  "lpLock": {
     "available": false
   },
   "maxChunks": 20,

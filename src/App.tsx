@@ -66,6 +66,7 @@ import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
+import ForbiddenPage from 'pages/ForbiddenPage';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import '@orderly.network/react/dist/styles.css';
 import './index.scss';
@@ -313,6 +314,11 @@ const App: React.FC = () => {
                     <Route exact path='/calculator/0.01-eth-to-usd'>
                       <PageLayout>
                         <CalculatorPage />
+                      </PageLayout>
+                    </Route>
+                    <Route path='/forbidden'>
+                      <PageLayout>
+                        <ForbiddenPage />
                       </PageLayout>
                     </Route>
                     <Route path='*'>

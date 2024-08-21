@@ -1,4 +1,6 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AML_SCORE_THRESHOLD } from 'config';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 // Components
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
@@ -18,6 +20,7 @@ import { LiquidityDex } from '@ape.swap/apeswap-lists';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useSoulZap } from 'state/application/hooks';
 import { useCurrencyBalance, useCurrencyBalances } from 'state/wallet/v3/hooks';
+import { useAmlScore } from 'state/user/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -52,6 +55,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   token0,
   token1,
 }) => {
+  const history = useHistory();
   const { t } = useTranslation();
   // Loading state for both approve and purchase functions
   const [pendingTx, setPendingTx] = useState(false);
@@ -88,6 +92,8 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
     lpCurrency ?? undefined,
   ]);
 
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const currencyBalances = useMemo(() => {
     return {
       [Field.INPUT]: relevantTokenBalances[0],
@@ -118,6 +124,10 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   );
 
   const soulZapCallback = useCallback(async () => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
     if (soulZap && zapData) {
       console.log('Attempting zap tx');
       console.log(zapData);
@@ -156,7 +166,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           setPendingTx(false);
         });
     }
-  }, [addTransaction, provider, soulZap, t, zapData]);
+  }, [addTransaction, history, amlScore, provider, soulZap, t, zapData]);
 
   // Approve logic
   const zapContractAddress = soulZap?.getZapContract().address;
@@ -282,7 +292,13 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           <Button
             onClick={soulZapCallback}
             fullWidth
-            disabled={loading || pendingTx || !zapData || !lpCurrency}
+            disabled={
+              loading ||
+              pendingTx ||
+              !zapData ||
+              !lpCurrency ||
+              isAmlScoreLoading
+            }
           >
             {t('buy')}
           </Button>

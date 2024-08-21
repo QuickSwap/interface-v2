@@ -145,8 +145,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const { t } = useTranslation();
   const arcxSdk = useArcxAnalytics();
   const [balance, setBalance] = useState<string | null>(null);
-  const tokenAddress =
-    wrappedTokenAddresses[chainId as keyof typeof wrappedTokenAddresses];
+  const tokenAddress = wrappedTokenAddresses[chainId];
   const [viewTransaction, setViewTransaction] = useState(false);
 
   const price = useUSDCPriceFromAddress(tokenAddress);
@@ -302,9 +301,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
               marginBottom: '8px',
             }}
           >
-            {balance ?? '-'}{' '}
-            {nativeTokenSymbols?.[chainId as keyof typeof nativeTokenSymbols] ||
-              ''}
+            {balance ?? '-'} {nativeTokenSymbols?.[chainId] || ''}
           </Typography>
           <Typography style={{ color: '#696c80', fontSize: '14px' }}>
             ${(+price.price * +(balance || 0) || 0)?.toFixed(2)}
