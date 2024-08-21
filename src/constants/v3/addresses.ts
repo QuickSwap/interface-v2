@@ -1776,33 +1776,42 @@ export class ExtendedEther extends V3Currency {
   }
 }
 
-export const wrappedTokenAddresses = {
-  1: '0xC02aaa39b223FE8D0A0e5C4F27eAD9083C756Cc2', // Ethereum Mainnet (WETH)
-  3: '0xc778417E063141139Fce010982780140Aa0cD5Ab', // Ropsten Testnet (WETH)
-  4: '0xc778417E063141139Fce010982780140Aa0cD5Ab', // Rinkeby Testnet (WETH)
-  5: '0xc778417E063141139Fce010982780140Aa0cD5Ab', // Goerli Testnet (WETH)
-  42: '0xd0A1E359811322d97991E03f863a0C30C2cF029C', // Kovan Testnet (WETH)
-  56: '0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // Binance Smart Chain Mainnet (WBNB)
-  97: '0xae13d989dac2f0debff460ac112a837c89baa7cd', // Binance Smart Chain Testnet (WBNB)
-  137: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // Polygon Mainnet (WMATIC)
-  80001: '0x9c3c9283d3e44854697cd22d3faa240cfb032889', // Mumbai Testnet (WMATIC)
-  43114: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Avalanche Mainnet (WAVAX)
-  1101: '0xa2036f0538221a77A3937F1379699f44945018d0', // Polygon zkEVM Mainnet (WETH)
-  344: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Manta Pacific L2 Rollup (WETH)
-  132: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Immutable zkEVM Mainnet (WETH)
-  592: '0x9fB83c0635De2E815fd1c21b3a292277540C2e8d', // Astar zkEVM (WASTR)
-  2000: '0x5c21a9226A2E5cd2c30bDB3A5D53E1c2325Ff55a', // DogeChain (wDOGE)
-  2010: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // X Layer (WETH)
-  2222: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', // Kava - Kinetix (WKAVA)
+export const wrappedTokenAddresses: {
+  readonly [chainId in ChainId]: string;
+} = {
+  [ChainId.MATIC]: WETH[ChainId.MATIC].address,
+  [ChainId.ZKEVM]: WETH[ChainId.ZKEVM].address,
+  [ChainId.MANTA]: WETH[ChainId.MANTA].address,
+  [ChainId.KAVA]: WETH[ChainId.KAVA].address,
+  [ChainId.IMX]: WETH[ChainId.IMX].address,
+  [ChainId.ASTARZKEVM]: WETH[ChainId.ASTARZKEVM].address,
+  [ChainId.DOGECHAIN]: WETH[ChainId.DOGECHAIN].address,
+  [ChainId.LAYERX]: WETH[ChainId.LAYERX].address,
+  [ChainId.ZKATANA]: WETH[ChainId.ZKATANA].address,
+  [ChainId.BTTC]: WETH[ChainId.BTTC].address,
+  [ChainId.X1]: WETH[ChainId.X1].address,
+  [ChainId.TIMX]: WETH[ChainId.TIMX].address,
+  [ChainId.ZKTESTNET]: WETH[ChainId.ZKTESTNET].address,
+  [ChainId.MUMBAI]: WETH[ChainId.MUMBAI].address,
+  [ChainId.DOEGCHAIN_TESTNET]: WETH[ChainId.DOEGCHAIN_TESTNET].address,
 };
 
-export const nativeTokenSymbols = {
-  137: 'MATIC', // Polygon Mainnet
-  1101: 'ETH', // Polygon zkEVM
-  344: 'MANTA', // Manta Pacific L2 Rollup (Assumed)
-  132: 'IMX', // Immutable zkEVM Mainnet (Assumed)
-  592: 'ASTR', // Astar zkEVM
-  2000: 'DOGE', // DogeChain
-  2010: 'XLAYER', // X Layer (Assumed)
-  2222: 'KAVA', // Kava - Kinetix
+export const nativeTokenSymbols: {
+  readonly [chainId in ChainId]: string | undefined;
+} = {
+  [ChainId.MATIC]: 'MATIC',
+  [ChainId.ZKEVM]: 'ETH',
+  [ChainId.MANTA]: 'ETH',
+  [ChainId.KAVA]: 'KAVA',
+  [ChainId.IMX]: 'IMX',
+  [ChainId.ASTARZKEVM]: 'ETH',
+  [ChainId.DOGECHAIN]: 'DOGE',
+  [ChainId.LAYERX]: 'OKB',
+  [ChainId.ZKATANA]: 'ETH',
+  [ChainId.BTTC]: 'BTT',
+  [ChainId.X1]: 'OKB',
+  [ChainId.TIMX]: 'IMX',
+  [ChainId.ZKTESTNET]: 'ETH',
+  [ChainId.MUMBAI]: 'MATIC',
+  [ChainId.DOEGCHAIN_TESTNET]: 'DOGE',
 };
