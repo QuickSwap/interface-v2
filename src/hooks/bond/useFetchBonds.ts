@@ -89,9 +89,8 @@ export const useFetchBonds = () => {
     if (!bonds) return [];
     return bonds
       .map((bond) => bond.earnToken)
-      .concat(bonds.map((bond) => bond.token))
       .filter(
-        (token) => token?.liquidityDex?.[chainId] !== LiquidityDex.External,
+        (token) => token.liquidityDex?.[chainId] !== LiquidityDex.External,
       )
       .reduce((acc: BondToken[], token) => {
         const itemIsExisting = !!acc.find((item) => {
@@ -117,9 +116,8 @@ export const useFetchBonds = () => {
     if (!bonds) return [];
     return bonds
       .map((bond) => bond.earnToken)
-      .concat(bonds.map((bond) => bond.token))
       .filter(
-        (token) => token?.liquidityDex?.[chainId] === LiquidityDex.External,
+        (token) => token.liquidityDex?.[chainId] === LiquidityDex.External,
       )
       .reduce((acc: BondToken[], token) => {
         const itemIsExisting = !!acc.find((item) => {
@@ -442,28 +440,7 @@ export const useFetchBonds = () => {
         earnTokenPrice && earnTokenPrice.price
           ? Number(formatUnits(earnTokenPrice.price))
           : dexScreenerEarnTokenPrice ?? 0;
-      const tokenPrice = bondTokenPrices.find((item) => {
-        const tokenAddress = item.token.address[chainId];
-        const bondTokenAddress = bond.token.address[chainId];
-        return (
-          tokenAddress &&
-          bondTokenAddress &&
-          tokenAddress.toLowerCase() === bondTokenAddress.toLowerCase()
-        );
-      });
-      const dexScreenerTokenPrice = (dexScreenerPrices ?? []).find((item) => {
-        const tokenAddress = item.token.address[chainId];
-        const bondTokenAddress = bond.token.address[chainId];
-        return (
-          tokenAddress &&
-          bondTokenAddress &&
-          tokenAddress.toLowerCase() === bondTokenAddress.toLowerCase()
-        );
-      })?.price;
-      const tokenPriceNumber =
-        tokenPrice && tokenPrice.price
-          ? Number(formatUnits(tokenPrice.price))
-          : dexScreenerTokenPrice ?? 0;
+
       const priceUsd =
         trueBillPrice && trueBillPrice.data
           ? Number(formatUnits(trueBillPrice.data.toString())) * lpPriceNumber
@@ -496,7 +473,6 @@ export const useFetchBonds = () => {
         maxTotalPayOut: bondMaxTotalPayOut?.maxTotalPayout,
         lpPrice: lpPriceNumber,
         earnTokenPrice: earnTokenPriceNumber,
-        tokenPrice: tokenPriceNumber,
         discount,
         priceUsd,
         maxPayoutTokens: bondMaxPayOut?.data,

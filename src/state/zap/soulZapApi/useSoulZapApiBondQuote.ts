@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import useFetchBondApiQuote from './useFetchBondApiQuote';
 import BigNumber from 'bignumber.js';
 import { Bond } from 'types/bond';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 export const useSoulZapBondApiQuote = (
   typedValue: string,
@@ -27,14 +28,29 @@ export const useSoulZapBondApiQuote = (
     allowedSlippage.toFixed(),
   );
 
-  const outputTokenPrice = bond?.tokenPrice ?? 0;
-  // Effects
-  const swapOutPutEstimate: string | undefined =
-    response?.lpQuote?.token0.fromAmountEstimate;
-  const lpAmount = new BigNumber(swapOutPutEstimate ?? '0')
-    ?.div(new BigNumber(10).pow(bond?.token?.decimals?.[bond?.chainId] ?? 18)) // this is amount of swap output
-    ?.times(new BigNumber(outputTokenPrice ?? 0)) // convert it to usd price
-    ?.div(bond?.lpPrice ?? 0); // then we divide the lp USD price to get the amount of LP tokens
+  const toToken0Estimate: string | undefined =
+    response?.lpQuote?.token0?.fromAmountEstimate;
+  const toToken0 = useCurrency(response?.lpQuote?.token0?.address);
+  const toToken0Price = useUSDCPriceFromAddress(
+    response?.lpQuote?.token0?.address ?? '',
+  );
+
+  const toToken1Estimate: string | undefined =
+    response?.lpQuote?.token1?.fromAmountEstimate;
+  const toToken1 = useCurrency(response?.lpQuote?.token1?.address);
+  const toToken1Price = useUSDCPriceFromAddress(
+    response?.lpQuote?.token1?.address ?? '',
+  );
+
+  const toToken0USD = new BigNumber(toToken0Estimate ?? '0')
+    ?.div(new BigNumber(10).pow(toToken0?.decimals ?? 18))
+    .times(new BigNumber(toToken0Price.price ?? 0));
+
+  const toToken1USD = new BigNumber(toToken1Estimate ?? '0')
+    ?.div(new BigNumber(10).pow(toToken1?.decimals ?? 18))
+    .times(new BigNumber(toToken1Price.price ?? 0));
+
+  const lpAmount = toToken0USD.plus(toToken1USD)?.div(bond?.lpPrice ?? 0); // then we divide the lp USD price to get the amount of LP tokens
 
   const estimateOutput = lpAmount.times(new BigNumber(10).pow(18)).toFixed(0);
   console.log('soulzap API response', response);
