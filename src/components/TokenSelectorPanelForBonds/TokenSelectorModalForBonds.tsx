@@ -1,49 +1,65 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isAddress } from 'utils';
 import CurrencyList from './CurrencyList';
 import { Currency } from '@uniswap/sdk-core';
-import { DualCurrencySelector } from 'types/bond';
+import { BondToken, DualCurrencySelector } from 'types/bond';
 import { CustomModal, SearchInput } from 'components';
 import { Box } from '@material-ui/core';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { ChainId } from '@uniswap/sdk';
+import { zapInputTokens } from 'constants/index';
 
 interface CurrencySearchModalProps {
   open: boolean;
   onClose: () => void;
-  onCurrencySelect: (currency: DualCurrencySelector, index: number) => void;
-  inputCurrencies: Currency[];
-  currenciesList: DualCurrencySelector[];
-  searchQuery: string;
-  handleSearchQuery: (val: string) => void;
+  bondPrincipalToken?: BondToken;
+  handleSetInputToken: (currency: string) => void;
+  chainId: ChainId;
 }
 
-const DualCurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
+const TokenSelectorModalForBonds: React.FC<CurrencySearchModalProps> = ({
   open,
   onClose,
-  onCurrencySelect,
-  currenciesList,
-  searchQuery,
-  handleSearchQuery,
+  bondPrincipalToken,
+  handleSetInputToken,
+  chainId,
 }) => {
   // refs for fixed size lists
   const { t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const zapInputList = zapInputTokens[chainId];
+
+  const inputTokenList: (BondToken | string)[] = useMemo(() => {
+    const parsedList = zapInputList
+      ?.filter((token) => {
+        return !searchQuery
+          ? true
+          : token.symbol.toLowerCase().includes(searchQuery.toLowerCase());
+      })
+      .map((token) => {
+        return token.address[chainId];
+      }) as string[];
+    if (bondPrincipalToken) return [bondPrincipalToken, 'ETH', ...parsedList];
+    return ['ETH', ...parsedList];
+  }, [bondPrincipalToken, chainId, searchQuery, zapInputList]);
 
   const handleCurrencySelect = useCallback(
-    (currency: DualCurrencySelector, index: number) => {
+    (currency: string) => {
       onClose();
-      onCurrencySelect(currency, index);
-      handleSearchQuery('');
+      handleSetInputToken(currency);
+      setSearchQuery('');
     },
-    [onClose, onCurrencySelect, handleSearchQuery],
+    [onClose, handleSetInputToken, setSearchQuery],
   );
 
   const handleInput = useCallback(
-    (input: string) => {
+    (event: any) => {
+      const input = event.target.value;
       const checksummedInput = isAddress(input);
-      handleSearchQuery(checksummedInput || input);
+      setSearchQuery(checksummedInput || input);
     },
-    [handleSearchQuery],
+    [setSearchQuery],
   );
 
   return (
@@ -73,8 +89,9 @@ const DualCurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
         </Box>
         <Box className='bg-grey29' borderRadius={16}>
           <CurrencyList
-            currenciesList={currenciesList}
+            currenciesList={inputTokenList}
             onCurrencySelect={handleCurrencySelect}
+            chainId={chainId}
           />
         </Box>
       </Box>
@@ -82,4 +99,4 @@ const DualCurrencySearchModal: React.FC<CurrencySearchModalProps> = ({
   );
 };
 
-export default React.memo(DualCurrencySearchModal);
+export default React.memo(TokenSelectorModalForBonds);

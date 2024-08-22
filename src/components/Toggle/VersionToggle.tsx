@@ -30,16 +30,10 @@ const VersionToggle: React.FC = () => {
       ? params.version
       : isAnalyticsPage
       ? analyticsVersion
-      : isPoolPage
-      ? 'lpLocker'
       : 'v3';
 
   useEffect(() => {
     updateIsV2(version === 'v2');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version]);
-
-  useEffect(() => {
     updateIsLpLock(version === 'lpLocker');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);

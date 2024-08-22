@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
-import { CustomModal, DualCurrencyPanel } from 'components';
+import {
+  CurrencyLogo,
+  CustomModal,
+  TokenSelectorPanelForBonds,
+} from 'components';
 import BillImage from 'assets/images/bonds/quickBond.jpg';
 import BondTokenDisplay from './BondTokenDisplay';
 import { useTranslation } from 'react-i18next';
@@ -8,21 +12,19 @@ import { formatNumber } from 'utils';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { Currency } from '@uniswap/sdk-core';
 import { useZapActionHandlers, useZapState } from 'state/zap/hooks';
 import { Field } from 'state/zap/actions';
 import { useCurrency } from 'hooks/v3/Tokens';
-import { Bond, DualCurrencySelector, PurchasePath } from 'types/bond';
+import { Bond, PurchasePath } from 'types/bond';
 import {
   LiquidityDex,
   dexToZapMapping,
   ZapVersion,
 } from '@ape.swap/apeswap-lists';
-import { NATIVE_TOKEN_ADDRESS, ZAP_ADDRESS } from 'constants/v3/addresses';
-import { useV2Pair } from 'hooks/v3/useV2Pairs';
 import BondActions from './BondActions';
 import UserBondModalView from './UserBondModalView';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 
 interface BuyBondModalProps {
   open: boolean;
@@ -31,62 +33,45 @@ interface BuyBondModalProps {
 }
 
 const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
-  const token1Obj = bond.token;
-  const token2Obj =
-    bond.billType === 'reserve' ? bond.earnToken : bond.quoteToken;
-  const token3Obj = bond.earnToken;
-  const stakeLP = bond.billType !== 'reserve';
+  // const token1Obj = bond.token;
+  // const token2Obj =
+  //   bond.billType === 'reserve' ? bond.earnToken : bond.quoteToken;
+  // const token3Obj = bond.earnToken;
+  // const stakeLP = bond.billType !== 'reserve';
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const { typedValue } = useZapState();
-  const { onCurrencySelection, onUserInput } = useZapActionHandlers();
+  const { onUserInput } = useZapActionHandlers();
   const [bondId, setBondId] = useState('');
   const [txSubmitted, setTxSubmitted] = useState(false);
+  const [inputTokenAddress, setInputTokenAddress] = useState<string>(
+    bond?.lpToken.address[chainId] ?? '',
+  );
 
-  const billCurrencyA = useCurrency(bond?.token.address[chainId]);
-  const billCurrencyB = useCurrency(bond?.quoteToken.address[chainId]);
-  const billsCurrencies = useMemo(() => {
-    if (!billCurrencyA) return;
-    return {
-      currencyA: billCurrencyA,
-      currencyB: billCurrencyB ?? undefined,
-    };
-  }, [billCurrencyA, billCurrencyB]);
-  const [currencyA, setCurrencyA] = useState(billsCurrencies?.currencyA);
-  const [currencyB, setCurrencyB] = useState(billsCurrencies?.currencyB);
-  const billCurrencyLoaded = !!billsCurrencies;
+  const { price: inputPrice } = useUSDCPriceFromAddress(inputTokenAddress);
+  const inputTokenPrice = useMemo(() => {
+    if (inputTokenAddress === bond.lpToken.address[chainId])
+      return bond.lpPrice;
+    return inputPrice;
+  }, [bond, chainId, inputPrice, inputTokenAddress]);
+
+  const inputCurrency = useCurrency(inputTokenAddress);
+  const billCurrencyLoaded = !!bond.lpToken.address[chainId];
 
   useEffect(() => {
-    if (billsCurrencies) {
-      setCurrencyA(billsCurrencies.currencyA);
-      setCurrencyB(billsCurrencies.currencyB);
-    }
+    setInputTokenAddress(bond.lpToken.address[chainId] ?? '');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [billCurrencyLoaded]);
-
-  const inputCurrencies = useMemo(() => {
-    const currencies = [];
-    if (currencyA) {
-      currencies.push(currencyA);
-    }
-    if (currencyB) {
-      currencies.push(currencyB);
-    }
-    return currencies;
-  }, [currencyA, currencyB]);
 
   const discountEarnTokenPrice =
     bond && bond?.earnTokenPrice
       ? bond?.earnTokenPrice -
         bond?.earnTokenPrice * ((bond?.discount ?? 0) / 100)
       : 0;
-  const principalToken = useCurrency(bond?.lpToken.address[chainId]);
 
   const selectedCurrencyBalance = useCurrencyBalance(
     account ?? undefined,
-    inputCurrencies[1]
-      ? principalToken ?? currencyA ?? undefined
-      : currencyA ?? undefined,
+    inputCurrency ?? undefined,
   );
 
   const onHandleValueChange = useCallback(
@@ -102,79 +87,37 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
     );
   }, [onHandleValueChange, selectedCurrencyBalance]);
 
-  const handleCurrencySelect = useCallback(
-    (currency: DualCurrencySelector) => {
-      setCurrencyA(currency?.currencyA);
-      setCurrencyB(currency?.currencyB);
-      onHandleValueChange('');
-      if (!currency?.currencyB) {
-        if (currency.currencyA) {
-          onCurrencySelection(Field.INPUT, [currency.currencyA]);
-        }
-        if (billsCurrencies) {
-          const currencies: Currency[] = [];
-          if (billsCurrencies.currencyA) {
-            currencies.push(billsCurrencies.currencyA);
-          }
-          if (billsCurrencies.currencyB) {
-            currencies.push(billsCurrencies.currencyB);
-          }
-          onCurrencySelection(Field.OUTPUT, currencies);
-        }
-      }
-    },
-    [billsCurrencies, onCurrencySelection, onHandleValueChange],
-  );
-
   const liquidityDex =
     bond?.lpToken.liquidityDex?.[chainId] || LiquidityDex.ApeSwapV2;
   const dexToZapMappingAny = dexToZapMapping as any;
-  const lpTokenZapVersion = dexToZapMappingAny[liquidityDex]?.[
-    chainId
-  ] as ZapVersion;
-  const [, pair] = useV2Pair(currencyA ?? undefined, currencyB ?? undefined);
-
-  const getInputCurrency = () => {
-    if (currencyB && pair && lpTokenZapVersion === ZapVersion.ZapV1) {
-      return pair.liquidityToken;
-    }
-
-    if (currencyB && lpTokenZapVersion !== ZapVersion.ZapV1) {
-      return principalToken?.wrapped;
-    }
-
-    if (currencyA?.isNative) {
-      return { ...currencyA, address: NATIVE_TOKEN_ADDRESS };
-    }
-
-    return currencyA;
-  };
-
-  const inputCurrency = getInputCurrency();
-
-  const { address: inputTokenAddress = '' } = inputCurrency ?? {};
+  const zapVersion =
+    liquidityDex && dexToZapMappingAny?.[liquidityDex]?.[chainId];
 
   const getIsZapCurrDropdownEnabled = (): boolean => {
     return (
-      bond?.billType !== 'reserve' && lpTokenZapVersion !== ZapVersion.External
+      bond.billType !== 'reserve' &&
+      zapVersion !== ZapVersion.External &&
+      !!zapVersion
     );
   };
 
   const pathSelector = (): PurchasePath => {
     switch (true) {
-      case inputTokenAddress === bond.lpToken.address[chainId]:
+      case inputTokenAddress.toLowerCase() ===
+        bond.lpToken.address[chainId]?.toLowerCase():
         return PurchasePath.LpPurchase;
-      case lpTokenZapVersion === ZapVersion.ZapV1:
-        console.error('Apeswap native zap deprecated');
-        return PurchasePath.ApeZap;
-      case lpTokenZapVersion === ZapVersion.SoulZap:
+      case zapVersion === ZapVersion.SoulZap:
         return PurchasePath.SoulZap;
-      case lpTokenZapVersion === ZapVersion.SoulZapApi:
+      case zapVersion === ZapVersion.SoulZapApi:
         return PurchasePath.SoulZapApi;
       default:
         return PurchasePath.Loading;
     }
   };
+
+  const tokenToDisplay = useCurrency(
+    bond.showcaseToken?.address[chainId] ?? bond.earnToken.address[chainId],
+  );
 
   return (
     <CustomModal open={open} onClose={onClose} modalWrapper='bondModalWrapper'>
@@ -190,53 +133,53 @@ const BuyBondModal: React.FC<BuyBondModalProps> = ({ bond, open, onClose }) => {
             <Box className='flex' mb={2}>
               <Box className='bondTypeTag'>{bond.billType}</Box>
             </Box>
-            <Box className='flex items-center'>
-              <BondTokenDisplay
-                token1Obj={token1Obj}
-                token2Obj={token2Obj}
-                token3Obj={token3Obj}
-                stakeLP={stakeLP}
-              />
-              <Box className='flex' mx='12px'>
-                <h6 className='weight-600 text-gray32'>
-                  {token1Obj?.symbol}
-                  {stakeLP ? `/${token2Obj?.symbol}` : ''} {` -> `}
-                  {stakeLP ? token3Obj?.symbol : token2Obj?.symbol}
-                </h6>
-              </Box>
-            </Box>
             <Box mt={2}>
-              <small className='text-secondary'>
-                {bond.earnToken?.symbol} {t('marketPrice')}&nbsp;
-                <span style={{ textDecoration: 'line-through' }}>
-                  ${formatNumber(bond?.earnTokenPrice ?? 0)}
-                </span>
-              </small>
-              <Box mt='4px' className='flex items-center'>
-                <BondTokenDisplay token1Obj={bond.earnToken} />
-                <Box ml={1}>
-                  <h4 className='font-bold text-white'>
+              <Box className='flex items-center' gridGap={6}>
+                <Box className='flex items-center'>
+                  <CurrencyLogo
+                    currency={tokenToDisplay ?? undefined}
+                    size='50px'
+                  />
+                  <Box className='flex' mx='12px'>
+                    <h4 className='weight-600 text-gray32'>
+                      {bond.earnToken.symbol}
+                    </h4>
+                  </Box>
+                </Box>
+                <Box>
+                  <small className='text-secondary'>
+                    <span style={{ textDecoration: 'line-through' }}>
+                      ${formatNumber(bond?.earnTokenPrice ?? 0)}
+                    </span>
+                  </small>
+                  <h6 className='font-bold text-white'>
                     ${formatNumber(discountEarnTokenPrice)} (
                     {formatNumber(bond?.discount ?? 0)}% {t('discount')})
-                  </h4>
+                  </h6>
                 </Box>
               </Box>
-              {billsCurrencies && (
+
+              {bond.shortDescription && (
                 <Box mt={2}>
-                  <DualCurrencyPanel
-                    handleMaxInput={handleMaxInput}
-                    onUserInput={onHandleValueChange}
-                    value={typedValue}
-                    onCurrencySelect={handleCurrencySelect}
-                    inputCurrencies={
-                      bond?.billType !== 'reserve'
-                        ? inputCurrencies
-                        : [inputCurrencies[0]]
-                    }
-                    lpList={[billsCurrencies]}
-                    principalToken={principalToken ?? null}
+                  <div
+                    className='p'
+                    dangerouslySetInnerHTML={{ __html: bond.shortDescription }}
+                  />
+                </Box>
+              )}
+
+              {bond.lpToken && (
+                <Box mt={2}>
+                  <TokenSelectorPanelForBonds
+                    inputAmount={typedValue}
+                    setInputAmount={onHandleValueChange}
+                    handleSetMaxBalance={handleMaxInput}
+                    bondPrincipalToken={bond.lpToken}
+                    inputTokenAddress={inputTokenAddress}
+                    setInputTokenAddress={setInputTokenAddress}
+                    chainId={chainId}
                     enableZap={getIsZapCurrDropdownEnabled()}
-                    lpUsdVal={bond?.lpPrice}
+                    inputTokenPrice={inputTokenPrice}
                   />
                 </Box>
               )}

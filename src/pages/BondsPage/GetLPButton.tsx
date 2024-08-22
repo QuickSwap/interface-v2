@@ -53,9 +53,7 @@ const GetLpButton = ({ bond }: { bond: Bond }) => {
         <SoulZapAddLiquidity
           open={openSoulZapAddLiquidity}
           onDismiss={() => setOpenSoulZapAddLiquidity(false)}
-          lpAddress={bond?.lpToken?.address?.[chainId]}
-          token0={bond?.token?.address?.[chainId]}
-          token1={bond?.quoteToken?.address?.[chainId]}
+          lpToken={bond?.lpToken}
           liquidityDex={liquidityDex}
           lpPrice={bond?.lpPrice}
         />
@@ -66,8 +64,6 @@ const GetLpButton = ({ bond }: { bond: Bond }) => {
           onDismiss={() => setOpenSoulZapAPIAddLiquidity(false)}
           bond={bond}
           chainId={chainId}
-          token0={bond?.token?.address?.[chainId]}
-          token1={bond?.quoteToken?.address?.[chainId]}
         />
       )}
       {bond && billType !== 'reserve' && (
