@@ -5,47 +5,47 @@ import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { useActiveWeb3React } from 'hooks';
 import { ReactComponent as ZapIcon } from 'assets/images/bonds/ZapIcon.svg';
-import { DualCurrencySelector } from 'types/bond';
+import { BondToken } from 'types/bond';
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
 import CurrencyLogo from 'components/CurrencyLogo';
+import { ChainId } from '@uniswap/sdk';
+import { useCurrency } from 'hooks/v3/Tokens';
+import { useCurrencyFromSymbol } from 'hooks/Tokens';
 
 export function Balance({ balance }: { balance: CurrencyAmount<Currency> }) {
   return <small className='text-bold'>{balance?.toSignificant(5)}</small>;
 }
 
 const SearcherDisplay: React.FC<{
-  item: DualCurrencySelector;
-}> = ({ item }) => {
+  item?: BondToken | string;
+  chainId: ChainId;
+}> = ({ item, chainId }) => {
   const { account } = useActiveWeb3React();
-  const { currencyA, currencyB } = item;
-  const [, pair] = useV2Pair(currencyA ?? undefined, currencyB ?? undefined);
-  const balance = useCurrencyBalance(
-    account ?? undefined,
-    pair ? pair?.liquidityToken : currencyA ?? undefined,
-  );
+  const address = typeof item === 'string' ? item : item?.address?.[chainId];
+  const currency = useCurrency(address);
+  const balance = useCurrencyBalance(account, currency ?? undefined);
+  const lpName = typeof item === 'string' || !item ? '' : item?.symbol;
+
+  const [firstValue, secondValue] = lpName?.split('-');
+
+  const currencyA = useCurrencyFromSymbol(firstValue);
+  const currencyB = useCurrencyFromSymbol(secondValue);
 
   return (
     <Box className='searcherDisplayItem' gridGap={12}>
-      {!currencyB && <ZapIcon />}
+      {!lpName && <ZapIcon />}
       <Box width='100%' className='flex items-center justify-between'>
         <Box className='flex items-center' gridGap={12}>
-          {currencyB ? (
+          {lpName ? (
             <DoubleCurrencyLogo
               currency0={currencyA}
               currency1={currencyB}
               size={32}
             />
           ) : (
-            <CurrencyLogo currency={currencyA} size='32px' />
+            <CurrencyLogo currency={currency ?? undefined} size='32px' />
           )}
-          <Box>
-            <p>
-              {currencyB
-                ? `${currencyA?.wrapped?.symbol}-${currencyB?.wrapped?.symbol}`
-                : currencyA?.symbol}
-            </p>
-            <small>{pair ? pair?.liquidityToken?.name : currencyA?.name}</small>
-          </Box>
+          <p>{lpName ? lpName : currency?.name}</p>
         </Box>
         <Box>
           {balance ? (

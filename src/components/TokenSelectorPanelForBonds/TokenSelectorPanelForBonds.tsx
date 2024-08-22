@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import DualCurrencyDropdown from './DualCurrencyDropdown';
-import { Currency } from '@uniswap/sdk-core';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
-import { DualCurrencySelector } from 'types/bond';
-import { useActiveWeb3React, useTokenPriceUsd } from 'hooks';
+import { BondToken } from 'types/bond';
+import { useActiveWeb3React } from 'hooks';
 import { Box, CircularProgress } from '@material-ui/core';
 import { NumericalInput } from 'components';
-import { toNativeCurrency } from 'utils';
 import 'components/styles/DualCurrencyPanel.scss';
+import { ChainId } from '@uniswap/sdk';
+import TokenSelectorForBonds from './TokenSelectorForBonds';
+import { useCurrency } from 'hooks/v3/Tokens';
 
 /**
  * Dropdown component that supports both single currencies and currency pairs. An array of pairs is passed as lpList,
@@ -22,95 +22,82 @@ import 'components/styles/DualCurrencyPanel.scss';
  * @param enableZap determines whether zap functionality is enabled for the selected product
  */
 
-interface DualCurrencyPanelProps {
-  handleMaxInput: () => void;
-  onUserInput: (val: string) => void;
-  value: string;
-  onCurrencySelect: (currency: DualCurrencySelector) => void;
-  inputCurrencies: Currency[];
-  lpList: DualCurrencySelector[];
-  principalToken: Currency | null;
-  enableZap?: boolean;
-  lpUsdVal?: number;
+interface TokenSelectorPanelForBondsProps {
+  inputAmount: string;
+  setInputAmount: (val: string) => void;
+  handleSetMaxBalance: () => void;
+  bondPrincipalToken?: BondToken;
+  inputTokenAddress: string;
+  setInputTokenAddress: (tokenAddress: string) => void;
+  chainId: ChainId;
+  enableZap: boolean;
+  inputTokenPrice?: number;
 }
 
-const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
-  handleMaxInput,
-  onUserInput,
-  value,
-  onCurrencySelect,
-  inputCurrencies,
-  lpList,
-  principalToken,
+const TokenSelectorPanelForBonds: React.FC<TokenSelectorPanelForBondsProps> = ({
+  inputAmount,
+  setInputAmount,
+  handleSetMaxBalance,
+  bondPrincipalToken,
+  inputTokenAddress,
+  setInputTokenAddress,
+  chainId,
   enableZap,
-  lpUsdVal = 0,
+  inputTokenPrice,
 }) => {
-  const { account, chainId } = useActiveWeb3React();
-  const selectedCurrencyBalance = useCurrencyBalance(
-    account ?? undefined,
-    inputCurrencies[1]
-      ? principalToken ?? inputCurrencies[0] ?? undefined
-      : inputCurrencies[0] ?? undefined,
+  const { t } = useTranslation();
+  const { account } = useActiveWeb3React();
+  const inputCurrency = useCurrency(inputTokenAddress);
+  const principalTokenCurrency = useCurrency(
+    bondPrincipalToken?.address[chainId],
   );
-  const pairBalance = useCurrencyBalance(
+  const selectedCurrencyBalance = useCurrencyBalance(
     account,
-    principalToken ?? inputCurrencies[0] ?? undefined,
+    inputCurrency ?? undefined,
+  );
+  const principalTokenBalance = useCurrencyBalance(
+    account,
+    principalTokenCurrency ?? undefined,
   );
   const currencyBalance = selectedCurrencyBalance?.toSignificant(6);
-  const { t } = useTranslation();
-
-  const [usdValue] = useTokenPriceUsd(
-    inputCurrencies[1] ? principalToken : inputCurrencies[0],
-    !!inputCurrencies[1],
-  );
-  const usdVal = inputCurrencies[1] ? lpUsdVal : usdValue;
 
   // Once balances are fetched it should check if the user holds the selected LP
   // if it doesn't, it will select the native coin to enable zap
   const hasRunRef = useRef(false);
   useEffect(() => {
-    const nativeCurrency = toNativeCurrency(chainId);
     if (
       !hasRunRef.current &&
       enableZap &&
-      pairBalance &&
-      pairBalance?.toExact() === '0' &&
-      nativeCurrency
+      principalTokenBalance?.toExact() === '0' &&
+      bondPrincipalToken
     ) {
-      onCurrencySelect({
-        currencyA: nativeCurrency,
-        currencyB: undefined,
-      });
+      setInputTokenAddress('ETH');
       hasRunRef.current = true;
     }
     /* eslint-disable react-hooks/exhaustive-deps */
-  }, [pairBalance, chainId]);
-
-  const filteredInputCurrencies = inputCurrencies.filter(
-    (currency) => !!currency,
-  ) as Currency[];
+  }, [principalTokenBalance?.toExact(), chainId]);
 
   return (
     <Box className='dualCurrencyPanelWrapper'>
       <Box className='flex' mb='10px'>
-        <NumericalInput value={value} onUserInput={onUserInput} />
-        {principalToken && (
-          <DualCurrencyDropdown
-            inputCurrencies={filteredInputCurrencies}
-            onCurrencySelect={onCurrencySelect}
-            lpList={lpList}
-            principalToken={principalToken}
-            enableZap={enableZap ?? true}
-            showNativeFirst={enableZap && pairBalance?.toExact() === '0'}
-          />
-        )}
+        <NumericalInput value={inputAmount} onUserInput={setInputAmount} />
+        <TokenSelectorForBonds
+          bondPrincipalToken={bondPrincipalToken}
+          inputTokenAddress={inputTokenAddress}
+          setInputTokenAddress={setInputTokenAddress}
+          enableZap={enableZap}
+          chainId={chainId}
+        />
       </Box>
       <Box className='flex items-center justify-between'>
         <Box className='flex items-center justify-center'>
-          {!usdVal && value !== '0.0' ? (
+          {!inputTokenPrice && inputAmount !== '0.0' ? (
             <CircularProgress size={15} />
-          ) : value !== '0.0' && usdVal !== 0 && value ? (
-            `$${(usdVal * parseFloat(value)).toFixed(2)}`
+          ) : inputAmount !== '0.0' &&
+            !!inputTokenPrice &&
+            inputTokenPrice !== 0 &&
+            inputAmount ? (
+            `$${(inputTokenPrice * parseFloat(inputAmount)).toFixed(2)}`
           ) : null}
         </Box>
         {account && (
@@ -127,7 +114,7 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
               <Box
                 ml={0.5}
                 className='dualCurrencyMaxButton'
-                onClick={handleMaxInput}
+                onClick={handleSetMaxBalance}
               >
                 <small>{t('max')}</small>
               </Box>
@@ -139,4 +126,4 @@ const DualCurrencyPanel: React.FC<DualCurrencyPanelProps> = ({
   );
 };
 
-export default React.memo(DualCurrencyPanel);
+export default React.memo(TokenSelectorPanelForBonds);

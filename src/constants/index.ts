@@ -58,6 +58,7 @@ import {
   VDA,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
+import { BondToken } from 'types/bond';
 
 export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
@@ -2882,4 +2883,79 @@ export const BOND_QUERY_KEYS = {
   TOKEN_HISTORIC: 'tokenHistoric',
   BONDS_LANDING: 'bondsLanding',
   BOND_POST_REFERENCE: 'bondPostReference',
+};
+
+export const zapInputTokens: Partial<Record<ChainId, BondToken[]>> = {
+  [ChainId.MATIC]: [
+    {
+      symbol: 'wMATIC',
+      address: {
+        [ChainId.MATIC]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+    {
+      symbol: 'USDC.e',
+      address: {
+        [ChainId.MATIC]: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      },
+      decimals: {
+        [ChainId.MATIC]: 6,
+      },
+      active: true,
+    },
+    {
+      symbol: 'USDC',
+      address: {
+        [ChainId.MATIC]: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      },
+      decimals: {
+        [ChainId.MATIC]: 6,
+      },
+      active: true,
+    },
+    {
+      symbol: 'USDT',
+      address: {
+        [ChainId.MATIC]: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      },
+      decimals: {
+        [ChainId.MATIC]: 6,
+      },
+      active: true,
+    },
+    {
+      symbol: 'DAI',
+      address: {
+        [ChainId.MATIC]: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+    {
+      symbol: 'wETH',
+      address: {
+        [ChainId.MATIC]: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+    {
+      symbol: 'BTC',
+      address: {
+        [ChainId.MATIC]: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+  ],
 };
