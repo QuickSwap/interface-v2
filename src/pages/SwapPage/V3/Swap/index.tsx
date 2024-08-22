@@ -691,7 +691,7 @@ const SwapV3Page: React.FC = () => {
         onDismiss={handleDismissTokenWarning}
       />
       <Box className='swap'>
-        <SwapHeader allowedSlippage={allowedSlippage} dynamicFee={dynamicFee} />
+        {/* <SwapHeader allowedSlippage={allowedSlippage} dynamicFee={dynamicFee} /> */}
 
         <ConfirmSwapModal
           isOpen={showConfirm}
@@ -802,35 +802,6 @@ const SwapV3Page: React.FC = () => {
             )}
           </Box>
         ) : null}
-
-        {!showWrap && !showNativeConvert && trade && (
-          <div className='flex items-center'>
-            <TradePrice
-              price={trade.executionPrice}
-              showInverted={showInverted}
-              setShowInverted={setShowInverted}
-            />
-            <CustomTooltip
-              onOpen={() => {
-                ReactGA.event({
-                  category: 'Swap',
-                  action: 'Transaction Details Tooltip Open',
-                });
-              }}
-              title={
-                <AdvancedSwapDetails
-                  trade={trade}
-                  allowedSlippage={allowedSlippage}
-                />
-              }
-            >
-              <Box padding='0.25rem' className='flex'>
-                <Info size={'1rem'} stroke='white' />
-              </Box>
-            </CustomTooltip>
-          </div>
-        )}
-
         <Box className='swapButtonWrapper'>
           {!account ? (
             <Button fullWidth onClick={() => open()}>
@@ -1012,6 +983,33 @@ const SwapV3Page: React.FC = () => {
             </Button>
           )}
         </Box>
+        {!showWrap && !showNativeConvert && trade && (
+          <div className='flex items-center'>
+            <TradePrice
+              price={trade.executionPrice}
+              showInverted={showInverted}
+              setShowInverted={setShowInverted}
+            />
+            <CustomTooltip
+              onOpen={() => {
+                ReactGA.event({
+                  category: 'Swap',
+                  action: 'Transaction Details Tooltip Open',
+                });
+              }}
+              title={
+                <AdvancedSwapDetails
+                  trade={trade}
+                  allowedSlippage={allowedSlippage}
+                />
+              }
+            >
+              <Box padding='0.25rem' className='flex'>
+                <Info size={'1rem'} stroke='white' />
+              </Box>
+            </CustomTooltip>
+          </div>
+        )}
         {isExpertMode && swapErrorMessage ? (
           <Box mt={2}>
             <SwapCallbackError error={swapErrorMessage} />
