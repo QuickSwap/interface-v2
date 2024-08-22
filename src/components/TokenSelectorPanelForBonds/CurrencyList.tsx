@@ -1,15 +1,18 @@
 import React, { useCallback } from 'react';
 import { Box } from '@material-ui/core';
 import SearcherDisplay from './SearcherDisplay';
-import { DualCurrencySelector } from 'types/bond';
+import { BondToken } from 'types/bond';
 import { Virtuoso } from 'react-virtuoso';
+import { ChainId } from '@uniswap/sdk';
 
 export default function CurrencyList({
   currenciesList,
   onCurrencySelect,
+  chainId,
 }: {
-  currenciesList: DualCurrencySelector[];
-  onCurrencySelect: (currency: DualCurrencySelector, index: number) => void;
+  currenciesList: (BondToken | string)[];
+  onCurrencySelect: (tokenAddress: string) => void;
+  chainId: ChainId;
 }) {
   const itemData = currenciesList;
 
@@ -19,14 +22,15 @@ export default function CurrencyList({
       index,
       style,
     }: {
-      data: DualCurrencySelector[];
+      data: (BondToken | string)[];
       index: number;
       style?: any;
     }) => {
-      const currency: DualCurrencySelector = data[index];
-      const handleSelect = () => {
-        onCurrencySelect(currency, index);
-      };
+      const currency: BondToken | string = data[index];
+      const handleSelect = () =>
+        typeof currency === 'string'
+          ? onCurrencySelect(currency)
+          : onCurrencySelect(currency.address[chainId] ?? '');
       const key = index;
 
       return (
@@ -36,11 +40,11 @@ export default function CurrencyList({
           className={`token-item-${key}`}
           onClick={handleSelect}
         >
-          <SearcherDisplay item={currency} />
+          <SearcherDisplay item={currency} chainId={chainId} />
         </Box>
       );
     },
-    [onCurrencySelect],
+    [chainId, onCurrencySelect],
   );
 
   return (

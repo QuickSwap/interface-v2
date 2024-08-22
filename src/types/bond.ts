@@ -26,8 +26,6 @@ export interface BondConfig {
   contractAddress: Partial<Record<ChainId, string>>;
   billVersion: BillVersion;
   billType: string;
-  token: BondToken;
-  quoteToken: BondToken;
   lpToken: BondToken;
   earnToken: BondToken;
   billNnftAddress: Partial<Record<ChainId, string>>;
@@ -98,7 +96,6 @@ export interface Bond extends BondConfig {
   maxDebt?: string;
   lpPriceUsd?: number;
   earnTokenPrice?: number;
-  tokenPrice?: number;
   userData?: {
     allowance?: string;
     stakingTokenBalance?: string;
