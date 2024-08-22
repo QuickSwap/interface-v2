@@ -62,7 +62,7 @@ export { default as NetworkSelectionDropdown } from './NetworkSelectionDropdown'
 export { default as SortColumns } from './SortColumns';
 export { default as TermsWrapper } from './TermsWrapper';
 export { default as LiquidityHubAnalytics } from './LiquidityHubAnalytics';
-export { default as DualCurrencyPanel } from './DualCurrencyPanel';
 export { default as ChainSelector } from './ChainSelector';
 export { default as Note } from './Note';
+export { default as TokenSelectorPanelForBonds } from './TokenSelectorPanelForBonds';
 export * from './Bridge';

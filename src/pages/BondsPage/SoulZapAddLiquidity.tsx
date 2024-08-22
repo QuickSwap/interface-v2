@@ -35,25 +35,23 @@ import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
 import ZapCurrencyInput from 'components/ZapCurrencyInput';
 import { useActiveWeb3React } from 'hooks';
+import { BondToken } from 'types/bond';
+import { useCurrencyFromSymbol } from 'hooks/Tokens';
 
 interface SoulZapAddLiquidityProps {
   open: boolean;
   onDismiss?: () => void;
-  lpAddress?: string;
+  lpToken?: BondToken;
   liquidityDex?: LiquidityDex;
   lpPrice?: number;
-  token0?: string;
-  token1?: string;
 }
 
 const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   open,
   onDismiss,
-  lpAddress,
+  lpToken,
   liquidityDex,
   lpPrice,
-  token0,
-  token1,
 }) => {
   const history = useHistory();
   const { t } = useTranslation();
@@ -61,7 +59,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   const [pendingTx, setPendingTx] = useState(false);
 
   // Hooks
-  const { account, provider } = useActiveWeb3React();
+  const { account, provider, chainId } = useActiveWeb3React();
   // const [onPresentSettingsModal] = useModal(<ZapSlippage />);
   const addTransaction = useTransactionAdder();
 
@@ -70,15 +68,13 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   const { INPUT, typedValue } = useZapState();
   const { onUserInput, onCurrencySelection } = useZapActionHandlers();
   const { loading, response: zapData } = useSoulZapQuote(
-    lpAddress ?? '',
+    lpToken?.address[chainId] ?? '',
     getLiquidityDEX(liquidityDex) as DEX,
     false,
   );
 
-  const lpTokenACurrency = useCurrency(token0);
-  const lpTokenBCurrency = useCurrency(token1);
   const inputCurrency = useCurrency(INPUT.currencyId);
-  const lpCurrency = useCurrency(lpAddress);
+  const lpCurrency = useCurrency(lpToken?.address[chainId] ?? '');
   const lpBalanceString = useCurrencyBalance(
     account,
     lpCurrency ?? undefined,
@@ -194,6 +190,9 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   }, [approveCallback]);
 
   const [openZapSlippage, setOpenZapSlippage] = useState(false);
+  const splited = lpToken?.symbol?.split('-');
+  const lpTokenACurrency = useCurrencyFromSymbol(splited?.[0]);
+  const lpTokenBCurrency = useCurrencyFromSymbol(splited?.[1]);
 
   return (
     <CustomModal
@@ -249,13 +248,11 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
             />
             <Box className='soulZapAddLiquidityCurrency' gridGap={8}>
               <DoubleCurrencyLogo
-                currency0={lpTokenACurrency ?? undefined}
-                currency1={lpTokenBCurrency ?? undefined}
+                currency0={lpTokenACurrency}
+                currency1={lpTokenBCurrency}
                 size={24}
               />
-              <p>
-                {lpTokenBCurrency?.symbol}-{lpTokenACurrency?.symbol}
-              </p>
+              <p>{lpToken?.symbol}</p>
             </Box>
           </Box>
           <Box className='flex justify-between' mt='12px'>
