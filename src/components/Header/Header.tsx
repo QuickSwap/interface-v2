@@ -82,8 +82,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     return 1;
   }, [deviceWidth]);
 
-  const isHome = history.location.pathname === '/';
-
   const config = getConfig(chainId);
   const showSwap = config['swap']['available'];
   const showPool = config['pools']['available'];
@@ -127,6 +125,31 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     });
   }
 
+  const perpsTab: HeaderMenuItem = {
+    text: t('Perps'),
+    id: 'earn-tab',
+    link: '/',
+    items: [],
+    isNew: true,
+  };
+  if (isPerpsDropdown) {
+    menuItems.push(perpsTab);
+  }
+  const perpsItem = {
+    link: '/perps',
+    text: 'Perps V1',
+    id: 'perps-page-link',
+    isExternal: true,
+    externalLink: process?.env?.REACT_APP_PERPS_URL || '',
+    onClick: async () => {
+      if (chainId !== ChainId.ZKEVM) {
+        switchNetwork(ChainId.ZKEVM);
+      }
+      if (process.env.REACT_APP_PERPS_URL) {
+        window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+      }
+    },
+  };
   const hydraItem = {
     link: '/hydra',
     text: 'Hydra',
@@ -142,92 +165,34 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       }
     },
   };
-  // const perpsTab: HeaderMenuItem = {
-  //   text: t('Perps'),
-  //   id: 'earn-tab',
-  //   link: '/',
-  //   items: [],
-  //   isNew: true,
-  // };
-  // if (showPerpsV2 && showPerps) {
-  //   menuItems.push(perpsTab);
-  // }
-  // const perpsItem = {
-  //   link: '/perps',
-  //   text: 'Perps',
-  //   id: 'perps-page-link',
-  //   isExternal: true,
-  //   externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-  //   onClick: async () => {
-  //     if (chainId !== ChainId.ZKEVM) {
-  //       switchNetwork(ChainId.ZKEVM);
-  //     }
-  //     if (process.env.REACT_APP_PERPS_URL) {
-  //       window.open(process.env.REACT_APP_PERPS_URL, '_self');
-  //     }
-  //   },
-  // };
-  if (isHome) {
-    menuItems.push({
-      link: '/perps',
-      text: 'Perps',
-      id: 'perps-page-link',
-      isExternal: true,
-      externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-      onClick: async () => {
-        if (chainId !== ChainId.ZKEVM) {
-          const zkEVMconfig = getConfig(ChainId.ZKEVM);
-          const chainParam = {
-            chainId: ChainId.ZKEVM,
-            chainName: `${zkEVMconfig['networkName']} Network`,
-            rpcUrls: [zkEVMconfig['rpc']],
-            nativeCurrency: zkEVMconfig['nativeCurrency'],
-            blockExplorerUrls: [zkEVMconfig['blockExplorer']],
-          };
-        }
-        if (process.env.REACT_APP_PERPS_URL) {
-          window.open(process.env.REACT_APP_PERPS_URL, '_self');
-        }
-      },
-      items: [
-        {
-          id: 'perps-new-page-link',
-          link: '/falkor',
-          text: 'Perps - PoS',
-          isNew: true,
-        },
-        {
-          id: 'perps-v1-page-link',
-          link: process.env.REACT_APP_PERPS_URL || '#',
-          text: 'Perps - zkEVM',
-          onClick: () => {
-            if (process.env.REACT_APP_PERPS_URL) {
-              window.open(process.env.REACT_APP_PERPS_URL, '_blank');
-            }
-          },
-        },
-        hydraItem,
-      ],
-    });
-  } else {
-    if (chainId === ChainId.MATIC) {
-      menuItems.push({
-        id: 'perps-new-page-link',
-        link: '/falkor',
+  if (showPerpsV2) {
+    if (showPerps) {
+      perpsTab.items?.push({
+        link: `/falkor`,
         text: 'Perps',
+        id: 'perps-page-link',
+      });
+    } else {
+      menuItems.push({
+        link: `/falkor`,
+        text: 'Perps',
+        id: 'perps-page-link',
         isNew: true,
       });
-    } else if (chainId === ChainId.ZKEVM) {
-      menuItems.push({
-        id: 'perps-v1-page-link',
-        link: process.env.REACT_APP_PERPS_URL || '#',
-        text: 'Perps',
-        onClick: () => {
-          if (process.env.REACT_APP_PERPS_URL) {
-            window.open(process.env.REACT_APP_PERPS_URL, '_blank');
-          }
-        },
-      });
+    }
+  }
+  if (showHydra) {
+    if (showPerps || showPerpsV2) {
+      perpsTab.items?.push(hydraItem);
+    } else {
+      menuItems.push(hydraItem);
+    }
+  }
+  if (showPerps) {
+    if (showHydra || showPerpsV2) {
+      perpsTab.items?.push(perpsItem);
+    } else {
+      menuItems.push(perpsItem);
     }
   }
 
@@ -245,22 +210,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     items: [],
   };
 
-  // const partnersTab: HeaderMenuItem = {
-  //   text: t('Partners'),
-  //   id: 'partners',
-  //   link: '/partners',
-  //   items: [
-  //     {
-  //       link: '/dappOS',
-  //       text: 'DappOS',
-  //       id: 'dappos-page-link',
-  //       isExternal: true,
-  //       target: '_blank',
-  //       externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-  //     },
-  //   ],
-  // };
-  // menuItems.push(partnersTab);
   if (showEarn) {
     menuItems.push(earnTab);
   }
