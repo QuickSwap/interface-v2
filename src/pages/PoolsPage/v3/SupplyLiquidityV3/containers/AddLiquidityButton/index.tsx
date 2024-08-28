@@ -332,7 +332,7 @@ export function AddLiquidityButton({
       return;
     }
 
-    if (amlScore > 1) {
+    if (amlScore > AML_SCORE_THRESHOLD) {
       history.push('/forbidden');
       return;
     }
