@@ -157,11 +157,12 @@ export function useContracts<T extends Contract = Contract>(
 export function useTokenLockerContract(
   chainId: ChainId,
   lockContractAddress?: string,
+  withSignerIfPossible = true,
 ): Contract | null {
   return useContract(
     lockContractAddress ?? V2_FACTORY_ADDRESSES[chainId],
     TokenLockerABI,
-    true,
+    withSignerIfPossible,
   );
 }
 
