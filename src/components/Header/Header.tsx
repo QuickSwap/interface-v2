@@ -96,7 +96,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showPerps = config['perps']['available'];
   const showHydra = config['hydra']['available'];
   const showPerpsV2 = config['perpsV2']['available'];
-  const showBOS = config['bos']['available'];
   const showBonds = config['bonds']['available'];
   const showDappOS = config['dappos']['available'];
   const showEarn = showFarm && showBonds;
@@ -274,17 +273,6 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       isExternal: true,
       target: '_top',
       externalLink: process?.env?.REACT_APP_GAMEHUB_URL || '',
-    });
-  }
-  if (showBOS) {
-    menuItems.push({
-      link: '/bos',
-      text: 'BOS',
-      id: 'bos-page-link',
-      isExternal: true,
-      target: '_blank',
-      externalLink: process?.env?.REACT_APP_BOS_URL || '',
-      isNew: true,
     });
   }
   if (showLeaderboard) {
