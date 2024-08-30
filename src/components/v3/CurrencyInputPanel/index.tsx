@@ -8,7 +8,7 @@ import { useActiveWeb3React } from 'hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
 import { useTranslation } from 'react-i18next';
 import './index.scss';
@@ -26,7 +26,7 @@ interface CurrencyInputPanelProps {
   onHalf?: () => void;
   showMaxButton: boolean;
   showHalfButton?: boolean;
-  label?: ReactNode;
+  label?: string;
   onCurrencySelect?: (currency: Currency) => void;
   currency?: Currency | null;
   hideBalance?: boolean;
@@ -55,6 +55,7 @@ interface CurrencyInputPanelProps {
 
 export default function CurrencyInputPanel({
   value,
+  label,
   onUserInput,
   onMax,
   onHalf,
@@ -179,8 +180,61 @@ export default function CurrencyInputPanel({
         </Box>
       )}
 
-      <Box id={id} className={`swapBox ${bgClass}`}>
-        <Box mb={2}>
+      <Box id={id} className={`swapBox ${bgClass} bg-secondary4`}>
+        <Box className='flex justify-between' mb={2}>
+          <p
+            style={{
+              color: '#fff',
+              fontSize: '13px',
+            }}
+          >
+            {label || `${t('youPay')}:`}
+          </p>
+          <Box className='flex'>
+            <Box className='flex justify-end' sx={{ fontSize: '13px' }}>
+              <small
+                className={`${color ? `text-${color}` : 'text-secondary'}}`}
+              >
+                <span className='subtext-color'>{t('balance')}:</span>{' '}
+                {(showETH && updatedEthBalance
+                  ? Number(updatedEthBalance.toSignificant(5))
+                  : 0) +
+                  (updatedBalance
+                    ? Number(updatedBalance.toSignificant(5))
+                    : 0)}
+              </small>
+            </Box>
+            <Box display='flex' ml={1}>
+              {account && currency && showHalfButton && (
+                <Box className='maxWrapper' onClick={onHalf}>
+                  <small>50%</small>
+                </Box>
+              )}
+              {account && currency && showMaxButton && (
+                <Box className='maxWrapper' marginLeft='10px' onClick={onMax}>
+                  <small>{t('max')}</small>
+                </Box>
+              )}
+            </Box>
+          </Box>
+        </Box>
+        <Box
+          mb={2}
+          sx={{ borderRadius: '10px', padding: '8px 16px' }}
+          className='bg-input1'
+        >
+          <Box className='inputWrapper'>
+            <NumericalInput
+              value={value}
+              align='left'
+              color={color}
+              placeholder='0.00'
+              onUserInput={(val) => {
+                if (val === '.') val = '0.';
+                onUserInput(val);
+              }}
+            />
+          </Box>
           <Box>
             <Box
               className={`currencyButton  ${'token-select-background-v3'}  ${
@@ -217,21 +271,9 @@ export default function CurrencyInputPanel({
               )}
             </Box>
           </Box>
-
-          <Box className='inputWrapper'>
-            <NumericalInput
-              value={value}
-              align='right'
-              color={color}
-              placeholder='0.00'
-              onUserInput={(val) => {
-                if (val === '.') val = '0.';
-                onUserInput(val);
-              }}
-            />
-          </Box>
         </Box>
-        <Box className='flex justify-between'>
+
+        {/* <Box className='flex justify-between'>
           <Box display='flex'>
             <small className='text-secondary'>
               {t('balance')}:{' '}
@@ -258,6 +300,23 @@ export default function CurrencyInputPanel({
               ${valueAsUsd.toLocaleString('us')}
             </small>
           </Box>
+        </Box> */}
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography className='subtext-color' style={{ fontSize: '13px' }}>
+            {' '}
+          </Typography>
+          <Typography className='subtext-color' style={{ fontSize: '13px' }}>
+            <small className={`${color ? `text-${color}` : 'text-secondary'}}`}>
+              ${valueAsUsd.toLocaleString('us')}
+            </small>
+          </Typography>
         </Box>
       </Box>
 
