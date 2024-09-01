@@ -11,7 +11,7 @@ import { ReactComponent as SettingsIcon } from 'assets/images/icons/cog-fill.svg
 import { SettingsModal } from 'components';
 import { SwapBestTrade } from 'components/Swap';
 import { getConfig } from 'config/index';
-import { useActiveWeb3React, useIsProMode } from 'hooks';
+import { useActiveWeb3React } from 'hooks';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { lazy, useEffect, useMemo, useState } from 'react';
@@ -42,7 +42,6 @@ const SwapMain: React.FC = () => {
 
   const parsedQs = useParsedQueryString();
   const swapType = parsedQs.swapIndex;
-  const isProMode = useIsProMode();
   const history = useHistory();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const { chainId } = useActiveWeb3React();
@@ -58,7 +57,6 @@ const SwapMain: React.FC = () => {
   const showLimitOrder = config['swap']['limitOrder'];
   const showTwapOrder = config['swap']['twapOrder'];
   const showCrossChain = config['swap']['crossChain'];
-  const showProMode = config['swap']['proMode'];
 
   const [
     userSlippageTolerance,
@@ -204,7 +202,7 @@ const SwapMain: React.FC = () => {
 
   const swapTabs = useMemo(() => {
     const tabs = [];
-    if (showLimitOrder || showTwapOrder) {
+    if (v2 || v3 || showBestTrade) {
       tabs.push({ id: 'market', text: 'Market' });
     }
     if (showLimitOrder) {
@@ -217,7 +215,7 @@ const SwapMain: React.FC = () => {
       tabs.push({ id: SWAP_TWAP.toString(), text: 'TWAP' });
     }
     return tabs;
-  }, [showLimitOrder, showTwapOrder]);
+  }, [v2, v3, showBestTrade, showCrossChain, showLimitOrder, showTwapOrder]);
 
   const isActiveSwapTab = (tabId: string) => {
     if (tabId === 'market') {
@@ -259,7 +257,7 @@ const SwapMain: React.FC = () => {
             // margin={isProMode ? '28px 0' : '28px 0 0'}
             className='swapLimitTabs'
             sx={{ width: '100%' }}
-            borderRadius={isProMode ? 0 : 10}
+            borderRadius={10}
           >
             {swapTabs.map((tab) => (
               <>
@@ -268,7 +266,7 @@ const SwapMain: React.FC = () => {
                     isActiveSwapTab(tab.id) ? 'activeSwapLimitTab' : ''
                   }`}
                   key={tab.id.toString()}
-                  borderRadius={isProMode ? 0 : 10}
+                  borderRadius={10}
                   onClick={() => {
                     if (tab.id === 'market') return;
                     redirectWithSwapType(Number(tab.id));
@@ -390,15 +388,7 @@ const SwapMain: React.FC = () => {
         </Box>
       </Box>
       {/* Widget Body */}
-      <Box
-        style={{
-          backgroundImage: isProMode
-            ? 'linear-gradient(to bottom, #282d3d, #1b1e29)'
-            : '',
-        }}
-        padding={isProMode ? '0 24px 24px' : '0'}
-        pt={3.5}
-      >
+      <Box pt={3.5}>
         {showBestTrade && Number(swapType) === SWAP_BEST_TRADE && (
           <SwapBestTrade />
         )}
