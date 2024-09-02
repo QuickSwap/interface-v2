@@ -2483,6 +2483,12 @@ export const DefiedgeStrategies: {
       token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
       pool: '0x7B925e617aefd7FB3a93Abe3a701135D7a1Ba710',
     },
+    {
+      id: '0xe95dc9e01bb0c24dbf4cbd2ecbfd4196fc4b7f2b',
+      pool: '0x8811519bFd7F0AF766caFc013677099D49FE6622',
+      token0: '0x5F2F8818002dc64753daeDF4A6CB2CcB757CD220',
+      token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+    },
   ],
 };
 
