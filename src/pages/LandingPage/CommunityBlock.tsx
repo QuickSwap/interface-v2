@@ -10,21 +10,17 @@ import {
 import React, { useState } from 'react';
 import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
-import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as Announcement } from 'assets/images/social/announcement.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
 import { ReactComponent as Medium } from 'assets/images/social/Medium.svg';
 import CoinmarketCap from 'assets/images/social/coin-market-cap.webp';
-import TikTokIcon from 'assets/images/social/TikTok_Qs.png';
+import GeckoterminalIcon from 'assets/images/social/Geckoterminal.png';
 import XIcon from 'assets/images/social/X.png';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
-import InstagramIcon from 'assets/images/social/instagram.png';
 import { useTranslation } from 'react-i18next';
-import EastIcon from '@material-ui/icons';
 import CallMadeIcon from '@material-ui/icons/CallMade';
 // interface CommunityBlockProps {}
 import layer3 from 'assets/images/layer3.png';
@@ -80,7 +76,7 @@ const CommunityBlock: React.FC = ({}) => {
     },
     {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
-      icon: <GeckoterminalIcon />,
+      icon: <img src={GeckoterminalIcon} alt='Coinpaprika' />,
       title: 'GeckoTerminal',
     },
     {

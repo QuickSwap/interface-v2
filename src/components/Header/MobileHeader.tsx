@@ -1,4 +1,4 @@
-import { Box, Button, ButtonBase, Typography } from '@material-ui/core';
+import { Box, ButtonBase, Typography } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
 import { HeaderMenuItem } from './HeaderListItem';
 import { ReactComponent as ThreeDashIcon } from 'assets/images/ThreeDashIcon.svg';
@@ -7,14 +7,12 @@ import MobileNavItem from './MobileNavItem';
 import CloseIcon from '@material-ui/icons/Close';
 import { ReactComponent as BlogIcon } from 'assets/images/social/Blog.svg';
 import XIcon from 'assets/images/social/X.png';
-import { ReactComponent as CoingeckoIcon } from 'assets/images/social/Coingecko.svg';
 import { ReactComponent as DiscordIcon } from 'assets/images/social/Discord.svg';
-import { ReactComponent as GeckoterminalIcon } from 'assets/images/social/Geckoterminal.svg';
 import { ReactComponent as RedditIcon } from 'assets/images/social/Reddit.svg';
 import { ReactComponent as TelegramIcon } from 'assets/images/social/Telegram.svg';
 import { ReactComponent as Announcement } from 'assets/images/social/announcement.svg';
 import { ReactComponent as YouTubeIcon } from 'assets/images/social/YouTube.svg';
-import { ReactComponent as Medium } from 'assets/images/social/Medium.svg';
+import GeckoterminalIcon from 'assets/images/social/Geckoterminal.png';
 import CoinpaprikaIcon from 'assets/images/social/coinpaprika-logo.png';
 import { HeaderDesktopItem } from 'components/Header/HeaderDesktopItem';
 import { useActiveWeb3React } from 'hooks';
@@ -36,11 +34,52 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 }) => {
   const [isActive, setIsActive] = useState(false);
   const location = useLocation();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
+
+  const config = getConfig(chainId);
+  const showPerps = config['perps']['available'];
+  const showHydra = config['hydra']['available'];
+  const showPerpsV2 = config['perpsV2']['available'];
 
   useEffect(() => {
     setIsActive(false);
   }, [location]);
+
+  const perpMenuItems = [];
+  if (showPerpsV2) {
+    perpMenuItems.push({
+      id: 'perps-new-page-link',
+      link: '/falkor',
+      text: 'Perps',
+      isNew: true,
+    });
+  }
+  if (showHydra) {
+    perpMenuItems.push({
+      link: '/hydra',
+      text: 'Hydra',
+      id: 'hydra-page-link',
+      isExternal: true,
+      externalLink: process?.env?.REACT_APP_HYDRA_URL || '',
+      onClick: async () => {
+        if (process.env.REACT_APP_HYDRA_URL) {
+          window.open(process.env.REACT_APP_HYDRA_URL, '_blank');
+        }
+      },
+    });
+  }
+  if (showPerps) {
+    perpMenuItems.push({
+      id: 'perps-v1-page-link',
+      link: process.env.REACT_APP_PERPS_URL || '#',
+      text: 'Perps V1',
+      onClick: () => {
+        if (process.env.REACT_APP_PERPS_URL) {
+          window.open(process.env.REACT_APP_PERPS_URL, '_blank');
+        }
+      },
+    });
+  }
 
   const socialicons = [
     {
@@ -80,7 +119,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     },
     {
       link: 'https://www.geckoterminal.com/polygon_pos/quickswap_v3/pools',
-      icon: <GeckoterminalIcon style={{ width: '30px', height: '30px' }} />,
+      icon: (
+        <img src={GeckoterminalIcon} alt='Coinpaprika' width={30} height={30} />
+      ),
       title: 'GeckoTerminal',
     },
     {
@@ -333,42 +374,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     id: 'perps-page-link',
                     isExternal: true,
                     externalLink: process?.env?.REACT_APP_PERPS_URL || '',
-                    items: [
-                      {
-                        id: 'perps-new-page-link',
-                        link: '/falkor',
-                        text: 'Perps - PoS',
-                        isNew: true,
-                      },
-                      {
-                        id: 'perps-v1-page-link',
-                        link: process.env.REACT_APP_PERPS_URL || '#',
-                        text: 'Perps - zkEVM',
-                        onClick: () => {
-                          if (process.env.REACT_APP_PERPS_URL) {
-                            window.open(
-                              process.env.REACT_APP_PERPS_URL,
-                              '_blank',
-                            );
-                          }
-                        },
-                      },
-                      {
-                        link: '/hydra',
-                        text: 'Hydra',
-                        id: 'hydra-page-link',
-                        isExternal: true,
-                        externalLink: process?.env?.REACT_APP_HYDRA_URL || '',
-                        onClick: async () => {
-                          if (process.env.REACT_APP_HYDRA_URL) {
-                            window.open(
-                              process.env.REACT_APP_HYDRA_URL,
-                              '_blank',
-                            );
-                          }
-                        },
-                      },
-                    ],
+                    items: perpMenuItems,
                   }}
                 />
               </Box>
