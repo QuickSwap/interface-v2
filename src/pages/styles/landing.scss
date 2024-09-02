@@ -4,11 +4,11 @@
 .heroSection {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   position: relative;
   text-align: left;
   z-index: 2;
-  @media screen and (max-width: "900px") {
+  @media screen and (max-width: '900px') {
     padding-top: 220px;
     align-items: center;
   }
@@ -36,7 +36,7 @@
   .cover_title {
     max-width: 40%;
     margin-bottom: 20px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       width: 100%;
       max-width: 100%;
       margin-bottom: 24px;
@@ -46,7 +46,7 @@
   .cover_sub_title {
     max-width: 40%;
     margin-bottom: 20px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       width: 100%;
       max-width: 100%;
       padding: 0 40px;
@@ -57,7 +57,7 @@
     font-size: 50px;
     font-weight: 600;
     line-height: 1.16;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       width: 100%;
       font-size: 32px;
       text-align: center;
@@ -69,7 +69,7 @@
     font-stretch: normal;
     font-style: normal;
     line-height: 1.67;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       width: 100%;
       font-size: 14px;
       text-align: center;
@@ -80,14 +80,14 @@
 .available_chain_list {
   flex-direction: row;
   gap: 16px;
-  @media screen and (max-width: "900px") {
+  @media screen and (max-width: '900px') {
     flex-direction: column;
     align-items: center;
     gap: 24px;
   }
 
   .chain_list {
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       flex-direction: column;
       align-items: start !important;
     }
@@ -96,20 +96,20 @@
 
 .quick_statistics {
   align-items: center;
-  @media screen and (max-width: "900px") {
+  @media screen and (max-width: '900px') {
     align-items: start;
   }
 
   .title {
     font-size: 32px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       font-size: 24px;
     }
   }
   .desc {
     text-align: center;
     font-size: 18px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       text-align: left;
       font-size: 16px;
     }
@@ -123,7 +123,7 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 24px;
-  @include media("screen", "<desktop") {
+  @include media('screen', '<desktop') {
     flex-wrap: wrap;
   }
 }
@@ -142,7 +142,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     margin: 32px 0 64px;
   }
   .allRewardPairs {
@@ -159,7 +159,7 @@
 .featureHeading {
   margin: auto;
   align-items: center;
-  @media screen and (max-width: "900px") {
+  @media screen and (max-width: '900px') {
     align-items: start;
   }
   & h3 {
@@ -169,14 +169,14 @@
 
   .title {
     font-size: 32px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       font-size: 24px;
     }
   }
   .desc {
     text-align: center;
     font-size: 18px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       text-align: left;
       font-size: 16px;
     }
@@ -199,14 +199,14 @@
     transform: translateY(-5px);
   }
 
-  @media screen and (max-width: "900px") {
+  @media screen and (max-width: '900px') {
     width: 100%;
     height: 200px;
   }
   .cover_title {
     flex-direction: column;
     gap: 26px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       flex-direction: row;
       gap: 24px;
       align-items: center;
@@ -214,7 +214,7 @@
     }
     p {
       margin-bottom: 12px;
-      @media screen and (max-width: "900px") {
+      @media screen and (max-width: '900px') {
         margin-bottom: 0;
       }
     }
@@ -224,7 +224,7 @@
     position: absolute;
     left: 24px;
     bottom: 24px;
-    @media screen and (max-width: "900px") {
+    @media screen and (max-width: '900px') {
       bottom: 28px;
     }
   }
@@ -238,7 +238,7 @@
 }
 .cover_feat_block {
   gap: 24px;
-  @media screen and (max-width: "900px") {
+  @media screen and (max-width: '900px') {
     gap: 16px;
   }
 }
@@ -250,10 +250,7 @@
         width: 32px;
         height: 32px;
       }
-      & > div {
-        // width: calc(100% - 270px);
-      }
-      @include media("screen", "<phone") {
+      @include media('screen', '<phone') {
         flex-direction: column;
         & > div {
           width: 100%;
@@ -292,20 +289,20 @@
     margin-top: 48px;
     .cover_community_content {
       padding: 35px 75px;
-      @media screen and (max-width: "900px") {
+      @media screen and (max-width: '900px') {
         padding: 48px 24px;
       }
 
       .cover_content {
         max-width: 80%;
-        @media screen and (max-width: "900px") {
+        @media screen and (max-width: '900px') {
           max-width: 100%;
         }
 
         .title {
           text-align: left;
           font-size: 32px;
-          @media screen and (max-width: "900px") {
+          @media screen and (max-width: '900px') {
             text-align: center;
             font-size: 24px;
           }
@@ -314,7 +311,7 @@
         .desc {
           text-align: left;
           font-size: 16px;
-          @media screen and (max-width: "900px") {
+          @media screen and (max-width: '900px') {
             text-align: center;
           }
         }
@@ -323,7 +320,7 @@
 
     .email_form {
       width: 318px;
-      @media screen and (max-width: "900px") {
+      @media screen and (max-width: '900px') {
         width: 100%;
         margin-bottom: 40px;
       }
@@ -336,7 +333,7 @@
     }
 
     .cover_social_list {
-      @media screen and (max-width: "900px") {
+      @media screen and (max-width: '900px') {
         justify-content: center;
       }
     }
@@ -363,7 +360,7 @@
         height: 64px;
         margin-bottom: 8px;
         filter: grayscale(1);
-        @media screen and (max-width: "900px") {
+        @media screen and (max-width: '900px') {
           width: 48px;
           height: 48px;
         }
@@ -419,7 +416,7 @@
     height: 32px;
     cursor: pointer;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     display: none;
   }
 }
@@ -433,7 +430,7 @@
   & > div {
     width: 100%;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     & .MuiGrid-item {
       width: 100%;
       margin-bottom: 32px;
@@ -445,7 +442,7 @@
 .swapInfo {
   text-align: left;
   margin-bottom: 60px;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     order: -1;
   }
   & h3 {
@@ -474,11 +471,8 @@
     background: #9b9b9b5b;
   }
 
-  @include media("screen", "<desktop") {
+  @include media('screen', '<desktop') {
     width: 187px;
-  }
-  & h6 {
-    // padding-top: 2px;
   }
   & p {
     font-size: 12px;
@@ -491,7 +485,7 @@
     margin-top: 3px;
     color: $primary;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     height: unset;
   }
   & h3 {
@@ -505,10 +499,10 @@
   border-radius: 48px;
   overflow: hidden;
   position: relative;
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     height: auto;
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 24px;
     border-radius: 24px;
   }
@@ -529,7 +523,7 @@
       width: 129px;
       max-width: 320px;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       flex-direction: column;
       padding: 0;
     }
@@ -541,7 +535,7 @@
       font-size: 22px;
       margin-bottom: 12px;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       flex-direction: column;
       margin-right: 0;
       margin-bottom: 32px;
@@ -572,11 +566,11 @@
   & .buyFiatWrapper {
     width: 408px;
     position: relative;
-    @include media("screen", "<tablet") {
+    @include media('screen', '<tablet') {
       width: calc(100% - 64px);
       margin-bottom: 32px;
     }
-    @include media("screen", "<phone") {
+    @include media('screen', '<phone') {
       width: calc(100% - 40px);
     }
     & .buyContent {
@@ -627,13 +621,13 @@
     right: 0;
     opacity: 0.4;
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     flex-direction: column;
     & > div:first-child {
       text-align: center;
     }
   }
-  @include media("screen", "<phone") {
+  @include media('screen', '<phone') {
     padding: 24px;
   }
 }
@@ -669,7 +663,7 @@
       font-weight: 500;
     }
   }
-  @include media("screen", "<tablet") {
+  @include media('screen', '<tablet') {
     margin: 16px 0 0;
     width: 100%;
     max-width: 430px;
