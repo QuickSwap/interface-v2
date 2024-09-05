@@ -18,7 +18,7 @@ export const OrderlyPoints: React.FC = () => {
         onClick={() => setOpenOrderlyPoints(!openOrderlyPoints)}
       >
         <img src={QuickPerpsIcon} width={24} className='orderlyPointsIcon' />
-        <small className='orderlyPointsTitle'>Merits</small>
+        <small className='orderlyPointsTitle'>Trading Rewards</small>
         {openOrderlyPoints ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
       {openOrderlyPoints && <OrderlyPointsDropdown />}
