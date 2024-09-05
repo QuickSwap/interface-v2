@@ -158,7 +158,7 @@ const LockV3Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero,
         {
-          value: feeData?.fee,
+          value: feeData?.isWhitelisted ? undefined : feeData?.fee,
         },
       );
       const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
@@ -171,7 +171,7 @@ const LockV3Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero,
         {
-          value: feeData?.fee,
+          value: feeData?.isWhitelisted ? undefined : feeData?.fee,
           gasLimit: gasEstimateWithMargin,
         },
       );

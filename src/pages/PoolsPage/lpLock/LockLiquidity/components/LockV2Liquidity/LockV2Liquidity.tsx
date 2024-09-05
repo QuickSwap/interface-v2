@@ -224,6 +224,7 @@ const LockV2Liquidity: React.FC = () => {
         unlockDate.unix(),
         false,
         ethers.constants.AddressZero,
+        { value: feeData?.isWhitelisted ? undefined : feeData?.fee },
       );
       const gasEstimateWithMargin = calculateGasMargin(gasEstimate);
       const response = await tokenLockerContract?.lockToken(
@@ -234,7 +235,7 @@ const LockV2Liquidity: React.FC = () => {
         false,
         ethers.constants.AddressZero,
         {
-          value: feeData?.fee,
+          value: feeData?.isWhitelisted ? undefined : feeData?.fee,
           gasLimit: gasEstimateWithMargin,
         },
       );
