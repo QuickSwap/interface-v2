@@ -84,7 +84,7 @@ export default function callWallchainAPI(
 
   const wallChainParam = WALLCHAIN_PARAMS[chainId];
   if (!wallChainParam) return null;
-  // If the intiial call fails APE router will be the default router
+  // If the initial call fails APE router will be the default router
   return fetch(
     `${wallChainParam[smartRouter].apiURL}?key=${
       wallChainParam[smartRouter].apiKey

@@ -83,7 +83,7 @@ export default function MigrateV2DetailsPage() {
   const reserve1 = pair?.reserve1;
 
   //Pairs sort the tokens to assure a single pair is created
-  //so we will use the pairs to determin the tokens
+  //so we will use the pairs to determine the tokens
   const token0 = useToken(reserve0?.currency.address);
   const token1 = useToken(reserve1?.currency.address);
 
