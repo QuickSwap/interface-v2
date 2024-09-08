@@ -95,7 +95,7 @@ export default function MyLiquidityPoolsV3() {
   );
 
   const myPoolsFilter = useMemo(() => {
-    const filters = [];
+    const filters: any[] = [];
     filters.push({
       id: GlobalConst.utils.poolsFilter.quickswap,
       text: (

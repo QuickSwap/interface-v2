@@ -75,7 +75,7 @@ function useZapCallArguments(
       return [];
     }
 
-    const swapMethods = [];
+    const swapMethods: any[] = [];
 
     swapMethods.push(
       Zap.zapCallParameters(zap, {

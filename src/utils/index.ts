@@ -513,8 +513,9 @@ export function getTokenFromAddress(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (!token) {
-      const commonToken = GlobalValue.tokens.COMMON[chainId].find(
-        (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+      const commonToken = (GlobalValue.tokens as any).COMMON[chainId].find(
+        (token: any) =>
+          token.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       if (!commonToken) {
         return;
@@ -624,7 +625,7 @@ export function getYAXISValuesAnalytics(chartData: any) {
   const minValue = Math.min(...chartData) * 0.99;
   const maxValue = Math.max(...chartData) * 1.01;
   const step = (maxValue - minValue) / 8;
-  const values = [];
+  const values: number[] = [];
   for (let i = 0; i < 9; i++) {
     values.push(maxValue - i * step);
   }

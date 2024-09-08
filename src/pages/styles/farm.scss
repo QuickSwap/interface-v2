@@ -143,6 +143,7 @@ a.button:hover {
   & button {
     height: 36px;
     border-radius: 10px;
+    width: auto;
   }
   &.mobile {
     max-width: unset;
