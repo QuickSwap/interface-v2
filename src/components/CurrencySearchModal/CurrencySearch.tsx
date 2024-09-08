@@ -36,7 +36,6 @@ import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { useLocalStorage } from '@orderly.network/hooks';
-import { TRENDING_LIST } from 'constants/v3/addresses';
 import { useUserAddedTokens } from 'state/user/hooks';
 
 interface CurrencySearchProps {
@@ -148,13 +147,14 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const filteredTokens: Token[] = useMemo(() => {
     if (isAddressSearch) return searchToken ? [searchToken] : [];
     let updatedTokens = Object.values(allTokens);
+
     if (tab === 'favorites') {
       updatedTokens = [...favoriteCurrencies];
-    }
-    if (tab === 'trending') {
-      updatedTokens = TRENDING_LIST[chainId];
-    }
-    if (tab === 'inWallet') {
+    } else if (tab === 'trending') {
+      updatedTokens = updatedTokens.filter(
+        (t) => (t as any).tokenInfo.trending,
+      );
+    } else if (tab === 'inWallet') {
       updatedTokens = Object.values(allTokens).filter((t) => {
         const currencyFound = currencyBalances.find(
           (item) => item?.currency?.symbol === t?.symbol,

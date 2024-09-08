@@ -45,7 +45,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     setIsActive(false);
   }, [location]);
 
-  const perpMenuItems = [];
+  const perpMenuItems: any[] = [];
   if (showPerpsV2) {
     perpMenuItems.push({
       id: 'perps-new-page-link',

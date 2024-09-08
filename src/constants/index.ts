@@ -189,6 +189,7 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
 export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [chainId in ChainId]: JSBI;
 } = {
+  [ChainId.ETHEREUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
   [ChainId.MATIC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
   [ChainId.MUMBAI]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
   [ChainId.DOEGCHAIN_TESTNET]: JSBI.exponentiate(

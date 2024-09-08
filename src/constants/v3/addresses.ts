@@ -19,6 +19,7 @@ type ChainTokenList = {
 };
 
 const WETH_ONLY: ChainTokenList = {
+  [ChainId.ETHEREUM]: [WETH[ChainId.ETHEREUM]],
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
   [ChainId.DOEGCHAIN_TESTNET]: [WETH[ChainId.DOEGCHAIN_TESTNET]],
@@ -1575,49 +1576,6 @@ export const SUGGESTED_BASES: {
   ],
 };
 
-export const TRENDING_LIST: {
-  [ChainId: number]: Token[];
-} = {
-  [ChainId.MATIC]: [
-    ...WETH_ONLY[ChainId.MATIC],
-    USDC[ChainId.MATIC],
-    WBTC[ChainId.MATIC],
-  ],
-  [ChainId.DOGECHAIN]: [
-    USDC[ChainId.DOGECHAIN],
-    USDT[ChainId.DOGECHAIN],
-    WBTC[ChainId.DOGECHAIN],
-  ],
-  [ChainId.ZKTESTNET]: [WETH[ChainId.ZKTESTNET], USDT[ChainId.ZKTESTNET]],
-  [ChainId.ZKEVM]: [
-    WETH[ChainId.ZKEVM],
-    USDT[ChainId.ZKEVM],
-    MATIC[ChainId.ZKEVM],
-    WBTC[ChainId.ZKEVM],
-  ],
-  [ChainId.MANTA]: [
-    WETH[ChainId.MANTA],
-    USDC[ChainId.MANTA],
-    WBTC[ChainId.MANTA],
-    MATIC[ChainId.MANTA],
-  ],
-  [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
-  [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
-  [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
-  [ChainId.IMX]: [WETH[ChainId.IMX], USDC[ChainId.IMX], WBTC[ChainId.IMX]],
-  [ChainId.ASTARZKEVM]: [
-    USDC[ChainId.ASTARZKEVM],
-    MATIC[ChainId.ASTARZKEVM],
-    WBTC[ChainId.ASTARZKEVM],
-  ],
-  [ChainId.LAYERX]: [
-    ETHER[ChainId.LAYERX],
-    WETH[ChainId.LAYERX],
-    WBTC[ChainId.LAYERX],
-    USDC[ChainId.LAYERX],
-  ],
-};
-
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
   [ChainId: number]: Token[];
 } = {
@@ -1779,6 +1737,7 @@ export class ExtendedEther extends V3Currency {
 export const wrappedTokenAddresses: {
   readonly [chainId in ChainId]: string;
 } = {
+  [ChainId.ETHEREUM]: WETH[ChainId.ETHEREUM].address,
   [ChainId.MATIC]: WETH[ChainId.MATIC].address,
   [ChainId.ZKEVM]: WETH[ChainId.ZKEVM].address,
   [ChainId.MANTA]: WETH[ChainId.MANTA].address,
@@ -1799,6 +1758,7 @@ export const wrappedTokenAddresses: {
 export const nativeTokenSymbols: {
   readonly [chainId in ChainId]: string | undefined;
 } = {
+  [ChainId.ETHEREUM]: 'ETHER',
   [ChainId.MATIC]: 'MATIC',
   [ChainId.ZKEVM]: 'ETH',
   [ChainId.MANTA]: 'ETH',
