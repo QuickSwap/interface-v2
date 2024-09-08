@@ -64,7 +64,7 @@ const SwapMain: React.FC = () => {
   ] = useUserSlippageTolerance();
 
   const SwapDropdownTabs = useMemo(() => {
-    const tabs = [];
+    const tabs: any[] = [];
     if (showBestTrade) {
       tabs.push({
         name: 'bestTrade',
@@ -201,7 +201,7 @@ const SwapMain: React.FC = () => {
   }, [swapType]);
 
   const swapTabs = useMemo(() => {
-    const tabs = [];
+    const tabs: any[] = [];
     if (v2 || v3 || showBestTrade) {
       tabs.push({ id: 'market', text: 'Market' });
     }
