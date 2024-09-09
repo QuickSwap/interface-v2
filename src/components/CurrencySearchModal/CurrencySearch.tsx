@@ -189,6 +189,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     inactiveTokens,
     searchQuery,
     favoriteCurrencies,
+    currencyBalances,
     tab,
   ]);
 
