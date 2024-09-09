@@ -152,7 +152,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       updatedTokens = [...favoriteCurrencies];
     } else if (tab === 'trending') {
       updatedTokens = updatedTokens.filter(
-        (t) => (t as any).tokenInfo.trending,
+        (t) => (t as any).tokenInfo?.trending,
       );
     } else if (tab === 'inWallet') {
       updatedTokens = Object.values(allTokens).filter((t) => {
@@ -189,6 +189,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     inactiveTokens,
     searchQuery,
     favoriteCurrencies,
+    currencyBalances,
     tab,
   ]);
 
