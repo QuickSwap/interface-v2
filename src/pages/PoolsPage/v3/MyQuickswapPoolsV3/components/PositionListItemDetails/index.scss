@@ -2,9 +2,11 @@
 @use 'styles/breakpoints' as *;
 
 .v3-pool-liquidity-item-details {
-  & button, & .button {
+  & button,
+  & .button {
     height: 26px;
     border-radius: 8px;
+    width: auto;
     & span {
       font-size: 14px;
     }
