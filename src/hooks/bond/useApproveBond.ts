@@ -7,6 +7,7 @@ import {
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useTranslation } from 'react-i18next';
+import { TransactionType } from 'models/enums';
 
 // Approve a bond
 const useApproveBond = (tokenAddress: string, bondAddress: string) => {
@@ -27,6 +28,7 @@ const useApproveBond = (tokenAddress: string, bondAddress: string) => {
         tokenAddress: tokenAddress,
         spender: bondAddress,
       },
+      type: TransactionType.APPROVED,
     });
     const resp = await trx.wait();
     finalizeTransaction(resp, {
@@ -35,6 +37,7 @@ const useApproveBond = (tokenAddress: string, bondAddress: string) => {
         tokenAddress: tokenAddress,
         spender: bondAddress,
       },
+      type: TransactionType.APPROVED,
     });
   }, [
     tokenContract,

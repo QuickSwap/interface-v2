@@ -29,6 +29,7 @@ import {
   useICHIVaultDepositData,
 } from 'hooks/useICHIData';
 import { BigNumber } from 'ethers';
+import { TransactionType } from 'models/enums';
 
 interface IncreaseICHILiquidityModalProps {
   open: boolean;
@@ -146,6 +147,7 @@ export default function IncreaseICHILiquidityModal({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -175,6 +177,7 @@ export default function IncreaseICHILiquidityModal({
       });
       addTransaction(response, {
         summary,
+        type: TransactionType.APPROVED,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -209,6 +212,7 @@ export default function IncreaseICHILiquidityModal({
       setTxPending(true);
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

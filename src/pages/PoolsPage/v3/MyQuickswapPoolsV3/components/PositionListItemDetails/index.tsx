@@ -50,6 +50,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { WETH } from '@uniswap/sdk';
 import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
+import { TransactionType } from 'models/enums';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -293,6 +294,7 @@ export default function PositionListItemDetails({
                 symbol1: feeValue0.currency.symbol,
                 symbol2: feeValue1.currency.symbol,
               }),
+              type: TransactionType.ADDED_LIQUIDITY,
             });
           });
       })

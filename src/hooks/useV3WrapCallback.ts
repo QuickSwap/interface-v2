@@ -6,6 +6,7 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
+import { TransactionType } from 'models/enums';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -77,6 +78,7 @@ export default function useWrapCallback(
                     summary: `Wrap ${inputAmount.toSignificant(2)} ${
                       ETHER[chainId].symbol
                     } to ${WETH[chainId].symbol}`,
+                    type: TransactionType.WRAP,
                   });
                   await txReceipt.wait();
                   setWrapping(false);
@@ -111,6 +113,7 @@ export default function useWrapCallback(
                     summary: `Unwrap ${inputAmount.toSignificant(2)} ${
                       WETH[chainId].symbol
                     } to ${ETHER[chainId].symbol}`,
+                    type: TransactionType.UNWRAP,
                   });
                   await txReceipt.wait();
                   setUnWrapping(false);

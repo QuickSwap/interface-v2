@@ -42,6 +42,7 @@ import ColoredSlider from 'components/ColoredSlider';
 import { JSBI, WETH } from '@uniswap/sdk';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import './index.scss';
+import { TransactionType } from 'models/enums';
 
 interface RemoveLiquidityV3Props {
   position: PositionPool;
@@ -194,6 +195,7 @@ export default function RemoveLiquidityV3({
             });
             addTransaction(response, {
               summary,
+              type: TransactionType.REMOVE_LIQUIDITY,
             });
 
             try {

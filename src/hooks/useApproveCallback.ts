@@ -37,6 +37,7 @@ import { OptimalRate } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import { useIsInfiniteApproval } from 'state/user/hooks';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
+import { TransactionType } from 'models/enums';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -161,6 +162,7 @@ export function useApproveCallback(
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,
           approval: { tokenAddress: token.address, spender: spender },
+          type: TransactionType.APPROVED,
         });
         try {
           await response.wait();
@@ -262,6 +264,7 @@ export function useApproveCallbackTokenId(
         addTransaction(response, {
           summary: 'Approve ALGB-POS-' + tokenId,
           approval: { tokenAddress: nftPosManAddress, spender: spender },
+          type: TransactionType.APPROVED,
         });
         try {
           await response.wait();
@@ -385,6 +388,7 @@ export function useApproveCallbackV3(
         addTransaction(response, {
           summary: 'Approve ' + amountToApprove.currency.symbol,
           approval: { tokenAddress: token.address, spender: spender },
+          type: TransactionType.APPROVED,
         });
         try {
           await response.wait();

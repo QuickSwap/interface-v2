@@ -29,6 +29,7 @@ import {
   useICHIVaultShare,
 } from 'hooks/useICHIData';
 import Loader from 'components/Loader';
+import { TransactionType } from 'models/enums';
 
 const SingleTokenDepositButton: React.FC = () => {
   const { t } = useTranslation();
@@ -74,6 +75,7 @@ const SingleTokenDepositButton: React.FC = () => {
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -154,6 +156,9 @@ const SingleTokenDepositButton: React.FC = () => {
       }
       addTransaction(txn, {
         summary,
+        type: isApproved
+          ? TransactionType.ADDED_LIQUIDITY
+          : TransactionType.APPROVED,
       });
       const receipt = await txn.wait();
       finalizedTransaction(receipt, {

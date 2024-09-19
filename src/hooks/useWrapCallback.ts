@@ -8,6 +8,7 @@ import { useWETHContract } from './useContract';
 import { formatTokenAmount } from 'utils';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
+import { TransactionType } from 'models/enums';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -72,6 +73,7 @@ export default function useWrapCallback(
                     summary: `Wrap ${formatTokenAmount(inputAmount)} ${
                       ETHER[chainId].symbol
                     } to ${WETH[chainId].symbol}`,
+                    type: TransactionType.WRAP,
                   });
                   await txReceipt.wait();
                   dispatch(updateUserBalance());
@@ -104,6 +106,7 @@ export default function useWrapCallback(
                     summary: `Unwrap ${formatTokenAmount(inputAmount)} ${
                       WETH[chainId].symbol
                     } to ${ETHER[chainId].symbol}`,
+                    type: TransactionType.UNWRAP,
                   });
                   await txReceipt.wait();
                   dispatch(updateUserBalance());

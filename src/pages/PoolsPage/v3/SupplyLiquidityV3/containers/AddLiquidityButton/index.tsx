@@ -64,6 +64,7 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import { ZERO } from 'v3lib/utils';
 import { Presets } from 'state/mint/v3/reducer';
+import { TransactionType } from 'models/enums';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -313,6 +314,7 @@ export function AddLiquidityButton({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -379,6 +381,7 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -478,6 +481,7 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -581,6 +585,7 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -689,6 +694,7 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -774,6 +780,7 @@ export function AddLiquidityButton({
                     });
                 addTransaction(response, {
                   summary,
+                  type: TransactionType.ADDED_LIQUIDITY,
                 });
 
                 dispatch(setAddLiquidityTxHash({ txHash: response.hash }));

@@ -52,6 +52,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import Web3 from 'web3';
+import { TransactionType } from 'models/enums';
 
 const DragonsLair = () => {
   const { breakpoints } = useTheme();
@@ -225,6 +226,7 @@ const DragonsLair = () => {
           );
           addTransaction(response, {
             summary: `${t('stake')} ${quickToken?.symbol}`,
+            type: TransactionType.STAKE,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
@@ -259,6 +261,7 @@ const DragonsLair = () => {
         );
         addTransaction(response, {
           summary: `${t('unstake')} ${dQuickToken?.symbol}`,
+          type: TransactionType.UNSTAKE,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -300,6 +303,7 @@ const DragonsLair = () => {
           setTxHash('');
           addTransaction(response, {
             summary: quickConvertingText,
+            type: TransactionType.SWAPPED,
           });
           try {
             const tx = await response.wait();

@@ -27,6 +27,7 @@ import {
   liquidityHubAnalytics,
   useLiquidityHubCallback,
 } from 'components/Swap/LiquidityHub';
+import { TransactionType } from 'models/enums';
 
 export enum SwapCallbackState {
   INVALID,
@@ -155,6 +156,7 @@ export function useParaswapCallback(
         if (liquidityHubResult) {
           addTransaction(liquidityHubResult, {
             summary,
+            type: TransactionType.SWAPPED,
           });
 
           return {
@@ -226,6 +228,7 @@ export function useParaswapCallback(
           liquidityHubAnalytics.onDexSwapSuccess(response);
           addTransaction(response, {
             summary,
+            type: TransactionType.SWAPPED,
           });
 
           return { response, summary };

@@ -48,6 +48,7 @@ import RateToggle from 'components/v3/RateToggle';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import { unwrappedToken } from 'utils/unwrappedToken';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { TransactionType } from 'models/enums';
 
 interface IncreaseLiquidityV3Props {
   positionDetails: PositionPool;
@@ -264,6 +265,7 @@ export default function IncreaseLiquidityV3({
               );
               addTransaction(response, {
                 summary,
+                type: TransactionType.ADDED_LIQUIDITY,
               });
               setTxHash(response.hash);
               ReactGA.event({

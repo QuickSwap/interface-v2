@@ -35,6 +35,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { TransactionType } from 'models/enums';
 
 interface IncreaseSteerLiquidityModalProps {
   open: boolean;
@@ -233,6 +234,7 @@ export default function IncreaseSteerLiquidityModal({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -276,6 +278,7 @@ export default function IncreaseSteerLiquidityModal({
       setTxPending(true);
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

@@ -10,6 +10,7 @@ import star from 'assets/images/icons/transactions/icon-star.svg';
 
 interface TransactionIconProps {
   type: TransactionType;
+  token0?: string;
 }
 
 const TransactionIcon: React.FC<TransactionIconProps> = ({ type }) => {
@@ -30,6 +31,8 @@ const TransactionIcon: React.FC<TransactionIconProps> = ({ type }) => {
 
       case TransactionType.SEND:
         return <img src={send} alt='send' />;
+      default:
+        return <img src={star} alt='transaction' />;
     }
   }, [type]);
 

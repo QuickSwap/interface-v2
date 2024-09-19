@@ -22,7 +22,7 @@ import { ethers } from 'ethers';
 import { useActiveWeb3React } from 'hooks';
 import useCopyClipboard from 'hooks/useCopyClipboard';
 import { TransactionType } from 'models/enums';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'state';
@@ -32,81 +32,98 @@ import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import StatusIcon from './StatusIcon';
 import Transaction from './Transaction';
 import TransactionItem from './TransactionItem';
+import { useAllTransactions } from 'state/transactions/hooks';
 
-const TRANSACTIONS_MOCK = [
-  {
-    title: 'Sent',
-    desc: '0.01 MATIC to 0e43…9480',
-    type: TransactionType.SEND,
-    time: '1min',
-  },
-  {
-    title: 'Swapped',
-    desc: '100 USDC for 197.39 WMATIC',
-    type: TransactionType.SWAPPED,
-    time: '1hr',
-  },
-  {
-    title: 'Approved',
-    desc: 'USDC',
-    type: TransactionType.APPROVED,
-    time: '1d',
-  },
-  {
-    title: 'Received',
-    desc: '1000 USDC from 0b84…9589',
-    type: TransactionType.RECEIVED,
-    time: '1w',
-  },
-  {
-    title: 'Added Liquidity',
-    desc: 'Added 100 USDC + 199.34 MATIC',
-    type: TransactionType.ADDED_LIQUIDITY,
-    time: '1mo',
-  },
-  {
-    title: 'Claimed Rewards',
-    desc: 'WBTC',
-    type: TransactionType.CLAIMED_REWARDS,
-    time: '1mo',
-  },
-  {
-    title: 'Received',
-    desc: '1000 USDC from 0b84…9589',
-    type: TransactionType.RECEIVED,
-    time: '1w',
-  },
-  {
-    title: 'Added Liquidity',
-    desc: 'Added 100 USDC + 199.34 MATIC',
-    type: TransactionType.ADDED_LIQUIDITY,
-    time: '1mo',
-  },
-  {
-    title: 'Claimed Rewards',
-    desc: 'WBTC',
-    type: TransactionType.CLAIMED_REWARDS,
-    time: '1mo',
-  },
-  {
-    title: 'Received',
-    desc: '1000 USDC from 0b84…9589',
-    type: TransactionType.RECEIVED,
-    time: '1w',
-  },
-  {
-    title: 'Added Liquidity',
-    desc: 'Added 100 USDC + 199.34 MATIC',
-    type: TransactionType.ADDED_LIQUIDITY,
-    time: '1mo',
-  },
-  {
-    title: 'Claimed Rewards',
-    desc: 'WBTC',
-    type: TransactionType.CLAIMED_REWARDS,
-    time: '1mo',
-  },
-];
+const renderTitle = (type?: string) => {
+  switch (type) {
+    case TransactionType.SEND:
+      return 'Sent';
+    case TransactionType.SWAPPED:
+      return 'Swapped';
+    case TransactionType.APPROVED:
+      return 'Approved';
+    case TransactionType.RECEIVED:
+      return 'Received';
+    case TransactionType.ADDED_LIQUIDITY:
+      return 'Added Liquidity';
+    case TransactionType.CLAIMED_REWARDS:
+      return 'Claimed Rewards';
+    case TransactionType.BUY_BOND:
+      return 'Buy Bond';
+    case TransactionType.CLAIM_BOND:
+      return 'Claim Bond';
+    case TransactionType.DEPOSIT_NFT:
+      return 'Deposit NFT';
+    case TransactionType.REMOVE_LIQUIDITY:
+      return 'Remove Liquidity';
+    case TransactionType.STAKE:
+      return 'Stake';
+    case TransactionType.TRANSFER_BOND:
+      return 'Transfer Bond';
+    case TransactionType.UNDEPOSIT_NFT:
+      return 'Undeposit NFT';
+    case TransactionType.UNSTAKE:
+      return 'Unstake';
+    case TransactionType.UNWRAP:
+      return 'Unwrap';
+    case TransactionType.WITHDRAW_LIQUIDITY:
+      return 'Withdraw Liquidity';
+    case TransactionType.WITHDRAW_NFT:
+      return 'Withdraw NFT';
+    case TransactionType.WRAP:
+      return 'Wrap';
+    case TransactionType.ZAP:
+      return 'Zap';
+
+    default:
+      return 'Transaction';
+  }
+};
+
+const timeDiff = (time: number) => {
+  // Time constants in milliseconds
+  const oneMinute = 60 * 1000;
+  const oneHour = 60 * oneMinute;
+  const oneDay = 24 * oneHour;
+  const oneWeek = 7 * oneDay;
+  const oneMonth = 30 * oneDay; // Approximating 1 month as 30 days
+
+  let timeString = '';
+
+  const now = Date.now(); // Get the current timestamp in milliseconds
+  let diff = Math.abs(now - time); // Difference between current time and the given time
+
+  if (diff >= oneMonth) {
+    const months = Math.floor(diff / oneMonth);
+    timeString += `${months}mo `;
+    diff %= oneMonth;
+  }
+
+  if (diff >= oneWeek) {
+    const weeks = Math.floor(diff / oneWeek);
+    timeString += `${weeks}w `;
+    diff %= oneWeek;
+  }
+
+  if (diff >= oneDay) {
+    const days = Math.floor(diff / oneDay);
+    timeString += `${days}d `;
+    diff %= oneDay;
+  }
+
+  if (diff >= oneHour) {
+    const hours = Math.floor(diff / oneHour);
+    timeString += `${hours}h `;
+    diff %= oneHour;
+  }
+
+  if (diff >= oneMinute) {
+    const minutes = Math.floor(diff / oneMinute);
+    timeString += `${minutes}m `;
+  }
+
+  return timeString;
+};
 
 function renderTransactions(transactions: string[]) {
   return (
@@ -135,6 +152,16 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   close,
   // openOptions,
 }) => {
+  const transactions = useAllTransactions();
+  const updatedTransactions = useMemo(() => {
+    return Object.values(transactions).map((item) => ({
+      desc: item.summary,
+      type: item.type,
+      title: renderTitle(item.type || TransactionType.APPROVED),
+      time: timeDiff(item.confirmedTime || 0),
+    }));
+  }, [transactions]);
+  console.log('transactions', transactions);
   const { chainId, account, provider } = useActiveWeb3React();
   const { disconnect } = useDisconnect();
   const [isC, staticCopy] = useCopyClipboard();
@@ -170,14 +197,14 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   }, [dispatch, chainId]);
 
   const links = [
-    // {
-    //   icon: <img src={swapIcon} alt='swap icon' />,
-    //   name: 'View transactions',
-    //   onClick: () => {
-    //     setViewTransaction(true);
-    //     console.log('open transaction');
-    //   },
-    // },
+    {
+      icon: <img src={swapIcon} alt='swap icon' />,
+      name: 'View transactions',
+      onClick: () => {
+        setViewTransaction(true);
+        console.log('open transaction');
+      },
+    },
     {
       icon: <img src={copyIcon} alt='copy icon' />,
       name: 'Copy address',
@@ -397,9 +424,10 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
             overflow: 'scroll',
             paddingTop: '12px',
             position: 'relative',
+            paddingBottom: 48,
           }}
         >
-          {TRANSACTIONS_MOCK.map((item, index) => {
+          {updatedTransactions.map((item, index) => {
             return <TransactionItem transaction={item} key={index} />;
           })}
         </Box>

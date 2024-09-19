@@ -10,6 +10,7 @@ import { USDC, USDCE } from 'constants/v3/addresses';
 import { calculateGasMargin } from 'utils';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
+import { TransactionType } from 'models/enums';
 
 export enum ConvertType {
   NOT_APPLICABLE,
@@ -98,6 +99,7 @@ export default function useNativeConvertCallback(
                     summary: `Convert ${inputAmount.toSignificant(
                       2,
                     )} old USDC to new USDC`,
+                    type: TransactionType.SWAPPED,
                   });
                   await txReceipt.wait();
                   dispatch(updateUserBalance());

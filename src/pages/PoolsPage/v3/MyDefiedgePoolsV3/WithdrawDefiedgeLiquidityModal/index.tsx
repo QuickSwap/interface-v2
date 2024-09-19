@@ -25,6 +25,7 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI, Token } from '@uniswap/sdk';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { TransactionType } from 'models/enums';
 
 interface WithdrawDefiedgeLiquidityModalProps {
   open: boolean;
@@ -107,6 +108,7 @@ export default function WithdrawDefiedgeLiquidityModal({
       setTxnHash(response.hash);
       addTransaction(response, {
         summary: t('withdrawingDefiedgeLiquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

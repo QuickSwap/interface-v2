@@ -20,6 +20,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
+import { TransactionType } from 'models/enums';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -246,6 +247,7 @@ const AddGammaLiquidity: React.FC<{
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -297,6 +299,7 @@ const AddGammaLiquidity: React.FC<{
       });
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

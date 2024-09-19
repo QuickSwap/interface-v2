@@ -47,6 +47,7 @@ import 'components/styles/RemoveLiquidityModal.scss';
 import { useTranslation } from 'react-i18next';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { TransactionType } from 'models/enums';
 
 interface RemoveLiquidityModalProps {
   currency0: Currency;

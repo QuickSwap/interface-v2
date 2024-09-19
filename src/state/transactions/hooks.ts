@@ -16,6 +16,7 @@ interface TransactionData {
   summary?: string;
   approval?: { tokenAddress: string; spender: string };
   claim?: { recipient: string };
+  type?: string;
 }
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
@@ -35,10 +36,12 @@ export function useTransactionAdder(): (
         summary,
         approval,
         claim,
+        type,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        type?: string;
       } = {},
       txHash?: string,
     ) => {
@@ -66,6 +69,7 @@ export function useTransactionAdder(): (
           approval,
           summary,
           claim,
+          type,
         }),
       );
     },
@@ -79,6 +83,7 @@ export function useTransactionFinalizer(): (
     summary?: string;
     approval?: { tokenAddress: string; spender: string };
     claim?: { recipient: string };
+    type?: string;
   },
 ) => void {
   const { chainId, account } = useActiveWeb3React();
@@ -90,10 +95,12 @@ export function useTransactionFinalizer(): (
       receipt: TransactionReceipt,
       {
         summary,
+        type,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        type?: string;
       } = {},
     ) => {
       if (!account) return;
