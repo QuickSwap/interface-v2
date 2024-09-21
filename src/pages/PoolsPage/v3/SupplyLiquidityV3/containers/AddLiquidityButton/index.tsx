@@ -328,7 +328,6 @@ export function AddLiquidityButton({
     }
   }
 
-  console.log('adasdadd', quoteCurrency, baseCurrency);
 
   async function onAdd() {
     if (!chainId || !library || !account) return;
@@ -643,7 +642,6 @@ export function AddLiquidityButton({
       setAttemptingTxn(true);
 
       const zeroCurrencyAmount = CurrencyAmount.fromRawAmount(quoteCurrency, 0);
-      console.log(zeroCurrencyAmount.numerator.toString());
 
       try {
         const estimatedGas = await defiedgeStrategyContract.estimateGas.mint(

@@ -163,7 +163,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       tokens: item?.tokens,
     }));
   }, [transactions]);
-  console.log('transactions', transactions);
   const { chainId, account, provider } = useActiveWeb3React();
   const { disconnect } = useDisconnect();
   const [isC, staticCopy] = useCopyClipboard();

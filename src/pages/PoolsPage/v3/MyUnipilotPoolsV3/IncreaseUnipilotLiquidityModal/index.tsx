@@ -269,7 +269,6 @@ export default function IncreaseUnipilotLiquidityModal({
     token1isWETH,
   ]);
 
-  console.log('position4', position);
 
   const addUnipilotLiquidity = async () => {
     if (!uniPilotVaultContract || !account) return;

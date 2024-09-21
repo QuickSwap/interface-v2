@@ -246,7 +246,6 @@ export default function IncreaseSteerLiquidityModal({
       setWrappingETH(false);
     }
   };
-  console.log('position3', position);
 
   const addSteerLiquidity = async () => {
     if (!steerPeripheryContract || !account) return;

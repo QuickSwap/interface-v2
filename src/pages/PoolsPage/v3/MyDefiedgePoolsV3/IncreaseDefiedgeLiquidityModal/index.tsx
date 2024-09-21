@@ -261,7 +261,6 @@ export default function IncreaseDefiedgeLiquidityModal({
       setWrappingETH(false);
     }
   };
-  console.log('position', position);
 
   const addDefiedgeLiquidity = async () => {
     if (!strategyContract || !account) return;
