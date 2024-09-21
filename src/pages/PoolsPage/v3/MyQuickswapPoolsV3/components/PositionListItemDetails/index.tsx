@@ -51,6 +51,7 @@ import { useTranslation } from 'react-i18next';
 import { WETH } from '@uniswap/sdk';
 import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
 import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 interface PositionListItemProps {
   positionDetails: PositionPool;
@@ -295,6 +296,10 @@ export default function PositionListItemDetails({
                 symbol2: feeValue1.currency.symbol,
               }),
               type: TransactionType.ADDED_LIQUIDITY,
+              tokens: [
+                wrappedCurrency(feeValue0.currency, chainId)?.address ?? '',
+                wrappedCurrency(feeValue1.currency, chainId)?.address ?? '',
+              ],
             });
           });
       })

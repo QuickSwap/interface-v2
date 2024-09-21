@@ -211,7 +211,7 @@ const UnipilotFarmCardDetails: React.FC<{
 
     addTransaction(response, {
       summary: t('depositliquidity'),
-      type: TransactionType.ADDED_LIQUIDITY,
+      type: TransactionType.SEND,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {

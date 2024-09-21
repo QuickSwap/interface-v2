@@ -35,7 +35,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ChainId, ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -65,6 +65,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import { ZERO } from 'v3lib/utils';
 import { Presets } from 'state/mint/v3/reducer';
 import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -327,6 +328,8 @@ export function AddLiquidityButton({
     }
   }
 
+  console.log('adasdadd', quoteCurrency, baseCurrency);
+
   async function onAdd() {
     if (!chainId || !library || !account) return;
 
@@ -382,6 +385,7 @@ export function AddLiquidityButton({
         addTransaction(response, {
           summary,
           type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -482,6 +486,7 @@ export function AddLiquidityButton({
         addTransaction(response, {
           summary,
           type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -586,6 +591,7 @@ export function AddLiquidityButton({
         addTransaction(response, {
           summary,
           type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -695,6 +701,7 @@ export function AddLiquidityButton({
         addTransaction(response, {
           summary,
           type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -781,6 +788,12 @@ export function AddLiquidityButton({
                 addTransaction(response, {
                   summary,
                   type: TransactionType.ADDED_LIQUIDITY,
+                  tokens: [
+                    ((baseCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                    ((quoteCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                  ],
                 });
 
                 dispatch(setAddLiquidityTxHash({ txHash: response.hash }));

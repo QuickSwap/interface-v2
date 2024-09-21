@@ -269,6 +269,8 @@ export default function IncreaseUnipilotLiquidityModal({
     token1isWETH,
   ]);
 
+  console.log('position4', position);
+
   const addUnipilotLiquidity = async () => {
     if (!uniPilotVaultContract || !account) return;
     setAttemptingTxn(true);
@@ -297,6 +299,10 @@ export default function IncreaseUnipilotLiquidityModal({
       addTransaction(response, {
         summary,
         type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [
+          position.token0?.address ?? '',
+          position.token1?.address ?? '',
+        ],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

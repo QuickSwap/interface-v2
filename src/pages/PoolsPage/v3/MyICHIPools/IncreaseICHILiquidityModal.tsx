@@ -213,6 +213,7 @@ export default function IncreaseICHILiquidityModal({
       addTransaction(response, {
         summary,
         type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [currency?.address ?? '', currency?.address ?? ''],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

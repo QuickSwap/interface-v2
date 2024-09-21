@@ -156,9 +156,7 @@ const SingleTokenDepositButton: React.FC = () => {
       }
       addTransaction(txn, {
         summary,
-        type: isApproved
-          ? TransactionType.ADDED_LIQUIDITY
-          : TransactionType.APPROVED,
+        type: isApproved ? TransactionType.SEND : TransactionType.APPROVED,
       });
       const receipt = await txn.wait();
       finalizedTransaction(receipt, {

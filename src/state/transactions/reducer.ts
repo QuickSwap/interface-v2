@@ -20,6 +20,7 @@ export interface TransactionDetails {
   confirmedTime?: number;
   from: string;
   type?: string;
+  tokens?: any[];
 }
 
 export interface TransactionState {
@@ -36,7 +37,18 @@ export default createReducer(initialState, (builder) =>
       addTransaction,
       (
         transactions,
-        { payload: { chainId, from, hash, approval, summary, claim, type } },
+        {
+          payload: {
+            tokens,
+            chainId,
+            from,
+            hash,
+            approval,
+            summary,
+            claim,
+            type,
+          },
+        },
       ) => {
         if (transactions[chainId]?.[hash]) {
           throw Error('Attempted to add existing transaction.');
@@ -50,6 +62,7 @@ export default createReducer(initialState, (builder) =>
           from,
           addedTime: now(),
           type,
+          tokens,
         };
         transactions[chainId] = txs;
       },

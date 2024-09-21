@@ -246,6 +246,7 @@ export default function IncreaseSteerLiquidityModal({
       setWrappingETH(false);
     }
   };
+  console.log('position3', position);
 
   const addSteerLiquidity = async () => {
     if (!steerPeripheryContract || !account) return;
@@ -279,6 +280,10 @@ export default function IncreaseSteerLiquidityModal({
       addTransaction(response, {
         summary,
         type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [
+          position.token0?.address ?? '',
+          position.token1?.address ?? '',
+        ],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

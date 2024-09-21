@@ -20,6 +20,7 @@ export const addTransaction = createAction<{
   claim?: { recipient: string };
   summary?: string;
   type?: string;
+  tokens?: any[];
 }>('transactions/addTransaction');
 export const clearAllTransactions = createAction<{ chainId: ChainId }>(
   'transactions/clearAllTransactions',

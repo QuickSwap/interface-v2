@@ -16,7 +16,11 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction }) => {
         gridGap: '16px',
       }}
     >
-      <TransactionIcon type={transaction.type} />
+      <TransactionIcon
+        type={transaction.type}
+        tokens={transaction.tokens}
+        approval={transaction?.approval}
+      />
       <Box
         sx={{
           width: '100%',

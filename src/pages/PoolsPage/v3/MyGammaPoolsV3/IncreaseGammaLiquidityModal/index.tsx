@@ -288,6 +288,8 @@ export default function IncreaseGammaLiquidityModal({
     }
   };
 
+  console.log('position2', position);
+
   const addGammaLiquidity = async () => {
     if (!gammaUNIPROXYContract || !account) return;
     setAttemptingTxn(true);
@@ -318,6 +320,7 @@ export default function IncreaseGammaLiquidityModal({
       addTransaction(response, {
         summary,
         type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [position.token0?.address, position.token1?.address],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

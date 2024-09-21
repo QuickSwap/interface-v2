@@ -115,7 +115,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           );
           addTransaction(response, {
             summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
-            type: TransactionType.ADDED_LIQUIDITY,
+            type: TransactionType.SEND,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
@@ -149,7 +149,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           );
           addTransaction(response, {
             summary: t('depositliquidity'),
-            type: TransactionType.ADDED_LIQUIDITY,
+            type: TransactionType.SEND,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {

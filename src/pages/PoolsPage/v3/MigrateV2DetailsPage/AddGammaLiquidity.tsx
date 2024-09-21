@@ -21,6 +21,7 @@ import {
 } from 'state/transactions/hooks';
 import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
 import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -260,6 +261,8 @@ const AddGammaLiquidity: React.FC<{
     }
   }
 
+  console.log('gammaToken0', gammaToken0);
+
   async function onAddLiquidity() {
     if (!chainId || !account) return;
 
@@ -300,6 +303,7 @@ const AddGammaLiquidity: React.FC<{
       addTransaction(response, {
         summary,
         type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [gammaToken0.address, gammaToken1.address],
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

@@ -261,6 +261,7 @@ export default function IncreaseDefiedgeLiquidityModal({
       setWrappingETH(false);
     }
   };
+  console.log('position', position);
 
   const addDefiedgeLiquidity = async () => {
     if (!strategyContract || !account) return;
@@ -292,6 +293,7 @@ export default function IncreaseDefiedgeLiquidityModal({
       addTransaction(response, {
         summary,
         type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [position.token0?.address, position.token1?.address],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

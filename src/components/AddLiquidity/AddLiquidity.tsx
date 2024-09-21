@@ -353,6 +353,12 @@ const AddLiquidity: React.FC<{
           addTransaction(response, {
             summary,
             type: TransactionType.ADDED_LIQUIDITY,
+            tokens: [
+              wrappedCurrency(currencies[Field.CURRENCY_A], chainId)?.address ??
+                '',
+              wrappedCurrency(currencies[Field.CURRENCY_B], chainId)?.address ??
+                '',
+            ],
           });
 
           setTxHash(response.hash);

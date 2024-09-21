@@ -159,6 +159,8 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
       type: item.type,
       title: renderTitle(item.type || TransactionType.APPROVED),
       time: timeDiff(item.confirmedTime || 0),
+      approval: item.approval,
+      tokens: item?.tokens,
     }));
   }, [transactions]);
   console.log('transactions', transactions);
