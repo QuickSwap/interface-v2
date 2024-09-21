@@ -288,7 +288,6 @@ export default function IncreaseGammaLiquidityModal({
     }
   };
 
-
   const addGammaLiquidity = async () => {
     if (!gammaUNIPROXYContract || !account) return;
     setAttemptingTxn(true);
