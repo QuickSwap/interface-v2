@@ -102,9 +102,11 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
       otherCurrency,
       chainId,
       usdPrices,
+      handleChangeFavorite,
       favoriteCurrencies,
       isOnSelectedList,
       balances,
+      onCurrencySelect,
     ],
   );
 

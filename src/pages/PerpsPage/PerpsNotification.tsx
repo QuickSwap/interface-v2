@@ -43,6 +43,7 @@ export const PerpsNotification: React.FC = () => {
       unsubscript();
       unsubscribeWallet();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const title = useMemo(
