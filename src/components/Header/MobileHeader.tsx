@@ -296,6 +296,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     width: '30px',
                     height: '30px',
                   }}
+                  onClick={() => {
+                    window.open(item.link, '_blank');
+                  }}
                 >
                   {item.icon}
                 </Box>
