@@ -287,13 +287,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           >
             Community
           </Typography>
-          <Box
-            style={{
-              display: 'flex',
-              gap: '30px',
-              flexWrap: 'wrap',
-            }}
-          >
+          <Box className='mobile_cover_social_list'>
             {socialicons.map((item, index) => {
               return (
                 <Box
