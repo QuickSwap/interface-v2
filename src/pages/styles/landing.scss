@@ -333,9 +333,19 @@
     }
 
     .cover_social_list {
+      z-index: 10;
+      position: relative;
       @media screen and (max-width: '900px') {
         justify-content: center;
       }
+    }
+
+    .mobile_cover_social_list {
+      display: flex;
+      flex-wrap: wrap;
+      z-index: 10;
+      position: relative;
+      gap: 30px;
     }
 
     & > div {

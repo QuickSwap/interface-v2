@@ -98,7 +98,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       title: 'Announcements',
     },
     {
-      link: 'https://discord.gg/dSMd7AFH36',
+      link: 'https://discord.gg/aMEzjcVM',
       icon: <DiscordIcon style={{ width: '30px', height: '30px' }} />,
       title: 'Discord',
     },
@@ -287,13 +287,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           >
             Community
           </Typography>
-          <Box
-            style={{
-              display: 'flex',
-              gap: '30px',
-              flexWrap: 'wrap',
-            }}
-          >
+          <Box className='mobile_cover_social_list'>
             {socialicons.map((item, index) => {
               return (
                 <Box
