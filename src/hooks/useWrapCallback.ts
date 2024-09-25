@@ -1,4 +1,11 @@
-import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@uniswap/sdk';
+import {
+  ChainId,
+  Currency,
+  currencyEquals,
+  ETHER,
+  Token,
+  WETH,
+} from '@uniswap/sdk';
 import { useMemo, useState } from 'react';
 import { tryParseAmount } from 'state/swap/hooks';
 import { useTransactionAdder } from 'state/transactions/hooks';
@@ -9,6 +16,7 @@ import { formatTokenAmount } from 'utils';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
 import { TransactionType } from 'models/enums';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -74,6 +82,7 @@ export default function useWrapCallback(
                       ETHER[chainId].symbol
                     } to ${WETH[chainId].symbol}`,
                     type: TransactionType.WRAP,
+                    tokens: [Token.ETHER[chainId]],
                   });
                   await txReceipt.wait();
                   dispatch(updateUserBalance());
@@ -107,6 +116,7 @@ export default function useWrapCallback(
                       WETH[chainId].symbol
                     } to ${ETHER[chainId].symbol}`,
                     type: TransactionType.UNWRAP,
+                    tokens: [Token.ETHER[chainId]],
                   });
                   await txReceipt.wait();
                   dispatch(updateUserBalance());

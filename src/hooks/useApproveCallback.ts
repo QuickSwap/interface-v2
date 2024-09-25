@@ -38,6 +38,7 @@ import { ONE } from 'v3lib/utils';
 import { useIsInfiniteApproval } from 'state/user/hooks';
 import { useSingleCallResult } from 'state/multicall/v3/hooks';
 import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 export enum ApprovalState {
   UNKNOWN,
@@ -164,6 +165,7 @@ export function useApproveCallback(
           approval: { tokenAddress: token.address, spender: spender },
           type: TransactionType.APPROVED,
         });
+        wrappedCurrency;
         try {
           await response.wait();
           setApproved(true);

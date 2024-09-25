@@ -138,6 +138,10 @@ export default function RemoveLiquidityV3({
     ) {
       return;
     }
+    console.log('[liquidityValue0.currency,liquidityValue1.currency]', [
+      liquidityValue0.currency,
+      liquidityValue1.currency,
+    ]);
 
     const NonfungiblePositionManager = position.isUni
       ? UniV3NonfungiblePositionManager
@@ -196,6 +200,7 @@ export default function RemoveLiquidityV3({
             addTransaction(response, {
               summary,
               type: TransactionType.REMOVE_LIQUIDITY,
+              tokens: [liquidityValue0.currency, liquidityValue1.currency],
             });
 
             try {

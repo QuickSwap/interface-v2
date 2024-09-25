@@ -153,11 +153,12 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   // openOptions,
 }) => {
   const transactions = useAllTransactions();
+  console.log('transactionstransactions', transactions);
   const updatedTransactions = useMemo(() => {
     return Object.values(transactions).map((item) => ({
       desc: item.summary,
       type: item.type,
-      title: renderTitle(item.type || TransactionType.APPROVED),
+      title: renderTitle(item.type || TransactionType.TRANSACTION),
       time: timeDiff(item.confirmedTime || 0),
       approval: item.approval,
       tokens: item?.tokens,

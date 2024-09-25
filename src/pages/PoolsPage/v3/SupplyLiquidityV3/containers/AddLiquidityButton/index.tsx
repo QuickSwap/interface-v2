@@ -66,6 +66,7 @@ import { ZERO } from 'v3lib/utils';
 import { Presets } from 'state/mint/v3/reducer';
 import { TransactionType } from 'models/enums';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -316,6 +317,7 @@ export function AddLiquidityButton({
       addTransaction(wrapResponse, {
         summary,
         type: TransactionType.WRAP,
+        tokens: [ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {

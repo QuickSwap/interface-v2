@@ -3,7 +3,7 @@ import './index.scss';
 import { useTranslation } from 'react-i18next';
 import { useActivePreset, useV3DerivedMintInfo } from 'state/mint/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { Box, Button } from '@material-ui/core';
 import { tryParseAmount } from 'state/swap/v3/hooks';
@@ -22,6 +22,7 @@ import {
 import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
 import { TransactionType } from 'models/enums';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -249,6 +250,7 @@ const AddGammaLiquidity: React.FC<{
       addTransaction(wrapResponse, {
         summary,
         type: TransactionType.WRAP,
+        tokens: [Token.ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {

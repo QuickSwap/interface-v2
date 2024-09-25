@@ -17,7 +17,7 @@ import {
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import './ICHILPItemDetails/index.scss';
-import { ETHER, JSBI } from '@uniswap/sdk';
+import { ETHER, JSBI, Token } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
@@ -30,6 +30,7 @@ import {
 } from 'hooks/useICHIData';
 import { BigNumber } from 'ethers';
 import { TransactionType } from 'models/enums';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IncreaseICHILiquidityModalProps {
   open: boolean;
@@ -148,6 +149,7 @@ export default function IncreaseICHILiquidityModal({
       addTransaction(wrapResponse, {
         summary,
         type: TransactionType.WRAP,
+        tokens: [Token.ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
