@@ -25,7 +25,7 @@ const MeldModal: React.FC<MeldModalProps> = ({ open, onClose }) => {
           height='692px'
           src={`${process.env.REACT_APP_MELD_URL}/?publicKey=${
             process.env.REACT_APP_MELD_KEY
-          }&destinationCurrencyCode=MATIC${
+          }&destinationCurrencyCode=POL${
             account ? `&walletAddress=${account}` : ''
           }`}
           width='100%'

@@ -561,3 +561,11 @@
     margin: 0 -12px;
   }
 }
+
+.mobile_cover_social_list {
+  display: flex;
+  flex-wrap: wrap;
+  z-index: 10;
+  position: relative;
+  gap: 30px;
+}
