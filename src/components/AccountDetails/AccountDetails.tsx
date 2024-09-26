@@ -155,14 +155,19 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
   const transactions = useAllTransactions();
   console.log('transactionstransactions', transactions);
   const updatedTransactions = useMemo(() => {
-    return Object.values(transactions).map((item) => ({
-      desc: item.summary,
-      type: item.type,
-      title: renderTitle(item.type || TransactionType.TRANSACTION),
-      time: timeDiff(item.confirmedTime || 0),
-      approval: item.approval,
-      tokens: item?.tokens,
-    }));
+    return Object.values(transactions)
+      .sort(
+        (item1, item2) =>
+          (item2.confirmedTime || 0) - (item1.confirmedTime || 0),
+      )
+      .map((item) => ({
+        desc: item.summary,
+        type: item.type,
+        title: renderTitle(item.type || TransactionType.TRANSACTION),
+        time: timeDiff(item.confirmedTime || 0),
+        approval: item.approval,
+        tokens: item?.tokens,
+      }));
   }, [transactions]);
   const { chainId, account, provider } = useActiveWeb3React();
   const { disconnect } = useDisconnect();
