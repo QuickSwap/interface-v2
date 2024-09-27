@@ -269,7 +269,6 @@ export default function IncreaseUnipilotLiquidityModal({
     token1isWETH,
   ]);
 
-
   const addUnipilotLiquidity = async () => {
     if (!uniPilotVaultContract || !account) return;
     setAttemptingTxn(true);
