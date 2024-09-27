@@ -1523,8 +1523,6 @@ export const SUGGESTED_BASES: {
   ],
   [ChainId.DOGECHAIN]: [
     ETHER[ChainId.DOGECHAIN],
-    WBTC[ChainId.DOGECHAIN],
-    MI[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
     USDO[ChainId.DOGECHAIN],
