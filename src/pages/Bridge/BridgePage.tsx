@@ -13,11 +13,14 @@ import Owlto from 'assets/images/bridge/Owlto.webp';
 import rango from 'assets/images/bridge/rango.svg';
 import Celer from 'assets/images/bridge/Celer.webp';
 import Orbiter from 'assets/images/bridge/Orbiter.webp';
+import Nitro from 'assets/images/bridge/Nitro.webp';
+import Galaxy from 'assets/images/bridge/Galaxy.webp';
 import Image505 from 'assets/images/bridge/Image505.webp';
 import polygon from 'assets/images/bridge/polygon.svg';
 import image525 from 'assets/images/bridge/Image525.webp';
 import Image510 from 'assets/images/bridge/Image510.webp';
 import Image511 from 'assets/images/bridge/Image511.webp';
+import Dogechain from 'assets/images/bridge/dog_coin.webp';
 import finance from 'assets/images/bridge/finance.svg';
 import layer from 'assets/images/bridge/layer.svg';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
@@ -82,6 +85,11 @@ const BridgePage: React.FC = ({}) => {
       externalLink: 'https://www.orbiter.finance/',
     },
     {
+      image: Nitro,
+      chains: [eth, polygon, image525, Image505, Image511, Dogechain],
+      externalLink: 'https://app.routernitro.com/swap',
+    },
+    {
       image: finance,
       chains: [eth, polygon, image525],
       externalLink: 'https://app.xy.finance/',
@@ -101,6 +109,12 @@ const BridgePage: React.FC = ({}) => {
       chains: [eth, polygon, image525],
       isSmallImage: true,
       externalLink: 'https://app.hop.exchange/',
+    },
+    {
+      image: Galaxy,
+      chains: [eth, polygon, Image505],
+      isSmallImage: true,
+      externalLink: 'https://galaxy.exchange/swap',
     },
   ];
 

@@ -50,7 +50,7 @@ const CommunityBlock: React.FC = ({}) => {
       title: 'Announcements',
     },
     {
-      link: 'https://discord.gg/dSMd7AFH36',
+      link: 'https://discord.gg/aMEzjcVM',
       icon: <DiscordIcon />,
       title: 'Discord',
     },

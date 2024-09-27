@@ -92,12 +92,10 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showLending = config['lending']['available'];
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
-  const showSafe = config['safe']['available'];
   const showPerps = config['perps']['available'];
   const showHydra = config['hydra']['available'];
   const showPerpsV2 = config['perpsV2']['available'];
   const showBonds = config['bonds']['available'];
-  const showDappOS = config['dappos']['available'];
   const showEarn = showFarm && showBonds;
   const menuItems: Array<HeaderMenuItem> = [];
   const isPerpsDropdown =
@@ -151,12 +149,12 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   };
   const hydraItem = {
     link: '/hydra',
-    text: 'Hydra',
+    text: chainId === ChainId.ZKEVM ? 'Hydra' : 'Perps',
     id: 'hydra-page-link',
     isExternal: true,
     externalLink: process?.env?.REACT_APP_HYDRA_URL || '',
     onClick: async () => {
-      if (chainId !== ChainId.ZKEVM) {
+      if (!showHydra) {
         switchNetwork(ChainId.ZKEVM);
       }
       if (process.env.REACT_APP_HYDRA_URL) {

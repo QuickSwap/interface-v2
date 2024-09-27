@@ -333,6 +333,8 @@
     }
 
     .cover_social_list {
+      z-index: 10;
+      position: relative;
       @media screen and (max-width: '900px') {
         justify-content: center;
       }

@@ -193,7 +193,8 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   useEffect(() => {
     getCurrentBalance();
-  }, [account, provider]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
 
   const handleClose = () => {
     setOpen(false);

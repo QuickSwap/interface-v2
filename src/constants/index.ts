@@ -2336,6 +2336,7 @@ export const IchiVaults: {
     '0x20268C918a6873aBB44d7f53A4Eb92a968Bb255b',
     '0xe3a2F6b642cBB29F7D5A82afa83a48b9c4E79244',
     '0xD7c329ce757b24a43E9767980CE568fDA14C7e95',
+    '0xF497556DC0e3E251CdFA6eA87772A54B8e0bc5a8',
   ],
   [ChainId.ZKEVM]: [
     '0x423382e084f1d1d180bec638bc64cc6408896c3c',
@@ -2569,11 +2570,9 @@ export const GlobalValue = {
         EMPTY[ChainId.DOGECHAIN],
         USDC[ChainId.DOGECHAIN],
         USDT[ChainId.DOGECHAIN],
-        WBTC[ChainId.DOGECHAIN],
         DAI[ChainId.DOGECHAIN],
         ETHER[ChainId.DOGECHAIN],
         MATIC[ChainId.DOGECHAIN],
-        MI[ChainId.DOGECHAIN],
         DC[ChainId.DOGECHAIN],
         DD[ChainId.DOGECHAIN],
         dDD[ChainId.DOGECHAIN],
@@ -2660,7 +2659,6 @@ export const GlobalData = {
       USDC[ChainId.DOGECHAIN],
       USDT[ChainId.DOGECHAIN],
       DAI[ChainId.ZKEVM],
-      MI[ChainId.DOGECHAIN],
     ],
     [ChainId.DOEGCHAIN_TESTNET]: [],
     [ChainId.ZKEVM]: [
