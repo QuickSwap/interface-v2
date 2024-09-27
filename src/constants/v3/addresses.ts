@@ -691,13 +691,6 @@ export const WBTC: { [chainId: number]: Token } = {
     'WBTC',
     'Wrapped BTC',
   ),
-  [ChainId.DOGECHAIN]: new Token(
-    ChainId.DOGECHAIN,
-    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',
-    8,
-    'WBTC',
-    'Wrapped Bitcoin',
-  ),
   [ChainId.ZKEVM]: new Token(
     ChainId.ZKEVM,
     '0xEA034fb02eB1808C2cc3adbC15f447B93CbE08e1',
@@ -848,13 +841,6 @@ export const MI: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1',
-    18,
-    'MAI',
-    'miMATIC',
-  ),
-  [ChainId.DOGECHAIN]: new Token(
-    ChainId.DOGECHAIN,
-    '0xb84Df10966a5D7e1ab46D9276F55d57bD336AFC7',
     18,
     'MAI',
     'miMATIC',
@@ -1523,8 +1509,6 @@ export const SUGGESTED_BASES: {
   ],
   [ChainId.DOGECHAIN]: [
     ETHER[ChainId.DOGECHAIN],
-    WBTC[ChainId.DOGECHAIN],
-    MI[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
     USDO[ChainId.DOGECHAIN],
