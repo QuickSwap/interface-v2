@@ -1,112 +1,135 @@
-import React, { useState } from 'react';
-import Chart from 'react-apexcharts';
-import { Box } from '@material-ui/core';
+import React, { useState, useMemo } from 'react';
+import { Box, duration } from '@material-ui/core';
 import 'pages/styles/dragon.scss';
-const CHART_DURATION_TEXTS = ['1D', '1W', '1M', 'All'];
+import { GlobalConst, GlobalData } from 'constants/index';
+import { getLimitedData } from 'utils';
+import { useActiveWeb3React } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { AreaChart } from 'components';
+import {
+  getQuickBurnChartDates,
+  appendedZeroChartData,
+  formatNumber,
+} from 'utils';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
+import { DLQUICK } from 'constants/v3/addresses';
 
 const QuickBurnChart: React.FC = () => {
-  const [chartType, setChartType] = useState(0);
-  const options = {
-    chart: {
-      sparkline: {
-        enabled: false,
-      },
-      toolbar: {
-        show: false,
-      },
-      width: '100%',
-      zoom: {
-        enabled: false,
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      width: 2,
-      colors: ['#3e92fe'],
-      curve: 'smooth' as any,
-    },
-    markers: {
-      colors: ['#3e92fe'],
-      strokeWidth: 0,
-    },
-    fill: {
-      type: 'gradient',
-      colors: ['#448aff'],
-      gradient: {
-        gradientToColors: ['#004ce6'],
-        shadeIntensity: 1,
-        opacityFrom: 0.5,
-        opacityTo: 0.15,
-        stops: [0, 100],
-      },
-    },
-    xaxis: {
-      categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-      ],
-    },
-    grid: {
-      show: false,
-      padding: {
-        left: 0,
-        right: 0,
-      },
-      xaxis: {
-        lines: {
-          show: false,
-        },
-      },
-    },
-    legend: {
-      show: false,
-    },
+  const { chainId } = useActiveWeb3React();
+  const quickToken = DLQUICK[chainId];
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
+
+  const [durationIndex, setDurationIndex] = useState(
+    GlobalConst.quickBurnChart.ONE_DAY_CHART,
+  );
+
+  const fetchQuickBurnChartData = async () => {
+    const res = await fetch(
+      `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/quick-burn/${durationIndex}?chainId=${chainId}`,
+    );
+    if (!res.ok) {
+      return { chartData: [], globals: null };
+    }
+    const pairsData = await res.json();
+    const chartData =
+      pairsData && pairsData.data && pairsData.data.chartData.length > 0
+        ? pairsData.data.chartData
+        : [];
+    const appendZeroChartData = appendedZeroChartData(chartData, durationIndex);
+    const globals =
+      pairsData && pairsData.data && pairsData.data.globals
+        ? pairsData.data.globals
+        : null;
+    return { chartData: appendZeroChartData, globals };
   };
 
-  const series = [
-    {
-      name: 'Desktops',
-      data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
-    },
-  ];
+  const { isLoading, data: chartData } = useQuery({
+    queryKey: ['fetchQuickBurnChartData', durationIndex, chainId],
+    queryFn: fetchQuickBurnChartData,
+    refetchInterval: 60000,
+  });
+
+  const yAxisValues = useMemo(() => {
+    if (chartData && chartData.chartData) {
+      const amounts: number[] = chartData.chartData.map((value: any) =>
+        Number(value.amount),
+      );
+
+      const minVolume = Math.floor(Math.min(...amounts));
+      const maxVolume = Math.ceil(Math.max(...amounts));
+
+      const values: any[] = [];
+      // show 10 values in the y axis of the graph
+      const step = (maxVolume - minVolume) / 10;
+      if (step > 0) {
+        for (let i = maxVolume; i >= minVolume; i -= step) {
+          values.push(Math.floor(i));
+        }
+      } else {
+        values.push(minVolume);
+      }
+      return values;
+    } else {
+      return undefined;
+    }
+  }, [chartData]);
 
   return (
     <Box className='dragonLairBg'>
       <Box className='dragonQuickBurnChart'>
         <Box className='sub-title'>
           <h5>QUICK Burn Data</h5>
-          <small>Total Burned: 245,244 QUICK • $101,231.12</small>
+          <small>
+            Total Burned:{' '}
+            {chartData && chartData.globals
+              ? formatNumber(chartData.globals.totalBurned)
+              : '0'}{' '}
+            QUICK • $
+            {formatNumber(
+              Number(
+                chartData && chartData.globals
+                  ? chartData.globals.totalBurned
+                  : 0,
+              ) * quickPrice,
+            )}
+          </small>
         </Box>
         <Box className='chart-type'>
-          {CHART_DURATION_TEXTS.map((type, index) => (
+          {GlobalData.quickBurns.CHART_DURATIONS.map((value, index) => (
             <Box
               key={`chart-type-${index}`}
               className={`chart-type-button ${
-                chartType == index ? 'selected' : 'unselected'
+                value === durationIndex ? 'selected' : 'unselected'
               } `}
-              onClick={() => setChartType(index)}
+              onClick={() => setDurationIndex(value)}
             >
-              {type}
+              {GlobalData.quickBurns.CHART_DURATION_TEXTS[index]}
             </Box>
           ))}
         </Box>
         <Box>
-          <Chart
-            options={options}
-            series={series}
-            type='area'
-            width='100%'
-            height={250}
-          />
+          {isLoading ? (
+            <Skeleton variant='rect' width='100%' height={223} />
+          ) : chartData && chartData.chartData ? (
+            <AreaChart
+              data={chartData.chartData.map((value: any) =>
+                Number(value.amount),
+              )}
+              strokeColor={'#3e92fe'}
+              gradientColor={'#448aff'}
+              yAxisValues={yAxisValues}
+              dates={chartData.chartData.map((value: any) => value.timestamp)}
+              width='100%'
+              height={250}
+              categories={getQuickBurnChartDates(
+                chartData.chartData,
+                durationIndex,
+              )}
+            />
+          ) : (
+            <></>
+          )}
         </Box>
       </Box>
     </Box>

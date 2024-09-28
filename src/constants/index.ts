@@ -307,6 +307,13 @@ export const GlobalConst = {
     ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
   },
+  quickBurnChart: {
+    ONE_DAY_CHART: 1,
+    ONE_WEEK_CHART: 2,
+    ONE_MONTH_CHART: 3,
+    ALL_CHART: 4,
+    CHART_COUNT: 60, //limit chart items not more than 60
+  },
   v2FarmTab: {
     LPFARM: 'lpFarm',
     DUALFARM: 'DualFarm',
@@ -2794,6 +2801,15 @@ export const GlobalData = {
       [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
     ],
     [ChainId.LAYERX]: [],
+  },
+  quickBurns: {
+    CHART_DURATIONS: [
+      GlobalConst.quickBurnChart.ONE_DAY_CHART,
+      GlobalConst.quickBurnChart.ONE_WEEK_CHART,
+      GlobalConst.quickBurnChart.ONE_MONTH_CHART,
+      GlobalConst.quickBurnChart.ALL_CHART,
+    ],
+    CHART_DURATION_TEXTS: ['1D', '1W', '1M', 'All'],
   },
 };
 
