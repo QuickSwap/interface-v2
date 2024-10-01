@@ -27,6 +27,7 @@ import { ChainId } from '@uniswap/sdk';
 import { OLD_QUICK } from 'constants/v3/addresses';
 import { getConfig } from 'config/index';
 import { useHistory } from 'react-router-dom';
+import { TransactionType } from 'models/enums';
 
 interface ConvertQUICKPageProps {
   isWidget?: boolean;
@@ -115,6 +116,7 @@ const ConvertQUICKPage: React.FC<ConvertQUICKPageProps> = ({ isWidget }) => {
           setTxHash('');
           addTransaction(response, {
             summary: quickConvertingText,
+            type: TransactionType.SWAPPED,
           });
           try {
             const tx = await response.wait();

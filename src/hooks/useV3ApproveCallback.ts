@@ -23,6 +23,7 @@ import { useV3TokenAllowance } from './useTokenAllowance';
 import { calculateGasMargin } from 'utils';
 import { MergedZap } from 'state/zap/actions';
 import { useIsInfiniteApproval } from 'state/user/hooks';
+import { TransactionType } from 'models/enums';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -130,6 +131,7 @@ export function useApproveCallback(
           summary:
             `Approve ` + (amountToApprove.currency.symbol || `LP-tokens`),
           approval: { tokenAddress: token.address, spender: spender },
+          type: TransactionType.APPROVED,
         });
         try {
           await response.wait();

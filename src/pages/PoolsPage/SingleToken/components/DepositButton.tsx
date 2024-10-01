@@ -19,7 +19,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { ETHER } from '@uniswap/sdk';
+import { Currency, ETHER, Token } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
 import { useWETHContract } from 'hooks/useContract';
 import { calculateGasMargin, formatNumber } from 'utils';
@@ -29,6 +29,8 @@ import {
   useICHIVaultShare,
 } from 'hooks/useICHIData';
 import Loader from 'components/Loader';
+import { TransactionType } from 'models/enums';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 const SingleTokenDepositButton: React.FC = () => {
   const { t } = useTranslation();
@@ -74,6 +76,8 @@ const SingleTokenDepositButton: React.FC = () => {
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [Token.ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -154,6 +158,7 @@ const SingleTokenDepositButton: React.FC = () => {
       }
       addTransaction(txn, {
         summary,
+        type: isApproved ? TransactionType.SEND : TransactionType.APPROVED,
       });
       const receipt = await txn.wait();
       finalizedTransaction(receipt, {

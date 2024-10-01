@@ -37,6 +37,7 @@ import ZapCurrencyInput from 'components/ZapCurrencyInput';
 import { useActiveWeb3React } from 'hooks';
 import { BondToken } from 'types/bond';
 import { useCurrencyFromSymbol } from 'hooks/Tokens';
+import { TransactionType } from 'models/enums';
 
 interface SoulZapAddLiquidityProps {
   open: boolean;
@@ -140,6 +141,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
               undefined,
               {
                 summary: t('zapBond'),
+                type: TransactionType.ZAP,
               },
               res.txHash,
             );

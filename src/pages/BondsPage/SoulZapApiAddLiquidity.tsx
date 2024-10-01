@@ -35,6 +35,7 @@ import { parseUnits } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
 import { useSoulZapLPApiQuote } from 'state/zap/soulZapApi/useSoulZapLPApiQuote';
 import { useCurrencyFromSymbol } from 'hooks/Tokens';
+import { TransactionType } from 'models/enums';
 
 interface SoulZapApiAddLiquidityProps {
   open: boolean;
@@ -154,6 +155,7 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
             undefined,
             {
               summary: t('zapBond'),
+              type: TransactionType.ZAP,
             },
             res.hash,
           );

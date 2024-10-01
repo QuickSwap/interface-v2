@@ -25,6 +25,7 @@ import useTransactionDeadline from './useTransactionDeadline';
 import useENS from './useENS';
 import { Version } from './useToggledVersion';
 import { liquidityHubAnalytics } from 'components/Swap/LiquidityHub';
+import { TransactionType } from 'models/enums';
 
 export enum SwapCallbackState {
   INVALID,
@@ -300,6 +301,7 @@ export function useSwapCallback(
 
             addTransaction(response, {
               summary: withVersion,
+              type: TransactionType.SWAPPED,
             });
 
             return { response, summary: withVersion };

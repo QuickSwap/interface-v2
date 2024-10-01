@@ -17,6 +17,7 @@ import 'components/styles/StakeModal.scss';
 import { useTranslation } from 'react-i18next';
 import { DLQUICK, OLD_QUICK } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
+import { TransactionType } from 'models/enums';
 
 interface StakeQuickModalProps {
   open: boolean;
@@ -82,6 +83,7 @@ const StakeQuickModal: React.FC<StakeQuickModalProps> = ({
           );
           addTransaction(response, {
             summary: `${t('stake')} ${quickToken?.symbol}`,
+            type: TransactionType.STAKE,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {

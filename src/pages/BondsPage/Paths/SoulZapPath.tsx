@@ -27,6 +27,7 @@ import { getFixedValue, getLiquidityDEX } from 'utils';
 import DisplayValues from '../DisplayValues';
 import GetLPButton from '../GetLPButton';
 import { useTranslation } from 'react-i18next';
+import { TransactionType } from 'models/enums';
 
 const SoulZapPath = ({
   purchasePath,
@@ -117,6 +118,7 @@ const SoulZapPath = ({
               undefined,
               {
                 summary: t('zapBond'),
+                type: TransactionType.ZAP,
               },
               res.txHash,
             );
