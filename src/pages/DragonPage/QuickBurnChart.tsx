@@ -1,23 +1,19 @@
 import React, { useState, useMemo } from 'react';
-import { Box, duration } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import 'pages/styles/dragon.scss';
 import { GlobalConst, GlobalData } from 'constants/index';
-import { getLimitedData } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
 import Skeleton from '@material-ui/lab/Skeleton';
 import AreaTimelineChart from 'components/AreaTimelineChart';
-import {
-  getQuickBurnChartDates,
-  appendedZeroChartData,
-  formatNumber,
-} from 'utils';
+import { appendedZeroChartData, formatNumber } from 'utils';
+import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { DLQUICK } from 'constants/v3/addresses';
 
 const QuickBurnChart: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const quickToken = DLQUICK[chainId];
-
+  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.quickBurnChart.ONE_DAY_CHART,
   );
@@ -83,7 +79,14 @@ const QuickBurnChart: React.FC = () => {
             {chartData && chartData.globals
               ? formatNumber(chartData.globals.totalBurned)
               : '0'}{' '}
-            QUICK
+            QUICK • $
+            {formatNumber(
+              Number(
+                chartData && chartData.globals
+                  ? chartData.globals.totalBurned
+                  : 0,
+              ) * quickPrice,
+            )}
           </small>
         </Box>
         <Box className='chart-type'>
