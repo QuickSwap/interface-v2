@@ -6,19 +6,17 @@ import { getLimitedData } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { AreaChart } from 'components';
+import AreaTimelineChart from 'components/AreaTimelineChart';
 import {
   getQuickBurnChartDates,
   appendedZeroChartData,
   formatNumber,
 } from 'utils';
-import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { DLQUICK } from 'constants/v3/addresses';
 
 const QuickBurnChart: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const quickToken = DLQUICK[chainId];
-  const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
 
   const [durationIndex, setDurationIndex] = useState(
     GlobalConst.quickBurnChart.ONE_DAY_CHART,
@@ -53,7 +51,7 @@ const QuickBurnChart: React.FC = () => {
   const yAxisValues = useMemo(() => {
     if (chartData && chartData.chartData) {
       const amounts: number[] = chartData.chartData.map((value: any) =>
-        Number(value.amount),
+        Number(value[1]),
       );
 
       const minVolume = Math.floor(Math.min(...amounts));
@@ -85,14 +83,7 @@ const QuickBurnChart: React.FC = () => {
             {chartData && chartData.globals
               ? formatNumber(chartData.globals.totalBurned)
               : '0'}{' '}
-            QUICK • $
-            {formatNumber(
-              Number(
-                chartData && chartData.globals
-                  ? chartData.globals.totalBurned
-                  : 0,
-              ) * quickPrice,
-            )}
+            QUICK
           </small>
         </Box>
         <Box className='chart-type'>
@@ -112,20 +103,13 @@ const QuickBurnChart: React.FC = () => {
           {isLoading ? (
             <Skeleton variant='rect' width='100%' height={223} />
           ) : chartData && chartData.chartData ? (
-            <AreaChart
-              data={chartData.chartData.map((value: any) =>
-                Number(value.amount),
-              )}
-              strokeColor={'#3e92fe'}
-              gradientColor={'#448aff'}
-              yAxisValues={yAxisValues}
-              dates={chartData.chartData.map((value: any) => value.timestamp)}
+            <AreaTimelineChart
               width='100%'
               height={250}
-              categories={getQuickBurnChartDates(
-                chartData.chartData,
-                durationIndex,
-              )}
+              strokeColor={'#3e92fe'}
+              gradientColor={'#448aff'}
+              data={chartData.chartData}
+              yAxisValues={yAxisValues}
             />
           ) : (
             <></>
