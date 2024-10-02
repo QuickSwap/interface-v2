@@ -14,7 +14,7 @@ import {
 import { useActiveWeb3React } from 'hooks';
 import JSBI from 'jsbi';
 import { TransactionResponse } from '@ethersproject/providers';
-import { FarmingType } from '../models/enums';
+import { FarmingType, TransactionType } from '../models/enums';
 import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
 import { useV3StakeData } from 'state/farms/hooks';
@@ -202,6 +202,7 @@ export function useFarmingHandlers() {
 
         addTransaction(result, {
           summary: t('undepositNFT', { nftID: token }),
+          type: TransactionType.UNDEPOSIT_NFT,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -317,6 +318,7 @@ export function useFarmingHandlers() {
 
         addTransaction(result, {
           summary: t('claimingReward'),
+          type: TransactionType.CLAIMED_REWARDS,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -383,6 +385,7 @@ export function useFarmingHandlers() {
 
         addTransaction(result, {
           summary: t('withdrawingNFT', { nftID: token }) + '!',
+          type: TransactionType.RECEIVED,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -460,6 +463,7 @@ export function useFarmingHandlers() {
 
         addTransaction(result, {
           summary: `${t('nftDepositing', { nftID: selectedNFT })}!`,
+          type: TransactionType.DEPOSIT_NFT,
         });
 
         updateV3Stake({ txHash: result.hash });
@@ -531,6 +535,7 @@ export function useFarmingHandlers() {
 
           addTransaction(result, {
             summary: `${t('nftApproving', { nftID: selectedNFT })}!`,
+            type: TransactionType.APPROVED,
           });
 
           updateV3Stake({ txHash: result.hash });
@@ -597,6 +602,7 @@ export function useFarmingHandlers() {
 
         addTransaction(result, {
           summary: t('claimingReward'),
+          type: TransactionType.CLAIMED_REWARDS,
         });
 
         updateV3Stake({ txHash: result.hash });

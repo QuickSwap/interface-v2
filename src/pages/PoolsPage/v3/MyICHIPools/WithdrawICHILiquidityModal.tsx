@@ -25,6 +25,7 @@ import { JSBI } from '@uniswap/sdk';
 import { ICHIVault } from 'hooks/useICHIData';
 import { SupportedDex, withdraw } from '@ichidao/ichi-vaults-sdk';
 import { BigNumber } from 'ethers';
+import { TransactionType } from 'models/enums';
 
 interface WithdrawICHILiquidityModalProps {
   open: boolean;
@@ -94,6 +95,7 @@ export default function WithdrawICHILiquidityModal({
       setTxnHash(response.hash);
       addTransaction(response, {
         summary: t('withdrawingICHILiquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

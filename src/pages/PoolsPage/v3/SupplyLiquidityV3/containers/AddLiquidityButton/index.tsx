@@ -35,7 +35,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ChainId, ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -64,6 +64,9 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import { ZERO } from 'v3lib/utils';
 import { Presets } from 'state/mint/v3/reducer';
+import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -313,6 +316,8 @@ export function AddLiquidityButton({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -379,6 +384,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -478,6 +485,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -581,6 +590,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -632,7 +643,6 @@ export function AddLiquidityButton({
       setAttemptingTxn(true);
 
       const zeroCurrencyAmount = CurrencyAmount.fromRawAmount(quoteCurrency, 0);
-      console.log(zeroCurrencyAmount.numerator.toString());
 
       try {
         const estimatedGas = await defiedgeStrategyContract.estimateGas.mint(
@@ -689,6 +699,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -774,6 +786,13 @@ export function AddLiquidityButton({
                     });
                 addTransaction(response, {
                   summary,
+                  type: TransactionType.ADDED_LIQUIDITY,
+                  tokens: [
+                    ((baseCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                    ((quoteCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                  ],
                 });
 
                 dispatch(setAddLiquidityTxHash({ txHash: response.hash }));

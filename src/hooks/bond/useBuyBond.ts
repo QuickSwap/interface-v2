@@ -10,6 +10,7 @@ import { parseUnits } from 'ethers/lib/utils';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useActiveWeb3React } from 'hooks';
 import { getFixedValue } from 'utils';
+import { TransactionType } from 'models/enums';
 
 const DEFAULT_SLIPPAGE = 102; // Maximum of 2% slippage when buying Bill
 // Buy a Bill
@@ -43,6 +44,7 @@ const useBuyBond = (
     );
     addTransaction(tx, {
       summary: t('buyBond'),
+      type: TransactionType.SEND,
     });
     const resp = await tx.wait();
     finalizeTransaction(resp, {

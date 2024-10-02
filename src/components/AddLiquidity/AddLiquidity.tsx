@@ -58,6 +58,7 @@ import { useParams } from 'react-router-dom';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { TransactionType } from 'models/enums';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
@@ -351,6 +352,13 @@ const AddLiquidity: React.FC<{
 
           addTransaction(response, {
             summary,
+            type: TransactionType.ADDED_LIQUIDITY,
+            tokens: [
+              wrappedCurrency(currencies[Field.CURRENCY_A], chainId)?.address ??
+                '',
+              wrappedCurrency(currencies[Field.CURRENCY_B], chainId)?.address ??
+                '',
+            ],
           });
 
           setTxHash(response.hash);

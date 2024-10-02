@@ -25,6 +25,7 @@ import {
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { JSBI, Token } from '@uniswap/sdk';
 import { useTokenBalance } from 'state/wallet/hooks';
+import { TransactionType } from 'models/enums';
 
 interface WithdrawGammaLiquidityModalProps {
   open: boolean;
@@ -112,6 +113,7 @@ export default function WithdrawGammaLiquidityModal({
       setTxnHash(response.hash);
       addTransaction(response, {
         summary: t('withdrawingGammaLiquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

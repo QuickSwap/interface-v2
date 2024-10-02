@@ -23,7 +23,7 @@ import {
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import '../GammaLPItemDetails/index.scss';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useGammaUNIProxyContract, useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
@@ -33,6 +33,8 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { TransactionType } from 'models/enums';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IncreaseGammaLiquidityModalProps {
   open: boolean;
@@ -274,6 +276,8 @@ export default function IncreaseGammaLiquidityModal({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [Token.ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -315,6 +319,8 @@ export default function IncreaseGammaLiquidityModal({
       setTxPending(true);
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [position.token0?.address, position.token1?.address],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

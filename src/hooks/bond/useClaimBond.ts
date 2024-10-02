@@ -6,6 +6,7 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { useTranslation } from 'react-i18next';
+import { TransactionType } from 'models/enums';
 
 // Claim a Bond
 const useClaimBond = (
@@ -21,7 +22,10 @@ const useClaimBond = (
   const handleClaimBill = useCallback(async () => {
     if (!bondContract) return;
     const tx = await bondContract.batchRedeem(billIds);
-    addTransaction(tx, { summary: t('claimBond') });
+    addTransaction(tx, {
+      summary: t('claimBond'),
+      type: TransactionType.CLAIM_BOND,
+    });
     const resp = await tx.wait();
     finalizeTransaction(resp, {
       summary: t('claimBond'),

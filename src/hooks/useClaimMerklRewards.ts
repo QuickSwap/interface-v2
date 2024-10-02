@@ -8,6 +8,7 @@ import { useActiveWeb3React } from 'hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { TransactionType } from 'models/enums';
 
 export const useClaimMerklRewards = () => {
   const { t } = useTranslation();
@@ -56,6 +57,7 @@ export const useClaimMerklRewards = () => {
       );
       addTransaction(response, {
         summary: t('claimingReward'),
+        type: TransactionType.CLAIMED_REWARDS,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
