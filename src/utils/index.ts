@@ -669,66 +669,45 @@ export function getLimitedData(data: any[], count: number) {
   return newArray;
 }
 export function appendedZeroChartData(data: any[], durationIndex) {
-  let newArray: any[] = [];
+  let newArray: number[][] = [];
   const now = dayjs().unix();
+  let sum = 0;
+  data.map((value) => {
+    sum += Number(value.amount);
+    newArray.push([Number(value.timestamp * 1000), sum]);
+  });
+
   if (durationIndex === GlobalConst.quickBurnChart.ONE_DAY_CHART) {
     const minTimestamp = now - 86400;
-    const step = 3600;
-    for (let i = 0; i < 24; i++) {
-      const timestamp = minTimestamp + i * step;
-      newArray.push({ amount: '0', timestamp });
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
     }
-    data.map((value) => {
-      const index = Math.floor((Number(value.timestamp) - minTimestamp) / step);
-      newArray[index].amount = (
-        Number(newArray[index].amount) + Number(value.amount)
-      ).toString();
-    });
   } else if (durationIndex === GlobalConst.quickBurnChart.ONE_WEEK_CHART) {
     const minTimestamp = now - 86400 * 7;
-    const step = Math.floor((86400 * 7) / 21);
-    for (let i = 0; i < 21; i++) {
-      const timestamp = minTimestamp + i * step;
-      newArray.push({ amount: '0', timestamp });
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
     }
-    data.map((value) => {
-      const index = Math.floor((Number(value.timestamp) - minTimestamp) / step);
-      newArray[index].amount = (
-        Number(newArray[index].amount) + Number(value.amount)
-      ).toString();
-    });
   } else if (durationIndex === GlobalConst.quickBurnChart.ONE_MONTH_CHART) {
-    // 31
-    const minTimestamp = now - 86400 * 31;
-    const step = 86400;
-    for (let i = 0; i < 31; i++) {
-      const timestamp = minTimestamp + i * step;
-      newArray.push({ amount: '0', timestamp });
+    const minTimestamp = now - 86400 * 30;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
     }
-    data.map((value) => {
-      const index = Math.floor((Number(value.timestamp) - minTimestamp) / step);
-      newArray[index].amount = (
-        Number(newArray[index].amount) + Number(value.amount)
-      ).toString();
-    });
   } else {
-    //ALL
-    const minTimestamp = Number(data[0].timestamp);
-    const maxTimestamp = now;
-    const step = (maxTimestamp - minTimestamp) / 31;
-    // 31
-    for (let i = 0; i < 31; i++) {
-      const timestamp = Math.floor(minTimestamp + step * i);
-      newArray.push({ amount: '0', timestamp });
-    }
-    data.map((value) => {
-      const index = Math.floor((Number(value.timestamp) - minTimestamp) / step);
-      newArray[index].amount = (
-        Number(newArray[index].amount) + Number(value.amount)
-      ).toString();
-    });
+    newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
   }
-  newArray = newArray.sort((a, b) => a.timestamp - b.timestamp);
+  newArray = newArray.sort((a, b) => a[0] - b[0]);
   return newArray;
 }
 
