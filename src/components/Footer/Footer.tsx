@@ -176,35 +176,23 @@ const Footer: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
-        {tabletWindowSize && (
-          <Box>
-            <Typography
-              style={{
-                marginBottom: '16px',
-                fontSize: '12px',
-                color: '#6880a3',
-              }}
-            >
-              Terms of Use
-            </Typography>
-          </Box>
-        )}
         <Box
           className={`copyrightWrapper ${
             tabletWindowSize ? 'copyright-mobile' : ''
           }`}
         >
-          <small className='text-secondary'>
-            © {copyrightYear} QuickSwap. &nbsp;
-          </small>
-          <small className='text-secondary'>
-            <Link className='footer-link' to='/tos'>
-              {t('allRights')}
-            </Link>
-          </small>
-          {!tabletWindowSize && pathname === '/' && (
-            <Box className='fake-community-container'>&nbsp;</Box>
-          )}
+          <Box>
+            <small className='text-secondary'>
+              © {copyrightYear} QuickSwap. &nbsp;
+            </small>
+          </Box>
+          <Box>
+            <small className='text-secondary'>
+              <Link className='footer-link' to='/tos'>
+                {t('termsofuse')}
+              </Link>
+            </small>
+          </Box>
         </Box>
       </Box>
     </Box>
