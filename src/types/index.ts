@@ -47,6 +47,8 @@ export interface LairInfo {
 
   totalQuickBalance: TokenAmount;
 
+  quickTotalSupply: TokenAmount;
+
   dQuickTotalSupply: TokenAmount;
 
   oneDayVol: number;
