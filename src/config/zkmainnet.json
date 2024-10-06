@@ -3,6 +3,7 @@
   "v2": false,
   "rpc": "https://zkevm-rpc.com",
   "blockExplorer": "https://zkevm.polygonscan.com",
+  "bridgeUrl": "https://portal.polygon.technology/bridge",
   "networkName": "Polygon zkEVM",
   "aprAPINetwork": "zkevm",
   "chainId": 1101,
@@ -13,6 +14,15 @@
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/polygon_cover_img.webp",
+    "supportedChains": [
+      "/bridge/eth.svg",
+      "/bridge/polygon.svg",
+      "/bridge/zkevm.webp"
+    ],
+    "isBigCoverImg": true
   },
   "swap": {
     "available": true,
@@ -64,6 +74,9 @@
   "perps": {
     "available": true
   },
+  "hydra": {
+    "available": true
+  },
   "perpsV2": {
     "available": false
   },
@@ -89,6 +102,9 @@
     "available": true
   },
   "defiedge": {
+    "available": false
+  },
+  "lpLock": {
     "available": false
   },
   "maxChunks": 70,

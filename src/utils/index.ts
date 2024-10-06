@@ -513,8 +513,9 @@ export function getTokenFromAddress(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (!token) {
-      const commonToken = GlobalValue.tokens.COMMON[chainId].find(
-        (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+      const commonToken = (GlobalValue.tokens as any).COMMON[chainId].find(
+        (token: any) =>
+          token.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       if (!commonToken) {
         return;
@@ -579,6 +580,56 @@ export function getChartDates(chartData: any[] | null, durationIndex: number) {
   }
 }
 
+export function getQuickBurnChartDates(
+  chartData: any[] | null,
+  durationIndex: number,
+) {
+  if (chartData) {
+    const now = dayjs().unix();
+    if (durationIndex === GlobalConst.quickBurnChart.ONE_DAY_CHART) {
+      //hourly
+      const hours: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const hour = formatDateFromTimeStamp(
+          value.timestamp,
+          ind === 1 || ind === chartData.length - 1 ? 'M/D HH' : 'HH',
+        );
+        hours.push(hour);
+      });
+      return hours;
+    } else if (durationIndex === GlobalConst.quickBurnChart.ONE_WEEK_CHART) {
+      const dates: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const dateStr = formatDateFromTimeStamp(
+          Number(value.timestamp),
+          ind % 3 === 0 ? 'M/D H:00' : 'H:00',
+        );
+        dates.push(dateStr);
+      });
+      return dates;
+    } else if (durationIndex === GlobalConst.quickBurnChart.ONE_MONTH_CHART) {
+      const dates: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const dateStr = formatDateFromTimeStamp(Number(value.timestamp), 'M/D');
+        dates.push(dateStr);
+      });
+      return dates;
+    } else {
+      const dates: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const dateStr = formatDateFromTimeStamp(
+          Number(value.timestamp),
+          'YYYY M/D',
+        );
+        dates.push(dateStr);
+      });
+      return dates;
+    }
+  } else {
+    return [];
+  }
+}
+
 export function getChartStartTime(durationIndex: number) {
   const utcEndTime = dayjs.utc();
   const months =
@@ -617,6 +668,48 @@ export function getLimitedData(data: any[], count: number) {
   });
   return newArray;
 }
+export function appendedZeroChartData(data: any[], durationIndex) {
+  let newArray: number[][] = [];
+  const now = dayjs().unix();
+  let sum = 0;
+  data.map((value) => {
+    sum += Number(value.amount);
+    newArray.push([Number(value.timestamp * 1000), sum]);
+  });
+
+  if (durationIndex === GlobalConst.quickBurnChart.ONE_DAY_CHART) {
+    const minTimestamp = now - 86400;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+    }
+  } else if (durationIndex === GlobalConst.quickBurnChart.ONE_WEEK_CHART) {
+    const minTimestamp = now - 86400 * 7;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+    }
+  } else if (durationIndex === GlobalConst.quickBurnChart.ONE_MONTH_CHART) {
+    const minTimestamp = now - 86400 * 30;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+    }
+  } else {
+    newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+  }
+  newArray = newArray.sort((a, b) => a[0] - b[0]);
+  return newArray;
+}
 
 export function getYAXISValuesAnalytics(chartData: any) {
   if (!chartData) return;
@@ -624,7 +717,7 @@ export function getYAXISValuesAnalytics(chartData: any) {
   const minValue = Math.min(...chartData) * 0.99;
   const maxValue = Math.max(...chartData) * 1.01;
   const step = (maxValue - minValue) / 8;
-  const values = [];
+  const values: number[] = [];
   for (let i = 0; i < 9; i++) {
     values.push(maxValue - i * step);
   }

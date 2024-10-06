@@ -1,9 +1,18 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
+
+.from_input {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.to_input {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
 
 .swapBox {
   padding: 16px;
-  border-radius: 10px;
   z-index: 1;
   position: relative;
   text-align: left;
@@ -19,15 +28,18 @@
       position: relative;
       padding-left: 8px;
       & input {
-        color: $textSecondary;
+        color: #fff;
       }
     }
     & .maxWrapper {
-      padding-left: 8px;
+      border-radius: 5px; 
+      border: solid 1px #448aff;
+      padding: 0px 6px;
+      line-height: 1.2;
       cursor: pointer;
       & small {
         color: $primary;
-        font-weight: 600
+        font-size: 10px;
       }
     }
   }
@@ -37,21 +49,22 @@
 }
 .priceShowBox {
   border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0
+  border-bottom-right-radius: 0;
 }
 .currencyButton {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 6px 10px 6px 6px;
   border-radius: 38px;
   & p {
     margin-left: 4px;
+    color: #fff;
   }
 }
 .noCurrency {
   background-image: linear-gradient(105deg, $primary 3%, $blue1);
 }
 .currencySelected {
-  background-color: $grey12;
+  // background-color: $grey12;
 }

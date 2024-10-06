@@ -37,6 +37,7 @@ import {
 import GammaRewarder from 'constants/abis/gamma-rewarder.json';
 import { Interface } from '@ethersproject/abi';
 import QIGammaMasterChef from 'constants/abis/gamma-masterchef1.json';
+import { TransactionType } from 'models/enums';
 
 const V3GammaFarmCardDetails: React.FC<{
   data: any;
@@ -236,6 +237,7 @@ const V3GammaFarmCardDetails: React.FC<{
     }
     addTransaction(response, {
       summary: t('depositliquidity'),
+      type: TransactionType.SEND,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
@@ -283,8 +285,10 @@ const V3GammaFarmCardDetails: React.FC<{
           },
         );
       }
+
       addTransaction(response, {
         summary: t('withdrawliquidity'),
+        type: TransactionType.RECEIVED,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -321,6 +325,7 @@ const V3GammaFarmCardDetails: React.FC<{
       }
       addTransaction(response, {
         summary: t('claimrewards'),
+        type: TransactionType.CLAIMED_REWARDS,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

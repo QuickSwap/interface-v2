@@ -362,7 +362,9 @@ export function SupplyLiquidityV3() {
         />
         <Box mt={4} position='relative'>
           <small className='weight-600'>{t('depositAmounts')}</small>
-          {gammaPair?.withdrawOnly && (
+          {(gammaPair?.withdrawOnly ||
+            liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) && (
             <Box className='v3-deposit-disable-banner'>
               <p>{t('withdrawOnlyVault')}</p>
             </Box>

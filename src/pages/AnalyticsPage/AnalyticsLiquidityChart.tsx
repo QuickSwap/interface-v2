@@ -69,7 +69,7 @@ const AnalyticsLiquidityChart: React.FC<{
       const minVolume = Math.floor(Math.min(...dailyVolumes));
       const maxVolume = Math.ceil(Math.max(...dailyVolumes));
 
-      const values = [];
+      const values: any[] = [];
       // show 10 values in the y axis of the graph
       const step = (maxVolume - minVolume) / 10;
       if (step > 0) {

@@ -54,8 +54,11 @@ import {
   DAIE,
   SD,
   ABOND,
+  DSRUN,
+  VDA,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
+import { BondToken } from 'types/bond';
 
 export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
@@ -187,6 +190,7 @@ export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
 export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [chainId in ChainId]: JSBI;
 } = {
+  [ChainId.ETHEREUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
   [ChainId.MATIC]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)), // .01 ETH
   [ChainId.MUMBAI]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
   [ChainId.DOEGCHAIN_TESTNET]: JSBI.exponentiate(
@@ -304,6 +308,13 @@ export const GlobalConst = {
     ONE_YEAR_CHART: 4,
     ALL_CHART: 5,
     CHART_COUNT: 60, //limit analytics chart items not more than 60
+  },
+  quickBurnChart: {
+    ONE_DAY_CHART: 1,
+    ONE_WEEK_CHART: 2,
+    ONE_MONTH_CHART: 3,
+    ALL_CHART: 4,
+    CHART_COUNT: 60, //limit chart items not more than 60
   },
   v2FarmTab: {
     LPFARM: 'lpFarm',
@@ -2331,6 +2342,11 @@ export const IchiVaults: {
     '0x2ED64d3De2A2c060FF4b31e9B2f9268ADcE7e671',
     '0x6fD4058ED78608F3C613585EEa222F6F5480e0D5',
     '0x3c306334b3728F5E50c1eDfA8338ffe96C875812',
+    '0xECD259DEdDc93B9881debDC67c7c4b553794Fd3c',
+    '0x20268C918a6873aBB44d7f53A4Eb92a968Bb255b',
+    '0xe3a2F6b642cBB29F7D5A82afa83a48b9c4E79244',
+    '0xD7c329ce757b24a43E9767980CE568fDA14C7e95',
+    '0xF497556DC0e3E251CdFA6eA87772A54B8e0bc5a8',
   ],
   [ChainId.ZKEVM]: [
     '0x423382e084f1d1d180bec638bc64cc6408896c3c',
@@ -2479,6 +2495,12 @@ export const DefiedgeStrategies: {
       token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
       pool: '0x7B925e617aefd7FB3a93Abe3a701135D7a1Ba710',
     },
+    {
+      id: '0xe95dc9e01bb0c24dbf4cbd2ecbfd4196fc4b7f2b',
+      pool: '0x8811519bFd7F0AF766caFc013677099D49FE6622',
+      token0: '0x5F2F8818002dc64753daeDF4A6CB2CcB757CD220',
+      token1: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+    },
   ],
 };
 
@@ -2551,16 +2573,16 @@ export const GlobalValue = {
         CRS[ChainId.MATIC],
         SD[ChainId.MATIC],
         ABOND[ChainId.MATIC],
+        DSRUN[ChainId.MATIC],
+        VDA[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],
         USDC[ChainId.DOGECHAIN],
         USDT[ChainId.DOGECHAIN],
-        WBTC[ChainId.DOGECHAIN],
         DAI[ChainId.DOGECHAIN],
         ETHER[ChainId.DOGECHAIN],
         MATIC[ChainId.DOGECHAIN],
-        MI[ChainId.DOGECHAIN],
         DC[ChainId.DOGECHAIN],
         DD[ChainId.DOGECHAIN],
         dDD[ChainId.DOGECHAIN],
@@ -2603,6 +2625,7 @@ export const paraswapTaxBuy: { [key: string]: number } = {
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
   '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 200,
+  '0x119fd89e56e3845b520644dcedf4a86cd0b66aa6': 300,
 };
 
 export const paraswapTaxSell: { [key: string]: number } = {
@@ -2612,6 +2635,7 @@ export const paraswapTaxSell: { [key: string]: number } = {
   '0xfca466f2fa8e667a517c9c6cfa99cf985be5d9b1': 300,
   '0x74dd45dd579cad749f9381d6227e7e02277c944b': 300,
   '0x428360b02c1269bc1c79fbc399ad31d58c1e8fda': 600,
+  '0x119fd89e56e3845b520644dcedf4a86cd0b66aa6': 300,
 };
 
 export const GlobalData = {
@@ -2646,7 +2670,6 @@ export const GlobalData = {
       USDC[ChainId.DOGECHAIN],
       USDT[ChainId.DOGECHAIN],
       DAI[ChainId.ZKEVM],
-      MI[ChainId.DOGECHAIN],
     ],
     [ChainId.DOEGCHAIN_TESTNET]: [],
     [ChainId.ZKEVM]: [
@@ -2794,6 +2817,15 @@ export const GlobalData = {
     [ChainId.LAYERX]: [],
     [ChainId.ETHEREUM]: [],
   },
+  quickBurns: {
+    CHART_DURATIONS: [
+      GlobalConst.quickBurnChart.ONE_DAY_CHART,
+      GlobalConst.quickBurnChart.ONE_WEEK_CHART,
+      GlobalConst.quickBurnChart.ONE_MONTH_CHART,
+      GlobalConst.quickBurnChart.ALL_CHART,
+    ],
+    CHART_DURATION_TEXTS: ['1D', '1W', '1M', 'All'],
+  },
 };
 
 export const ContestPairs: any = {
@@ -2891,4 +2923,79 @@ export const BOND_QUERY_KEYS = {
   TOKEN_HISTORIC: 'tokenHistoric',
   BONDS_LANDING: 'bondsLanding',
   BOND_POST_REFERENCE: 'bondPostReference',
+};
+
+export const zapInputTokens: Partial<Record<ChainId, BondToken[]>> = {
+  [ChainId.MATIC]: [
+    {
+      symbol: 'wMATIC',
+      address: {
+        [ChainId.MATIC]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+    {
+      symbol: 'USDC.e',
+      address: {
+        [ChainId.MATIC]: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      },
+      decimals: {
+        [ChainId.MATIC]: 6,
+      },
+      active: true,
+    },
+    {
+      symbol: 'USDC',
+      address: {
+        [ChainId.MATIC]: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+      },
+      decimals: {
+        [ChainId.MATIC]: 6,
+      },
+      active: true,
+    },
+    {
+      symbol: 'USDT',
+      address: {
+        [ChainId.MATIC]: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      },
+      decimals: {
+        [ChainId.MATIC]: 6,
+      },
+      active: true,
+    },
+    {
+      symbol: 'DAI',
+      address: {
+        [ChainId.MATIC]: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+    {
+      symbol: 'wETH',
+      address: {
+        [ChainId.MATIC]: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+    {
+      symbol: 'BTC',
+      address: {
+        [ChainId.MATIC]: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+      },
+      decimals: {
+        [ChainId.MATIC]: 18,
+      },
+      active: true,
+    },
+  ],
 };

@@ -17,7 +17,7 @@ import {
 } from 'state/transactions/hooks';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import './ICHILPItemDetails/index.scss';
-import { ETHER, JSBI } from '@uniswap/sdk';
+import { ETHER, JSBI, Token } from '@uniswap/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { useWETHContract } from 'hooks/useContract';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
@@ -29,6 +29,8 @@ import {
   useICHIVaultDepositData,
 } from 'hooks/useICHIData';
 import { BigNumber } from 'ethers';
+import { TransactionType } from 'models/enums';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IncreaseICHILiquidityModalProps {
   open: boolean;
@@ -146,6 +148,8 @@ export default function IncreaseICHILiquidityModal({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [Token.ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -175,6 +179,7 @@ export default function IncreaseICHILiquidityModal({
       });
       addTransaction(response, {
         summary,
+        type: TransactionType.APPROVED,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -209,6 +214,8 @@ export default function IncreaseICHILiquidityModal({
       setTxPending(true);
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [currency?.address ?? '', currency?.address ?? ''],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

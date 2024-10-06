@@ -25,6 +25,7 @@ import { useSteerVaultContract } from 'hooks/useContract';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import { Token } from '@uniswap/sdk-core';
+import { TransactionType } from 'models/enums';
 
 interface WithdrawSteerLiquidityModalProps {
   open: boolean;
@@ -106,6 +107,7 @@ export default function WithdrawSteerLiquidityModal({
       setTxnHash(response.hash);
       addTransaction(response, {
         summary: t('withdrawingSteerLiquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

@@ -3,6 +3,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { Box, Grid, useMediaQuery } from '@material-ui/core';
 import DragonsLair from './DragonsLair';
 import DragonsSyrup from './DragonsSyrup';
+import QuickBurnChart from './QuickBurnChart';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
 import { HypeLabAds, CurrencyLogo } from 'components';
@@ -193,6 +194,9 @@ const DragonPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={5}>
           <DragonsInfo />
+        </Grid>
+        <Grid item xs={12}>
+          <QuickBurnChart />
         </Grid>
         <Grid item xs={12}>
           <DragonsSyrup />

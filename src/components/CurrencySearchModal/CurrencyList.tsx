@@ -7,7 +7,7 @@ import {
   ChainId,
   WETH,
 } from '@uniswap/sdk';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import { useIsV2 } from 'state/application/hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -23,6 +23,8 @@ interface CurrencyListProps {
   chainId: ChainId;
   balances: (CurrencyAmount | undefined)[];
   usdPrices?: { address: string; price: number }[];
+  favoriteCurrencies?: Currency[];
+  handleChangeFavorite?: (currency: Currency, checked: boolean) => void;
 }
 
 const CurrencyList: React.FC<CurrencyListProps> = ({
@@ -34,8 +36,11 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
   chainId,
   balances,
   usdPrices,
+  favoriteCurrencies,
+  handleChangeFavorite,
 }) => {
   const { isV2 } = useIsV2();
+
   const nativeCurrency = useMemo(() => {
     return isV2
       ? ETHER[chainId]
@@ -73,25 +78,35 @@ const CurrencyList: React.FC<CurrencyListProps> = ({
         : undefined;
       return (
         <CurrencyRow
+          onChangeFavorite={handleChangeFavorite}
+          isFavorite={favoriteCurrencies?.some(
+            (item) => item?.symbol === currency?.symbol,
+          )}
           style={style}
           currency={currency}
           isSelected={isSelected}
           onSelect={handleSelect}
           otherSelected={otherSelected}
           isOnSelectedList={isOnSelectedList[index]}
-          balance={balances[index]}
+          balance={balances.find(
+            (b) =>
+              b?.currency.symbol?.toLowerCase() ===
+              currency?.symbol?.toLowerCase(),
+          )}
           usdPrice={usdPrice ? usdPrice.price : 0}
         />
       );
     },
     [
-      onCurrencySelect,
-      otherCurrency,
       selectedCurrency,
+      otherCurrency,
+      chainId,
+      usdPrices,
+      handleChangeFavorite,
+      favoriteCurrencies,
       isOnSelectedList,
       balances,
-      usdPrices,
-      chainId,
+      onCurrencySelect,
     ],
   );
 

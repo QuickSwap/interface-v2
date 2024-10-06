@@ -358,6 +358,7 @@ const AnalyticsSearch: React.FC = () => {
                   tokenMap,
                   [new Token(chainIdToUse, getAddress(val.id), val.decimals)],
                 );
+
                 return (
                   <Box
                     key={ind}

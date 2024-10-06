@@ -13,6 +13,7 @@ import { isAddress } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useBytes32TokenContract, useTokenContract } from 'hooks/useContract';
 import ERC20_INTERFACE, { ERC20_BYTES32_INTERFACE } from 'constants/abis/erc20';
+import { GlobalValue } from 'constants/index';
 
 export function useAllTokens(): { [address: string]: Token } {
   const { chainId } = useActiveWeb3React();
@@ -307,4 +308,21 @@ export function useCurrency(
   const isETH = currencyId?.toUpperCase() === 'ETH';
   const token = useToken(isETH ? undefined : currencyId);
   return isETH ? nativeCurrency : token;
+}
+
+export function useCurrencyFromSymbol(symbol?: string): Currency | undefined {
+  const { chainId } = useActiveWeb3React();
+  const allTokens = useAllTokens();
+  const commonTokens = GlobalValue.tokens.COMMON[chainId];
+  if (!symbol) return;
+  if (symbol.toLowerCase() === ETHER[chainId].symbol?.toLowerCase())
+    return ETHER[chainId];
+  const token = Object.values(allTokens).find(
+    (token) => token.symbol?.toLowerCase() === symbol.toLowerCase(),
+  );
+  if (token) return token;
+  const tokenInCommon = commonTokens.find(
+    (token) => token.symbol?.toLowerCase() === symbol.toLowerCase(),
+  );
+  return tokenInCommon;
 }

@@ -112,6 +112,7 @@ a.button:hover {
     border-radius: 10px;
     height: 36px;
     padding: 0 16px;
+    width: auto;
     & span {
       font-size: 14px;
     }
@@ -143,6 +144,7 @@ a.button:hover {
   & button {
     height: 36px;
     border-radius: 10px;
+    width: auto;
   }
   &.mobile {
     max-width: unset;

@@ -35,6 +35,7 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
+import { TransactionType } from 'models/enums';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -119,6 +120,7 @@ const FarmCardDetails: React.FC<{
         }
         addTransaction(response, {
           summary: t('withdrawliquidity'),
+          type: TransactionType.RECEIVED,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -142,6 +144,7 @@ const FarmCardDetails: React.FC<{
         });
         addTransaction(response, {
           summary: t('claimrewards'),
+          type: TransactionType.CLAIMED_REWARDS,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -193,6 +196,7 @@ const FarmCardDetails: React.FC<{
         );
         addTransaction(response, {
           summary: t('depositliquidity'),
+          type: TransactionType.SEND,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {

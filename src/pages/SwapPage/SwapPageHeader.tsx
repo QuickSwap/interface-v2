@@ -14,8 +14,8 @@ const SwapPageHeader: React.FC<{ proMode: boolean; isTablet: boolean }> = ({
     <></>
   ) : (
     <Box className='pageHeading'>
-      <h1 className='h4'>{t('swap')}</h1>
-      {helpURL && (
+      {/* <h1 className='h4'>{t('swap')}</h1> */}
+      {/* {helpURL && (
         <Box
           className='helpWrapper'
           onClick={() => window.open(helpURL, '_blank')}
@@ -23,7 +23,7 @@ const SwapPageHeader: React.FC<{ proMode: boolean; isTablet: boolean }> = ({
           <small>{t('help')}</small>
           <HelpIcon />
         </Box>
-      )}
+      )} */}
     </Box>
   );
 };

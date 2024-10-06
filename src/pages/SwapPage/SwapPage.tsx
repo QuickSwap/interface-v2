@@ -85,9 +85,6 @@ const SwapPage: React.FC = () => {
       )}
 
       <SwapPageHeader proMode={isProMode} isTablet={isTablet} />
-      <Box margin='24px auto'>
-        <HypeLabAds />
-      </Box>
 
       {isProMode ? (
         <SwapProMain
@@ -98,18 +95,21 @@ const SwapPage: React.FC = () => {
         />
       ) : (
         <>
-          <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
-            <LiquidityHubAd />
-          </Box>
-
-          <Box sx={{ maxWidth: '1536px', margin: 'auto' }}>
+          <Box sx={{ maxWidth: '1536px', margin: '12px auto' }}>
             <SwapDefaultMode
               token1={isV2 ? token1 : token1V3}
               token2={isV2 ? token2 : token2V3}
             />
           </Box>
+          <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
+            <LiquidityHubAd />
+          </Box>
         </>
       )}
+
+      <Box margin='24px auto'>
+        <HypeLabAds />
+      </Box>
     </Box>
   );
 };

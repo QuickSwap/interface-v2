@@ -31,6 +31,7 @@ import { useSingleCallResult } from 'state/multicall/hooks';
 import { useSteerFarmingContract } from 'hooks/useContract';
 import { useTokenBalance } from 'state/wallet/v3/hooks';
 import Loader from 'components/Loader';
+import { TransactionType } from 'models/enums';
 
 const V3SteerFarmCardDetails: React.FC<{
   data: any;
@@ -172,6 +173,7 @@ const V3SteerFarmCardDetails: React.FC<{
 
     addTransaction(response, {
       summary: t('depositliquidity'),
+      type: TransactionType.SEND,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
@@ -202,6 +204,7 @@ const V3SteerFarmCardDetails: React.FC<{
       }
       addTransaction(response, {
         summary: t('withdrawliquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -225,6 +228,7 @@ const V3SteerFarmCardDetails: React.FC<{
 
       addTransaction(response, {
         summary: t('claimrewards'),
+        type: TransactionType.CLAIMED_REWARDS,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

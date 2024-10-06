@@ -19,6 +19,7 @@ type ChainTokenList = {
 };
 
 const WETH_ONLY: ChainTokenList = {
+  [ChainId.ETHEREUM]: [WETH[ChainId.ETHEREUM]],
   [ChainId.MUMBAI]: [WETH[ChainId.MUMBAI]],
   [ChainId.MATIC]: [WETH[ChainId.MATIC]],
   [ChainId.DOEGCHAIN_TESTNET]: [WETH[ChainId.DOEGCHAIN_TESTNET]],
@@ -384,12 +385,14 @@ export const STEER_PERIPHERY: AddressMap = {
   [ChainId.MATIC]: '0x29E1888F7DD0757f2873E494463Ec389dab38D27',
   [ChainId.MANTA]: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921',
   [ChainId.ASTARZKEVM]: '0x37Cff062D52Dd6E9E39Df619CCd30c037a36bB83',
+  [ChainId.LAYERX]: '0xab36D30C1A1C683037Bd7AAC67f29B2e3ECC6576',
 };
 
 export const STEER_VAULT_REGISTRY: AddressMap = {
   [ChainId.MATIC]: '0x24825B3C44742600D3995d1D3760cceE999A7f0b',
   [ChainId.MANTA]: '0x38a07152ee64C7067fEeBA904D72ABc9a9DA0C77',
   [ChainId.ASTARZKEVM]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
+  [ChainId.LAYERX]: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9',
 };
 
 export const MERKL_DISTRIBUTOR = '0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae';
@@ -659,6 +662,13 @@ export const NEW_QUICK: { [chainId: number]: Token } = {
     'QUICK',
     'QuickSwap',
   ),
+  [ChainId.DOGECHAIN]: new Token(
+    ChainId.DOGECHAIN,
+    '0xb12c13e66AdE1F72f71834f2FC5082Db8C091358',
+    18,
+    'QUICK',
+    'QuickSwap',
+  ),
 };
 
 export const OLD_DQUICK: { [chainId: number]: Token } = {
@@ -688,13 +698,6 @@ export const WBTC: { [chainId: number]: Token } = {
     8,
     'WBTC',
     'Wrapped BTC',
-  ),
-  [ChainId.DOGECHAIN]: new Token(
-    ChainId.DOGECHAIN,
-    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',
-    8,
-    'WBTC',
-    'Wrapped Bitcoin',
   ),
   [ChainId.ZKEVM]: new Token(
     ChainId.ZKEVM,
@@ -846,13 +849,6 @@ export const MI: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1',
-    18,
-    'MAI',
-    'miMATIC',
-  ),
-  [ChainId.DOGECHAIN]: new Token(
-    ChainId.DOGECHAIN,
-    '0xb84Df10966a5D7e1ab46D9276F55d57bD336AFC7',
     18,
     'MAI',
     'miMATIC',
@@ -1328,6 +1324,16 @@ export const ABOND: { [chainId: number]: Token } = {
   ),
 };
 
+export const DSRUN: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0xFf76c0B48363A7C7307868a81548d340049b0023',
+    18,
+    'DSRUN',
+    'DerbyStarsRUN',
+  ),
+};
+
 export const EMPTY: { [chainId: number]: Token } = {
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
@@ -1366,6 +1372,16 @@ export const USDO: { [chainId: number]: Token } = {
     18,
     'USDO',
     'USDoge',
+  ),
+};
+
+export const VDA: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x683565196C3EAb450003C964D4bad1fd3068D4cC',
+    18,
+    'VDA',
+    'Verida',
   ),
 };
 
@@ -1501,8 +1517,6 @@ export const SUGGESTED_BASES: {
   ],
   [ChainId.DOGECHAIN]: [
     ETHER[ChainId.DOGECHAIN],
-    WBTC[ChainId.DOGECHAIN],
-    MI[ChainId.DOGECHAIN],
     DD[ChainId.DOGECHAIN],
     DC[ChainId.DOGECHAIN],
     USDO[ChainId.DOGECHAIN],
@@ -1563,7 +1577,7 @@ export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
     //USDC[ChainId.MATIC],
     //USDT[ChainId.MATIC],
     //OLD_QUICK[ChainId.MATIC],
-    //NEW_QUICK[ChainId.MATIC],
+    NEW_QUICK[ChainId.MATIC],
     ETHER[ChainId.MATIC],
     //WBTC[ChainId.MATIC],
     USDCE[ChainId.MATIC],
@@ -1711,3 +1725,45 @@ export class ExtendedEther extends V3Currency {
     );
   }
 }
+
+export const wrappedTokenAddresses: {
+  readonly [chainId in ChainId]: string;
+} = {
+  [ChainId.ETHEREUM]: WETH[ChainId.ETHEREUM].address,
+  [ChainId.MATIC]: WETH[ChainId.MATIC].address,
+  [ChainId.ZKEVM]: WETH[ChainId.ZKEVM].address,
+  [ChainId.MANTA]: WETH[ChainId.MANTA].address,
+  [ChainId.KAVA]: WETH[ChainId.KAVA].address,
+  [ChainId.IMX]: WETH[ChainId.IMX].address,
+  [ChainId.ASTARZKEVM]: WETH[ChainId.ASTARZKEVM].address,
+  [ChainId.DOGECHAIN]: WETH[ChainId.DOGECHAIN].address,
+  [ChainId.LAYERX]: WETH[ChainId.LAYERX].address,
+  [ChainId.ZKATANA]: WETH[ChainId.ZKATANA].address,
+  [ChainId.BTTC]: WETH[ChainId.BTTC].address,
+  [ChainId.X1]: WETH[ChainId.X1].address,
+  [ChainId.TIMX]: WETH[ChainId.TIMX].address,
+  [ChainId.ZKTESTNET]: WETH[ChainId.ZKTESTNET].address,
+  [ChainId.MUMBAI]: WETH[ChainId.MUMBAI].address,
+  [ChainId.DOEGCHAIN_TESTNET]: WETH[ChainId.DOEGCHAIN_TESTNET].address,
+};
+
+export const nativeTokenSymbols: {
+  readonly [chainId in ChainId]: string | undefined;
+} = {
+  [ChainId.ETHEREUM]: 'ETHER',
+  [ChainId.MATIC]: 'MATIC',
+  [ChainId.ZKEVM]: 'ETH',
+  [ChainId.MANTA]: 'ETH',
+  [ChainId.KAVA]: 'KAVA',
+  [ChainId.IMX]: 'IMX',
+  [ChainId.ASTARZKEVM]: 'ETH',
+  [ChainId.DOGECHAIN]: 'DOGE',
+  [ChainId.LAYERX]: 'OKB',
+  [ChainId.ZKATANA]: 'ETH',
+  [ChainId.BTTC]: 'BTT',
+  [ChainId.X1]: 'OKB',
+  [ChainId.TIMX]: 'IMX',
+  [ChainId.ZKTESTNET]: 'ETH',
+  [ChainId.MUMBAI]: 'MATIC',
+  [ChainId.DOEGCHAIN_TESTNET]: 'DOGE',
+};

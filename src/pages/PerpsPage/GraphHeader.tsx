@@ -5,7 +5,7 @@ import { Box, Popover, useMediaQuery, useTheme } from '@material-ui/core';
 import { formatNumber, getPerpsSymbol } from 'utils';
 import { SearchInput } from 'components';
 import { LeverageManage } from './LeverageManage';
-import { formatDollarAmount } from 'utils/numbers';
+import { formatDollarAmount, formatFloat } from 'utils/numbers';
 
 interface Props {
   tokenSymbol: string;
@@ -217,20 +217,18 @@ export const GraphHeader: React.FC<Props> = ({
               <p className='span'>{token?.['24h_volume']}</p>
             </Box>
             <Box>
-              <p className='span text-secondary'>Funding Rate Long</p>
+              <p className='span text-secondary'>Funding Rate</p>
               <p className='span'>
-                <span className='text-error'>
-                  -{parseFloat(token?.est_funding_rate) * 100}%
-                </span>{' '}
-                in {timeDifference}
-              </p>
-            </Box>
-            <Box>
-              <p className='span text-secondary'>Funding Rate Short</p>
-              <p className='span'>
-                <span className='text-success'>
-                  +{parseFloat(token?.est_funding_rate) * 100}%
-                </span>{' '}
+                {token?.est_funding_rate * 100 > 0 && (
+                  <span className='text-success'>
+                    {formatFloat(token?.est_funding_rate * 100, 4)}%
+                  </span>
+                )}
+                {token?.est_funding_rate * 100 < 0 && (
+                  <span className='text-error'>
+                    {formatFloat(token?.est_funding_rate * 100, 4)}%
+                  </span>
+                )}{' '}
                 in {timeDifference}
               </p>
             </Box>

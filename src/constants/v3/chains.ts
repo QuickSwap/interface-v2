@@ -43,8 +43,8 @@ export const CHAIN_INFO: ChainInfo = {
     explorer: 'https://polygonscan.com/',
     infoLink: 'https://algebra.finance',
     label: 'Polygon',
-    nativeCurrencySymbol: 'MATIC',
-    nativeCurrencyName: 'Matic',
+    nativeCurrencySymbol: 'POL',
+    nativeCurrencyName: 'Polygon Ecosystem Token',
     nativeCurrencyDecimals: 18,
   },
   [ChainId.DOGECHAIN]: {

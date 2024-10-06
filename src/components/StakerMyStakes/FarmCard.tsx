@@ -79,7 +79,7 @@ export default function FarmCard({ el, poolApr, farmApr }: FarmCardProps) {
       : el.eternalBonusRewardToken;
 
   const rewardTokenAddresses = useMemo(() => {
-    const addresses = [];
+    const addresses: any[] = [];
     if (rewardToken) addresses.push(rewardToken.address);
     if (bonusRewardToken) addresses.push(bonusRewardToken.address);
     return addresses;

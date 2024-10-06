@@ -11,11 +11,14 @@ import { AppDispatch, AppState } from 'state';
 import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import { Currency } from '@uniswap/sdk';
 
 interface TransactionData {
   summary?: string;
   approval?: { tokenAddress: string; spender: string };
   claim?: { recipient: string };
+  type?: string;
+  tokens?: any[];
 }
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
@@ -35,10 +38,14 @@ export function useTransactionAdder(): (
         summary,
         approval,
         claim,
+        type,
+        tokens,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        type?: string;
+        tokens?: any[];
       } = {},
       txHash?: string,
     ) => {
@@ -66,6 +73,8 @@ export function useTransactionAdder(): (
           approval,
           summary,
           claim,
+          type,
+          tokens,
         }),
       );
     },
@@ -79,6 +88,7 @@ export function useTransactionFinalizer(): (
     summary?: string;
     approval?: { tokenAddress: string; spender: string };
     claim?: { recipient: string };
+    type?: string;
   },
 ) => void {
   const { chainId, account } = useActiveWeb3React();
@@ -90,10 +100,12 @@ export function useTransactionFinalizer(): (
       receipt: TransactionReceipt,
       {
         summary,
+        type,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        type?: string;
       } = {},
     ) => {
       if (!account) return;

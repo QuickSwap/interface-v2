@@ -207,7 +207,17 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-
+    .notice-msg {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      small {
+        color: #e18d2f;
+        font-size: 13px;
+        text-align: center;
+      }
+    }
     .input-item {
       display: flex;
       flex-direction: column;
@@ -403,6 +413,52 @@
     h5 {
       margin-top: 16px;
       font-size: 14px;
+      color: #6880a3;
+    }
+  }
+}
+
+.dragonQuickBurnChart {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  padding: 22 24 24;
+  height: 350px;
+
+  .sub-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    h5 {
+      font-size: 20px
+    }
+    small {
+      font-size: 14px;
+      color: #7d95b8;
+    }
+  }
+  .chart-type{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+
+    .chart-type-button{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      padding: 0 8px 0;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .selected{
+      border-radius: 10px;
+      background-color: #374769;
+    }
+    .unselected{
       color: #6880a3;
     }
   }

@@ -1,4 +1,6 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AML_SCORE_THRESHOLD } from 'config';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
 // Components
 import DoubleCurrencyLogo from 'components/DoubleCurrencyLogo';
@@ -18,6 +20,7 @@ import { LiquidityDex } from '@ape.swap/apeswap-lists';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { useSoulZap } from 'state/application/hooks';
 import { useCurrencyBalance, useCurrencyBalances } from 'state/wallet/v3/hooks';
+import { useAmlScore } from 'state/user/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -32,32 +35,32 @@ import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTranslation } from 'react-i18next';
 import ZapCurrencyInput from 'components/ZapCurrencyInput';
 import { useActiveWeb3React } from 'hooks';
+import { BondToken } from 'types/bond';
+import { useCurrencyFromSymbol } from 'hooks/Tokens';
+import { TransactionType } from 'models/enums';
 
 interface SoulZapAddLiquidityProps {
   open: boolean;
   onDismiss?: () => void;
-  lpAddress?: string;
+  lpToken?: BondToken;
   liquidityDex?: LiquidityDex;
   lpPrice?: number;
-  token0?: string;
-  token1?: string;
 }
 
 const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   open,
   onDismiss,
-  lpAddress,
+  lpToken,
   liquidityDex,
   lpPrice,
-  token0,
-  token1,
 }) => {
+  const history = useHistory();
   const { t } = useTranslation();
   // Loading state for both approve and purchase functions
   const [pendingTx, setPendingTx] = useState(false);
 
   // Hooks
-  const { account, provider } = useActiveWeb3React();
+  const { account, provider, chainId } = useActiveWeb3React();
   // const [onPresentSettingsModal] = useModal(<ZapSlippage />);
   const addTransaction = useTransactionAdder();
 
@@ -66,15 +69,13 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   const { INPUT, typedValue } = useZapState();
   const { onUserInput, onCurrencySelection } = useZapActionHandlers();
   const { loading, response: zapData } = useSoulZapQuote(
-    lpAddress ?? '',
+    lpToken?.address[chainId] ?? '',
     getLiquidityDEX(liquidityDex) as DEX,
     false,
   );
 
-  const lpTokenACurrency = useCurrency(token0);
-  const lpTokenBCurrency = useCurrency(token1);
   const inputCurrency = useCurrency(INPUT.currencyId);
-  const lpCurrency = useCurrency(lpAddress);
+  const lpCurrency = useCurrency(lpToken?.address[chainId] ?? '');
   const lpBalanceString = useCurrencyBalance(
     account,
     lpCurrency ?? undefined,
@@ -87,6 +88,8 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
     inputCurrency ?? undefined,
     lpCurrency ?? undefined,
   ]);
+
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 
   const currencyBalances = useMemo(() => {
     return {
@@ -118,6 +121,10 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   );
 
   const soulZapCallback = useCallback(async () => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
     if (soulZap && zapData) {
       console.log('Attempting zap tx');
       console.log(zapData);
@@ -134,6 +141,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
               undefined,
               {
                 summary: t('zapBond'),
+                type: TransactionType.ZAP,
               },
               res.txHash,
             );
@@ -156,7 +164,7 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           setPendingTx(false);
         });
     }
-  }, [addTransaction, provider, soulZap, t, zapData]);
+  }, [addTransaction, history, amlScore, provider, soulZap, t, zapData]);
 
   // Approve logic
   const zapContractAddress = soulZap?.getZapContract().address;
@@ -184,6 +192,9 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
   }, [approveCallback]);
 
   const [openZapSlippage, setOpenZapSlippage] = useState(false);
+  const splited = lpToken?.symbol?.split('-');
+  const lpTokenACurrency = useCurrencyFromSymbol(splited?.[0]);
+  const lpTokenBCurrency = useCurrencyFromSymbol(splited?.[1]);
 
   return (
     <CustomModal
@@ -239,13 +250,11 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
             />
             <Box className='soulZapAddLiquidityCurrency' gridGap={8}>
               <DoubleCurrencyLogo
-                currency0={lpTokenACurrency ?? undefined}
-                currency1={lpTokenBCurrency ?? undefined}
+                currency0={lpTokenACurrency}
+                currency1={lpTokenBCurrency}
                 size={24}
               />
-              <p>
-                {lpTokenBCurrency?.symbol}-{lpTokenACurrency?.symbol}
-              </p>
+              <p>{lpToken?.symbol}</p>
             </Box>
           </Box>
           <Box className='flex justify-between' mt='12px'>
@@ -282,7 +291,13 @@ const SoulZapAddLiquidity: FC<SoulZapAddLiquidityProps> = ({
           <Button
             onClick={soulZapCallback}
             fullWidth
-            disabled={loading || pendingTx || !zapData || !lpCurrency}
+            disabled={
+              loading ||
+              pendingTx ||
+              !zapData ||
+              !lpCurrency ||
+              isAmlScoreLoading
+            }
           >
             {t('buy')}
           </Button>

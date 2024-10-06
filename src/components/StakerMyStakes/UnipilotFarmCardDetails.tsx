@@ -31,6 +31,7 @@ import {
   useUniPilotVaultContract,
   useUnipilotFarmingContract,
 } from 'hooks/useContract';
+import { TransactionType } from 'models/enums';
 
 const UnipilotFarmCardDetails: React.FC<{
   data: any;
@@ -210,6 +211,7 @@ const UnipilotFarmCardDetails: React.FC<{
 
     addTransaction(response, {
       summary: t('depositliquidity'),
+      type: TransactionType.SEND,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
@@ -240,6 +242,7 @@ const UnipilotFarmCardDetails: React.FC<{
       }
       addTransaction(response, {
         summary: t('withdrawliquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -263,6 +266,7 @@ const UnipilotFarmCardDetails: React.FC<{
 
       addTransaction(response, {
         summary: t('claimrewards'),
+        type: TransactionType.CLAIMED_REWARDS,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
