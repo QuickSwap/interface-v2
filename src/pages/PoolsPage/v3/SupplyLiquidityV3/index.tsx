@@ -12,7 +12,6 @@ import { InitialPrice } from './containers/InitialPrice';
 import { EnterAmounts } from './containers/EnterAmounts';
 import { SelectPair } from './containers/SelectPair';
 import { SelectRange } from './containers/SelectRange';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import { Currency } from '@uniswap/sdk-core';
 
@@ -32,15 +31,7 @@ import { AddLiquidityButton } from './containers/AddLiquidityButton';
 import { getGammaPairsForTokens, useIsSupportedNetwork } from 'utils';
 import { useIsExpertMode } from 'state/user/hooks';
 import { currencyId } from 'utils/v3/currencyId';
-import {
-  Box,
-  Button,
-  ButtonBase,
-  MenuItem,
-  Select,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Box, Button, makeStyles } from '@material-ui/core';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { SettingsModal } from 'components';
 import { ReactComponent as SettingsIcon } from 'assets/images/SettingsIcon.svg';
@@ -51,25 +42,9 @@ import { ChainId } from '@uniswap/sdk';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst } from 'constants/index';
 import SelectFeeTier from './containers/SelectFeeTier';
-import SelectVault from './containers/SelectVault';
-import DepositAmount from './containers/DepositAmount';
-import token from '../../../../assets/tokenLogo/0xfa9343c3897324496a05fc75abed6bac29f8a40f.png';
 import { SelectDepositType } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectDepositType';
-import V3CurrencySelect from 'components/v3/CurrencySelect';
-import {
-  useSingleTokenCurrency,
-  useSingleTokenVault,
-} from 'state/singleToken/hooks';
-import SingleTokenEnterAmount from 'pages/PoolsPage/SingleToken/components/EnterAmount';
-import SingleTokenDepositButton from 'pages/PoolsPage/SingleToken/components/DepositButton';
-
-const tokenList = [
-  {
-    value: 'wbtc',
-    name: 'WBTC',
-    icon: token,
-  },
-];
+import { useSingleTokenVault } from 'state/singleToken/hooks';
+import { SingleTokenSupplyLiquidity } from 'pages/PoolsPage/SingleToken/SupplyLiquidity';
 
 const useStyles = makeStyles(() => ({
   formControl: {
@@ -166,26 +141,10 @@ export function SupplyLiquidityV3() {
   const dispatch = useAppDispatch();
 
   const expertMode = useIsExpertMode();
-  const [selectedDepositType, setSelectedDepositType] = useState('single');
+  const [selectedDepositType, setSelectedDepositType] = useState('double');
 
   const [priceFormat, setPriceFormat] = useState(PriceFormats.TOKEN);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-
-  const menuProps = {
-    classes: {
-      list: classes.list,
-      paper: classes.paper,
-    },
-    // anchorOrigin: {
-    //   vertical: 'bottom',
-    //   horizontal: 'center',
-    // },
-    // transformOrigin: {
-    //   vertical: 'top',
-    //   horizontal: 'center',
-    // },
-    getContentAnchorEl: null,
-  };
 
   useEffect(() => {
     onFieldAInput('');
@@ -194,10 +153,7 @@ export function SupplyLiquidityV3() {
     onRightRangeInput('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currencyIdA, currencyIdB]);
-  const depositToken = useSingleTokenCurrency();
-  const handleChange = () => {
-    console.log('asdasdasd');
-  };
+  // const depositToken = useSingleTokenCurrency();
 
   const baseCurrency = useCurrency(currencyIdA);
   const currencyB = useCurrency(currencyIdB);
@@ -453,55 +409,7 @@ export function SupplyLiquidityV3() {
           </Button>
         )}
       </Box>
-      {selectedDepositType === 'single' && (
-        <Box>
-          <Box>
-            {/* <Select
-              value={depositToken}
-              onChange={handleChange}
-              disableUnderline
-              IconComponent={KeyboardArrowDownIcon}
-              MenuProps={menuProps}
-              fullWidth
-              classes={{
-                select: classes.select,
-                icon: classes.selectIcon,
-              }}
-            >
-              {tokenList.map((item, index) => (
-                <MenuItem key={item.value} value={item.value}>
-                  <Box
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                    }}
-                  >
-                    <img src={item.icon} alt='icon ' width={20} />
-                    {item.name}
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select> */}
-            {account && isSupportedNetwork && (
-              <V3CurrencySelect
-                currency={depositToken ?? undefined}
-                handleCurrencySelect={handleCurrencySelectSingle}
-              />
-            )}
-          </Box>
-          <Box sx={{ padding: '12px 0' }}>
-            <SelectVault currency={depositToken} />
-          </Box>
-          <Box>
-            <SingleTokenEnterAmount />
-          </Box>
-
-          <Box mt={2}>
-            <SingleTokenDepositButton />
-          </Box>
-        </Box>
-      )}
+      {selectedDepositType === 'single' && <SingleTokenSupplyLiquidity />}
       {selectedDepositType === 'double' && (
         <Box>
           {account && isSupportedNetwork && (
