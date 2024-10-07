@@ -576,6 +576,14 @@ function useLairInfo(
     ignore,
   );
 
+  const quickTotalSupply = useSingleCallResult(
+    quickContract,
+    'totalSupply',
+    [],
+    undefined,
+    ignore,
+  );
+
   const getOneDayVol = async () => {
     const config = getConfig(chainId);
     let v2OneDayVol = 0,
@@ -626,6 +634,10 @@ function useLairInfo(
       dQuickTotalSupply: new TokenAmount(
         dQuickToken,
         JSBI.BigInt(_dQuickTotalSupply?.result?.[0] ?? 0),
+      ),
+      quickTotalSupply: new TokenAmount(
+        quickToken,
+        JSBI.BigInt(quickTotalSupply?.result?.[0] ?? 0),
       ),
       oneDayVol: oneDayVolume ?? 0,
     };
