@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, useTheme, useMediaQuery } from '@material-ui/core';
-import { CustomModal, QuestionHelper } from 'components';
-import BondTokenDisplay from './BondTokenDisplay';
+import { CurrencyLogo, CustomModal, QuestionHelper } from 'components';
 import { formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { UserBond } from 'types/bond';
@@ -11,6 +10,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import VestedTimer from './VestedTimer';
 import UserBondModalView from './UserBondModalView';
 import ClaimBond from './ClaimBond';
+import { useCurrency } from 'hooks/Tokens';
 
 interface BondItemProps {
   userBond: UserBond;
@@ -24,14 +24,6 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const isTablet = useMediaQuery(breakpoints.down('sm'));
 
-  const token1Obj = userBond.bond.token;
-  const token2Obj =
-    userBond.bond.billType === 'reserve'
-      ? userBond.bond.earnToken
-      : userBond.bond.quoteToken;
-  const token3Obj = userBond.bond.earnToken;
-  const stakeLP = userBond.bond.billType !== 'reserve';
-
   const pending = Number(
     formatUnits(
       userBond.totalPayout ?? '0',
@@ -44,6 +36,11 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
       userBond.pendingRewards ?? '0',
       userBond.bond?.earnToken?.decimals?.[chainId] ?? 18,
     ),
+  );
+
+  const showCaseToken = useCurrency(
+    userBond.bond.showcaseToken?.address[chainId] ??
+      userBond.bond.earnToken.address[chainId],
   );
 
   return (
@@ -67,21 +64,12 @@ const UserBondItem: React.FC<BondItemProps> = ({ userBond }) => {
         className='flex items-center'
         width={isMobile ? '100%' : isTablet ? '51%' : '30%'}
         my='6px'
+        gridGap={8}
       >
-        <BondTokenDisplay
-          token1Obj={token1Obj}
-          token2Obj={token2Obj}
-          token3Obj={token3Obj}
-          stakeLP={stakeLP}
-        />
-        <Box className='flex flex-col items-start' ml={2}>
+        <CurrencyLogo currency={showCaseToken ?? undefined} size='40px' />
+        <Box className='flex flex-col items-start'>
           <Box className='bondTypeTag'>{userBond.bond.billType}</Box>
-          <h6>
-            {token1Obj?.symbol}
-            {stakeLP ? `/${token2Obj?.symbol}` : ''}
-            {` -> `}
-            {stakeLP ? token3Obj?.symbol : token2Obj?.symbol}
-          </h6>
+          <h6>{userBond.bond.earnToken.symbol}</h6>
         </Box>
       </Box>
       <Box

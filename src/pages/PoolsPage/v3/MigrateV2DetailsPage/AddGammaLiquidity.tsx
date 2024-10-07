@@ -3,7 +3,7 @@ import './index.scss';
 import { useTranslation } from 'react-i18next';
 import { useActivePreset, useV3DerivedMintInfo } from 'state/mint/v3/hooks';
 import { Currency, CurrencyAmount } from '@uniswap/sdk-core';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { Box, Button } from '@material-ui/core';
 import { tryParseAmount } from 'state/swap/v3/hooks';
@@ -20,6 +20,9 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import { calculateGasMargin, getGammaPairsForTokens } from 'utils';
+import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 const AddGammaLiquidity: React.FC<{
   token0Value: CurrencyAmount<Currency> | undefined;
@@ -246,6 +249,8 @@ const AddGammaLiquidity: React.FC<{
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [Token.ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -257,6 +262,8 @@ const AddGammaLiquidity: React.FC<{
       setWrappingETH(false);
     }
   }
+
+  console.log('gammaToken0', gammaToken0);
 
   async function onAddLiquidity() {
     if (!chainId || !account) return;
@@ -297,6 +304,8 @@ const AddGammaLiquidity: React.FC<{
       });
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [gammaToken0.address, gammaToken1.address],
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

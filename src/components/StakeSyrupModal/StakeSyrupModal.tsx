@@ -27,6 +27,7 @@ import {
   calculateGasMargin,
 } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { TransactionType } from 'models/enums';
 
 interface StakeSyrupModalProps {
   open: boolean;
@@ -114,6 +115,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           );
           addTransaction(response, {
             summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
+            type: TransactionType.SEND,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
@@ -147,6 +149,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           );
           addTransaction(response, {
             summary: t('depositliquidity'),
+            type: TransactionType.SEND,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {

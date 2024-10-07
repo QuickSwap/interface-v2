@@ -34,6 +34,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { tryParseAmount } from 'state/swap/v3/hooks';
 import Loader from 'components/Loader';
 import { Check } from '@material-ui/icons';
+import { TransactionType } from 'models/enums';
 
 interface IncreaseUnipilotLiquidityModalProps {
   open: boolean;
@@ -295,6 +296,11 @@ export default function IncreaseUnipilotLiquidityModal({
       setTxPending(true);
       addTransaction(response, {
         summary,
+        type: TransactionType.ADDED_LIQUIDITY,
+        tokens: [
+          position.token0?.address ?? '',
+          position.token1?.address ?? '',
+        ],
       });
       setTxnHash(response.hash);
       const receipt = await response.wait();

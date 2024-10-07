@@ -24,6 +24,7 @@ import { JSBI } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
 import { useUniPilotVaultContract } from 'hooks/useContract';
 import { UnipilotPosition } from 'hooks/v3/useV3Positions';
+import { TransactionType } from 'models/enums';
 
 interface WithdrawUnipilotLiquidityModalProps {
   open: boolean;
@@ -98,6 +99,7 @@ export default function WithdrawUnipilotLiquidityModal({
       setTxnHash(response.hash);
       addTransaction(response, {
         summary: t('withdrawingUnipilotLiquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {

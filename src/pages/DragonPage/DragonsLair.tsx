@@ -52,6 +52,8 @@ import {
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
 import Web3 from 'web3';
+import { TransactionType } from 'models/enums';
+import { ReportProblemOutlined } from '@material-ui/icons';
 
 const DragonsLair = () => {
   const { breakpoints } = useTheme();
@@ -225,6 +227,7 @@ const DragonsLair = () => {
           );
           addTransaction(response, {
             summary: `${t('stake')} ${quickToken?.symbol}`,
+            type: TransactionType.STAKE,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
@@ -259,6 +262,7 @@ const DragonsLair = () => {
         );
         addTransaction(response, {
           summary: `${t('unstake')} ${dQuickToken?.symbol}`,
+          type: TransactionType.UNSTAKE,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -300,6 +304,7 @@ const DragonsLair = () => {
           setTxHash('');
           addTransaction(response, {
             summary: quickConvertingText,
+            type: TransactionType.SWAPPED,
           });
           try {
             const tx = await response.wait();
@@ -394,106 +399,21 @@ const DragonsLair = () => {
           </TabList>
 
           <TabPanel value='stake'>
-            <Box className='stake-wrapper'>
-              <Box className='input-item'>
-                <Box className='input-header'>
-                  <p>{t('stake')}:</p>
-                  <p>
-                    {t('available')}: {formatTokenAmount(quickBalance)}
-                  </p>
-                </Box>
-                <Box
-                  className={
-                    'input-wrapper ' +
-                    `currencyInput${
-                      isInsufficientStakeAmount ? ' errorInput' : ''
-                    }`
-                  }
-                >
-                  <NumericalInput
-                    placeholder='0.00'
-                    value={stakeAmount}
-                    fontSize={18}
-                    onUserInput={(value) => {
-                      const digits =
-                        value.indexOf('.') > -1
-                          ? value.split('.')[1].length
-                          : 0;
-                      let fixedVal = value;
-                      if (digits > quickToken.decimals) {
-                        fixedVal = Number(value).toFixed(quickToken.decimals);
-                      }
-                      setStakeAmount(fixedVal);
-                      setStakedAmount(
-                        (
-                          Number(fixedVal) / Number(dQUICKtoQUICK)
-                        ).toLocaleString('fullwide', {
-                          useGrouping: false,
-                          maximumFractionDigits: quickToken.decimals,
-                        }),
-                      );
-                    }}
-                  />
-                  <Box display='flex' alignItems='center'>
-                    <button
-                      className='max-button'
-                      onClick={() => {
-                        if (quickBalance) {
-                          setStakeAmount(quickBalance.toExact());
-                          setStakedAmount(
-                            (
-                              Number(quickBalance.toExact()) /
-                              Number(dQUICKtoQUICK)
-                            ).toString(),
-                          );
-                        }
-                      }}
-                    >
-                      {t('max')}
-                    </button>
-                    <Box display='flex' alignItems='center'>
-                      <CurrencyLogo currency={quickToken} />
-                      <p className='token-name'>{quickToken?.symbol}</p>
-                    </Box>
-                  </Box>
-                </Box>
-                {isInsufficientStakeAmount && (
-                  <small className='text-error'>
-                    {t('insufficientBalance', { symbol: 'QUICK' })}
-                  </small>
-                )}
-              </Box>
-              <Box className='input-item'>
-                <Box className='input-header'>
-                  <p>{t('receive')}:</p>
-                  <p>
-                    {t('available')}:{' '}
-                    {formatTokenAmount(lairInfoToUse?.dQUICKBalance)}
-                  </p>
-                </Box>
-                <Box className='input-wrapper'>
-                  <NumericalInput
-                    placeholder='0.00'
-                    value={stakedAmount}
-                    fontSize={18}
-                    onUserInput={(value) => {
-                      setStakedAmount(value);
-                      const stakeAmount = (
-                        Number(value) / Number(dQUICKtoQUICK)
-                      ).toLocaleString('fullwide', {
-                        useGrouping: false,
-                        maximumFractionDigits: dQuickToken.decimals,
-                      });
-                      setStakeAmount(stakeAmount);
-                    }}
-                  />
-                  <Box display='flex' alignItems='center'>
-                    <Box display='flex' alignItems='center'>
-                      <CurrencyLogo currency={dQuickToken} />
-                      <p className='token-name'>{dQuickToken?.symbol}</p>
-                    </Box>
-                  </Box>
-                </Box>
+            <Box
+              className='stake-wrapper items-center justify-center'
+              minHeight={280}
+            >
+              <Box className='notice-msg' maxWidth={430}>
+                <small style={{ marginBottom: '8px' }}>
+                  <ReportProblemOutlined /> Important Notice
+                </small>
+                <small>
+                  For the next three months, all $QUICK tokens purchased through
+                  Dragons Lair buybacks will be sent to the burn address.
+                </small>
+                <small>
+                  Unstaking during this trial period is not required.
+                </small>
               </Box>
             </Box>
           </TabPanel>
@@ -720,66 +640,47 @@ const DragonsLair = () => {
           </TabPanel>
         </TabContext>
       </Box>
-
-      <Box className='stakeButton'>
-        {tabValue === 'stake' && (
-          <Button
-            disabled={
-              approving ||
-              attemptStaking ||
-              isInsufficientStakeAmount ||
-              Number(stakeAmount) <= 0
-            }
-            className='stakeButton'
-            onClick={() => {
-              if (stakingApproval === ApprovalState.APPROVED) {
-                onStake();
-              } else {
-                attemptToStakeApprove();
+      {tabValue !== 'stake' && (
+        <Box className='stakeButton'>
+          {tabValue === 'unstake' && (
+            <Button
+              disabled={
+                approving ||
+                attemptUnstaking ||
+                isInsufficientUnstakeAmount ||
+                Number(unstakeAmount) <= 0
               }
-            }}
-          >
-            {stakingButtonText}
-          </Button>
-        )}
-        {tabValue === 'unstake' && (
-          <Button
-            disabled={
-              approving ||
-              attemptUnstaking ||
-              isInsufficientUnstakeAmount ||
-              Number(unstakeAmount) <= 0
-            }
-            className='unstakeButton'
-            onClick={() => {
-              onWithdraw();
-            }}
-          >
-            {unstakingButtonText}
-          </Button>
-        )}
-        {tabValue === 'convert' && (
-          <Button
-            disabled={
-              approving ||
-              attemptConverting ||
-              isInsufficientQUICK ||
-              !quickAmount ||
-              !Number(quickAmount)
-            }
-            className='convertButton'
-            onClick={() => {
-              if (approval === ApprovalState.APPROVED) {
-                convertQUICK();
-              } else {
-                attemptToApprove();
+              className='unstakeButton'
+              onClick={() => {
+                onWithdraw();
+              }}
+            >
+              {unstakingButtonText}
+            </Button>
+          )}
+          {tabValue === 'convert' && (
+            <Button
+              disabled={
+                approving ||
+                attemptConverting ||
+                isInsufficientQUICK ||
+                !quickAmount ||
+                !Number(quickAmount)
               }
-            }}
-          >
-            {buttonText}
-          </Button>
-        )}
-      </Box>
+              className='convertButton'
+              onClick={() => {
+                if (approval === ApprovalState.APPROVED) {
+                  convertQUICK();
+                } else {
+                  attemptToApprove();
+                }
+              }}
+            >
+              {buttonText}
+            </Button>
+          )}
+        </Box>
+      )}
 
       {showConfirm && (
         <TransactionConfirmationModal

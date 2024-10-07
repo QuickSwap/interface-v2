@@ -25,6 +25,7 @@ import WarningModal from '../WarningModal';
 import DisplayValues from '../DisplayValues';
 import { useTranslation } from 'react-i18next';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import { TransactionType } from 'models/enums';
 
 const SoulZapApiPath = ({
   purchasePath,
@@ -125,6 +126,7 @@ const SoulZapApiPath = ({
                 undefined,
                 {
                   summary: t('zapBond'),
+                  type: TransactionType.ZAP,
                 },
                 res.hash,
               );

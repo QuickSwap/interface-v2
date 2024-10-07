@@ -171,6 +171,7 @@ export default function Updater(): null {
         blocksPerFetch: blocksPerFetch,
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId]);
   const listeningKeys: { [callKey: string]: number } = useMemo(() => {
     return activeListeningKeys(debouncedListeners, chainId);

@@ -34,6 +34,8 @@ import { Bond } from 'types/bond';
 import { parseUnits } from 'ethers/lib/utils';
 import { getFixedValue } from 'utils';
 import { useSoulZapLPApiQuote } from 'state/zap/soulZapApi/useSoulZapLPApiQuote';
+import { useCurrencyFromSymbol } from 'hooks/Tokens';
+import { TransactionType } from 'models/enums';
 
 interface SoulZapApiAddLiquidityProps {
   open: boolean;
@@ -41,8 +43,6 @@ interface SoulZapApiAddLiquidityProps {
   bond?: Bond;
   liquidityDex?: LiquidityDex;
   chainId: ChainId;
-  token0?: string;
-  token1?: string;
 }
 
 const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
@@ -50,8 +50,6 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
   onDismiss,
   bond,
   chainId,
-  token0,
-  token1,
 }) => {
   const { t } = useTranslation();
   // Loading state for both approve and purchase functions
@@ -73,8 +71,6 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
     estimateOutput: consideredValue,
   } = useSoulZapLPApiQuote(typedValue, inputTokenString, lpAddress ?? '', bond);
 
-  const lpTokenACurrency = useCurrency(token0);
-  const lpTokenBCurrency = useCurrency(token1);
   const inputCurrency = useCurrency(inputTokenString);
   const lpCurrency = useCurrency(lpAddress);
   const lpBalanceString = useCurrencyBalance(
@@ -85,7 +81,7 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
     typedValue && Number(typedValue) > 0
       ? new BigNumber(consideredValue).toNumber()
       : 0;
-  const outputUSD = bigValue * (bond?.tokenPrice ?? 0);
+  const outputUSD = bigValue * (bond?.lpPrice ?? 0);
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
     lpCurrency ?? undefined,
@@ -159,6 +155,7 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
             undefined,
             {
               summary: t('zapBond'),
+              type: TransactionType.ZAP,
             },
             res.hash,
           );
@@ -210,6 +207,10 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
   }, [approveCallback]);
 
   const [openZapSlippage, setOpenZapSlippage] = useState(false);
+
+  const splited = bond?.lpToken?.symbol?.split('-');
+  const lpTokenACurrency = useCurrencyFromSymbol(splited?.[0]);
+  const lpTokenBCurrency = useCurrencyFromSymbol(splited?.[1]);
 
   return (
     <CustomModal
@@ -270,11 +271,11 @@ const SoulZapApiAddLiquidity: FC<SoulZapApiAddLiquidityProps> = ({
           </Box>
           <Box className='flex justify-between' mt='12px'>
             <small className='text-secondary'>
-              {!bond?.tokenPrice && consideredValue !== '0.0' ? (
+              {!bond?.lpPrice && consideredValue !== '0.0' ? (
                 <Loader />
               ) : consideredValue !== '0.0' &&
-                bond?.tokenPrice &&
-                bond?.tokenPrice !== 0 &&
+                bond?.lpPrice &&
+                bond?.lpPrice !== 0 &&
                 consideredValue ? (
                 `$${outputUSD.toFixed(2)}`
               ) : null}

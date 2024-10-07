@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
-import { QuestionHelper } from 'components';
+import { CurrencyLogo, QuestionHelper } from 'components';
 import BuyBondModal from './BuyBondModal';
-import BondTokenDisplay from './BondTokenDisplay';
 import { formatCompact, formatNumber } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { BigNumber } from 'ethers';
 import { Bond } from 'types/bond';
 import { Skeleton } from '@material-ui/lab';
 import { formatUnits } from 'ethers/lib/utils';
+import { useCurrency } from 'hooks/v3/Tokens';
 
 interface BondItemProps {
   bond: Bond;
@@ -23,11 +23,6 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
   const isMobile = useMediaQuery(breakpoints.down('xs'));
   const isTablet = useMediaQuery(breakpoints.down('sm'));
 
-  const token1Obj = bond.token;
-  const token2Obj =
-    bond.billType === 'reserve' ? bond.earnToken : bond.quoteToken;
-  const token3Obj = bond.earnToken;
-  const stakeLP = bond.billType !== 'reserve';
   const vestingDays = useMemo(() => {
     if (!bond || !bond.vestingTerm) return 0;
     return Math.floor(Number(bond.vestingTerm) / (3600 * 24));
@@ -37,7 +32,7 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
       BigNumber.from(bond?.maxTotalPayOut ?? '0').sub(
         BigNumber.from(bond?.totalPayoutGiven ?? '0'),
       ),
-      token3Obj?.decimals?.[chainId] ?? undefined,
+      bond.earnToken?.decimals?.[chainId] ?? undefined,
     ),
   );
   const thresholdToShow =
@@ -61,6 +56,10 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
     ? available <= thresholdToHide || Number(bond.discount) === 100
     : false;
 
+  const showCaseToken = useCurrency(
+    bond.showcaseToken?.address[chainId] ?? bond.earnToken.address[chainId],
+  );
+
   return (
     <Box mb={2} className='bondItemWrapper'>
       {openModal && (
@@ -74,21 +73,12 @@ const BondItem: React.FC<BondItemProps> = ({ bond }) => {
         className='flex items-center'
         width={isMobile ? '100%' : isTablet ? '50%' : '30%'}
         my='6px'
+        gridGap={8}
       >
-        <BondTokenDisplay
-          token1Obj={token1Obj}
-          token2Obj={token2Obj}
-          token3Obj={token3Obj}
-          stakeLP={stakeLP}
-        />
-        <Box className='flex flex-col items-start' ml={2}>
+        <CurrencyLogo currency={showCaseToken ?? undefined} size='40px' />
+        <Box className='flex flex-col items-start'>
           <Box className='bondTypeTag'>{bond.billType}</Box>
-          <h6>
-            {token1Obj?.symbol}
-            {stakeLP ? `/${token2Obj?.symbol}` : ''}
-            {` -> `}
-            {stakeLP ? token3Obj?.symbol : token2Obj?.symbol}
-          </h6>
+          <h6>{bond.earnToken.symbol}</h6>
         </Box>
       </Box>
       <Box

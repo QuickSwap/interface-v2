@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId } from '@uniswap/sdk';
 import { DLDQUICK, OLD_DQUICK } from 'constants/v3/addresses';
+import { TransactionType } from 'models/enums';
 
 const web3 = new Web3();
 
@@ -64,6 +65,7 @@ const UnstakeQuickModal: React.FC<UnstakeQuickModalProps> = ({
         );
         addTransaction(response, {
           summary: `${t('unstake')} ${dQuickToken?.symbol}`,
+          type: TransactionType.UNSTAKE,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {

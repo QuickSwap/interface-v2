@@ -27,6 +27,7 @@ import { useUSDCPriceToken } from 'utils/useUSDCPrice';
 import { GlobalConst } from 'constants/index';
 import { ChainId } from '@uniswap/sdk';
 import { formatUnits } from 'ethers/lib/utils';
+import { TransactionType } from 'models/enums';
 
 const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
   syrup,
@@ -73,6 +74,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         });
         addTransaction(response, {
           summary: t('claimrewards1', { symbol: syrup.token.symbol }),
+          type: TransactionType.CLAIMED_REWARDS,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -96,6 +98,7 @@ const SyrupCardDetails: React.FC<{ syrup: SyrupInfo; dQUICKAPY: string }> = ({
         });
         addTransaction(response, {
           summary: t('withdrawliquidity'),
+          type: TransactionType.WITHDRAW_LIQUIDITY,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
