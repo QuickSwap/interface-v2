@@ -16,10 +16,9 @@ import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
 import BurnImage from 'assets/images/fire.png';
-import { useLairDQUICKAPY } from 'utils';
+// import { useLairDQUICKAPY } from 'utils';
 import { formatAmount } from 'utils/numbers';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { fetchQuickBurnAmount, fetchQuickBurnApy } from 'utils/api';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -30,7 +29,7 @@ const DragonPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const lairInfoToUse = useNewLairInfo();
-  const APY = useLairDQUICKAPY(true, lairInfoToUse);
+  const APY = 0; //useLairDQUICKAPY(true, lairInfoToUse);
   const quickToken = DLQUICK[chainIdToUse];
   const dQuickToken = DLDQUICK[chainIdToUse];
   const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
@@ -49,6 +48,10 @@ const DragonPage: React.FC = () => {
         Number(lairInfoToUse?.totalQuickBalance.toExact()) * quickPrice,
       )
     : 0;
+  const totalSupplyQuick = lairInfoToUse
+    ? Number(lairInfoToUse.quickTotalSupply.toExact())
+    : 0;
+
   const history = useHistory();
 
   const [quickBurnAmount, setQuickBurnAmount] = useState('0');
@@ -63,22 +66,43 @@ const DragonPage: React.FC = () => {
   }, [showLair]);
 
   useEffect(() => {
-    const fetchQuickBurn = async () => {
-      const amount = await fetchQuickBurnAmount();
-      const formattedAmount = formatAmount(amount);
-      const usdPrice = formatAmount(amount * quickPrice);
-      setQuickBurnAmount(formattedAmount);
-      setQuickBurnUSD(usdPrice);
+    const fetchQuickBurnData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/quick-burn/3?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          return;
+        }
+        const resData = await res.json();
+        const burnAmount = Number(resData.data.globals.totalBurned);
+        const formattedBurnAmount = formatAmount(burnAmount);
+        const burnUsd = formatAmount(burnAmount * quickPrice);
+        setQuickBurnAmount(formattedBurnAmount);
+        setQuickBurnUSD(burnUsd);
+
+        const monthBurnAmount = resData.data.chartData.reduce(
+          (sum, value) => sum + Number(value.amount),
+          0,
+        );
+        const circulateSupply = totalSupplyQuick
+          ? totalSupplyQuick -
+            Number(lairInfoToUse?.totalQuickBalance.toExact())
+          : 0;
+        const apy =
+          circulateSupply > 0
+            ? Number(
+                Number((monthBurnAmount * 12) / circulateSupply).toFixed(3),
+              ).toString()
+            : '0';
+        setQuickBurnApy(apy);
+      } catch {
+        setQuickBurnApy('0');
+      }
     };
 
-    const fetchQuickBurnAPY = async () => {
-      const apy = await fetchQuickBurnApy();
-      setQuickBurnApy(apy);
-    };
-
-    fetchQuickBurn();
-    fetchQuickBurnAPY();
-  }, [quickPrice]);
+    fetchQuickBurnData();
+  }, [quickPrice, totalSupplyQuick]);
 
   return showLair ? (
     <Box width='100%' mb={3}>
@@ -120,7 +144,7 @@ const DragonPage: React.FC = () => {
               <Box>
                 <small>{t('stakingApy')}</small>
                 <Box display='flex' alignItems='center'>
-                  <h5 className='text-success'>{APY ? APY : '-'}%</h5>
+                  <h5 className='text-success'>{APY}%</h5>
                   <img src={APRHover} width={18} />
                 </Box>
               </Box>
