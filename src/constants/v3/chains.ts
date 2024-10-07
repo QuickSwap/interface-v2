@@ -29,6 +29,15 @@ type ChainInfo = { readonly [chainId: number]: L1ChainInfo | L2ChainInfo } & {
   { readonly [chainId in SupportedL1ChainId]: L1ChainInfo };
 
 export const CHAIN_INFO: ChainInfo = {
+  [ChainId.ETHEREUM]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://etherscan.io/',
+    infoLink: 'https://algebra.finance',
+    label: 'Ethereum',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Ether',
+    nativeCurrencyDecimals: 18,
+  },
   [ChainId.MATIC]: {
     docs: 'https://algebra.finance/',
     explorer: 'https://polygonscan.com/',

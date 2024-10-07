@@ -90,6 +90,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showConvert = config['convert']['available'];
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
+  const showDappOs = config['dappos']['available'];
   const showGamingHub = config['gamingHub']['available'];
   const showLeaderboard = config['leaderboard']['available'];
   const showPerps = config['perps']['available'];
@@ -289,14 +290,16 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     });
   }
 
-  menuItems.push({
-    link: '/dappOS',
-    text: 'DappOS',
-    id: 'dappos-page-link',
-    isExternal: true,
-    target: '_blank',
-    externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
-  });
+  if (showDappOs) {
+    menuItems.push({
+      link: '/dappOS',
+      text: 'DappOS',
+      id: 'dappos-page-link',
+      isExternal: true,
+      target: '_blank',
+      externalLink: process?.env?.REACT_APP_DAPPOS_URL || '',
+    });
+  }
 
   if (showLending) {
     menuItems.push({
