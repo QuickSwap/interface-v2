@@ -6,6 +6,7 @@ import {
 } from 'state/transactions/hooks';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React } from 'hooks';
+import { TransactionType } from 'models/enums';
 
 const useTransferBond = (
   billNftAddress: string,
@@ -24,7 +25,10 @@ const useTransferBond = (
       const tx = await bondNftContract[
         'safeTransferFrom(address,address,uint256)'
       ](account ?? '', toAddress, billId);
-      addTransaction(tx, { summary: t('transferBond') });
+      addTransaction(tx, {
+        summary: t('transferBond'),
+        type: TransactionType.TRANSFER_BOND,
+      });
       const resp = await tx.wait();
       finalizeTransaction(resp, {
         summary: t('transferBond'),

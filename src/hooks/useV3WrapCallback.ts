@@ -1,4 +1,4 @@
-import { WETH, ETHER } from '@uniswap/sdk';
+import { WETH, ETHER, Token } from '@uniswap/sdk';
 import { Currency } from '@uniswap/sdk-core';
 import { useMemo, useState } from 'react';
 import { tryParseAmount } from 'state/swap/v3/hooks';
@@ -6,6 +6,8 @@ import { useTransactionAdder } from 'state/transactions/hooks';
 import { useCurrencyBalance } from 'state/wallet/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
 import { useWETHContract } from './useContract';
+import { TransactionType } from 'models/enums';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -77,6 +79,8 @@ export default function useWrapCallback(
                     summary: `Wrap ${inputAmount.toSignificant(2)} ${
                       ETHER[chainId].symbol
                     } to ${WETH[chainId].symbol}`,
+                    type: TransactionType.WRAP,
+                    tokens: [Token.ETHER[chainId]],
                   });
                   await txReceipt.wait();
                   setWrapping(false);
@@ -111,6 +115,8 @@ export default function useWrapCallback(
                     summary: `Unwrap ${inputAmount.toSignificant(2)} ${
                       WETH[chainId].symbol
                     } to ${ETHER[chainId].symbol}`,
+                    type: TransactionType.UNWRAP,
+                    tokens: [Token.ETHER[chainId]],
                   });
                   await txReceipt.wait();
                   setUnWrapping(false);

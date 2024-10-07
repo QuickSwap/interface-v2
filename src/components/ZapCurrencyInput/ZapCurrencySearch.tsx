@@ -27,7 +27,7 @@ import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { wrappedCurrencyV3 } from 'utils/wrappedCurrency';
 import { useSetZapInputList, useZapInputList } from 'state/zap/hooks';
-import { createFilterToken } from 'components/DualCurrencyPanel/filtering';
+import { createFilterToken } from 'components/TokenSelectorPanelForBonds/filtering';
 import { useAllTokens } from 'hooks/v3/Tokens';
 
 interface CurrencySearchProps {

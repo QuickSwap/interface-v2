@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import store from 'state';
 import GoogleAnalyticsReporter from './components/GoogleAnalytics/GoogleAnalyticsReporter';
 import { OrderlyConfigProvider } from '@orderly.network/hooks';
+
 const PerpsPage = lazy(() => import('./pages/PerpsPage'));
 const DragonPage = lazy(() => import('./pages/DragonPage'));
 const FarmPage = lazy(() => import('./pages/FarmPage'));
@@ -65,6 +66,7 @@ import { mainTheme } from './theme';
 import Background from 'layouts/Background';
 import { RedirectExternal } from 'components/RedirectExternal/RedirectExternal';
 import NotFound404Page from 'pages/NotFound404Page';
+import ForbiddenPage from 'pages/ForbiddenPage';
 import { ArcxAnalyticsProvider } from '@arcxmoney/analytics';
 import '@orderly.network/react/dist/styles.css';
 import './index.scss';
@@ -77,6 +79,7 @@ import {
   createSoulZapApiClient,
   SoulZapApiClient,
 } from 'utils/soulZapTrpcClient';
+import { BridgePage } from 'pages';
 
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ?? '';
 
@@ -186,6 +189,11 @@ const App: React.FC = () => {
                     <Route exact path='/swap/:version?'>
                       <PageLayout>
                         <SwapPage />
+                      </PageLayout>
+                    </Route>
+                    <Route exact path='/bridge'>
+                      <PageLayout>
+                        <BridgePage />
                       </PageLayout>
                     </Route>
                     <Route exact path='/leader-board'>
@@ -306,6 +314,11 @@ const App: React.FC = () => {
                     <Route exact path='/calculator/0.01-eth-to-usd'>
                       <PageLayout>
                         <CalculatorPage />
+                      </PageLayout>
+                    </Route>
+                    <Route path='/forbidden'>
+                      <PageLayout>
+                        <ForbiddenPage />
                       </PageLayout>
                     </Route>
                     <Route path='*'>

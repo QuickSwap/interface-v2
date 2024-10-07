@@ -333,7 +333,12 @@ export function useV3DerivedMintInfo(
   };
 
   const feeAmount = useMemo(() => {
-    const algebraChains = [ChainId.MATIC, ChainId.DOGECHAIN, ChainId.ZKEVM];
+    const algebraChains = [
+      ChainId.MATIC,
+      ChainId.DOGECHAIN,
+      ChainId.ZKEVM,
+      ChainId.LAYERX,
+    ];
     if (existingPosition && existingPosition.pool.isUni)
       return existingPosition.pool.fee;
     if (!feeTier) {
@@ -993,8 +998,7 @@ export function useV3DerivedMintInfo(
 
   // sorted for token order
   const depositADisabled =
-    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&
@@ -1007,8 +1011,7 @@ export function useV3DerivedMintInfo(
             poolForPosition.token1.equals(tokenA)),
       ));
   const depositBDisabled =
-    (liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE) &&
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
     (invalidRange ||
       Boolean(
         (deposit0Disabled &&

@@ -11,6 +11,7 @@ import { ZapType } from 'constants/index';
 import { MergedZap } from 'state/zap/actions';
 import { useActiveWeb3React } from 'hooks';
 import { Zap } from 'v3lib/entities/zap';
+import { TransactionType } from 'models/enums';
 
 export const DEFAULT_ADD_V2_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
@@ -75,7 +76,7 @@ function useZapCallArguments(
       return [];
     }
 
-    const swapMethods = [];
+    const swapMethods: any[] = [];
 
     swapMethods.push(
       Zap.zapCallParameters(zap, {
@@ -255,7 +256,10 @@ export function useZapCallback(
                       ? recipientAddressOrName
                       : recipientAddressOrName
                   }`;
-            addTransaction(response, { summary: 'Zap' });
+            addTransaction(response, {
+              summary: 'Zap',
+              type: TransactionType.ZAP,
+            });
             return response.hash;
           })
           .catch((error: any) => {

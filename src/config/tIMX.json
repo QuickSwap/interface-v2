@@ -63,6 +63,9 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": false
+  },
   "perpsV2": {
     "available": false
   },
@@ -88,6 +91,9 @@
     "available": false
   },
   "ichi": {
+    "available": false
+  },
+  "lpLock": {
     "available": false
   }
 }

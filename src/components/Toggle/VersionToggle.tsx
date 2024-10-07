@@ -1,20 +1,25 @@
 import React, { useEffect } from 'react';
+import NewTag from 'assets/images/NewTag.png';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsLpLock, useIsV2 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { getConfig } from 'config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
+  const { isV2, updateIsV2 } = useIsV2();
+  const { isLpLock, updateIsLpLock } = useIsLpLock();
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
+  const v2Available = config['v2'];
+  const v3Available = config['v3'];
   const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const singleTokenEnabled = config['ichi']['available'];
-  const { updateIsV2 } = useIsV2();
+  const lpLockEnabled = config['lpLock']['available'];
   const params: any = useParams();
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
@@ -29,6 +34,7 @@ const VersionToggle: React.FC = () => {
 
   useEffect(() => {
     updateIsV2(version === 'v2');
+    updateIsLpLock(version === 'lpLocker');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
@@ -58,23 +64,27 @@ const VersionToggle: React.FC = () => {
 
   return (
     <Box className='version-toggle-container'>
-      <Box
-        className={version === 'v2' ? 'version-toggle-active' : ''}
-        onClick={() => {
-          redirectWithVersion('v2');
-        }}
-      >
-        <small>{t('V2')}</small>
-      </Box>
+      {v2Available && (
+        <Box
+          className={version === 'v2' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('v2');
+          }}
+        >
+          <small>{t('V2')}</small>
+        </Box>
+      )}
 
-      <Box
-        className={version === 'v3' ? 'version-toggle-active' : ''}
-        onClick={() => {
-          redirectWithVersion('v3');
-        }}
-      >
-        <small>{t('V3')}</small>
-      </Box>
+      {v3Available && (
+        <Box
+          className={version === 'v3' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('v3');
+          }}
+        >
+          <small>{t('V3')}</small>
+        </Box>
+      )}
 
       {isPoolPage && singleTokenEnabled && (
         <Box
@@ -84,6 +94,17 @@ const VersionToggle: React.FC = () => {
           }}
         >
           <small>{t('singleToken')}</small>
+        </Box>
+      )}
+      {isPoolPage && lpLockEnabled && (
+        <Box
+          className={isLpLock ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('lpLocker');
+          }}
+        >
+          <small>{t('liquidityLocker')}</small>
+          <img src={NewTag} alt='new feature' width={46} />
         </Box>
       )}
 

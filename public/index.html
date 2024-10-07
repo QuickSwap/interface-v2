@@ -46,9 +46,7 @@
 
       gtag('config', 'G-L7F0MLF9R2');
     </script>
-    <script
-      src="https://api.hypelab.com/v1/scripts/hp-sdk.js?v=0"
-    ></script>
+    <script src="https://api.hypelab.com/v1/scripts/hp-sdk.js?v=0"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         HypeLab.initialize({
@@ -57,6 +55,17 @@
           environment: 'production',
         });
       });
+    </script>
+    <script>
+      var script = document.createElement('script');
+      script.defer = true;
+      script.crossOrigin = 'anonymous';
+      script.src =
+        'https://cdn.markfi.xyz/scripts/analytics/0.11.18/cookie3.analytics.min.js';
+      script.setAttribute('site-id', '9a9e2391-5736-4697-b63f-600bc63de8ad');
+      script.integrity =
+        'sha384-5ACBVBmg9LPRTQ7zWLnt2g6dUyFA8qNGkveZ0dAUcasaImV008rHYh1AdBarFCcK';
+      document.getElementsByTagName('head')[0].appendChild(script);
     </script>
   </head>
 

@@ -3,6 +3,7 @@
   "v2": false,
   "rpc": "https://rpc.xlayer.tech",
   "blockExplorer": "https://www.oklink.com/xlayer",
+  "bridgeUrl": "https://www.okx.com/xlayer/bridge",
   "networkName": "X Layer",
   "aprAPINetwork": "layerx",
   "chainId": 196,
@@ -13,6 +14,10 @@
     "name": "OKB",
     "symbol": "OKB",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/okx_cover_img.svg",
+    "supportedChains": ["/bridge/eth.svg", "/bridge/x_layer.webp"]
   },
   "swap": {
     "available": true,
@@ -64,6 +69,9 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": false
+  },
   "perpsV2": {
     "available": false
   },
@@ -83,12 +91,15 @@
     "available": false
   },
   "steer": {
-    "available": false
+    "available": true
   },
   "dappos": {
     "available": false
   },
   "ichi": {
+    "available": false
+  },
+  "lpLock": {
     "available": false
   },
   "maxChunks": 20,

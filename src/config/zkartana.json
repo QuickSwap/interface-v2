@@ -64,6 +64,9 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": false
+  },
   "perpsV2": {
     "available": false
   },
@@ -89,6 +92,9 @@
     "available": false
   },
   "defiedge": {
+    "available": false
+  },
+  "lpLock": {
     "available": false
   }
 }

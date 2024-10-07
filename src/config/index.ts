@@ -44,3 +44,5 @@ export const getQlpManager = () => {
 export const getOrderlyFeeTiers = () => {
   return orderlyFeeTiers;
 };
+
+export const AML_SCORE_THRESHOLD = 7;

@@ -13,8 +13,13 @@ import { Box, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
+import Fire from 'assets/images/fire.svg';
 import { useAllTokens, useToken, useInActiveTokens } from 'hooks/Tokens';
-import { useInactiveTokenList, useSelectedListInfo } from 'state/lists/hooks';
+import {
+  WrappedTokenInfo,
+  useInactiveTokenList,
+  useSelectedListInfo,
+} from 'state/lists/hooks';
 import { selectList } from 'state/lists/actions';
 import { GlobalConst } from 'constants/index';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
@@ -22,13 +27,16 @@ import { ReactComponent as SearchIcon } from 'assets/images/SearchIcon.svg';
 import CommonBases from './CommonBases';
 import CurrencyList from './CurrencyList';
 import { AppDispatch } from 'state';
-import { isAddress } from 'utils';
+import { formatNumber, isAddress } from 'utils';
 import { filterTokens } from 'utils/filtering';
 import { useTokenComparator } from 'utils/sorting';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import CustomTabSwitch from 'components/v3/CustomTabSwitch';
+import { useLocalStorage } from '@orderly.network/hooks';
+import { useUserAddedTokens } from 'state/user/hooks';
 
 interface CurrencySearchProps {
   isOpen: boolean;
@@ -48,16 +56,58 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   onDismiss,
   isOpen,
 }) => {
+  const userAddedTokens = useUserAddedTokens();
+
+  const [favoriteCurrencies, setFavoriteCurrencies] = useLocalStorage<
+    Currency[]
+  >('favoriteCurrencies', []);
+
+  // const [favoriteCurrencies, setFavoriteCurrencies] = useState<Currency[]>([]);
+  const handleChangeFavorite = (currency: Currency, checked: boolean) => {
+    if (checked) {
+      setFavoriteCurrencies([...favoriteCurrencies, currency]);
+    } else {
+      setFavoriteCurrencies(
+        favoriteCurrencies.filter(
+          (item: Currency) => item.symbol !== currency.symbol,
+        ),
+      );
+    }
+  };
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = ETHER[chainIdToUse];
+
   const handleInput = useCallback((input: string) => {
     const checksummedInput = isAddress(input);
     setSearchQuery(checksummedInput || input);
   }, []);
-
+  const [tab, setTab] = useState('all');
+  const tabs = [
+    {
+      id: 'all',
+      text: 'All',
+    },
+    {
+      id: 'trending',
+      text: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <img src={Fire} alt='fire' />
+          Trending
+        </div>
+      ),
+    },
+    {
+      id: 'favorites',
+      text: 'Favorites',
+    },
+    {
+      id: 'inWallet',
+      text: 'In Wallet',
+    },
+  ];
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchQueryInput, setSearchQueryInput] = useDebouncedChangeHandler(
     searchQuery,
@@ -86,11 +136,36 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     return s === '' || s === 'e' || s === 'et' || s === 'eth';
   }, [searchQuery]);
 
+  const currencyBalances = useCurrencyBalances(
+    account || undefined,
+    showETH
+      ? [nativeCurrency, ...Object.values(allTokens)]
+      : Object.values(allTokens),
+  );
   const tokenComparator = useTokenComparator(false);
 
   const filteredTokens: Token[] = useMemo(() => {
     if (isAddressSearch) return searchToken ? [searchToken] : [];
-    const filteredResult = filterTokens(Object.values(allTokens), searchQuery);
+    let updatedTokens = Object.values(allTokens);
+
+    if (tab === 'favorites') {
+      updatedTokens = [...favoriteCurrencies];
+    } else if (tab === 'trending') {
+      updatedTokens = updatedTokens.filter(
+        (t) => (t as any).tokenInfo?.trending,
+      );
+    } else if (tab === 'inWallet') {
+      updatedTokens = Object.values(allTokens).filter((t) => {
+        const currencyFound = currencyBalances.find(
+          (item) => item?.currency?.symbol === t?.symbol,
+        );
+        if (!currencyFound) return false;
+
+        return Number(currencyFound.toExact()) > 0;
+      });
+    }
+
+    const filteredResult = filterTokens(updatedTokens, searchQuery);
     let filteredInactiveResult: Token[] = [];
     // search in inactive token list.
     if (searchQuery) {
@@ -107,7 +182,16 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
     );
     // return filterTokens(Object.values(allTokens), searchQuery);
     return [...filteredDefaultTokens, ...filteredInactiveResult];
-  }, [isAddressSearch, searchToken, allTokens, inactiveTokens, searchQuery]);
+  }, [
+    isAddressSearch,
+    searchToken,
+    allTokens,
+    inactiveTokens,
+    searchQuery,
+    favoriteCurrencies,
+    currencyBalances,
+    tab,
+  ]);
 
   const filteredSortedTokens: Token[] = useMemo(() => {
     if (searchToken) return [searchToken];
@@ -133,11 +217,6 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   const allCurrencies = showETH
     ? [nativeCurrency, ...filteredSortedTokens]
     : filteredSortedTokens;
-
-  const currencyBalances = useCurrencyBalances(
-    account || undefined,
-    allCurrencies,
-  );
 
   const tokenAddresses = allCurrencies
     .map((currency) => {
@@ -209,16 +288,23 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           autoFocus
         />
       </Box>
-      {showCommonBases && (
-        <CommonBases
-          chainId={chainIdToUse}
-          onSelect={handleCurrencySelect}
-          selectedCurrency={selectedCurrency}
-        />
-      )}
-
+      <CommonBases
+        chainId={chainIdToUse}
+        onSelect={handleCurrencySelect}
+        currencies={favoriteCurrencies.map(
+          (item: WrappedTokenInfo) =>
+            new WrappedTokenInfo(item.tokenInfo, item?.tags || []),
+        )}
+        selectedCurrency={selectedCurrency}
+        onRemoveFavorite={(c) => handleChangeFavorite(c, false)}
+      />
+      <CustomTabSwitch
+        items={tabs}
+        value={tab}
+        handleTabChange={setTab}
+        height={45}
+      />
       <Divider />
-
       <Box flex={1}>
         <CurrencyList
           chainId={chainIdToUse}
@@ -229,6 +315,8 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
           selectedCurrency={selectedCurrency}
           balances={currencyBalances}
           usdPrices={usdPrices}
+          handleChangeFavorite={handleChangeFavorite}
+          favoriteCurrencies={favoriteCurrencies}
         />
       </Box>
 

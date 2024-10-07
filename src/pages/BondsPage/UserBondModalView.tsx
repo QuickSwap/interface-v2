@@ -16,6 +16,8 @@ import {
 } from 'hooks/bond/useUserBond';
 import { formatUnits } from 'ethers/lib/utils';
 import { formatNumber } from 'utils';
+import { useCurrency, useCurrencyFromSymbol } from 'hooks/Tokens';
+import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
 
 interface BondModalProps {
   onDismiss?: () => void;
@@ -40,7 +42,7 @@ const UserBondModalView: React.FC<BondModalProps> = ({
 
   const { chainId } = useActiveWeb3React();
   const { t } = useTranslation();
-  const { token, quoteToken, earnToken, lpToken, index, billType } = bond;
+  const { earnToken, lpToken, index, billType } = bond;
   const userBond = userOwnedBonds?.find(
     (b) => billId && parseInt(b.id) === parseInt(billId),
   );
@@ -64,6 +66,10 @@ const UserBondModalView: React.FC<BondModalProps> = ({
   const claimableUsd = Number(claimable) * (bond?.earnTokenPrice ?? 0);
 
   const [openTransferBondModal, setOpenTransferBondModal] = useState(false);
+  const showCaseToken = useCurrency(
+    userBond?.bond.showcaseToken?.address[chainId] ??
+      userBond?.bond.earnToken.address[chainId],
+  );
 
   return (
     <>
@@ -106,18 +112,12 @@ const UserBondModalView: React.FC<BondModalProps> = ({
                 )}
                 <Box className='bondTypeTag'>{billType}</Box>
               </Box>
-              <Box className='flex items-center' mt='12px'>
-                <BondTokenDisplay
-                  token1Obj={token}
-                  token2Obj={
-                    bond.billType === 'reserve' ? earnToken : quoteToken
-                  }
-                  token3Obj={earnToken}
-                  stakeLP={billType !== 'reserve'}
+              <Box className='flex items-center' mt='12px' gridGap={8}>
+                <CurrencyLogo
+                  currency={showCaseToken ?? undefined}
+                  size='32px'
                 />
-                <Box margin='0 8px 0 12px'>
-                  <h5>{lpToken.symbol}</h5>
-                </Box>
+                <h5>{bond.earnToken.symbol}</h5>
                 <p className='weight-600'>#{userBond?.id}</p>
               </Box>
             </Box>

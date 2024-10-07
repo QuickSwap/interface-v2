@@ -1,4 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AML_SCORE_THRESHOLD } from 'config';
 import {
   useDefiedgeStrategyContract,
   useGammaUNIProxyContract,
@@ -10,7 +12,11 @@ import {
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useIsExpertMode,
+  useUserSlippageTolerance,
+  useAmlScore,
+} from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
@@ -29,7 +35,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ChainId, ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
@@ -58,6 +64,9 @@ import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import { ZERO } from 'v3lib/utils';
 import { Presets } from 'state/mint/v3/reducer';
+import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -76,6 +85,7 @@ export function AddLiquidityButton({
   title,
   setRejected,
 }: IAddLiquidityButton) {
+  const history = useHistory();
   const { t } = useTranslation();
   const { chainId, library, account } = useActiveWeb3React();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -112,6 +122,8 @@ export function AddLiquidityButton({
   const isNetworkFailed = useIsNetworkFailedImmediate();
 
   const [allowedSlippage] = useUserSlippageTolerance();
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const allowedSlippagePercent: Percent = useMemo(() => {
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
@@ -282,6 +294,11 @@ export function AddLiquidityButton({
     if (!chainId || !library || !account || !wethContract || !amountToWrap)
       return;
 
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+
     setWrappingETH(true);
     try {
       const wrapEstimateGas = await wethContract.estimateGas.deposit({
@@ -299,6 +316,8 @@ export function AddLiquidityButton({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -315,6 +334,11 @@ export function AddLiquidityButton({
     if (!chainId || !library || !account) return;
 
     if (!baseCurrency || !quoteCurrency) {
+      return;
+    }
+
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
       return;
     }
 
@@ -360,6 +384,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -459,6 +485,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -562,6 +590,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -613,7 +643,6 @@ export function AddLiquidityButton({
       setAttemptingTxn(true);
 
       const zeroCurrencyAmount = CurrencyAmount.fromRawAmount(quoteCurrency, 0);
-      console.log(zeroCurrencyAmount.numerator.toString());
 
       try {
         const estimatedGas = await defiedgeStrategyContract.estimateGas.mint(
@@ -670,6 +699,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -755,6 +786,13 @@ export function AddLiquidityButton({
                     });
                 addTransaction(response, {
                   summary,
+                  type: TransactionType.ADDED_LIQUIDITY,
+                  tokens: [
+                    ((baseCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                    ((quoteCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                  ],
                 });
 
                 dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
@@ -1019,7 +1057,7 @@ export function AddLiquidityButton({
       )}
       <Button
         className='v3-supply-liquidity-button'
-        disabled={!isReady}
+        disabled={!isReady || isAmlScoreLoading}
         onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
       >
         {mintInfo.presetRange?.type === Presets.OUT_OF_RANGE

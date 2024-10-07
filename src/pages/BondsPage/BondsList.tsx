@@ -79,7 +79,6 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
 
         const searchCondition =
           bond.earnToken.symbol.toLowerCase().includes(search.toLowerCase()) ||
-          bond.token.symbol.toLowerCase().includes(search.toLowerCase()) ||
           bond.lpToken.symbol.toLowerCase().includes(search.toLowerCase());
         return searchCondition && bondStatusCondition;
       })
@@ -97,14 +96,8 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
             ? sortMultiplier
             : -1 * sortMultiplier;
         } else {
-          const title1 =
-            bond1.token.symbol +
-            bond1.quoteToken.symbol +
-            bond1.earnToken.symbol;
-          const title2 =
-            bond2.token.symbol +
-            bond2.quoteToken.symbol +
-            bond2.earnToken.symbol;
+          const title1 = bond1.lpToken.symbol + bond1.earnToken.symbol;
+          const title2 = bond2.lpToken.symbol + bond2.earnToken.symbol;
           return title1 > title2 ? sortMultiplier : -1 * sortMultiplier;
         }
       });
@@ -118,7 +111,6 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
 
         const searchCondition =
           bond.earnToken.symbol.toLowerCase().includes(search.toLowerCase()) ||
-          bond.token.symbol.toLowerCase().includes(search.toLowerCase()) ||
           bond.lpToken.symbol.toLowerCase().includes(search.toLowerCase());
         return searchCondition;
       })
@@ -170,13 +162,9 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
             : -1 * sortMultiplier;
         } else {
           const title1 =
-            bond1.bond.token.symbol +
-            bond1.bond.quoteToken.symbol +
-            bond1.bond.earnToken.symbol;
+            bond1.bond.lpToken.symbol + bond1.bond.earnToken.symbol;
           const title2 =
-            bond2.bond.token.symbol +
-            bond2.bond.quoteToken.symbol +
-            bond2.bond.earnToken.symbol;
+            bond2.bond.lpToken.symbol + bond2.bond.earnToken.symbol;
           return title1 > title2 ? sortMultiplier : -1 * sortMultiplier;
         }
       });
