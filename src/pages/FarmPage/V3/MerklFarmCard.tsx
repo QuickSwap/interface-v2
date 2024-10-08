@@ -83,6 +83,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   };
 
   const tokenMap = useSelectedTokenList();
+
   const token0 = getTokenFromAddress(farm.token0, chainId, tokenMap, []);
   const token1 = getTokenFromAddress(farm.token1, chainId, tokenMap, []);
 

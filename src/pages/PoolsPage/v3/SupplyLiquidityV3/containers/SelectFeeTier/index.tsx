@@ -230,16 +230,12 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
       (farm) =>
         currencyAAddress &&
         currencyBAddress &&
-        ((farm.campaignParameters.token0.toLowerCase() ===
-          currencyAAddress.toLowerCase() &&
-          farm.campaignParameters.token1.toLowerCase() ===
-            currencyBAddress.toLowerCase()) ||
-          (farm.campaignParameters.token0.toLowerCase() ===
-            currencyBAddress.toLowerCase() &&
-            farm.campaignParameters.token1.toLowerCase() ===
-              currencyAAddress.toLowerCase())) &&
+        ((farm.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
+          farm.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
+          (farm.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
+            farm.token1.toLowerCase() === currencyAAddress.toLowerCase())) &&
         (farm?.ammName && farm.ammName.toLowerCase() === 'quickswapuni'
-          ? Number(farm.campaignParameters.poolFee) * 10000 === feeAmount
+          ? Number(farm.poolFee) * 10000 === feeAmount
           : fee.text === 'Dynamic'),
     );
     const isFeeOnSteerFarm = !!steerVaults.find((vault) => {

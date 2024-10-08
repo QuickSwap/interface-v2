@@ -17,9 +17,11 @@ export const MerklClaimAll: React.FC = () => {
   const { chainId, account } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
   const fetchUserRewardsMerklFarms = async () => {
-    const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
+    if (!account) {
+      return [];
+    }
     const res = await fetch(
-      `${merklAPIURL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
+      `${process.env.REACT_APP_MERKL_API_URL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
     );
     const retData = await res.json();
     const data: any[] = [];
