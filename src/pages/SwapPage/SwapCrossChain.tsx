@@ -1,50 +1,92 @@
 import { SquidWidget } from '@0xsquid/widget';
-import { ConfigTheme } from '@0xsquid/widget/widget/core/types/config';
 import { Box, Grid } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
-import React, { useEffect } from 'react';
-import { useIsDarkMode } from 'state/user/hooks';
+import React from 'react';
 
 const SwapCrossChain: React.FC = () => {
-  const darkMode = useIsDarkMode();
   const { chainId } = useActiveWeb3React();
-  const darkModeStyle: ConfigTheme = {
-    baseContent: '#f3ecec',
-    neutralContent: '#696c80',
-    base100: '#0f0e0e',
-    base200: '#232531',
-    base300: '#0f1720',
-    error: '#ED6A5E',
-    warning: '#FFB155',
-    success: '#62C555',
-    primary: '#558AC5',
-    secondary: '#457cbb',
-    secondaryContent: '#2e2d30',
-    neutral: '#121319',
-    roundedBtn: '26px',
-    roundedBox: '1rem',
-    roundedDropDown: '20rem',
+
+  const darkTheme = {
+    borderRadius: {
+      'button-lg-primary': '1.25rem',
+      'button-lg-secondary': '1.25rem',
+      'button-lg-tertiary': '1.25rem',
+      'button-md-primary': '0.9375rem',
+      'button-md-secondary': '0.9375rem',
+      'button-md-tertiary': '0.9375rem',
+      container: '1.25rem',
+      input: '0.9375rem',
+      'menu-sm': '0.65rem',
+      'menu-lg': '0.65rem',
+      modal: '1.25rem',
+    },
+    fontSize: {
+      caption: '0.875rem',
+      'body-small': '1.14375rem',
+      'body-medium': '1.40625rem',
+      'body-large': '1.75625rem',
+      'heading-small': '2.1875rem',
+      'heading-medium': '3.08125rem',
+      'heading-large': '4.40625rem',
+    },
+    fontWeight: {
+      caption: '400',
+      'body-small': '400',
+      'body-medium': '400',
+      'body-large': '400',
+      'heading-small': '400',
+      'heading-medium': '400',
+      'heading-large': '400',
+    },
+    fontFamily: {
+      'squid-main': 'Geist, sans-serif',
+    },
+    boxShadow: {
+      container:
+        '0px 2px 4px 0px rgba(0, 0, 0, 0.20), 0px 5px 50px -1px rgba(0, 0, 0, 0.33)',
+    },
+    color: {
+      'grey-100': '#FBFBFD',
+      'grey-200': '#EDEFF3',
+      'grey-300': '#D1D6E0',
+      'grey-400': '#A7ABBE',
+      'grey-500': '#8A8FA8',
+      'grey-600': '#676B7E',
+      'grey-700': '#4C515D',
+      'grey-800': '#292C32',
+      'grey-900': '#17191C',
+      'royal-300': '#D9BEF4',
+      'royal-400': '#B893EC',
+      'royal-500': '#9E79D2',
+      'royal-700': '#6B45A1',
+      'status-positive': '#7AE870',
+      'status-negative': '#FF4D5B',
+      'status-partial': '#F3AF25',
+      'highlight-700': '#E4FE53',
+      'animation-bg': '#9E79D2',
+      'animation-text': '#FBFBFD',
+      'button-lg-primary-bg': '#9E79D2',
+      'button-lg-primary-text': '#FBFBFD',
+      'button-lg-secondary-bg': '#FBFBFD',
+      'button-lg-secondary-text': '#292C32',
+      'button-lg-tertiary-bg': '#292C32',
+      'button-lg-tertiary-text': '#D1D6E0',
+      'button-md-primary-bg': '#9E79D2',
+      'button-md-primary-text': '#FBFBFD',
+      'button-md-secondary-bg': '#FBFBFD',
+      'button-md-secondary-text': '#292C32',
+      'button-md-tertiary-bg': '#292C32',
+      'button-md-tertiary-text': '#D1D6E0',
+      'input-bg': '#17191C',
+      'input-placeholder': '#676B7E',
+      'input-text': '#D1D6E0',
+      'input-selection': '#D1D6E0',
+      'menu-bg': '#17191CA8',
+      'menu-text': '#FBFBFDA8',
+      'menu-backdrop': '#FBFBFD1A',
+      'modal-backdrop': '#17191C54',
+    },
   };
-  const lightModeStyle: ConfigTheme = {
-    baseContent: '#070002',
-    neutralContent: '#070002',
-    base100: '#FFFFFF',
-    base200: '#e7e7e7',
-    base300: '#FBF5FF',
-    error: '#ED6A5E',
-    warning: '#FFB155',
-    success: '#62C555',
-    primary: '#558AC5',
-    secondary: '#457cbb',
-    secondaryContent: '#F7F6FB',
-    neutral: '#FFFFFF',
-    roundedBtn: '26px',
-    roundedBox: '1rem',
-    roundedDropDown: '20rem',
-  };
-  useEffect(() => {
-    // console.log('SwapCrossChain #init');
-  }, []);
 
   return (
     <Grid style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -57,15 +99,15 @@ const SwapCrossChain: React.FC = () => {
         <SquidWidget
           config={{
             integratorId: 'quickswap-swap-widget',
-            companyName: 'Quickswap',
             apiUrl: 'https://apiplus.squidrouter.com',
             initialAssets: {
               from: {
                 chainId: chainId.toString(),
-                address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+                address: '0x0000000000000000000000000000000000000000',
               },
             },
-            style: darkMode ? darkModeStyle : lightModeStyle,
+            theme: darkTheme,
+            themeType: 'dark',
             loadPreviousStateFromLocalStorage: true,
             preferDex: ['QUICKSWAP V3', 'Quickswap V2'],
           }}
