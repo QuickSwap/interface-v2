@@ -1,12 +1,7 @@
 import React from 'react';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { List } from '@material-ui/core';
+import { Collapse, List, ListItem, ListItemText } from '@material-ui/core';
 import { useLocation, useHistory } from 'react-router-dom';
-import Collapse from '@mui/material/Collapse';
 import NewTag from 'assets/images/NewTag.png';
-
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { NewSparkleTag } from './NewSparkleTag';
 
@@ -58,35 +53,38 @@ export const HeaderListItem: React.FC<{
   return (
     <>
       <ListItem
-        disablePadding
+        button
+        onClick={handleClick}
         className={`menu-list-item ${
           pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
         } ${classNames}`}
       >
-        <ListItemButton onClick={handleClick} className='menu-list-item'>
-          <ListItemText
-            className={`mobile-btn-text menu-list-item ${
-              pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
-            }`}
-          >
-            <div className='flex menu-list-item'>
-              <div className='my-auto'>{item.text}</div>
-              <div className='mobile-new-tag'>
-                {item.isNew && <NewSparkleTag />}
-              </div>
+        <ListItemText
+          className={`mobile-btn-text menu-list-item ${
+            pathname !== '/' && item.link.includes(pathname) ? 'active' : ''
+          }`}
+        >
+          <div className='flex menu-list-item'>
+            <div className='my-auto'>{item.text}</div>
+            <div className='mobile-new-tag'>
+              {item.isNew ? (
+                <img src={NewTag} alt='new menu' width={46} />
+              ) : (
+                <></>
+              )}
             </div>
-          </ListItemText>
+          </div>
+        </ListItemText>
 
-          {hasSubMenu ? (
-            open ? (
-              <KeyboardArrowUp />
-            ) : (
-              <KeyboardArrowDown />
-            )
+        {hasSubMenu ? (
+          open ? (
+            <KeyboardArrowUp />
           ) : (
-            <></>
-          )}
-        </ListItemButton>
+            <KeyboardArrowDown />
+          )
+        ) : (
+          <></>
+        )}
       </ListItem>
       {hasSubMenu && (
         <Collapse

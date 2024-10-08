@@ -2,15 +2,7 @@ import React, { useState } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import { FC } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Box,
-} from '@mui/material';
+import { AppBar, Box, MenuItem, Select, Toolbar, Typography } from '@material-ui/core';
 
 interface Ticker {
   symbol: string;
@@ -60,7 +52,7 @@ export const Pairs: FC = () => {
     tickers[0].symbol,
   );
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = (event: any) => {
     setSelectedSymbol(event.target.value as string);
   };
 
@@ -75,7 +67,7 @@ export const Pairs: FC = () => {
           <Select
             value={selectedSymbol}
             onChange={handleChange}
-            sx={{
+            style={{
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',
@@ -100,25 +92,25 @@ export const Pairs: FC = () => {
                 marginLeft: 4,
               }}
             >
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 Open: {selectedTicker.open}
               </Typography>
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 Close: {selectedTicker.close}
               </Typography>
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 High: {selectedTicker.high}
               </Typography>
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 Low: {selectedTicker.low}
               </Typography>
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 Volume: {selectedTicker.volume}
               </Typography>
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 Amount: {selectedTicker.amount}
               </Typography>
-              <Typography variant='body1' sx={{ marginRight: 2 }}>
+              <Typography variant='body1' style={{ marginRight: 2 }}>
                 Count: {selectedTicker.count}
               </Typography>
             </Box>

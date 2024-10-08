@@ -6,7 +6,6 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -20,5 +19,6 @@
     "downlevelIteration": true,
     "noImplicitAny": false,
   },
-  "include": ["src"]
+  "include": ["./src"],
+  
 }
