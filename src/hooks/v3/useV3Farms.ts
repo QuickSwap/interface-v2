@@ -315,38 +315,33 @@ export const useGetMerklFarms = () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
     const amms = merklAMMs[chainId] ?? ['quickswapuni'];
-    // const ammStr = amms.map((amm) => `AMMs[]=${amm}&`).join('');
-    const res = await fetch(
-      `${merklAPIURL}/v3/campaigns?chainIds=${chainId}&live=true&types=2`,
-    );
+    const res = await fetch(`${merklAPIURL}/v3/merkl?chainIds=${chainId}`);
     const data = await res.json();
     const farmData =
-      data && data[chainId.toString()] ? data[chainId.toString()] : undefined;
+      data && data[chainId.toString()]
+        ? data[chainId.toString()]?.pools
+        : undefined;
     if (!farmData) return [];
     const currentTime = dayjs().unix();
-    const farmList: any[] = [];
 
-    Object.values(farmData).map((mainParameter: any) => {
-      const farms = Object.values(mainParameter)
-        .filter(
-          (item: any) =>
-            item.isLive &&
-            !item.isMock &&
-            (item?.endTimestamp ?? 0) >= currentTime &&
-            (item?.startTimestamp ?? 0) <= currentTime,
-        )
-        .filter(
-          (item: any) =>
-            !(blackListMerklFarms[chainId] ?? []).find(
-              (address) =>
-                item?.mainParameter &&
-                item.mainParameter.toLowerCase() ===
-                  address.toLocaleLowerCase(),
-            ) && amms.includes(item.ammName.toLocaleLowerCase()),
-        ) as any[];
-      farmList.push(...farms);
-    });
-    return farmList;
+    return Object.values(farmData)
+      .filter(
+        (item: any) =>
+          (item?.distributionData ?? []).filter(
+            (item: any) =>
+              item.isLive &&
+              !item.isMock &&
+              (item?.endTimestamp ?? 0) >= currentTime &&
+              (item?.startTimestamp ?? 0) <= currentTime,
+          ).length > 0,
+      )
+      .filter(
+        (item: any) =>
+          !(blackListMerklFarms[chainId] ?? []).find(
+            (address) =>
+              item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
+          ) && amms.includes(item.ammName.toLowerCase()),
+      ) as any[];
   };
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({
@@ -375,7 +370,7 @@ export const useMerklFarms = () => {
       (vault) =>
         !!merklFarms.find(
           (item) =>
-            !!item.forwarders.find(
+            !!Object.values(item.alm).find(
               (alm: any) =>
                 alm.label.includes('Ichi') &&
                 vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
@@ -411,7 +406,7 @@ export const useMerklFarms = () => {
         (vault) =>
           !!merklFarms.find(
             (item) =>
-              !!item.forwarders.find(
+              !!Object.values(item.alm).find(
                 (alm: any) =>
                   alm.label.includes('DefiEdge') &&
                   vault.id.toLowerCase() === alm.almAddress.toLowerCase(),
@@ -432,7 +427,7 @@ export const useMerklFarms = () => {
   const farms = useMemo(() => {
     if (!merklFarms) return [];
     return merklFarms.map((item: any) => {
-      const filteredALMs = item.forwarders.filter((alm: any) => {
+      const filteredALMs = Object.values(item.alm).filter((alm: any) => {
         if (alm.label.includes('Gamma')) {
           return getAllGammaPairs(chainId).find(
             (item) =>
@@ -457,14 +452,14 @@ export const useMerklFarms = () => {
       const alms = filteredALMs
         .concat([
           {
-            almAddress: item.mainParameter,
+            almAddress: item.pool,
             almTVL:
               (item.tvl ?? 0) -
               filteredALMs.reduce(
                 (total: number, alm: any) => total + alm.almTVL,
                 0,
               ),
-            almAPR: item?.apr ?? 0,
+            almAPR: item?.meanAPR ?? 0,
             label: item?.ammName,
           },
         ])
