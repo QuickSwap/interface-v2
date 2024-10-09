@@ -82,23 +82,23 @@ const PoolsPage: React.FC = () => {
               </Box>
             )}
           </Box>
-
-          {helpURL && (
-            <Box
-              className='helpWrapper'
-              onClick={() => window.open(helpURL, '_blank')}
-            >
-              <small>{t('help')}</small>
-              <HelpIcon />
-            </Box>
-          )}
         </Box>
       )}
-      <Box margin='24px auto'>
+      {/* <Box margin='24px auto'>
         <HypeLabAds />
-      </Box>
+      </Box> */}
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={12} md={5}>
+        <Grid
+          style={{
+            backgroundColor: '#1b1e29',
+            borderRadius: '20px',
+            padding: '22px 24px 24px',
+          }}
+          item
+          xs={12}
+          sm={12}
+          md={5}
+        >
           <Box className='wrapper'>
             {version === 'singleToken' ? (
               <SingleTokenSupplyLiquidity />
