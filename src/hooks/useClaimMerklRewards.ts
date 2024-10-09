@@ -22,21 +22,18 @@ export const useClaimMerklRewards = () => {
     setClaiming(true);
     let data: any;
     try {
+      const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
       const res = await fetch(
-        `${process.env.REACT_APP_MERKL_API_URL}?chainIds[]=${chainId}&AMMs[]=quickswapalgebra&user=${account}`,
+        `${merklAPIURL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
       );
-      const merklData = await res.json();
-      data =
-        merklData && merklData[chainId]
-          ? merklData[chainId].transactionData
-          : undefined;
+      data = await res.json();
     } catch {
       setClaiming(false);
       throw 'Angle API not responding';
     }
     // Distributor address is the same across different chains
     const tokens = Object.keys(data).filter((k) => data[k].proof !== undefined);
-    const claims = tokens.map((t) => data[t].claim);
+    const claims = tokens.map((t) => data[t].accumulated);
     const proofs = tokens.map((t) => data[t].proof);
 
     try {
