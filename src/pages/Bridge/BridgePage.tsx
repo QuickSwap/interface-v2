@@ -23,6 +23,7 @@ import Image511 from 'assets/images/bridge/Image511.webp';
 import Dogechain from 'assets/images/bridge/dog_coin.webp';
 import finance from 'assets/images/bridge/finance.svg';
 import layer from 'assets/images/bridge/layer.svg';
+import squid from 'assets/images/bridge/squid.webp';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { useActiveWeb3React } from 'hooks';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
@@ -116,140 +117,143 @@ const BridgePage: React.FC = ({}) => {
       isSmallImage: true,
       externalLink: 'https://galaxy.exchange/swap',
     },
+    {
+      image: squid,
+      chains: [eth, polygon],
+      isSmallImage: true,
+      externalLink: 'https://app.squidrouter.com/',
+    },
   ];
 
   return (
-    <Box width={'100%'}>
+    <Box width={'100%'} mb={2}>
       <Box margin='24px auto'>
         <HypeLabAds />
       </Box>
-      <Grid>
-        <Grid container justifyContent='center' spacing={2}>
-          <Grid item xs={12} sm={12} md={6} lg={6}>
-            <Box sx={{ marginBottom: '28px' }}>
-              <Note
-                title='Important Disclaimer!'
-                message='QuickSwap has no affiliation with, is not responsible for and does not make any representation or warranty for any bridge. Users should review Terms of Use or other documentation for third party bridges.'
-              />
-            </Box>
-            <Box style={{ marginBottom: '16px' }}>
-              <Typography
-                style={{
-                  fontSize: '20px',
-                  color: '#fff',
-                  fontWeight: 500,
-                  marginBottom: '16px',
-                }}
-              >
-                Chain Native Bridge
-              </Typography>
+      <Grid container justifyContent='center' spacing={2}>
+        <Grid item xs={12} sm={12} md={6} lg={6}>
+          <Box sx={{ marginBottom: '28px' }}>
+            <Note
+              title='Important Disclaimer!'
+              message='QuickSwap has no affiliation with, is not responsible for and does not make any representation or warranty for any bridge. Users should review Terms of Use or other documentation for third party bridges.'
+            />
+          </Box>
+          <Box style={{ marginBottom: '16px' }}>
+            <Typography
+              style={{
+                fontSize: '20px',
+                color: '#fff',
+                fontWeight: 500,
+                marginBottom: '16px',
+              }}
+            >
+              Chain Native Bridge
+            </Typography>
+            <Box
+              style={{
+                backgroundColor: '#22314d',
+                borderRadius: '10px',
+                padding: '20px 0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                position: 'relative',
+              }}
+            >
               <Box
                 style={{
-                  backgroundColor: '#22314d',
-                  borderRadius: '10px',
-                  padding: '20px 0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  flexDirection: 'column',
-                  position: 'relative',
+                  gap: '8px',
+                  marginBottom: '12px',
                 }}
               >
-                <Box
+                <img
+                  src={
+                    currentChain?.bridge?.bridgeCoverImg ??
+                    currentChain?.nativeCurrencyImage
+                  }
+                  alt='image'
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    marginBottom: '12px',
+                    width: currentChain?.bridge?.isBigCoverImg ? '50%' : 'auto',
                   }}
-                >
-                  <img
-                    src={
-                      currentChain?.bridge?.bridgeCoverImg ??
-                      currentChain?.nativeCurrencyImage
-                    }
-                    alt='image'
-                    style={{
-                      width: currentChain?.bridge?.isBigCoverImg
-                        ? '50%'
-                        : 'auto',
-                    }}
-                  />
-                  {/* <Typography style={{ fontSize: '24px', color: '#fff' }}>
+                />
+                {/* <Typography style={{ fontSize: '24px', color: '#fff' }}>
                     {currentChain?.networkName?.toLowerCase()} portal
                   </Typography> */}
-                </Box>
-                <Typography
-                  style={{
-                    fontSize: '12px',
-                    color: '#f6f6f9',
-                    marginBottom: '28px',
-                  }}
-                >
-                  {`${currentChain?.networkName}'s Native Bridge`}
-                </Typography>
-                <Box className='flex items-center justify-center'>
-                  {currentChain?.bridge?.supportedChains?.map(
-                    (item: string, index: number) => {
-                      return (
-                        <img
-                          key={index}
-                          src={item}
-                          alt='item'
-                          width={16}
-                          height={16}
-                          style={{ marginLeft: '-2px' }}
-                        />
-                      );
-                    },
-                  )}
-                </Box>
-                <ButtonBase
-                  style={{
-                    position: 'absolute',
-                    bottom: '16px',
-                    right: '16px',
-                    color: '#448aff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '2px',
-                  }}
-                  onClick={() => {
-                    if (!currentChain?.bridgeUrl) return;
-                    window.open(currentChain?.bridgeUrl, '_blank');
-                  }}
-                >
-                  Bridge now
-                  <ArrowForwardIcon style={{ fontSize: '14px' }} />
-                </ButtonBase>
               </Box>
-            </Box>
-            <Box>
               <Typography
                 style={{
-                  fontSize: '20px',
-                  color: '#fff',
-                  fontWeight: 500,
-                  marginBottom: '16px',
+                  fontSize: '12px',
+                  color: '#f6f6f9',
+                  marginBottom: '28px',
                 }}
               >
-                3rd Party Bridges
+                {`${currentChain?.networkName}'s Native Bridge`}
               </Typography>
+              <Box className='flex items-center justify-center'>
+                {currentChain?.bridge?.supportedChains?.map(
+                  (item: string, index: number) => {
+                    return (
+                      <img
+                        key={index}
+                        src={item}
+                        alt='item'
+                        width={16}
+                        height={16}
+                        style={{ marginLeft: '-2px' }}
+                      />
+                    );
+                  },
+                )}
+              </Box>
+              <ButtonBase
+                style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  right: '16px',
+                  color: '#448aff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '2px',
+                }}
+                onClick={() => {
+                  if (!currentChain?.bridgeUrl) return;
+                  window.open(currentChain?.bridgeUrl, '_blank');
+                }}
+              >
+                Bridge now
+                <ArrowForwardIcon style={{ fontSize: '14px' }} />
+              </ButtonBase>
+            </Box>
+          </Box>
+          <Box>
+            <Typography
+              style={{
+                fontSize: '20px',
+                color: '#fff',
+                fontWeight: 500,
+                marginBottom: '16px',
+              }}
+            >
+              3rd Party Bridges
+            </Typography>
 
-              <Box style={{ marginBottom: '16px' }}>
-                <Typography
-                  style={{
-                    fontSize: '11px',
-                    color: '#6880a3',
-                    fontWeight: 500,
-                    marginBottom: '8px',
-                  }}
-                >
-                  Select Bridge
-                </Typography>
-                {/* <Select
+            <Box style={{ marginBottom: '16px' }}>
+              <Typography
+                style={{
+                  fontSize: '11px',
+                  color: '#6880a3',
+                  fontWeight: 500,
+                  marginBottom: '8px',
+                }}
+              >
+                Select Bridge
+              </Typography>
+              {/* <Select
                   style={{
                     backgroundColor: '#22314d',
                     padding: '4px 8px',
@@ -267,12 +271,30 @@ const BridgePage: React.FC = ({}) => {
                 >
                   <MenuItem value='all'>All</MenuItem>
                 </Select> */}
-              </Box>
+            </Box>
 
-              <Grid container spacing={2}>
-                {bridgeData.map((item, index) => {
-                  return (
-                    <Grid key={index} item xs={6}>
+            <Grid container spacing={2}>
+              {bridgeData.map((item, index) => {
+                return (
+                  <Grid
+                    key={index}
+                    item
+                    xs={
+                      bridgeData.length % 2 === 1 &&
+                      index === bridgeData.length - 1
+                        ? 12
+                        : 6
+                    }
+                    className='flex justify-center'
+                  >
+                    <Box
+                      width={
+                        bridgeData.length % 2 === 1 &&
+                        index === bridgeData.length - 1
+                          ? 1 / 2
+                          : 1
+                      }
+                    >
                       <BridgeBlockItem
                         onClick={() => {
                           window.open(item.externalLink, '_blank');
@@ -280,12 +302,12 @@ const BridgePage: React.FC = ({}) => {
                         image={item.image}
                         chains={item.chains}
                       />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Box>
-          </Grid>
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
         </Grid>
       </Grid>
     </Box>
