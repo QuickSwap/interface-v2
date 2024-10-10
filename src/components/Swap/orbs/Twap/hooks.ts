@@ -5,11 +5,13 @@ import {
   MIN_DURATION_MINUTES,
   groupOrdersByStatus,
   zeroAddress,
+  Order,
+  OrderType,
 } from '@orbs-network/twap-sdk';
 import { ChainId, Currency, currencyEquals, ETHER } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useCallback, useMemo } from 'react';
-import { useTwapContext } from './context';
+import { useTwapContext } from './TwapContext';
 import { V3Currency } from 'v3lib/entities/v3Currency';
 import { useApproval } from '../hooks';
 import { useCurrency } from 'hooks/Tokens';
@@ -121,11 +123,30 @@ export const isNativeCurrency = (currency?: Currency, chainId?: ChainId) => {
   );
 };
 
+export const useOrderTitle = (order?: Order) => {
+  const { t } = useTranslation();
+
+  return useMemo(() => {
+    if (!order) return '';
+    switch (order.orderType) {
+      case OrderType.LIMIT:
+        return t('limitOrder');
+      case OrderType.DCA_MARKET:
+        return t('twapMarketOrder');
+      case OrderType.DCA_LIMIT:
+        return t('twapLimitOrder');
+
+      default:
+        return t('twap')
+    }
+  }, [order?.orderType, t]);
+};
+
 export const useTwapApprovalCallback = () => {
   const {
     twapSDK: { config },
     parsedAmount,
-    currencies
+    currencies,
   } = useTwapContext();
 
   return useApproval(
@@ -190,4 +211,35 @@ export const useTwapOrderCurrency = (address?: string) => {
   const _address = address?.toLowerCase() === zeroAddress ? 'ETH' : address;
   const currency = useCurrency(_address);
   return currency || undefined;
+};
+
+export const useFillDelayAsText = (fillDelay?: number) => {
+  const { t } = useTranslation();
+  return useMemo(() => {
+    if (!fillDelay) return;
+
+    const days = Math.floor(fillDelay / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (fillDelay % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    const minutes = Math.floor((fillDelay % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((fillDelay % (1000 * 60)) / 1000);
+
+    const arr: string[] = [];
+
+    if (days) {
+      arr.push(`${days} ${t('days')} `);
+    }
+    if (hours) {
+      arr.push(`${hours} ${t('hours')} `);
+    }
+    if (minutes) {
+      arr.push(`${minutes} ${t('minutes')}`);
+    }
+    if (seconds) {
+      arr.push(`${seconds} ${t('seconds')}`);
+    }
+
+    return arr.join(' ');
+  }, [fillDelay, t]);
 };

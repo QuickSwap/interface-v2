@@ -2,7 +2,6 @@ import { Order } from '@orbs-network/twap-sdk';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { useTwapOrdersQuery } from '../hooks';
 
-
 interface ContextValues {
   selectedOrderId: number | undefined;
   setSelectedOrderId: (payload?: number) => void;

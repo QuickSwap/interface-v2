@@ -1,4 +1,11 @@
-import { Box, Button, Card, LinearProgress, Menu, MenuItem, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  LinearProgress,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@material-ui/core';
 import { Close, KeyboardArrowDown } from '@material-ui/icons';
 import { Order, OrderStatus } from '@orbs-network/twap-sdk';
 import CurrencyLogo from 'components/CurrencyLogo';
@@ -6,13 +13,13 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 import { formatDateFromTimeStamp } from 'utils';
-import { useGrouppedTwapOrders, useTwapOrderCurrency } from '../hooks';
+import { useGrouppedTwapOrders, useOrderTitle, useTwapOrderCurrency } from '../hooks';
 import { useTwapOrdersContext } from './context';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import { Card } from '../Components/Components';
 
 export const TwapOrdersList = () => {
   const groupedOrders = useGrouppedTwapOrders();
-  const { t } = useTranslation();
   const [selectedStatus, setSelectedStatus] = useState(OrderStatus.All);
   const { selectedOrderId, onDismiss } = useTwapOrdersContext();
   const Row = useCallback(
@@ -39,7 +46,7 @@ export const TwapOrdersList = () => {
           onSelect={setSelectedStatus}
           selectedStatus={selectedStatus}
         />
-        <Close className='text-secondary cursor-pointer' onClick={onDismiss} />
+        <Close className='cursor-pointer' onClick={onDismiss} />
       </Box>
       {orders.length === 0 ? (
         <EmptyList selectedStatus={selectedStatus} />
@@ -98,20 +105,12 @@ const OrderMenu = ({
 
   return (
     <>
-      <Button
-        onClick={onOpen}
-        id='swap-button'
-        aria-controls={open ? 'swap-menu' : undefined}
-        aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        variant='text'
-        disableElevation
-        endIcon={<KeyboardArrowDown />}
-        className={`tab tabMenu`}
-      >
-        {t(selectedStatus)}
-      </Button>
+      <button onClick={onOpen} className='TwapOrderMenuButton'>
+        <p>{t(selectedStatus)}</p>
+        <KeyboardArrowDown />
+      </button>
       <Menu
+      className='TwapOrderMenu'
         id='order-menu'
         anchorEl={anchorEl}
         open={open}
@@ -125,6 +124,7 @@ const OrderMenu = ({
           const selected = selectedStatus === status;
           return (
             <MenuItem
+            className='TwapOrderMenuItem'
               key={status}
               disabled={selected}
               selected={selected}
@@ -139,8 +139,6 @@ const OrderMenu = ({
     </>
   );
 };
-
-
 
 export function TwapOrdersListItem({ order }: { order: Order }) {
   const onSelect = useTwapOrdersContext().setSelectedOrderId;
@@ -159,10 +157,11 @@ export function TwapOrdersListItem({ order }: { order: Order }) {
 }
 
 const Header = ({ order }: { order: Order }) => {
+  const title = useOrderTitle(order);
   return (
     <Box className='TwapOrdersListItemHeader'>
       <Typography className='TwapOrderTitle'>
-        # {order.id} {order.orderType}{' '}
+        # {order.id} {title}{' '}
         <small>{`(${formatDateFromTimeStamp(
           order.createdAt / 1000,
           'MMM DD, YYYY HH:mm',

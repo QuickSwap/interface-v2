@@ -6,13 +6,13 @@ import { ReactNode } from 'react';
 import { formatNumber } from '@orderly.network/hooks/esm/utils';
 import { useTranslation } from 'react-i18next';
 import { useTwapSwapActionHandlers } from 'state/swap/twap/hooks';
-import { fromRawAmount } from '../utils';
+import { fromRawAmount } from '../../utils';
 import { TimeDuration, TimeUnit } from '@orbs-network/twap-sdk';
 import ReportProblemIcon from '@material-ui/icons/ReportProblem';
-import { TWAP_FAQ } from '../consts';
+import { TWAP_FAQ } from '../../consts';
 import useUSDCPrice from 'utils/useUSDCPrice';
-import { useTwapContext } from './context';
-import { Field } from '../../../../state/swap/actions';
+import { useTwapContext } from '../TwapContext';
+import { Field } from '../../../../../state/swap/actions';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { useTwapState } from 'state/swap/twap/hooks';
 import { Currency } from '@uniswap/sdk';
@@ -23,22 +23,25 @@ import CloseIcon from '@material-ui/icons/Close';
 import { tryParseAmount } from 'state/swap/hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
 import SwapVertIcon from '@material-ui/icons/SwapVert';
-import { useOptimalRate } from './context';
+import { useOptimalRate } from '../TwapContext';
 import { Skeleton } from '@material-ui/lab';
 
 export const Card = ({
   children,
   className = '',
   onClick,
+  styles,
 }: {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  styles?: React.CSSProperties;
 }) => {
   return (
     <Box
       onClick={onClick}
-      className={`swapBox bg-secondary4 TwapCard ${className}`}
+      className={`${className} TwapCard bg-secondary4`}
+      style={styles}
     >
       {children}
     </Box>
@@ -85,10 +88,10 @@ const useInvertedAmount = (amount?: string) => {
   }, [chainId, currencies.OUTPUT, amount]);
 };
 
-const Switch = () => {
+export const PriceSwitch = () => {
   const { onMarketOrder } = useTwapSwapActionHandlers();
   const { isMarketOrder } = useTwapContext();
-
+  const { t } = useTranslation();
   return (
     <Box className='TwapSwitch'>
       <button
@@ -96,91 +99,73 @@ const Switch = () => {
         className={`TwapSwitchButton ${isMarketOrder &&
           'TwapSwitchButtonSelected'}`}
       >
-        Market
+        {t('marketPrice')}
       </button>
       <button
         onClick={() => onMarketOrder(false)}
         className={`TwapSwitchButton ${!isMarketOrder &&
           'TwapSwitchButtonSelected'}`}
       >
-        Limit
+        {t('limitPrice')}
       </button>
     </Box>
   );
 };
 
-const LimitInputPanelHeader = () => {
-  const { isLimitPanel } = useTwapContext();
-  const { t } = useTranslation();
-
-  if (isLimitPanel) return null;
-  return (
-    <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <CardTitle title={<>{t('price')}</>} tooltip='/' />
-      <Switch />
-    </Box>
-  );
-};
-
-export function LimitInputPanel() {
-  const { t } = useTranslation();
-  return (
-    <>
-      <Card className='TwapLimitPanel'>
-        <LimitInputPanelHeader />
-        <LimitInputPanelContent />
-      </Card>
-    </>
-  );
-}
-
-const LimitInputPanelContent = () => {
+export const LimitInputPanel = () => {
   const { redirectWithCurrency } = useSwapRedirects();
   const { onInvertLimitPrice } = useTwapSwapActionHandlers();
   const { currencies, isMarketOrder } = useTwapContext();
 
-  const { isLimitPriceInverted } = useTwapState();
+  const { isTradePriceInverted } = useTwapState();
   const handleCurrencySelect = (currency: Currency) => {
-    redirectWithCurrency(currency, isLimitPriceInverted ? true : false);
+    redirectWithCurrency(currency, isTradePriceInverted ? true : false);
   };
 
-  const inCurrency = isLimitPriceInverted
+  const inCurrency = isTradePriceInverted
     ? currencies.OUTPUT
     : currencies.INPUT;
-  const outCurrency = isLimitPriceInverted
+  const outCurrency = isTradePriceInverted
     ? currencies.INPUT
     : currencies.OUTPUT;
 
   if (isMarketOrder) return null;
 
   return (
-    <Box style={{ display: 'block' }}>
-      <Box className='TwapLimitPanelHeader'>
-        <Box className='TwapLimitPanelHeaderLabel'>
-          When 1 <CurrencyLogo currency={inCurrency} size='17px' />{' '}
-          {inCurrency?.symbol} is worth
-        </Box>
+    <Card className='TwapLimitPanel'>
+      <Box style={{ display: 'block' }}>
+        <Box className='TwapLimitPanelHeader'>
+          <Box className='TwapLimitPanelHeaderLabel'>
+            When 1{' '}
+            {inCurrency ? (
+              <CurrencyLogo currency={inCurrency} size='17px' />
+            ) : (
+              '-'
+            )}{' '}
+            {inCurrency?.symbol} is worth
+          </Box>
 
-        <button
-          className='TwapLimitPanelHeaderInvert'
-          onClick={() => onInvertLimitPrice(!isLimitPriceInverted)}
-        >
-          <SwapVertIcon />
-        </button>
-      </Box>
-      <CardInput>
-        <Box style={{ display: 'flex', gap: '20px', width: '100%' }}>
-          <LimitPriceInput />
-          <CurrencySelect
-            id='twap-limit-currency-select'
-            currency={outCurrency}
-            otherCurrency={inCurrency}
-            handleCurrencySelect={handleCurrencySelect}
-          />
+          <button
+            className='TwapLimitPanelHeaderInvert'
+            onClick={() => onInvertLimitPrice(!isTradePriceInverted)}
+          >
+            <SwapVertIcon />
+          </button>
         </Box>
-      </CardInput>
-      <PercentButtons />
-    </Box>
+        <CardInput>
+          <Box style={{ display: 'flex', gap: '20px', width: '100%' }}>
+            <LimitPriceInput />
+            <CurrencySelect
+              id='twap-limit-currency-select'
+              currency={outCurrency}
+              otherCurrency={inCurrency}
+              handleCurrencySelect={handleCurrencySelect}
+            />
+          </Box>
+        </CardInput>
+        <PercentButtons />
+      </Box>
+    </Card>
   );
 };
 
@@ -189,23 +174,24 @@ const LimitPriceInput = () => {
   const { currencies } = useTwapContext();
   const { data, isLoading } = useOptimalRate();
   const state = useTwapState();
-  const { onLimitPriceInput } = useTwapSwapActionHandlers();
+  const { onTradePriceInput } = useTwapSwapActionHandlers();
   const marketPrice = data?.rate?.destAmount;
   const invertedMarketPrice = useInvertedAmount(marketPrice);
 
   const value = useMemo(() => {
-    if (state.limitPrice !== undefined) {
-      return state.limitPrice;
+    if (state.tradePrice !== undefined) {
+      return state.tradePrice;
     }
-    if (state.isLimitPriceInverted) {
-      return invertedMarketPrice?.toExact();
+    let result = fromRawAmount(currencies.OUTPUT, marketPrice)?.toExact();
+    if (state.isTradePriceInverted) {
+      result = invertedMarketPrice?.toExact();
     }
-    return fromRawAmount(currencies.OUTPUT, marketPrice)?.toExact();
+    return parseFloat(Number(result).toFixed(6));
   }, [
-    state.limitPrice,
+    state.tradePrice,
     marketPrice,
     currencies.OUTPUT,
-    state.isLimitPriceInverted,
+    state.isTradePriceInverted,
     invertedMarketPrice?.toExact(),
   ]);
 
@@ -220,7 +206,7 @@ const LimitPriceInput = () => {
           color={isProMode ? 'white' : 'secondary'}
           placeholder='0.00'
           onUserInput={(val) => {
-            onLimitPriceInput(val);
+            onTradePriceInput(val);
           }}
         />
       )}
@@ -230,36 +216,36 @@ const LimitPriceInput = () => {
 
 function useCalculatePercentageDiff() {
   const context = useTwapContext();
-  const { isLimitPriceInverted } = useTwapState();
+  const { isTradePriceInverted } = useTwapState();
   const destAmount = useOptimalRate().data?.rate?.destAmount;
 
   return useMemo(() => {
-    if (!destAmount || !context.limitPrice) return 0;
+    if (!destAmount || !context.tradePrice) return 0;
     const marketPrice = Number(destAmount);
-    const limitPrice = Number(context.limitPrice);
+    const tradePrice = Number(context.tradePrice);
 
     if (marketPrice === 0) return 0;
-    const diff = marketPrice - limitPrice;
+    const diff = marketPrice - tradePrice;
     let percentageDiff = (diff * 100) / marketPrice;
-    if (!isLimitPriceInverted) {
+    if (!isTradePriceInverted) {
       percentageDiff = -percentageDiff;
     }
     return parseFloat(percentageDiff.toFixed(2));
-  }, [context.limitPrice, destAmount, isLimitPriceInverted]);
+  }, [context.tradePrice, destAmount, isTradePriceInverted]);
 }
 
 const PercentButtons = () => {
   const { currencies } = useTwapContext();
-  const { isLimitPriceInverted, limitPercent } = useTwapState();
-  const { onLimitPriceInput } = useTwapSwapActionHandlers();
+  const { isTradePriceInverted, tradePrice } = useTwapState();
+  const { onTradePriceInput } = useTwapSwapActionHandlers();
   const marketPrice = useOptimalRate().data?.rate?.destAmount;
   const invertedAmount = useInvertedAmount(marketPrice);
 
-  const onPercent = useCallback(
+  const onPercentClick = useCallback(
     (percentage: number) => {
       if (!marketPrice || !currencies.OUTPUT) return;
 
-      const price = isLimitPriceInverted
+      const price = isTradePriceInverted
         ? invertedAmount?.toExact()
         : fromRawAmount(currencies.OUTPUT, marketPrice)?.toExact();
       if (!price) return;
@@ -268,26 +254,22 @@ const PercentButtons = () => {
       const newLimitPrice = parseFloat(
         (Number(price) * (1 + adjustment)).toFixed(5),
       );
-      onLimitPriceInput(newLimitPrice.toString() || '', percentage);
+      onTradePriceInput(newLimitPrice.toString() || '');
     },
-    [marketPrice, currencies, onLimitPriceInput, isLimitPriceInverted],
+    [marketPrice, currencies, onTradePriceInput, isTradePriceInverted],
   );
 
   const percent = useMemo(() => {
-    return [1, 5, 10].map((it) => it * (isLimitPriceInverted ? -1 : 1));
-  }, [isLimitPriceInverted]);
+    return [1, 5, 10].map((it) => it * (isTradePriceInverted ? -1 : 1));
+  }, [isTradePriceInverted]);
 
   return (
     <Box className='TwapLimitPanelPercent'>
       <ResetButton />
       {percent.map((percent) => {
         return (
-          <SelectorButton
-            key={percent}
-            selected={limitPercent === percent}
-            onClick={() => onPercent(percent)}
-          >
-            {isLimitPriceInverted ? '' : '+'}
+          <SelectorButton key={percent} onClick={() => onPercentClick(percent)}>
+            {isTradePriceInverted ? '' : '+'}
             {percent}%
           </SelectorButton>
         );
@@ -297,40 +279,33 @@ const PercentButtons = () => {
 };
 
 const ResetButton = () => {
-  const { onLimitPriceInput } = useTwapSwapActionHandlers();
+  const { onTradePriceInput } = useTwapSwapActionHandlers();
   const priceDiff = useCalculatePercentageDiff();
-  const state = useTwapState();
-  const { t } = useTranslation();
-  const showPercent = priceDiff && !state.limitPercent;
-  console.log(state.limitPercent, priceDiff);
 
-  if (!showPercent) {
+  const onClick = () => {
+    onTradePriceInput(undefined);
+  };
+
+  if (priceDiff !== 0) {
     return (
-      <SelectorButton
-        onClick={() => onLimitPriceInput(undefined)}
-        selected={Number(priceDiff) === 0 && state.limitPrice !== ''}
-      >
-        0%
-      </SelectorButton>
+      <Box className='TwapLimitPanelPercentReset' onClick={onClick}>
+        <SelectorButton selected={true}>
+          {Number(priceDiff) > 0 ? '+' : ''}
+          {priceDiff || 0}%
+        </SelectorButton>
+        {priceDiff !== 0 && (
+          <SelectorButton selected={true}>
+            <CloseIcon />
+          </SelectorButton>
+        )}
+      </Box>
     );
   }
 
   return (
-    <Box className='TwapLimitPanelPercentReset'>
-      <SelectorButton
-        onClick={() => onLimitPriceInput(undefined)}
-        selected={true}
-      >
-        {Number(priceDiff) > 0 ? '+' : ''}
-        {priceDiff}%
-      </SelectorButton>
-      <SelectorButton
-        onClick={() => onLimitPriceInput(undefined)}
-        selected={true}
-      >
-        <CloseIcon />
-      </SelectorButton>
-    </Box>
+    <SelectorButton onClick={() => onTradePriceInput(undefined)}>
+      0%
+    </SelectorButton>
   );
 };
 
@@ -363,7 +338,7 @@ const Chunks = () => {
 
 const ChunkSize = () => {
   const { derivedSwapValues, currencies } = useTwapContext();
-  const { srcChunkAmount } = derivedSwapValues;
+  const { srcChunkAmount, chunks } = derivedSwapValues;
   const oneSrcTokenUsd = Number(
     useUSDCPrice(currencies[Field.INPUT])?.toSignificant() ?? 0,
   );
@@ -376,11 +351,15 @@ const ChunkSize = () => {
     return oneSrcTokenUsd * Number(srcChunkCurrencyAmount?.toExact() ?? 0);
   }, [oneSrcTokenUsd, srcChunkAmount, currencies[Field.INPUT]]);
 
+  if(chunks === 1) return null;
+
   const amount = fromRawAmount(currencies[Field.INPUT], srcChunkAmount);
+  
   return (
     <Box className='TwapChunkSize'>
-      {formatNumber(amount?.toExact())} {amount?.currency.symbol} per trade{' '}
-      <small>{`($${formatNumber(srcChukAmountUsd)})`}</small>
+      {Number(amount?.toExact() || '0').toLocaleString('us')}{' '}
+      {amount?.currency.symbol} per trade{' '}
+      <small>{`($${Number(srcChukAmountUsd).toLocaleString('us')})`}</small>
     </Box>
   );
 };
@@ -554,19 +533,36 @@ export const TwapInputs = () => {
   );
 };
 
-export function LimitPriceWarning() {
+export const MarketPriceWarning = () => {
+  const { t } = useTranslation();
+  return <PriceWarning message={t('marketPriceWarning')} />;
+};
+
+const LimitPriceWarning = () => {
+  const { t } = useTranslation();
+  return <PriceWarning message={t('limitPriceWarning')} />;
+};
+
+export const TradePriceWarning = () => {
   const { isMarketOrder } = useTwapContext();
-  if (isMarketOrder) return null;
+  return isMarketOrder ? <MarketPriceWarning /> : <LimitPriceWarning />;
+};
+
+function PriceWarning({ message }: { message: string }) {
+  const { t } = useTranslation();
+
   return (
-    <Card className='TwapLimitPriceWarning'>
-      <ReportProblemIcon />
-      <p>
-        Limit orders may not execute when the token's price is equal or close to
-        the limit price, due to gas and standard swap fees.{' '}
-        <a href={TWAP_FAQ} target='_blank' rel='noreferrer'>
-          Learn more
-        </a>
-      </p>
+    <Card className='TwapPriceWarning'>
+      <Box className='TwapPriceWarningContent'>
+        <ReportProblemIcon />
+
+        <p>
+          {message}{' '}
+          <a href={TWAP_FAQ} target='_blank' rel='noreferrer'>
+            {t('learnMore')}
+          </a>
+        </p>
+      </Box>
     </Card>
   );
 }
@@ -577,7 +573,7 @@ export function SelectorButton({
   children,
 }: {
   selected?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   children: ReactNode;
 }) {
   return (
@@ -591,3 +587,30 @@ export function SelectorButton({
     </button>
   );
 }
+
+export const MarketPriceOutputInput = ({
+  handleCurrencySelect,
+  title,
+}: {
+  handleCurrencySelect: (currency: Currency) => void;
+  title: string;
+}) => {
+  const { currencies } = useTwapContext();
+  return (
+    <Card>
+      <p
+        style={{
+          color: '#fff',
+          fontSize: '13px',
+        }}
+      >
+        {title}
+      </p>
+      <CurrencySelect
+        currency={currencies[Field.OUTPUT]}
+        otherCurrency={currencies[Field.OUTPUT]}
+        handleCurrencySelect={handleCurrencySelect}
+      />
+    </Card>
+  );
+};

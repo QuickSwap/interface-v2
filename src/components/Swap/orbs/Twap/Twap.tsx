@@ -7,6 +7,7 @@ import {
   Fraction,
   ChainId,
   WETH,
+  Currency as TokenCurrency,
 } from '@uniswap/sdk';
 import { Currency, CurrencyAmount, NativeCurrency } from '@uniswap/sdk-core';
 import { Box, Button } from '@material-ui/core';
@@ -42,20 +43,23 @@ import {
   useTwapState,
   useTwapSwapActionHandlers,
 } from 'state/swap/twap/hooks';
-import { TwapContextProvider } from './context';
+import { TwapContextProvider } from './TwapContext';
 import { TwapSwapConfirmation } from './TwapSwapConfirmation/TwapSwapConfirmation';
 import {
+  Card,
   LimitInputPanel,
-  LimitPriceWarning,
-  TwapInputs
-} from './components';
+  PriceSwitch,
+  TradePriceWarning,
+  TwapInputs,
+} from './Components/Components';
 import { TwapOrders } from './TwapOrders/TwapOrders';
 import 'components/styles/Swap.scss';
 import 'components/styles/orbs/Twap.scss';
 
 import { TimeUnit } from '@orbs-network/twap-sdk';
-import { useTwapContext, useOptimalRate } from './context';
-import { useInputError } from './hooks';
+import { useTwapContext, useOptimalRate } from './TwapContext';
+import { useInputError, useTwapApprovalCallback } from './hooks';
+import CurrencySelect from 'components/CurrencySelect';
 
 const Content: React.FC<{
   currencyBgClass?: string;
@@ -92,6 +96,7 @@ const Content: React.FC<{
   // dismiss warning if all imported tokens are in active lists
   const defaultTokens = useAllTokens();
   const [showConfirm, setShowConfirm] = useState(false);
+  const { isPending: allowancePending } = useTwapApprovalCallback();
 
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
@@ -104,6 +109,7 @@ const Content: React.FC<{
     currencies,
     currencyBalances,
     maxImpactAllowed,
+    isMarketOrder,
   } = useTwapContext();
   const swapInputError = useInputError();
   const tradeDestAmount = derivedSwapValues.destTokenAmount;
@@ -370,7 +376,11 @@ const Content: React.FC<{
   );
 
   const noRoute = !optimalRate || optimalRate.bestRoute.length < 0;
-  const srcAmount = optimalRate?.srcAmount;
+  const tradeDecimals = currencies.INPUT?.decimals;
+  const srcAmount =
+    parsedAmount && tradeDecimals
+      ? parsedAmount.multiply(JSBI.BigInt(10 ** tradeDecimals)).toFixed(0)
+      : undefined;
 
   const swapInputAmountWithSlippage =
     inputCurrencyV3 && srcAmount
@@ -445,8 +455,11 @@ const Content: React.FC<{
         return t('insufficientBalance', {
           symbol: currencies[Field.INPUT]?.symbol,
         });
+      }
+      if (allowancePending) {
+        return t('loading');
       } else {
-        return t('swap');
+        return t('createOrder');
       }
     } else {
       return t('connectWallet');
@@ -472,18 +485,22 @@ const Content: React.FC<{
     wrapInputError,
     wrapType,
     maxImpactAllowed,
+    allowancePending,
   ]);
 
   const maxImpactReached = optimalRate?.maxImpactReached;
-  const tradeSrcAmount = parsedAmount?.numerator.toString();
+  const tradeSrcAmount = optimalRate?.srcAmount;
+  console.log(
+    parsedAmounts[Field.INPUT]?.toFixed(),
+    JSBI.BigInt(tradeSrcAmount || 0).toString(),
+  );
+
   const swapButtonDisabled = useMemo(() => {
-    if (swapInputError) {
+    if (allowancePending || swapInputError) {
       return true;
     }
     const isSwapError =
       (maxImpactReached && !isExpertMode) ||
-      (tradeSrcAmount &&
-        !parsedAmounts[Field.INPUT]?.equalTo(JSBI.BigInt(tradeSrcAmount))) ||
       (tradeDestAmount &&
         !parsedAmounts[Field.OUTPUT]?.equalTo(JSBI.BigInt(tradeDestAmount))) ||
       (swapInputAmountWithSlippage &&
@@ -530,6 +547,7 @@ const Content: React.FC<{
     tradeDestAmount,
     maxImpactReached,
     swapInputError,
+    allowancePending,
   ]);
 
   const handleTypeInput = useCallback(
@@ -554,6 +572,10 @@ const Content: React.FC<{
       setShowConfirm(true);
     }
   }, [onWrap, wrapType]);
+
+  const inInputTitle = isLimitPanel ? t('sell') : `${t('allocate')}`;
+  const outInputTitle = isLimitPanel ? t('buy') : `${t('toBuy')}`;
+
   return (
     <Box>
       <TokenWarningModal
@@ -564,12 +586,15 @@ const Content: React.FC<{
       />
 
       <TwapSwapConfirmation
+        inInputTitle={inInputTitle}
+        outInputTitle={outInputTitle}
         isOpen={showConfirm}
         onDismiss={() => setShowConfirm(false)}
       />
+      <PriceSwitch />
       <LimitInputPanel />
       <CurrencyInput
-        title={`${t('allocate')}:`}
+        title={inInputTitle}
         id='swap-currency-input'
         classNames='from_input'
         currency={currencies[Field.INPUT]}
@@ -607,9 +632,9 @@ const Content: React.FC<{
         </Box>
       </Box>
       <CurrencyInput
-        title={`${t('toEstimate')}:`}
+        title={outInputTitle}
         id='swap-currency-output'
-        classNames='to_input'
+        classNames={`to_input ${isMarketOrder ? 'TwapInputMarketOrder' : ''} `}
         currency={currencies[Field.OUTPUT]}
         showMaxButton={false}
         otherCurrency={currencies[Field.INPUT]}
@@ -639,7 +664,7 @@ const Content: React.FC<{
           </Button>
         </Box>
       </Box>
-      <LimitPriceWarning />
+      <TradePriceWarning />
       <TwapOrders />
     </Box>
   );

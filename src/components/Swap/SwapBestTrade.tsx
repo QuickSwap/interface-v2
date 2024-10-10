@@ -426,7 +426,6 @@ const SwapBestTrade: React.FC<{
     refetchInterval: 5000,
     enabled: !isLiquidityHubOnly,
   });
-  
 
   const optimalRate = useMemo(() => {
     if (!optimalRateData) return;
@@ -582,7 +581,7 @@ const SwapBestTrade: React.FC<{
     nativeConvertApproveCallback,
   ] = useApproveCallback(parsedAmount, NATIVE_CONVERTER[chainId]);
 
-  const isLiquidityHubTrade = true
+  const isLiquidityHubTrade = true;
 
   const showApproveFlow =
     !isLiquidityHubOnly &&
@@ -863,7 +862,6 @@ const SwapBestTrade: React.FC<{
     [onUserInput],
   );
 
-
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
       tradeToConfirm: undefined,
@@ -1041,8 +1039,6 @@ const SwapBestTrade: React.FC<{
       onParaswap();
     }
   }, [onParaswap, isLiquidityHubTrade]);
-
-  
 
   const paraRate = optimalRate
     ? (Number(optimalRate.destAmount) * 10 ** optimalRate.srcDecimals) /
@@ -1341,18 +1337,6 @@ const SwapBestTrade: React.FC<{
           )}
         </Box>
       )}
-      {isLiquidityHubOnly ? (
-        <LiquidityHubSwapDetails
-          quote={liquidityHubQuote}
-          allowedSlippage={allowedSlippage}
-        />
-      ) : (
-        <BestTradeAdvancedSwapDetails
-          optimalRate={optimalRate}
-          inputCurrency={inputCurrency}
-          outputCurrency={outputCurrency}
-        />
-      )}
       {isLowSrcAmountError && <LowSrcAmountWarning />}
       <Box className='swapButtonWrapper'>
         {showApproveFlow && (
@@ -1466,11 +1450,18 @@ const SwapBestTrade: React.FC<{
           </Typography>
         </Box>
       )}
-      <BestTradeAdvancedSwapDetails
-        optimalRate={optimalRate}
-        inputCurrency={inputCurrency}
-        outputCurrency={outputCurrency}
-      />
+      {isLiquidityHubOnly ? (
+        <LiquidityHubSwapDetails
+          quote={liquidityHubQuote}
+          allowedSlippage={allowedSlippage}
+        />
+      ) : (
+        <BestTradeAdvancedSwapDetails
+          optimalRate={optimalRate}
+          inputCurrency={inputCurrency}
+          outputCurrency={outputCurrency}
+        />
+      )}
       {/* <Box className='subtext-color infoWrapper'>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box>

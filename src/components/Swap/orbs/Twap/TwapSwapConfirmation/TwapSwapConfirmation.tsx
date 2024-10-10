@@ -2,11 +2,14 @@ import React, { useMemo } from 'react';
 import OrbsLogo from 'assets/images/orbs-logo.svg';
 import { useTranslation } from 'react-i18next';
 import { Box, Button } from '@material-ui/core';
-import { useCreateOrderCallback } from './useCreateOrderCallback';
-import { ContextProvider, useTwapConfirmationContext } from './context';
+import { useSubmitOrderCallback } from './useSubmitOrderCallback';
+import {
+  ContextProvider,
+  useTwapConfirmationContext,
+} from './TwapSwapConfirmationContext';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import SwapVerticalCircleIcon from '@material-ui/icons/SwapVerticalCircle';
-import { useTwapApprovalCallback } from '../hooks';
+import { useFillDelayAsText, useTwapApprovalCallback } from '../hooks';
 import { Steps } from 'components/Swap/orbs/types';
 import { useGetLogoCallback } from 'components/Swap/orbs/hooks';
 import { fromRawAmount } from 'components/Swap/orbs/utils';
@@ -14,8 +17,9 @@ import { ORBS_WEBSITE, TWAP_WEBSITE } from '../../consts';
 import { SwapStep } from '@orbs-network/swap-ui';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import { ConfirmationModal } from '../../ConfirmationModal';
-import { OrderDetails } from '../OrderDetails';
-import { useTwapContext } from '../context';
+import { OrderDetails } from '../Components/OrderDetails';
+import { useTwapContext } from '../TwapContext';
+import { MarketPriceWarning } from '../Components/Components';
 
 export const useSteps = () => {
   const { currencies } = useTwapContext();
@@ -77,86 +81,88 @@ const SuccessContent = ({ txHash }: { txHash?: string }) => {
   );
 };
 
+const FillDelayAndChunks = () => {
+  const { derivedSwapValues } = useTwapContext();
+  const { chunks, fillDelay } = derivedSwapValues;
+  const fillDelayAsText = useFillDelayAsText(fillDelay.unit * fillDelay.value);
+  if (chunks === 1) return null;
+
+  return (
+    <p className='TwapFillDelayAndChunks'>{`Every ${fillDelayAsText} over ${chunks} trades`}</p>
+  );
+};
+
 const SwapDetails = () => {
   const {
     derivedSwapValues: {
-      deadline,
       chunks,
       fillDelay,
       destTokenMinAmount,
       srcChunkAmount,
     },
+    tradeDeadline,
     currencies,
     isMarketOrder,
   } = useTwapContext();
 
   return (
-    <OrderDetails>
-      <Price />
-      <OrderDetails.Deadline deadline={deadline} />
-      {chunks > 1 && (
-        <OrderDetails.ChunkSize
-          srcChunk={srcChunkAmount}
-          inCurrency={currencies.INPUT}
+    <>
+      <FillDelayAndChunks />
+      <OrderDetails>
+        <Price />
+        {isMarketOrder && <MarketPriceWarning />}
+        <OrderDetails.Deadline deadline={tradeDeadline} />
+        {chunks > 1 && (
+          <OrderDetails.ChunkSize
+            srcChunk={srcChunkAmount}
+            inCurrency={currencies.INPUT}
+          />
+        )}
+        <OrderDetails.Chunks totalChunks={chunks} />
+        <OrderDetails.FillDelay fillDelay={fillDelay.unit * fillDelay.value} />
+        <OrderDetails.MinReceived
+          isMarketOrder={isMarketOrder}
+          dstMinAmount={destTokenMinAmount}
+          currency={currencies.OUTPUT}
         />
-      )}
-      <OrderDetails.Chunks totalChunks={chunks} />
-      <OrderDetails.FillDelay fillDelay={fillDelay.unit * fillDelay.value} />
-      <OrderDetails.MinReceived
-        isMarketOrder={isMarketOrder}
-        dstMinAmount={destTokenMinAmount}
-        currency={currencies.OUTPUT}
-      />
-      <OrderDetails.Recipient />
-    </OrderDetails>
+        <OrderDetails.Recipient />
+      </OrderDetails>
+    </>
   );
 };
 
 const Price = () => {
-  const { t } = useTranslation();
-  const { limitPrice, currencies, isMarketOrder } = useTwapContext();
-  const parsedLimitPrice = fromRawAmount(currencies.OUTPUT, limitPrice);
+  const { tradePrice, currencies, isMarketOrder } = useTwapContext();
+  const parsedTradePrice = fromRawAmount(currencies.OUTPUT, tradePrice);
   const usd =
     Number(useUSDCPrice(currencies.OUTPUT)?.toSignificant() ?? 0) *
-    Number(parsedLimitPrice?.toExact() || 0);
+    Number(parsedTradePrice?.toExact() || 0);
 
   return (
     <Box className='TwapConfirmationPrice'>
       <OrderDetails.Price
-        price={parsedLimitPrice?.toExact()}
+        price={parsedTradePrice?.toExact()}
         inCurrency={currencies.INPUT}
         outCurrency={currencies.OUTPUT}
         usd={usd}
+        isMarketOrder={isMarketOrder}
       />
-      {isMarketOrder && (
-        <p className='TwapConfirmationPriceWarning'>
-          {t('marketPriceWarning')}{' '}
-          <a
-            href='https://www.orbs.com/dtwap-and-dlimit-faq/'
-            target='_blank'
-            rel='noreferrer'
-          >
-            {t('learnMore')}
-          </a>
-        </p>
-      )}
     </Box>
   );
 };
 
 const SwapButton = () => {
   const { t } = useTranslation();
-  const { isPending: allowancePending } = useTwapApprovalCallback();
-  const { mutate: createOrder } = useCreateOrderCallback();
+  const { mutate: createOrder } = useSubmitOrderCallback();
   const { currencies } = useTwapContext();
   const usd = useUSDCPrice(currencies.INPUT)?.toSignificant();
-  const isLoading = !usd || allowancePending;
+  const isLoading = !usd;
 
   return (
     <Box className='swapButtonWrapper'>
       <Box width='100%'>
         <Button disabled={isLoading} fullWidth onClick={() => createOrder()}>
-          {isLoading ? t('loading') : t('createOrder')}
+          {isLoading ? t('loading') : t('confirmOrder')}
         </Button>
       </Box>
     </Box>
@@ -164,9 +170,17 @@ const SwapButton = () => {
 };
 
 const MainContent = () => {
-  const { t } = useTranslation();
-  const { currentStep } = useTwapConfirmationContext().state;
-  const { currencies, derivedSwapValues, parsedAmount } = useTwapContext();
+  const {
+    state: { currentStep },
+    inInputTitle,
+    outInputTitle,
+  } = useTwapConfirmationContext();
+  const {
+    currencies,
+    derivedSwapValues,
+    parsedAmount,
+    isMarketOrder,
+  } = useTwapContext();
   const steps = useSteps();
   const parsedTradeDestAmount = fromRawAmount(
     currencies.OUTPUT,
@@ -185,10 +199,10 @@ const MainContent = () => {
       currentStep={currentStep}
       swapDetails={<SwapDetails />}
       swapButton={<SwapButton />}
-      inTitle={t('allocate')}
-      outTitle={t('buy')}
+      inTitle={inInputTitle}
+      outTitle={outInputTitle}
       inUsd={inUsd.toLocaleString('en')}
-      outUsd={outUsd.toLocaleString('en')}
+      outUsd={isMarketOrder ? '' : outUsd.toLocaleString('en')}
     />
   );
 };
@@ -206,7 +220,12 @@ export function Content() {
     onDismiss,
     state: { swapStatus },
   } = useTwapConfirmationContext();
-  const { currencies, parsedAmount, derivedSwapValues } = useTwapContext();
+  const {
+    currencies,
+    parsedAmount,
+    derivedSwapValues,
+    isMarketOrder,
+  } = useTwapContext();
 
   const tradeDestAmount = derivedSwapValues?.destTokenAmount;
 
@@ -218,7 +237,11 @@ export function Content() {
         currencies.INPUT,
         parsedAmount?.raw.toString(),
       )?.toExact()}
-      outAmount={fromRawAmount(currencies.OUTPUT, tradeDestAmount)?.toExact()}
+      outAmount={
+        isMarketOrder
+          ? ''
+          : fromRawAmount(currencies.OUTPUT, tradeDestAmount)?.toExact()
+      }
       isOpen={isOpen}
       swapStatus={swapStatus}
       onDismiss={onDismiss}
@@ -232,6 +255,8 @@ export function Content() {
 export const TwapSwapConfirmation = (props: {
   isOpen: boolean;
   onDismiss: () => void;
+  inInputTitle: string;
+  outInputTitle: string;
 }) => {
   return (
     <ContextProvider {...props}>

@@ -57,23 +57,17 @@ export const setSwapDelay = createAction<{ swapDelay: SwapDelay }>(
   'twap/swapDelay',
 );
 
-export const setChunks = createAction<{ chunks: number }>(
-  'twap/setChunks',
-);
+export const setChunks = createAction<{ chunks: number }>('twap/setChunks');
 
-export const setLimitPrice = createAction<{
-  limitPrice?: string;
-  limitPercent?: number;
-}>('twap/setLimitPrice');
+export const setTradePrice = createAction<{
+  tradePrice?: string;
+}>('twap/setTradePrice');
 
 export const setIsMarketOrder = createAction<{ isMarketOrder: boolean }>(
   'twap/setIsMarketOrder',
 );
 
-export const toggleMarketOrder = createAction(
-  'twap/toggleMarketOrder',
-);
-
+export const toggleMarketOrder = createAction('twap/toggleMarketOrder');
 
 export const setUpdatingOrders = createAction<{ updatingOrders: boolean }>(
   'twap/setUpdatingOrders',
@@ -87,8 +81,8 @@ export const setDuration = createAction<{ duration?: TimeDuration }>(
   'twap/setDuration',
 );
 
-export const invertLimitPrice = createAction<{ isLimitPriceInverted: boolean }>(
-  'twap/invertLimitPrice',
+export const invertTradePrice = createAction<{ isTradePriceInverted: boolean }>(
+  'twap/invertTradePrice',
 );
 
 export const replaceSwapState = createAction<{

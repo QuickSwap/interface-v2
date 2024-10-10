@@ -13,6 +13,8 @@ interface ContextValues {
   resetStore: () => void;
   isOpen: boolean;
   onDismiss: () => void;
+  inInputTitle: string;
+  outInputTitle: string;
 }
 const Context = createContext({} as ContextValues);
 
@@ -20,6 +22,8 @@ interface ContextProps {
   children: React.ReactNode;
   isOpen: boolean;
   onDismiss: () => void;
+  inInputTitle: string;
+  outInputTitle: string;
 }
 
 export const ContextProvider = ({ children, ...props }: ContextProps) => {
@@ -30,12 +34,14 @@ export const ContextProvider = ({ children, ...props }: ContextProps) => {
   const { onUserInput } = useTwapSwapActionHandlers();
 
   const onDismiss = useCallback(() => {
-    setTimeout(() => {
-      resetStore();
-      onUserInput(Field.INPUT, '');
-    }, DISMISS_TIMEOUT);
+    if (store.swapStatus) {
+      setTimeout(() => {
+        resetStore();
+        onUserInput(Field.INPUT, '');
+      }, DISMISS_TIMEOUT);
+    }
     props.onDismiss();
-  }, [props.onDismiss, resetStore, onUserInput]);
+  }, [props.onDismiss, resetStore, onUserInput, store.swapStatus]);
 
   return (
     <Context.Provider

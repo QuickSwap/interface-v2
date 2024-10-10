@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { useMarketsStream } from '@orderly.network/hooks';
 import { OrderSide, OrderStatus, OrderType } from '@orderly.network/types';
 import { FC } from 'react';
-import { AppBar, Box, MenuItem, Select, Toolbar, Typography } from '@material-ui/core';
+import {
+  AppBar,
+  Box,
+  MenuItem,
+  Select,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
 
 interface Ticker {
   symbol: string;

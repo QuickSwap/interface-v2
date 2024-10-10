@@ -16,22 +16,29 @@
 }
 
 .TwapSwitch {
-  padding: 3px; 
+  width: 100%;
+  padding: 5px;
   border-radius: 10px;
-  background: #141622;
+  background: #1f263d;
   display: flex;
-  width: fit-content;
   margin-bottom: 2px;
   margin-left: auto;
+  gap: 5px;
   &Button {
-    font-size: white;
+    color: white;
     min-width: 80px;
     text-align: center;
-    font-size: 13px;
+    font-size: 14px;
     border-radius: 8px;
-    padding: 4px 4px;
+    padding: 10px 4px;
+    height: 100%;
+    width: 50%;
+    transition: 0.2s all;
     &Selected {
-      background:#1f263d;
+      background: #141827;
+    }
+    &:hover {
+      background: #141827;
     }
   }
 }
@@ -46,7 +53,7 @@
     align-items: center;
     justify-content: flex-start;
     color: white;
-    opacity: 0.7;
+    font-size: 14px;
     .currencyLogo {
       margin-left: 5px;
       margin-right: 5px;
@@ -71,13 +78,16 @@
 .TwapLimitPanel {
   margin-bottom: 2px;
   position: relative;
-  .MuiSwitch-root{
-    position: absolute;
-    right: 10px;
-    top: 6px;
-  }
   &Input {
     flex: 1;
+  }
+  &Header {
+    position: relative;
+    &Invert {
+      position: absolute;
+      top: -10px;
+      right: -5px;
+    }
   }
   &Percent {
     margin-top: 20px;
@@ -114,16 +124,19 @@
   border-radius: 10px;
   padding: 8px 16px;
   flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .TwapCard {
   border-radius: 16px;
   flex: 1;
   display: flex;
+  padding: 16px;
   flex-direction: column;
   gap: 16px;
   &Title {
- 
     p {
       font-size: 13px;
       margin-right: 7px;
@@ -157,7 +170,7 @@
 }
 
 .TwapChunkSize {
-  font-size: 14px;
+  font-size: 13px;
   margin-top: 5px;
   color: white;
   small {
@@ -165,30 +178,38 @@
     color: $textHint;
   }
 }
-.TwapLimitPriceWarning {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 20px;
-  p {
-    font-size: 14px;
-    flex: 1;
+.TwapPriceWarning {
+  margin-top: 10px;
+  &Content {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    p {
+      font-size: 14px;
+      flex: 1;
+    }
+    svg {
+      width: 19px;
+      height: 19px;
+    }
   }
-  svg {
-    width: 19px;
-    height: 19px;
+  a {
+    text-decoration: underline;
   }
 }
+
 .TwapShowOrdersButton {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
   cursor: pointer;
-  margin-top: 20px;
-  p {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  span {
     font-size: 14px;
-    margin: 0px;
+    margin-bottom: 0px;
   }
 }
 
@@ -277,11 +298,48 @@
 .TwapOrderDetails {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   margin-top: 20px;
+  margin-bottom: 10px;
   padding-top: 20px;
-  border-top: 1px solid rgba(130, 177, 255, 0.08);
+  border-top: 1px solid rgba(130, 177, 255, 0.12);
+  .TwapPriceWarning {
+    padding: 10px;
+    gap: 5px;
+    margin-bottom: 6px;
+    p {
+      text-align: left;
+      font-size: 13px;
+    }
+    svg {
+      display: none;
+    }
+  }
+}
+.orbs_MainTokenLeft {
+  gap: 4px;
+}
+
+.TwapFillDelayAndChunks {
+  font-size: 13px;
+  text-align: left;
+  color: $textHint;
+  width: 100%;
+  margin-top: 7px;
+}
+
+.TwapInputMarketOrder {
+  .inputWrapper {
+    display: none;
+  }
+  .currencyButton {
+    width: 100%;
+  }
+  .bg-input1 {
+    background: transparent;
+    padding: 0px;
+  }
 }
 .TwapOrderDetailsRow {
   display: flex;
@@ -292,16 +350,37 @@
     gap: 5px;
   }
   &Value {
-    font-size: 14px;
+    font-size: 13px;
   }
   &Label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: $textSecondary;
+    color: white;
   }
   small {
-    opacity: 0.7;
+    color: $textHint;
     font-size: 13px;
+  }
+}
+
+.TwapOrderMenu {
+  &Item {
+    text-transform: capitalize;
+  }
+  &Button {
+    width: fit-content;
+    display: flex;
+    padding: 8px 20px;
+    margin: 0;
+    background: #1f263d;
+    border-radius: 10px;
+    color: white;
+    text-transform: capitalize;
+
+    p {
+      font-size: 14px;
+    }
   }
 }
 
@@ -309,7 +388,8 @@
   font-size: 15px;
   small {
     font-size: 13px;
-    color: $textSecondary;
+    color: white;
+    opacity: 0.8;
   }
 }
 .TwapSelectedOrderAccordions {
@@ -319,16 +399,11 @@
 }
 
 .TwapSelectedOrderAccordion {
-  border-radius: 12px;
+  border-radius: 12px !important;
   &.Mui-expanded {
-    margin: 0;
+    margin: 0 !important;
   }
-  &:first-child {
-    border-radius: 12px;
-  }
-  &:last-child {
-    border-radius: 12px;
-  }
+
   .MuiAccordionDetails-root {
     display: flex;
     flex-direction: column;

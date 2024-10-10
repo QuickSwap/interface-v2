@@ -17,8 +17,7 @@
     "jsx": "react-jsx",
     "useUnknownInCatchVariables": false,
     "downlevelIteration": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
-  "include": ["./src"],
-  
+  "include": ["./src"]
 }

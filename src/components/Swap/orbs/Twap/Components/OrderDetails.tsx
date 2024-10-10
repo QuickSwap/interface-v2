@@ -6,39 +6,14 @@ import React, { ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatDateFromTimeStamp, formatNumber, getEtherscanLink } from 'utils';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
-import { fromRawAmount, makeElipsisAddress } from '../utils';
+import { fromRawAmount, makeElipsisAddress } from '../../utils';
+import { useFillDelayAsText } from '../hooks';
+import { Card } from './Components';
 
 const ELIPSIS_PADDING = 5;
 
 const FillDelayAsText = ({ fillDelay }: { fillDelay?: number }) => {
-  const { t } = useTranslation();
-  const text = useMemo(() => {
-    if (!fillDelay) return;
-
-    const days = Math.floor(fillDelay / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(
-      (fillDelay % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-    );
-    const minutes = Math.floor((fillDelay % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((fillDelay % (1000 * 60)) / 1000);
-
-    const arr: string[] = [];
-
-    if (days) {
-      arr.push(`${days} ${t('days')} `);
-    }
-    if (hours) {
-      arr.push(`${hours} ${t('hours')} `);
-    }
-    if (minutes) {
-      arr.push(`${minutes} ${t('minutes')}`);
-    }
-    if (seconds) {
-      arr.push(`${seconds} ${t('seconds')}`);
-    }
-
-    return arr.join(' ');
-  }, [fillDelay, t]);
+  const text = useFillDelayAsText(fillDelay);
 
   return <>{text}</>;
 };
@@ -221,12 +196,10 @@ export const TwapOrderDetailsRow = ({
   return (
     <Box className='TwapOrderDetailsRow'>
       <Box className='TwapOrderDetailsRowLeft'>
-        <Typography className='TwapOrderDetailsRowLabel'>{label}</Typography>
+        <p className='TwapOrderDetailsRowLabel'>{label}</p>
         {tooltip && <QuestionHelper text={tooltip} size={16} />}
       </Box>
-      <Typography className='TwapOrderDetailsRowValue'>
-        {value || '-'}
-      </Typography>
+      <p className='TwapOrderDetailsRowValue'>{value || '-'}</p>
     </Box>
   );
 };

@@ -21,6 +21,9 @@ import { Steps } from './types';
 import 'components/styles/orbs/ConfirmationModal.scss';
 import CustomModal from 'components/CustomModal';
 import { useGetLogoCallback } from './hooks';
+import { Card } from './Twap/Components/Components';
+import { useTwapContext } from './Twap/TwapContext';
+import { useFillDelayAsText } from './Twap/hooks';
 
 const Context = createContext({} as ContextValues);
 
@@ -247,7 +250,7 @@ export const Main = ({
 
   return (
     <ConfirmationContainer title={!swapStatus ? 'confirmTx' : ''}>
-      <SwapFlow.Review
+      <SwapFlow.Main
         inUsd={inUsd && `$${inUsd}`}
         outUsd={outUsd && `$${outUsd}`}
         fromTitle={inTitle || t('sell')}

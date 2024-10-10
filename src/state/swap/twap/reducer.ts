@@ -11,11 +11,10 @@ import {
   setChunks,
   setFillDelay,
   setDuration,
-  setLimitPrice,
-  invertLimitPrice,
+  invertTradePrice,
   setUpdatingOrders,
-  toggleMarketOrder,
   setIsMarketOrder,
+  setTradePrice,
 } from './actions';
 
 export interface TwapSwapState {
@@ -23,10 +22,9 @@ export interface TwapSwapState {
   readonly chunks?: number;
   readonly fillDelay?: TimeDuration;
   readonly duration?: TimeDuration;
-  readonly limitPrice?: string;
+  readonly tradePrice?: string;
   readonly isMarketOrder?: boolean;
-  readonly isLimitPriceInverted?: boolean;
-  readonly limitPercent?: number;
+  readonly isTradePriceInverted?: boolean;
   readonly updatingOrders?: boolean;
 
   readonly [Field.INPUT]: {
@@ -120,23 +118,18 @@ export default createReducer<TwapSwapState>(initialState, (builder) =>
     .addCase(setUpdatingOrders, (state, { payload: { updatingOrders } }) => {
       state.updatingOrders = updatingOrders;
     })
-    .addCase(setIsMarketOrder, (state, { payload:{isMarketOrder} }) => {
-      state.isMarketOrder = isMarketOrder
+    .addCase(setIsMarketOrder, (state, { payload: { isMarketOrder } }) => {
+      state.isMarketOrder = isMarketOrder;
     })
-    .addCase(
-      setLimitPrice,
-      (state, { payload: { limitPrice, limitPercent } }) => {
-        state.limitPrice = limitPrice;
-        state.limitPercent = limitPercent;
-      },
-    )
+    .addCase(setTradePrice, (state, { payload: { tradePrice } }) => {
+      state.tradePrice = tradePrice;
+    })
 
     .addCase(
-      invertLimitPrice,
-      (state, { payload: { isLimitPriceInverted } }) => {
-        state.isLimitPriceInverted = isLimitPriceInverted;
-        state.limitPrice = undefined;
-        state.limitPercent = undefined;
+      invertTradePrice,
+      (state, { payload: { isTradePriceInverted } }) => {
+        state.isTradePriceInverted = isTradePriceInverted;
+        state.tradePrice = undefined;
       },
     ),
 );

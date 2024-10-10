@@ -1,8 +1,9 @@
-import React, { createContext, useMemo } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import {
   Configs,
   constructSDK,
   DerivedSwapValuesResponse,
+  TimeDuration,
   TwapSDK,
 } from '@orbs-network/twap-sdk';
 import { useActiveWeb3React } from 'hooks';
@@ -30,7 +31,7 @@ interface ContextValues {
     [Field.INPUT]: Currency | undefined;
     [Field.OUTPUT]: Currency | undefined;
   };
-  limitPrice: string | undefined;
+  tradePrice: string | undefined;
   maxImpactAllowed: number;
   currencyBalances: {
     [Field.INPUT]: CurrencyAmount | undefined;
@@ -38,6 +39,7 @@ interface ContextValues {
   };
   parsedAmount?: CurrencyAmount;
   derivedSwapValues: DerivedSwapValuesResponse;
+  tradeDeadline: number;
 }
 
 const Context = createContext({} as ContextValues);
@@ -54,6 +56,22 @@ const useTwapSDK = () => {
   return useMemo(() => constructSDK({ config }), [config]);
 };
 
+const useDealine = (twapSDK: TwapSDK, duration: TimeDuration) => {
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  useEffect(() => {
+    setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 60_000);
+  }, []);
+
+  return useMemo(() => twapSDK.orderDeadline(currentTime, duration), [
+    currentTime,
+    duration,
+    twapSDK,
+  ]);
+};
+
 export const TwapContextProvider = ({
   children,
   isLimitPanel,
@@ -62,15 +80,20 @@ export const TwapContextProvider = ({
   isLimitPanel?: boolean;
 }) => {
   const state = useTwapState();
+  const isMarketOrder = isLimitPanel ? false : !!state.isMarketOrder;
   const twapSDK = useTwapSDK();
   const currencies = useCurrencies();
-  const limitPrice = useLimitPrice(isLimitPanel);
+  const tradePrice = usePrice(isMarketOrder);
   const maxImpactAllowed = useMaxImpactAllowed();
   const currencyBalances = useTokenBalances();
   const parsedAmount = useParsedAmount();
-  const isMarketOrder = isLimitPanel ? false : !!state.isMarketOrder
 
-  const derivedSwapValues = useDerivedTwapSwapData(isLimitPanel, isMarketOrder);
+  const derivedSwapValues = useDerivedTwapSwapData(
+    isLimitPanel,
+    isMarketOrder,
+    tradePrice,
+  );
+  const tradeDeadline = useDealine(twapSDK, derivedSwapValues.duration);
 
   return (
     <Context.Provider
@@ -79,11 +102,12 @@ export const TwapContextProvider = ({
         twapSDK,
         isMarketOrder,
         currencies,
-        limitPrice,
+        tradePrice,
         maxImpactAllowed,
         currencyBalances,
         parsedAmount,
         derivedSwapValues,
+        tradeDeadline
       }}
     >
       {children}
@@ -107,38 +131,35 @@ const useCurrencies = () => {
   };
 };
 
-const useLimitPrice = (isLimitPanel?: boolean) => {
+const usePrice = (isMarketOrder?: boolean) => {
   const currencies = useCurrencies();
   const state = useTwapState();
   const { chainId } = useActiveWeb3React();
-
   const { data } = useOptimalRate();
   const marketPrice = data?.rate?.destAmount;
+
   return useMemo(() => {
+    if (isMarketOrder) return marketPrice;
     let result = marketPrice;
-    if (!isLimitPanel) {
-      return marketPrice;
-    }
-    if (state.limitPrice !== undefined) {
+    if (state.tradePrice !== undefined) {
       result = tryParseAmount(
         chainId,
-        state.isLimitPriceInverted
-          ? (1 / Number(state.limitPrice)).toString()
-          : state.limitPrice,
+        state.isTradePriceInverted
+          ? (1 / Number(state.tradePrice)).toString()
+          : state.tradePrice,
         currencies[Field.OUTPUT],
       )?.raw.toString();
     }
     return result;
   }, [
-    state.limitPrice,
+    state.tradePrice,
     chainId,
     currencies[Field.OUTPUT],
     marketPrice,
-    state.isLimitPriceInverted,
-    isLimitPanel,
+    state.isTradePriceInverted,
+    isMarketOrder,
   ]);
 };
-
 
 const useMaxImpactAllowed = () => {
   const [isExpertMode] = useExpertModeManager();
@@ -237,24 +258,27 @@ const useParsedAmount = () => {
   const typedValue = useTwapState().typedValue;
   const inputCurrency = useCurrencies()[Field.INPUT];
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-
   return useMemo(() => {
     return tryParseAmount(chainId, typedValue, inputCurrency);
-  }, [chainIdToUse, inputCurrency, typedValue]);
+  }, [chainIdToUse, inputCurrency, typedValue, chainId]);
 };
 
-const useDerivedTwapSwapData = (isLimitPanel?: boolean, isMarketOrder?: boolean) => {
+const useDerivedTwapSwapData = (
+  isLimitPanel?: boolean,
+  isMarketOrder?: boolean,
+  price?: string,
+) => {
   const parsedAmount = useParsedAmount();
   const currencies = useCurrencies();
   const twapSDK = useTwapSDK();
   const state = useTwapState();
-  const limitPrice = useLimitPrice();
   const oneSrcTokenUsd = Number(
     useUSDCPrice(currencies[Field.INPUT])?.toSignificant() ?? 0,
   );
+
   return twapSDK.derivedSwapValues({
     srcAmount: parsedAmount?.raw.toString(),
-    limitPrice,
+    price,
     customDuration: state.duration,
     customChunks: state.chunks,
     customFillDelay: state.fillDelay,

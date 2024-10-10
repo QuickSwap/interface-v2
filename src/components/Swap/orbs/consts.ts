@@ -5,4 +5,3 @@ export const LIQUIDITY_HUB_WEBSITE = 'https://www.orbs.com/liquidity-hub';
 export const TWAP_WEBSITE = 'https://www.orbs.com/dtwap';
 export const LIMIT_WEBSITE = 'https://www.orbs.com/dlimit';
 export const TWAP_FAQ = 'https://www.orbs.com/dtwap-and-dlimit-faq/';
-

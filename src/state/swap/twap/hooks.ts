@@ -7,15 +7,15 @@ import { AppDispatch, AppState } from 'state';
 import { TimeDuration } from '@orbs-network/twap-sdk';
 import {
   Field,
-  invertLimitPrice,
+  invertTradePrice,
   replaceSwapState,
   selectCurrency,
   setChunks,
   setDuration,
   setFillDelay,
   setIsMarketOrder,
-  setLimitPrice,
   setSwapDelay,
+  setTradePrice,
   setUpdatingOrders,
   SwapDelay,
   switchCurrencies,
@@ -36,9 +36,9 @@ export function useTwapSwapActionHandlers(): {
   onDurationInput: (typedValue?: TimeDuration) => void;
   onFillDelayInput: (typedValue: TimeDuration) => void;
   onSetSwapDelay: (swapDelay: SwapDelay) => void;
-  onLimitPriceInput: (typedValue?: string, limitPercent?: number) => void;
+  onTradePriceInput: (typedValue?: string) => void;
   onMarketOrder: (isMarketOrder: boolean) => void;
-  onInvertLimitPrice: (isLimitPriceInverted: boolean) => void;
+  onInvertLimitPrice: (isTradePriceInverted: boolean) => void;
   onUpdatingOrders: (updatingOrders: boolean) => void;
   onToggleMarketOrder: () => void;
 } {
@@ -113,9 +113,9 @@ export function useTwapSwapActionHandlers(): {
     [dispatch],
   );
 
-  const onLimitPriceInput = useCallback(
-    (limitPrice?: string, limitPercent?: number) => {
-      dispatch(setLimitPrice({ limitPrice, limitPercent }));
+  const onTradePriceInput = useCallback(
+    (tradePrice?: string) => {
+      dispatch(setTradePrice({ tradePrice }));
     },
     [dispatch],
   );
@@ -127,16 +127,13 @@ export function useTwapSwapActionHandlers(): {
     [dispatch],
   );
 
-  const onToggleMarketOrder = useCallback(
-    () => {
-      dispatch(toggleMarketOrder());
-    },
-    [dispatch],
-  );
+  const onToggleMarketOrder = useCallback(() => {
+    dispatch(toggleMarketOrder());
+  }, [dispatch]);
 
   const onInvertLimitPrice = useCallback(
-    (isLimitPriceInverted: boolean) => {
-      dispatch(invertLimitPrice({ isLimitPriceInverted }));
+    (isTradePriceInverted: boolean) => {
+      dispatch(invertTradePrice({ isTradePriceInverted }));
     },
     [dispatch],
   );
@@ -156,7 +153,7 @@ export function useTwapSwapActionHandlers(): {
     onChunksInput,
     onFillDelayInput,
     onDurationInput,
-    onLimitPriceInput,
+    onTradePriceInput,
     onMarketOrder,
     onInvertLimitPrice,
     onUpdatingOrders,

@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { formatDateFromTimeStamp, formatNumber, getEtherscanLink } from 'utils';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { fromRawAmount, makeElipsisAddress } from '../../utils';
-import { useTwapOrderCurrency } from '../hooks';
-import { OrderDetails } from '../OrderDetails';
+import { useOrderTitle, useTwapOrderCurrency } from '../hooks';
+import { OrderDetails } from '../Components/OrderDetails';
 import { useTwapOrdersContext } from './context';
 
 const ELIPSIS_PADDING = 5;
@@ -36,17 +36,30 @@ export function TwapSelectedOrder() {
 
 const Accordions = () => {
   const { t } = useTranslation();
+  const [expanded, setExpanded] = useState<number | undefined>(1);
+
+  const onExpand = (value: number) => {
+    setExpanded(value === expanded ? undefined : value);
+  };
 
   return (
     <Box className='TwapSelectedOrderAccordions'>
-      <InfoAccordion title={t('excecutionSummary')} defaultExpanded={true}>
+      <InfoAccordion
+        title={t('excecutionSummary')}
+        expanded={expanded === 1}
+        onExpand={() => onExpand(1)}
+      >
         <Status />
         <AmountSent />
         <AmountReceived />
         <Progress />
         <ExcecutionPrice />
       </InfoAccordion>
-      <InfoAccordion title={t('orderInfo')}>
+      <InfoAccordion
+        title={t('orderInfo')}
+        expanded={expanded === 2}
+        onExpand={() => onExpand(2)}
+      >
         <LimitPrice />
         <CreatedAt />
         <Expiration />
@@ -65,6 +78,8 @@ const Accordions = () => {
 const Header = () => {
   const { t } = useTranslation();
   const { setSelectedOrderId, selectedOrder } = useTwapOrdersContext();
+  const title = useOrderTitle(selectedOrder);
+
   if (!selectedOrder) return null;
 
   return (
@@ -73,14 +88,14 @@ const Header = () => {
       mb={2}
     >
       <Typography className='TwapOrderTitle'>
-        # {selectedOrder.id} {t(`${selectedOrder.orderType}`)}{' '}
+        # {selectedOrder.id} {title}{' '}
         <small>{`(${formatDateFromTimeStamp(
           selectedOrder.createdAt / 1000,
           'MMM DD, YYYY HH:mm',
         )})`}</small>
       </Typography>
       <Close
-        className='text-secondary cursor-pointer'
+        className='cursor-pointer'
         onClick={() => setSelectedOrderId(undefined)}
       />
     </Box>
@@ -96,11 +111,11 @@ const Currencies = () => {
     <Box className='TwapSelectedOrderCurrencies'>
       <CurrenciesCurrency
         address={selectedOrder?.srcTokenAddress}
-        label={t('allocate')}
+        label={selectedOrder.isMarketOrder ? t('allocated') : t('sold')}
       />
       <CurrenciesCurrency
         address={selectedOrder?.dstTokenAddress}
-        label={t('buy')}
+        label={t('toBuy')}
       />
     </Box>
   );
@@ -271,19 +286,18 @@ const LimitPrice = () => {
 const InfoAccordion = ({
   title,
   children,
-  defaultExpanded,
+  expanded,
+  onExpand,
 }: {
   title: string;
   children: ReactNode;
-  defaultExpanded?: boolean;
+  expanded: boolean;
+  onExpand: () => void;
 }) => {
   return (
-    <Accordion
-      className='TwapSelectedOrderAccordion'
-      defaultExpanded={!!defaultExpanded}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>{title}</Typography>
+    <Accordion className='TwapSelectedOrderAccordion' expanded={expanded}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} onClick={onExpand}>
+        <Typography style={{fontSize: 16}}>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>
