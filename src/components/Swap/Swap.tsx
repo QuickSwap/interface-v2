@@ -67,7 +67,6 @@ import { getConfig } from 'config/index';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { useV2TradeTypeAnalyticsCallback } from './LiquidityHub';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { useWalletInfo } from '@web3modal/ethers5/react';
 import { useAppDispatch } from 'state';
@@ -532,15 +531,9 @@ const Swap: React.FC<{
     fromTokenWrapped?.address ?? '',
   );
 
-  const onV2TradeAnalytics = useV2TradeTypeAnalyticsCallback(
-    currencies,
-    allowedSlippage,
-  );
-
   const { walletInfo } = useWalletInfo();
 
   const handleSwap = useCallback(() => {
-    onV2TradeAnalytics(trade);
     if (
       priceImpactWithoutFee &&
       !confirmPriceImpactWithoutFee(priceImpactWithoutFee, t)
@@ -636,7 +629,6 @@ const Swap: React.FC<{
         });
       });
   }, [
-    onV2TradeAnalytics,
     trade,
     priceImpactWithoutFee,
     t,

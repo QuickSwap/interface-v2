@@ -1,10 +1,5 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { List } from '@material-ui/core';
+import { List, Box, ListItemText, ListItem, Drawer } from '@material-ui/core';
 import { ReactComponent as ThreeDashIcon } from 'assets/images/ThreeDashIcon.svg';
 import { ReactComponent as CloseIcon } from 'assets/images/close_v3.svg';
 import { HeaderListItem, HeaderMenuItem } from './HeaderListItem';
@@ -51,21 +46,21 @@ export const MobileMenuDrawer: React.FC<{ menuItems: HeaderMenuItem[] }> = ({
                   onClick={() => setOpen(false)}
                 />
               ))}
-              <ListItem disablePadding className='close-item'>
-                <ListItemButton
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  <ListItemText className='mobile-btn-text'>
-                    <Box className='flex' mt={1}>
-                      <Box className='my-auto ml-auto'>Close</Box>
-                      <Box ml={1} pt={1}>
-                        <CloseIcon />
-                      </Box>
+              <ListItem
+                button
+                className='close-item'
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <ListItemText className='mobile-btn-text'>
+                  <Box className='flex' mt={1}>
+                    <Box className='my-auto ml-auto'>Close</Box>
+                    <Box ml={1} pt={1}>
+                      <CloseIcon />
                     </Box>
-                  </ListItemText>
-                </ListItemButton>
+                  </Box>
+                </ListItemText>
               </ListItem>
             </List>
           </Box>
