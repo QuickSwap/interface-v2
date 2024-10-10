@@ -90,12 +90,14 @@ export const useTradeSizeWarning = () => {
   const { t } = useTranslation();
   const {
     derivedSwapValues: { warnings },
+    twapSDK
   } = useTwapContext();
+  
   return useMemo(() => {
     if (warnings.tradeSize) {
-      return t('tradeSizeWarning');
+      return t('tradeSizeWarning', {usd: twapSDK.config.minChunkSizeUsd});
     }
-  }, [warnings.tradeSize, t]);
+  }, [warnings.tradeSize, t, twapSDK.config.minChunkSizeUsd]);
 };
 
 export const useFillDelayWarning = () => {

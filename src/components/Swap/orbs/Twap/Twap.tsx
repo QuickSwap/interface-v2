@@ -60,6 +60,7 @@ import { TimeUnit } from '@orbs-network/twap-sdk';
 import { useTwapContext, useOptimalRate } from './TwapContext';
 import { useInputError, useTwapApprovalCallback } from './hooks';
 import CurrencySelect from 'components/CurrencySelect';
+import { PoweredByOrbs } from '@orbs-network/swap-ui';
 
 const Content: React.FC<{
   currencyBgClass?: string;
@@ -661,6 +662,7 @@ const Content: React.FC<{
       </Box>
       <TradePriceWarning />
       <TwapOrders />
+      <PoweredByOrbs />
     </Box>
   );
 };

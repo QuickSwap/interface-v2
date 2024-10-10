@@ -99,7 +99,7 @@
     "@material-ui/styles": "^4.11.5",
     "@orbs-network/liquidity-hub-sdk": "^1.0.40",
     "@orbs-network/swap-ui": "^0.0.14",
-    "@orbs-network/twap-sdk": "^2.0.27",
+    "@orbs-network/twap-sdk": "^2.0.30",
     "@orderly.network/hooks": "^1.4.3",
     "@orderly.network/react": "^1.4.3",
     "@orderly.network/types": "^1.4.3",

@@ -256,6 +256,13 @@
     background-blend-mode: screen;
   }
 }
+
+.orbs_PoweredBy {
+  margin-top: 20px;
+  span {
+    font-size: 15px;
+  }
+}
 .TwapDurationSelect {
   display: flex;
   justify-content: space-between;

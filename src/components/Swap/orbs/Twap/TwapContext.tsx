@@ -53,9 +53,6 @@ const useTwapSDK = () => {
     }
   }, [chainId]);
 
-  console.log({config});
-  
-
   return useMemo(() => constructSDK({ config }), [config]);
 };
 
@@ -110,7 +107,7 @@ export const TwapContextProvider = ({
         currencyBalances,
         parsedAmount,
         derivedSwapValues,
-        tradeDeadline
+        tradeDeadline,
       }}
     >
       {children}
@@ -157,10 +154,10 @@ const usePrice = (isMarketOrder?: boolean) => {
   }, [
     state.tradePrice,
     chainId,
-    currencies[Field.OUTPUT],
     marketPrice,
     state.isTradePriceInverted,
     isMarketOrder,
+    currencies
   ]);
 };
 
@@ -262,7 +259,7 @@ const useParsedAmount = () => {
   const inputCurrency = useCurrencies()[Field.INPUT];
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   return useMemo(() => {
-    return tryParseAmount(chainId, typedValue, inputCurrency);
+    return tryParseAmount(chainIdToUse, typedValue, inputCurrency);
   }, [chainIdToUse, inputCurrency, typedValue, chainId]);
 };
 

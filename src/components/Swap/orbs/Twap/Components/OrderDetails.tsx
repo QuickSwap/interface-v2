@@ -106,7 +106,7 @@ const SrcAmount = ({
   return (
     <TwapOrderDetailsRow
       label={t('amountOut')}
-      value={`${formatCurrencyAmount(amount, 4)} ${currency?.symbol}`}
+      value={`${formatCurrencyAmount(amount, 6)} ${currency?.symbol}`}
     />
   );
 };
@@ -121,14 +121,14 @@ const MinReceived = ({
   currency?: Currency;
 }) => {
   const { t } = useTranslation();
-  const amount = fromRawAmount(currency, dstMinAmount);
+  const amount = fromRawAmount(currency, dstMinAmount);  
   if (isMarketOrder) return null;
 
   return (
     <TwapOrderDetailsRow
       label={t('minReceived')}
       tooltip={t('minimumReceivedTooltip')}
-      value={`${formatCurrencyAmount(amount, 4)} ${currency?.symbol}`}
+      value={`${formatCurrencyAmount(amount, 6)} ${currency?.symbol}`}
     />
   );
 };
