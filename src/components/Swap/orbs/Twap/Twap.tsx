@@ -490,11 +490,6 @@ const Content: React.FC<{
 
   const maxImpactReached = optimalRate?.maxImpactReached;
   const tradeSrcAmount = optimalRate?.srcAmount;
-  console.log(
-    parsedAmounts[Field.INPUT]?.toFixed(),
-    JSBI.BigInt(tradeSrcAmount || 0).toString(),
-  );
-
   const swapButtonDisabled = useMemo(() => {
     if (allowancePending || swapInputError) {
       return true;

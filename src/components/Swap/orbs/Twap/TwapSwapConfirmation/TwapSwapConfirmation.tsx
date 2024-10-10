@@ -29,6 +29,7 @@ export const useSteps = () => {
   } = useTwapConfirmationContext();
   const getLogo = useGetLogoCallback();
   const inCurrency = currencies.INPUT;
+  const orderType = useOrderType();
 
   return useMemo(() => {
     if (!steps) return [];
@@ -49,23 +50,41 @@ export const useSteps = () => {
     }
 
     result.push({
-      title: t('createOrder'),
+      title: `${t('create')} ${orderType}`,
+
       icon: <SwapVerticalCircleIcon />,
       id: Steps.SWAP,
     });
     return result;
-  }, [steps, inCurrency, getLogo, t]);
+  }, [steps, inCurrency, getLogo, t, orderType]);
 };
 
+const useOrderType = () => {
+  const { isLimitPanel, isMarketOrder } = useTwapContext();
+  const { t } = useTranslation();
+
+  return useMemo(() => {
+    if (isLimitPanel) {
+      return `${t('limitOrder')} `;
+    }
+    if (isMarketOrder) {
+      return `${t('twapMarketOrder')}`;
+    }
+    return `${t('twapLimitOrder')}`;
+  }, [isLimitPanel, isMarketOrder, t]);
+};
 const SuccessContent = ({ txHash }: { txHash?: string }) => {
   const { isLimitPanel } = useTwapContext();
   const { t } = useTranslation();
+
+  const orderType = useOrderType();
+
   return (
     <ConfirmationModal.Success
       txHash={txHash}
       content={
         <p className='TwapSwapConfirmationSuccess'>
-          {t('orderCreated')}
+          {`${orderType} ${t('created')}`}
           <span>{t(' using')}</span>{' '}
           <a href={TWAP_WEBSITE} target='_blank' rel='noreferrer'>
             {isLimitPanel ? 'dLimit' : 'dTWAP'}

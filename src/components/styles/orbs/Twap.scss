@@ -183,14 +183,16 @@
   &Content {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 7px;
     p {
       font-size: 14px;
       flex: 1;
     }
     svg {
-      width: 19px;
-      height: 19px;
+      width: 17px;
+      height: 17px;
+      position: relative;
+      top: 3px;
     }
   }
   a {
@@ -258,6 +260,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  &Content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .TwapSelectorButton {
     span {

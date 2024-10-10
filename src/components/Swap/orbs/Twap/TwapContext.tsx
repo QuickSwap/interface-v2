@@ -53,6 +53,9 @@ const useTwapSDK = () => {
     }
   }, [chainId]);
 
+  console.log({config});
+  
+
   return useMemo(() => constructSDK({ config }), [config]);
 };
 

@@ -90,8 +90,10 @@ const useInvertedAmount = (amount?: string) => {
 
 export const PriceSwitch = () => {
   const { onMarketOrder } = useTwapSwapActionHandlers();
-  const { isMarketOrder } = useTwapContext();
+  const { isMarketOrder, isLimitPanel } = useTwapContext();
   const { t } = useTranslation();
+
+  if(isLimitPanel) return null;
   return (
     <Box className='TwapSwitch'>
       <button
@@ -390,7 +392,8 @@ function DurationSelect() {
 
   return (
     <Card className='TwapDurationSelect'>
-      <CardTitle tooltip={t('expiryTooltip')} title={t('expiry')} />
+     <Box className='TwapDurationSelectContent'>
+     <CardTitle tooltip={t('expiryTooltip')} title={t('expiry')} />
       <Box className='TwapDurationSelectButtons'>
         {resolutions
           .filter((it) => it.unit !== TimeUnit.Minutes)
@@ -407,6 +410,7 @@ function DurationSelect() {
             );
           })}
       </Box>
+     </Box>
     </Card>
   );
 }

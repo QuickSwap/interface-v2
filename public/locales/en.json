@@ -1027,5 +1027,8 @@
   "confirmOrder": "Confirm Order",
   "allocated": "Allocated",
   "twapMarketOrder": "TWAP Market Order",
-  "twapLimitOrder": "TWAP Limit Order"
+  "twapLimitOrder": "TWAP Limit Order",
+  "limitOrder": "Limit Order",
+  "created": "Created",
+  "create": "Create"
 }
