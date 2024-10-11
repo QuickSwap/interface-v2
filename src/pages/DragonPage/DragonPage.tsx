@@ -102,6 +102,7 @@ const DragonPage: React.FC = () => {
     };
 
     fetchQuickBurnData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quickPrice, totalSupplyQuick]);
 
   return showLair ? (
