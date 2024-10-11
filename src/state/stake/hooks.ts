@@ -653,6 +653,7 @@ function useLairInfo(
     dQuickBalance?.result,
     quickBalance?.result,
     _dQuickTotalSupply?.result,
+    quickTotalSupply?.result,
     oneDayVolume,
   ]);
 }
