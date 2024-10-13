@@ -74,6 +74,16 @@ const DragonPage: React.FC = () => {
         if (!res.ok) {
           return;
         }
+
+        const res1 = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/new-circulating-supply`,
+        );
+        if (!res1.ok) {
+          return;
+        }
+        const resData1 = await res1.json();
+        const circulateSupply = Number(resData1.supplyData);
+
         const resData = await res.json();
         const burnAmount = Number(resData.data.globals.totalBurned);
         const formattedBurnAmount = formatAmount(burnAmount);
@@ -85,10 +95,7 @@ const DragonPage: React.FC = () => {
           (sum, value) => sum + Number(value.amount),
           0,
         );
-        const circulateSupply = totalSupplyQuick
-          ? totalSupplyQuick -
-            Number(lairInfoToUse?.totalQuickBalance.toExact())
-          : 0;
+
         const apy =
           circulateSupply > 0
             ? Number(
