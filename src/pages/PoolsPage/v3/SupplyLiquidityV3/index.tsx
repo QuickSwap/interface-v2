@@ -333,14 +333,6 @@ export function SupplyLiquidityV3() {
       ? gammaPairs.find((pair) => pair.type === preset)
       : undefined;
 
-  console.log(
-    'baseCurrency',
-    baseCurrency,
-    quoteCurrency,
-    account,
-    isSupportedNetwork,
-  );
-
   const { redirectWithCurrencySingleToken } = usePoolsRedirect();
 
   const handleCurrencySelectSingle = useCallback(
