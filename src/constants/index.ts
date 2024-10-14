@@ -56,6 +56,7 @@ import {
   ABOND,
   DSRUN,
   VDA,
+  TRKX,
 } from './v3/addresses';
 import { FeeAmount } from 'v3lib/utils';
 import { BondToken } from 'types/bond';
@@ -2344,6 +2345,7 @@ export const IchiVaults: {
     '0xe3a2F6b642cBB29F7D5A82afa83a48b9c4E79244',
     '0xD7c329ce757b24a43E9767980CE568fDA14C7e95',
     '0xF497556DC0e3E251CdFA6eA87772A54B8e0bc5a8',
+    '0xC47dC89a5bAa26E0E3f58b64caEc095d80cD4c2D',
   ],
   [ChainId.ZKEVM]: [
     '0x423382e084f1d1d180bec638bc64cc6408896c3c',
@@ -2572,6 +2574,7 @@ export const GlobalValue = {
         ABOND[ChainId.MATIC],
         DSRUN[ChainId.MATIC],
         VDA[ChainId.MATIC],
+        TRKX[ChainId.MATIC],
       ],
       [ChainId.DOGECHAIN]: [
         EMPTY[ChainId.DOGECHAIN],

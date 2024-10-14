@@ -1377,6 +1377,16 @@ export const VDA: { [chainId: number]: Token } = {
   ),
 };
 
+export const TRKX: { [chainId: number]: Token } = {
+  [ChainId.MATIC]: new Token(
+    ChainId.MATIC,
+    '0x61bf130d973D59c69d3227f1668d534d83119860',
+    18,
+    'TRKX',
+    'Trakx Token',
+  ),
+};
+
 export const DLQUICK: { [chainId: number]: Token } = {
   [ChainId.MATIC]: NEW_QUICK[ChainId.MATIC],
   [ChainId.DOGECHAIN]: DD[ChainId.DOGECHAIN],

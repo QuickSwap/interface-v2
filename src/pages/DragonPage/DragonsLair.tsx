@@ -93,7 +93,8 @@ const DragonsLair = () => {
   const lairInfo = useOldLairInfo();
   const newLairInfo = useNewLairInfo();
   const lairInfoToUse = isNew ? newLairInfo : lairInfo;
-  const APY = useLairDQUICKAPY(isNew, lairInfoToUse);
+  // const APY = useLairDQUICKAPY(isNew, lairInfoToUse);
+  const APY = '0';
   const dQUICKtoQUICK = lairInfoToUse?.dQUICKtoQUICK?.toExact();
   const QUICKtodQUICK = lairInfoToUse?.QUICKtodQUICK?.toExact();
 
