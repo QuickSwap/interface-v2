@@ -71,7 +71,9 @@ const VersionToggle: React.FC = () => {
             redirectWithVersion('v2');
           }}
         >
-          <small>{t('V2')}</small>
+          <small style={{ lineHeight: 5.85, fontSize: '13px' }}>
+            {t('V2')}
+          </small>
         </Box>
       )}
 
@@ -82,11 +84,13 @@ const VersionToggle: React.FC = () => {
             redirectWithVersion('v3');
           }}
         >
-          <small>{t('V3')}</small>
+          <small style={{ lineHeight: 5.85, fontSize: '13px' }}>
+            {t('V3')}
+          </small>
         </Box>
       )}
 
-      {isPoolPage && singleTokenEnabled && (
+      {/* {isPoolPage && singleTokenEnabled && (
         <Box
           className={version === 'singleToken' ? 'version-toggle-active' : ''}
           onClick={() => {
@@ -95,7 +99,7 @@ const VersionToggle: React.FC = () => {
         >
           <small>{t('singleToken')}</small>
         </Box>
-      )}
+      )} */}
       {isPoolPage && lpLockEnabled && (
         <Box
           className={isLpLock ? 'version-toggle-active' : ''}

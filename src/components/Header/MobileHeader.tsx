@@ -98,7 +98,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       title: 'Announcements',
     },
     {
-      link: 'https://discord.gg/aMEzjcVM',
+      link: 'https://t.me/+OQ-H4hjc-BU5ZmRl',
       icon: <DiscordIcon style={{ width: '30px', height: '30px' }} />,
       title: 'Discord',
     },

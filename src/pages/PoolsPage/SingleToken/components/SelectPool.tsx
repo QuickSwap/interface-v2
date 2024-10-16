@@ -25,10 +25,11 @@ const SingleTokenSelectPool: React.FC<{ currency?: Currency }> = ({
     const token0Address = vault.token0?.address ?? '';
     const token1Address = vault.token1?.address ?? '';
     return (
-      (token0Address.toLowerCase() === tokenAddress.toLowerCase() &&
+      !!currency &&
+      ((token0Address.toLowerCase() === tokenAddress.toLowerCase() &&
         vault.allowToken0) ||
-      (token1Address.toLowerCase() === tokenAddress.toLowerCase() &&
-        vault.allowToken1)
+        (token1Address.toLowerCase() === tokenAddress.toLowerCase() &&
+          vault.allowToken1))
     );
   });
 
