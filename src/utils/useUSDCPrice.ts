@@ -6,6 +6,7 @@ import {
   WETH,
   Token,
   Trade,
+  ETHER,
 } from '@uniswap/sdk';
 import { useMemo } from 'react';
 import { PairState, usePairs, usePair } from 'data/Reserves';
@@ -34,6 +35,11 @@ dayjs.extend(weekOfYear);
 
 export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const { chainId } = useActiveWeb3React();
+  const token = useMemo(() => wrappedCurrency(currency, chainId), [
+    currency,
+    chainId,
+  ]);
+  const { data: priceUsd } = useFetchEthereumPrice(token?.address);
 
   const amountOut = chainId
     ? tryParseAmount(chainId, '1', USDC[chainId])
@@ -42,6 +48,20 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
   const allowedPairs = useAllCommonPairs(currency, USDC[chainId]);
 
   return useMemo(() => {
+    if (chainId && chainId === ChainId.ETHEREUM) {
+      const amount = tryParseAmount(
+        chainId,
+        priceUsd?.price.toString(),
+        currency,
+      );
+
+      const usdcAmount = tryParseAmount(chainId, '1', USDC[chainId]);
+
+      if (!currency || !amount || !usdcAmount) return;
+
+      return new Price(USDC[chainId], currency, usdcAmount.raw, amount.raw);
+    }
+
     if (!currency || !amountOut || !allowedPairs.length) {
       return undefined;
     }
@@ -57,8 +77,44 @@ export default function useUSDCPrice(currency?: Currency): Price | undefined {
     const { numerator, denominator } = trade.route.midPrice;
 
     return new Price(currency, USDC[chainId], denominator, numerator);
-  }, [currency, allowedPairs, amountOut, chainId]);
+  }, [currency, allowedPairs, amountOut, chainId, priceUsd]);
 }
+
+const fetchEthereumPrice = async (address: string) => {
+  const tokenAddressWithChainId = `ethereum:${address}`;
+  const url = `https://coins.llama.fi/prices/current/${tokenAddressWithChainId}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return {
+        address,
+        price: 0,
+      };
+    }
+    const data = await response.json();
+    const coin = data.coins[tokenAddressWithChainId];
+    return {
+      address,
+      price: coin.price || 0,
+    };
+  } catch (error) {
+    console.error(`Failed to fetch price for ${address}:`, error);
+    return {
+      address,
+      price: 0,
+    };
+  }
+};
+
+const useFetchEthereumPrice = (address?: string) => {
+  const { chainId } = useActiveWeb3React();
+
+  return useQuery({
+    queryKey: ['useFetchEthereumPrice', address, chainId],
+    queryFn: () => fetchEthereumPrice(address!),
+    enabled: !!address && chainId === ChainId.ETHEREUM,
+  });
+};
 
 const getUSDPricesFromAddresses = async (
   chainId: ChainId,
@@ -71,6 +127,12 @@ const getUSDPricesFromAddresses = async (
   const config = getConfig(chainId);
   const v2 = config['v2'] && !onlyV3;
   const addresses = addressStr.split('_');
+
+  if (chainId === ChainId.ETHEREUM) {
+    return await Promise.all(
+      addresses.map(async (address) => fetchEthereumPrice(address)),
+    );
+  }
 
   for (const ind of Array.from(
     { length: Math.ceil(addresses.length / 150) },

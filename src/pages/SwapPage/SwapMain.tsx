@@ -21,12 +21,14 @@ import { useIsV2 } from 'state/application/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import '../styles/swap-main.scss';
 
+import { SlippageWrapper } from './SlippageWrapper';
+const SwapTwap = lazy(() => import('components/Swap/orbs/Twap/Twap'));
+
 const SwapV3Page = lazy(() => import('./V3/Swap'));
 const Swap = lazy(() =>
   import('components').then((module) => ({ default: module.Swap })),
 );
 const SwapCrossChain = lazy(() => import('./SwapCrossChain'));
-const TWAPBase = lazy(() => import('./LimitAndTWAP/LimitAndTWAP'));
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -252,121 +254,151 @@ const SwapMain: React.FC = () => {
           gridGap: '20px',
         }}
       >
-        {swapTabs.length > 0 && (
-          <Box
-            // margin={isProMode ? '28px 0' : '28px 0 0'}
-            className='swapLimitTabs'
-            sx={{ width: '100%' }}
-            borderRadius={10}
-          >
-            {swapTabs.map((tab) => (
-              <>
-                <Box
-                  className={`swapLimitTab ${
-                    isActiveSwapTab(tab.id) ? 'activeSwapLimitTab' : ''
-                  }`}
-                  key={tab.id.toString()}
-                  borderRadius={10}
-                  onClick={() => {
-                    if (tab.id === 'market') return;
-                    redirectWithSwapType(Number(tab.id));
-                  }}
-                >
-                  {tab.id === 'market' ? (
-                    <>
-                      {dropDownMenuText && (
-                        <Button
-                          id='swap-button'
-                          aria-controls={open ? 'swap-menu' : undefined}
-                          aria-haspopup='true'
-                          aria-expanded={open ? 'true' : undefined}
-                          variant='text'
-                          disableElevation
-                          onClick={handleClickListItem}
-                          endIcon={<KeyboardArrowDown />}
-                          style={{
-                            fontSize: '14px',
-                          }}
-                          className={`tab tabMenu ${
-                            selectedIndex !== SWAP_CROSS_CHAIN
-                              ? 'activeTab'
-                              : ''
-                          }`}
-                        >
-                          {t(dropDownMenuText)}
-                          {dropDownMenuText === 'bestTrade' && (
-                            <Tooltip
-                              style={{ margin: '0 4px' }}
-                              title={
-                                <Box
-                                  sx={{
-                                    padding: '16px',
-                                    fontSize: '12px',
-                                    color: '#c7cad9',
-                                    bgcolor: '#0000003d',
-                                    border:
-                                      'solid 1px rgba(255, 255, 255, 0.04)',
-                                    boxShadow: '0 0 16px 0 rgba(0, 0, 0, 0.24)',
-                                    borderRadius: '12px',
-                                  }}
-                                  style={{ backdropFilter: 'blur(40px)' }}
-                                >
-                                  {t('bestTradeTooltip')}
-                                </Box>
-                              }
-                            >
-                              <img
-                                src='/info.svg'
-                                alt='question'
-                                width={12}
-                                height={12}
-                              />
-                            </Tooltip>
-                          )}
-                        </Button>
-                      )}
-                      <Menu
-                        id='swap-menu'
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          'aria-labelledby': 'swap-button',
-                          role: 'listbox',
-                        }}
-                      >
-                        {SwapDropdownTabs.filter(
-                          (d) => d.visible !== false,
-                        ).map((option, index) => (
-                          <MenuItem
-                            className={`swap-menu-item ${
-                              option.key === selectedIndex
-                                ? 'swap-menu-item-selected'
+        {swapTabs.length === 1 ? (
+          <Box style={{ display: 'flex', gap: 5 }}>
+            {t(dropDownMenuText)}
+            {dropDownMenuText === 'bestTrade' && (
+              <Tooltip
+                style={{ margin: '0 4px' }}
+                title={
+                  <Box
+                    sx={{
+                      padding: '16px',
+                      fontSize: '12px',
+                      color: '#c7cad9',
+                      bgcolor: '#0000003d',
+                      border: 'solid 1px rgba(255, 255, 255, 0.04)',
+                      boxShadow: '0 0 16px 0 rgba(0, 0, 0, 0.24)',
+                      borderRadius: '12px',
+                    }}
+                    style={{ backdropFilter: 'blur(40px)' }}
+                  >
+                    {t('bestTradeTooltip')}
+                  </Box>
+                }
+              >
+                <img src='/info.svg' alt='question' width={12} height={12} />
+              </Tooltip>
+            )}
+          </Box>
+        ) : (
+          swapTabs.length > 0 && (
+            <Box
+              // margin={isProMode ? '28px 0' : '28px 0 0'}
+              className='swapLimitTabs'
+              sx={{ width: '100%' }}
+              borderRadius={10}
+            >
+              {swapTabs.map((tab) => (
+                <>
+                  <Box
+                    className={`swapLimitTab ${
+                      isActiveSwapTab(tab.id) ? 'activeSwapLimitTab' : ''
+                    }`}
+                    key={tab.id.toString()}
+                    borderRadius={10}
+                    onClick={() => {
+                      if (tab.id === 'market') return;
+                      redirectWithSwapType(Number(tab.id));
+                    }}
+                  >
+                    {tab.id === 'market' ? (
+                      <>
+                        {dropDownMenuText && (
+                          <Button
+                            id='swap-button'
+                            aria-controls={open ? 'swap-menu' : undefined}
+                            aria-haspopup='true'
+                            aria-expanded={open ? 'true' : undefined}
+                            variant='text'
+                            disableElevation
+                            onClick={handleClickListItem}
+                            endIcon={<KeyboardArrowDown />}
+                            style={{
+                              fontSize: '14px',
+                            }}
+                            className={`tab tabMenu ${
+                              selectedIndex !== SWAP_CROSS_CHAIN
+                                ? 'activeTab'
                                 : ''
                             }`}
-                            key={option.key}
-                            disabled={option.key === selectedIndex}
-                            selected={option.key === selectedIndex}
-                            onClick={(event) =>
-                              handleMenuItemClick(event, index)
-                            }
                           >
-                            {t(option.name)}
-
-                            {option.key === selectedIndex && (
-                              <Box ml={5} className='selectedMenuDot' />
+                            {t(dropDownMenuText)}
+                            {dropDownMenuText === 'bestTrade' && (
+                              <Tooltip
+                                style={{ margin: '0 4px' }}
+                                title={
+                                  <Box
+                                    sx={{
+                                      padding: '16px',
+                                      fontSize: '12px',
+                                      color: '#c7cad9',
+                                      bgcolor: '#0000003d',
+                                      border:
+                                        'solid 1px rgba(255, 255, 255, 0.04)',
+                                      boxShadow:
+                                        '0 0 16px 0 rgba(0, 0, 0, 0.24)',
+                                      borderRadius: '12px',
+                                    }}
+                                    style={{ backdropFilter: 'blur(40px)' }}
+                                  >
+                                    {t('bestTradeTooltip')}
+                                  </Box>
+                                }
+                              >
+                                <img
+                                  src='/info.svg'
+                                  alt='question'
+                                  width={12}
+                                  height={12}
+                                />
+                              </Tooltip>
                             )}
-                          </MenuItem>
-                        ))}
-                      </Menu>
-                    </>
-                  ) : (
-                    <small>{tab.text}</small>
-                  )}
-                </Box>
-              </>
-            ))}
-          </Box>
+                          </Button>
+                        )}
+                        <Menu
+                          id='swap-menu'
+                          anchorEl={anchorEl}
+                          open={open}
+                          onClose={handleClose}
+                          MenuListProps={{
+                            'aria-labelledby': 'swap-button',
+                            role: 'listbox',
+                          }}
+                        >
+                          {SwapDropdownTabs.filter(
+                            (d) => d.visible !== false,
+                          ).map((option, index) => (
+                            <MenuItem
+                              className={`swap-menu-item ${
+                                option.key === selectedIndex
+                                  ? 'swap-menu-item-selected'
+                                  : ''
+                              }`}
+                              key={option.key}
+                              disabled={option.key === selectedIndex}
+                              selected={option.key === selectedIndex}
+                              onClick={(event) =>
+                                handleMenuItemClick(event, index)
+                              }
+                            >
+                              {t(option.name)}
+
+                              {option.key === selectedIndex && (
+                                <Box ml={5} className='selectedMenuDot' />
+                              )}
+                            </MenuItem>
+                          ))}
+                        </Menu>
+                      </>
+                    ) : (
+                      <small>{tab.text}</small>
+                    )}
+                  </Box>
+                </>
+              ))}
+            </Box>
+          )
         )}
         <Box
           sx={{
@@ -397,10 +429,9 @@ const SwapMain: React.FC = () => {
         {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
           <SwapCrossChain />
         )}
-        {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
-          <TWAPBase limit={true} />
-        )}
-        {swapType === SWAP_TWAP.toString() && <TWAPBase limit={false} />}
+        {showLimitOrder &&
+          (Number(swapType) === SWAP_LIMIT ||
+            Number(swapType) === SWAP_TWAP) && <SwapTwap />}
       </Box>
     </>
   );
