@@ -11,6 +11,10 @@ export const PerpsPage = () => {
   const perpsV2Available = config['perpsV2']['available'];
   const history = useHistory();
 
+  if (!perpsV2Available) {
+    location.href = '/';
+  }
+
   useEffect(() => {
     if (!perpsV2Available) {
       history.push('/');
