@@ -38,6 +38,7 @@ interface CurrencyInputProps {
   classNames?: string;
   balancePrev?: string;
   balanceAfter?: string;
+  disabled?: boolean;
 }
 
 const CurrencyInput: React.FC<CurrencyInputProps> = ({
@@ -58,6 +59,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   classNames,
   balancePrev,
   balanceAfter,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { account, chainId } = useActiveWeb3React();
@@ -157,7 +159,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         sx={{ borderRadius: '10px', padding: '8px 16px' }}
         className='bg-input1'
       >
-        <Box className='inputWrapper'>
+        <Box
+          className='inputWrapper'
+          style={{
+            pointerEvents: disabled ? 'none' : 'auto',
+          }}
+        >
           <NumericalInput
             value={amount}
             align='left'

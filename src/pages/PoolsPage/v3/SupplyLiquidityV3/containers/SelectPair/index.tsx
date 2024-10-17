@@ -8,7 +8,6 @@ import { Add } from '@material-ui/icons';
 import V3CurrencySelect from 'components/v3/CurrencySelect';
 import { useTranslation } from 'react-i18next';
 import { Value } from 'sass';
-import { PoweredBy } from '@orbs-network/twap-ui/dist/components';
 import { useState } from 'react';
 import Fire from 'assets/images/fire-new.svg';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';

@@ -298,7 +298,7 @@ export function useDerivedSwapInfo(): {
   useEffect(() => {
     const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
-      stableCoins && stableCoins.length > 0
+      stableCoins && stableCoins?.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
         : [];
     if (!swapSlippage && !slippageManuallySet) {

@@ -1,0 +1,56 @@
+@use 'styles/variables' as *;
+
+
+.orbsErrorContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  &Text{
+    margin-top: 20px;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  .txSubmitButton {
+    width: 100%;
+  }
+  &Buttons {
+    margin-top: 30px;
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    width: 100%;
+  }
+}
+
+
+.orbsTxModalContent {
+  margin-top: 20px;
+  padding: 16px 0;
+  padding-bottom: 0px;
+  color: $textPrimary;
+  text-align: center;
+  & .orbs_StepsStepLogo {
+   border: 7px solid #1b1e29;
+
+  }
+}
+
+.orbsModalWrapper {
+  max-width: 500px;
+}
+
+.orbsSuccessContentButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  .txSubmitButton {
+    width: 100%;
+  }
+  &Link {
+    width: 100%;
+    text-decoration: none;
+  }
+}

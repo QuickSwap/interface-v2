@@ -1,6 +1,6 @@
 {
-  "v3": true,
-  "v2": true,
+  "v3": false,
+  "v2": false,
   "rpc": "https://mainnet.infura.io/v3/",
   "blockExplorer": "https://etherscan.io",
   "chainId": 1,
@@ -14,11 +14,11 @@
     "decimals": 18
   },
   "swap": {
-    "available": false,
-    "bestTrade": false,
+    "available": true,
+    "bestTrade": true,
     "proMode": false,
     "limitOrder": false,
-    "liquidityHub": false,
+    "liquidityHub": true,
     "twapOrder": false,
     "crossChain": false
   },

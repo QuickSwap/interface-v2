@@ -38,6 +38,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   const config = getConfig(chainId);
   const showPerps = config['perps']['available'];
+  const showPools = config['pools']['available'];
+
   const showHydra = config['hydra']['available'];
   const showPerpsV2 = config['perpsV2']['available'];
 
@@ -375,9 +377,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                   }}
                 />
               </Box>
-              <Box>
-                <Link to='/pools'>{t('pool')}</Link>
-              </Box>
+              {showPools && (
+                <Box>
+                  <Link to='/pools'>{t('pool')}</Link>
+                </Box>
+              )}
               <ButtonBase
                 style={{
                   display: 'flex',
