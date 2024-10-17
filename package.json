@@ -122,6 +122,7 @@
     "react-tradingview-embed": "^3.0.6",
     "react-virtuoso": "^4.1.0",
     "sass": "^1.77.1",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "web3": "^1.7.1"
   }
 }
