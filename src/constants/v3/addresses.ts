@@ -925,6 +925,13 @@ export const axlUSDC: { [chainId: number]: Token } = {
     'axlUSDC',
     'Axelar Wrapped USDC',
   ),
+  [ChainId.IMX]: new Token(
+    ChainId.IMX,
+    '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
+    18,
+    'axlUSDC',
+    'Axelar Wrapped USDC',
+  ),
 };
 
 export const TUSD: { [chainId: number]: Token } = {

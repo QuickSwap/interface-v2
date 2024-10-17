@@ -2695,7 +2695,7 @@ export const GlobalData = {
     [ChainId.TIMX]: [USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [USDC[ChainId.X1]],
-    [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX]],
+    [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX], axlUSDC[ChainId.IMX]],
     [ChainId.ASTARZKEVM]: [
       USDC[ChainId.ASTARZKEVM],
       USDT[ChainId.ASTARZKEVM],
