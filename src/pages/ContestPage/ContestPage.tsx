@@ -54,6 +54,10 @@ const ContestPage: React.FC = () => {
   const showLeaderBoard = config['leaderboard']['available'];
   const history = useHistory();
 
+  if (!showLeaderBoard) {
+    location.href = '/';
+  }
+
   useEffect(() => {
     if (!showLeaderBoard) {
       history.push('/');

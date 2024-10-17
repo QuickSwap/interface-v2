@@ -27,6 +27,10 @@ const BondsPage: React.FC = () => {
   const history = useHistory();
   const helpURL = process.env.REACT_APP_HELP_URL;
 
+  if (!showBonds) {
+    location.href = '/';
+  }
+
   useEffect(() => {
     if (!showBonds) {
       history.push('/');
