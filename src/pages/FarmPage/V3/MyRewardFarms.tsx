@@ -148,24 +148,24 @@ const MyRewardFarms: React.FC<Props> = ({
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
         (reward: any) => reward.isLive && !reward.isMock,
       );
-      const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
-        const usdPrice =
-          rewardUSDPrices?.find(
-            (priceItem) =>
-              item.rewardToken &&
-              priceItem.address.toLowerCase() ===
-                item.rewardToken.toLowerCase(),
-          )?.price ?? 0;
-        const rewardDuration =
-          (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
-        return (
-          total +
-          (rewardDuration > 0
-            ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
-            : 0)
-        );
-      }, 0);
-      return { ...item, apr, title, dailyRewardUSD };
+      // const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
+      //   const usdPrice =
+      //     rewardUSDPrices?.find(
+      //       (priceItem) =>
+      //         item.rewardToken &&
+      //         priceItem.address.toLowerCase() ===
+      //           item.rewardToken.toLowerCase(),
+      //     )?.price ?? 0;
+      //   const rewardDuration =
+      //     (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+      //   return (
+      //     total +
+      //     (rewardDuration > 0
+      //       ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
+      //       : 0)
+      //   );
+      // }, 0);
+      return { ...item, apr, title };
     })
     .filter((farm) => {
       const searchCondition = (farm?.title ?? '')
@@ -235,11 +235,11 @@ const MyRewardFarms: React.FC<Props> = ({
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
-          ? sortMultiplier
-          : -1 * sortMultiplier;
-      }
+      // if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+      //   return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+      //     ? sortMultiplier
+      //     : -1 * sortMultiplier;
+      // }
       return 1;
     });
 
