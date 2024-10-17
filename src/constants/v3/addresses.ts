@@ -92,6 +92,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.IMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.ASTARZKEVM]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
   [ChainId.LAYERX]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
+  [ChainId.ETHEREUM]: '0xcA11bde05977b3631167028862bE2a173976CA11',
 };
 
 export const defaultBondDexFactories: {
@@ -465,6 +466,13 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
 };
 
 export const USDC: { [chainId: number]: Token } = {
+  [ChainId.ETHEREUM]: new Token(
+    ChainId.ETHEREUM,
+    '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    6,
+    'USDC',
+    'USD Coin',
+  ),
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
@@ -572,6 +580,13 @@ export const DAIE: { [chainId: number]: Token } = {
 };
 
 export const USDT: { [chainId: number]: Token } = {
+  [ChainId.ETHEREUM]: new Token(
+    ChainId.ETHEREUM,
+    '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    6,
+    'USDT',
+    'Tether USD',
+  ),
   [ChainId.MATIC]: new Token(
     ChainId.MATIC,
     '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
@@ -1408,6 +1423,7 @@ export const DLDQUICK: { [chainId: number]: Token } = {
 export const V2_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId: number]: Token[];
 } = {
+  [ChainId.ETHEREUM]: [],
   [ChainId.MATIC]: [
     ...WETH_ONLY[ChainId.MATIC],
     USDC[ChainId.MATIC],

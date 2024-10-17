@@ -68,7 +68,6 @@ import { useTranslation } from 'react-i18next';
 import { useTransactionFinalizer } from 'state/transactions/hooks';
 import { getConfig } from 'config/index';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { useV3TradeTypeAnalyticsCallback } from 'components/Swap/LiquidityHub';
 import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
@@ -356,17 +355,11 @@ const SwapV3Page: React.FC = () => {
   const { price: fromTokenUSDPrice } = useUSDCPriceFromAddress(
     currencies[Field.INPUT]?.wrapped.address ?? '',
   );
-  const onV3TradeAnalytics = useV3TradeTypeAnalyticsCallback(
-    currencies,
-    allowedSlippage,
-  );
-
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
 
   const { walletInfo } = useWalletInfo();
 
   const handleSwap = useCallback(() => {
-    onV3TradeAnalytics(formattedAmounts);
     if (!swapCallback) {
       return;
     }
@@ -460,7 +453,6 @@ const SwapV3Page: React.FC = () => {
         });
       });
   }, [
-    onV3TradeAnalytics,
     formattedAmounts,
     swapCallback,
     tradeToConfirm,

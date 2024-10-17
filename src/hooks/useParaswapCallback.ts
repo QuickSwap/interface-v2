@@ -23,10 +23,6 @@ import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { BigNumber } from 'ethers';
-import {
-  liquidityHubAnalytics,
-  useLiquidityHubCallback,
-} from 'components/Swap/LiquidityHub';
 import { TransactionType } from 'models/enums';
 
 export enum SwapCallbackState {
@@ -72,13 +68,7 @@ export function useParaswapCallback(
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
-  const liquidutyHubCallback = useLiquidityHubCallback(
-    allowedSlippage,
-    priceRoute?.srcToken,
-    priceRoute?.destToken,
-    inputCurrency,
-    outputCurrency,
-  );
+
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
@@ -147,24 +137,6 @@ export function useParaswapCallback(
           recipientAddressOrName,
         });
 
-        const liquidityHubResult = await liquidutyHubCallback(
-          maxSrcAmount,
-          minDestAmount,
-          priceRoute.destAmount,
-        );
-
-        if (liquidityHubResult) {
-          addTransaction(liquidityHubResult, {
-            summary,
-            type: TransactionType.SWAPPED,
-          });
-
-          return {
-            response: liquidityHubResult,
-            summary,
-          };
-        }
-
         let txParams;
 
         try {
@@ -223,9 +195,7 @@ export function useParaswapCallback(
         );
 
         try {
-          liquidityHubAnalytics.onDexSwapRequest();
           const response = await signer.sendTransaction(ethersTxParams);
-          liquidityHubAnalytics.onDexSwapSuccess(response);
           addTransaction(response, {
             summary,
             type: TransactionType.SWAPPED,
@@ -233,7 +203,6 @@ export function useParaswapCallback(
 
           return { response, summary };
         } catch (error) {
-          liquidityHubAnalytics.onDexSwapFailed(error.message);
           if (error?.code === 'ACTION_REJECTED') {
             throw new Error('Transaction rejected.');
           } else {
@@ -258,7 +227,6 @@ export function useParaswapCallback(
     inputCurrency,
     outputCurrency,
     allowedSlippage,
-    liquidutyHubCallback,
   ]);
 }
 
