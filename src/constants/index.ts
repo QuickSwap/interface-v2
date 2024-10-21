@@ -117,6 +117,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.IMX]: 'IMX',
   [ChainId.ASTARZKEVM]: 'astar_zkevm',
   [ChainId.LAYERX]: 'layerX',
+  [ChainId.ETHEREUM]: 'ethereum',
 };
 
 export enum ZapType {
@@ -215,6 +216,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
+  [ChainId.ETHEREUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
 };
 
 export const GlobalConst = {
@@ -361,6 +363,7 @@ export const DEFAULT_LIST_OF_LISTS: string[] = [
 ];
 
 export const SUPPORTED_CHAINIDS = [
+  ChainId.ETHEREUM,
   ChainId.MATIC,
   ChainId.ZKEVM,
   ChainId.MANTA,
@@ -2350,6 +2353,8 @@ export const IchiVaults: {
   [ChainId.ZKEVM]: [
     '0x423382e084f1d1d180bec638bc64cc6408896c3c',
     '0xb4eac29e630e38133e015ad17e3986886d5e8b35',
+    '0xc0892aD9148b6A6520698BA0079E92242435bF7b',
+    '0x24091dAe5CEBbb3ebb52A786716015B83FBe3fe5',
   ],
 };
 
@@ -2610,6 +2615,7 @@ export const GlobalValue = {
       [ChainId.IMX]: [],
       [ChainId.ASTARZKEVM]: [],
       [ChainId.LAYERX]: [],
+      [ChainId.ETHEREUM]: [],
     },
   },
   marketSDK: {
@@ -2691,7 +2697,7 @@ export const GlobalData = {
     [ChainId.TIMX]: [USDC[ChainId.TIMX]],
     [ChainId.BTTC]: [],
     [ChainId.X1]: [USDC[ChainId.X1]],
-    [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX]],
+    [ChainId.IMX]: [USDC[ChainId.IMX], USDT[ChainId.IMX], axlUSDC[ChainId.IMX]],
     [ChainId.ASTARZKEVM]: [
       USDC[ChainId.ASTARZKEVM],
       USDT[ChainId.ASTARZKEVM],
@@ -2701,6 +2707,11 @@ export const GlobalData = {
       USDC[ChainId.LAYERX],
       USDT[ChainId.LAYERX],
       DAI[ChainId.LAYERX],
+    ],
+    [ChainId.ETHEREUM]: [
+      USDC[ChainId.ETHEREUM],
+      USDT[ChainId.ETHEREUM],
+      DAI[ChainId.ETHEREUM],
     ],
   },
   blueChips: {
@@ -2767,6 +2778,13 @@ export const GlobalData = {
       DAI[ChainId.LAYERX],
       WBTC[ChainId.LAYERX],
     ],
+    [ChainId.ETHEREUM]: [
+      WETH[ChainId.ETHEREUM],
+      USDC[ChainId.ETHEREUM],
+      USDT[ChainId.ETHEREUM],
+      DAI[ChainId.ETHEREUM],
+      WBTC[ChainId.ETHEREUM],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2802,6 +2820,7 @@ export const GlobalData = {
       [WETH[ChainId.ASTARZKEVM], WSTETH[ChainId.ASTARZKEVM]],
     ],
     [ChainId.LAYERX]: [],
+    [ChainId.ETHEREUM]: [],
   },
   quickBurns: {
     CHART_DURATIONS: [
@@ -2883,6 +2902,7 @@ export const ContestPairs: any = {
   [ChainId.DOGECHAIN]: [],
   [ChainId.ZKTESTNET]: [],
   [ChainId.MUMBAI]: [],
+  [ChainId.ETHEREUM]: [],
 };
 
 export const LeaderBoardAnalytics = {
