@@ -351,6 +351,7 @@ export const useGetMerklFarms = () => {
         pool: distributions[0]['mainParameter'],
         token0: distributions[0]['campaignParameters']['token0'],
         token1: distributions[0]['campaignParameters']['token1'],
+        poolFee: distributions[0]['campaignParameters']['poolFee'],
         symbolToken0: distributions[0]['symbolToken0'],
         symbolToken1: distributions[0]['symbolToken1'],
         distributions,

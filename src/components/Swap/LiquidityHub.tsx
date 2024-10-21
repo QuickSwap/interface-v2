@@ -220,7 +220,7 @@ export const useLiquidityHubCallback = (
       onSetLiquidityHubState({ isFailed: true });
       if (wrapped) {
         throw new Error(
-          'Transaction reverted, Please try again. Note! Your MATIC has been wrapped and are now wMATIC',
+          'Transaction reverted, Please try again. Note! Your POL has been wrapped and are now WPOL',
         );
       }
       return undefined;
