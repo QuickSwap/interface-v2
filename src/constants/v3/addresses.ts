@@ -35,7 +35,6 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.IMX]: [WETH[ChainId.IMX]],
   [ChainId.ASTARZKEVM]: [WETH[ChainId.ASTARZKEVM]],
   [ChainId.LAYERX]: [WETH[ChainId.LAYERX]],
-  [ChainId.ETHEREUM]: [WETH[ChainId.ETHEREUM]],
 };
 
 export const toV2Token = (t: {
