@@ -3,44 +3,21 @@ import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import ClaimAllBg from 'assets/images/claimAllBg.png';
 import { useTranslation } from 'react-i18next';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import { formatNumber, getTokenFromAddress } from 'utils';
+import { formatNumber } from 'utils';
 import { useClaimMerklRewards } from 'hooks/useClaimMerklRewards';
 import { Skeleton } from '@material-ui/lab';
 import { CurrencyLogo, CustomTooltip } from 'components';
-import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { useQuery } from '@tanstack/react-query';
-import { formatUnits } from 'ethers/lib/utils';
+import { useGetMerklRewards } from 'hooks/v3/useV3Farms';
 
 export const MerklClaimAll: React.FC = () => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
-  const tokenMap = useSelectedTokenList();
-  const fetchUserRewardsMerklFarms = async () => {
-    if (!account) {
-      return [];
-    }
-    const res = await fetch(
-      `${process.env.REACT_APP_MERKL_API_URL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
-    );
-    const retData = await res.json();
-    const data: any[] = [];
-    for (const [key, value] of Object.entries<any>(retData)) {
-      const token = getTokenFromAddress(key, chainId, tokenMap, []);
-      data.push({
-        address: key,
-        unclaimed: Number(formatUnits(value.unclaimed, value.decimals)),
-        symbol: value.symbol,
-        token,
-      });
-    }
-    return data;
-  };
-  const { isLoading: loadingFarms, data: merklRewards } = useQuery({
-    queryKey: ['fetchUserRewardsMerklFarms', chainId, account],
-    queryFn: fetchUserRewardsMerklFarms,
-    refetchInterval: 60000,
-  });
+
+  const { isLoading: loadingFarms, data: merklRewards } = useGetMerklRewards(
+    chainId,
+    account,
+  );
 
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
