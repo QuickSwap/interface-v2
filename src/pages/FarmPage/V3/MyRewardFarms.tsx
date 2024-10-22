@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
@@ -8,7 +8,6 @@ import CustomSelector from 'components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
 import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useHistory } from 'react-router-dom';
 import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import {
@@ -294,31 +293,12 @@ const MyRewardFarms: React.FC<Props> = ({
                 item.address.toLowerCase() === alm.almAddress.toLowerCase(),
             )?.title ?? '';
         }
-        const farmType = alm.label.split(' ')[0];
-        const poolRewards = pool?.rewardsPerToken;
-        const rewardTokenAddresses = poolRewards
-          ? Object.keys(poolRewards)
-          : [];
-        const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
-        const rewards = rewardData
-          .map((item, ind) => {
-            return { ...item, address: rewardTokenAddresses[ind] };
-          })
-          .filter((item) => {
-            const accumulatedRewards = item.breakdownOfAccumulated;
-            return (
-              accumulatedRewards &&
-              Object.keys(accumulatedRewards).find((item) =>
-                item.includes(farmType),
-              )
-            );
-          });
+
         return {
           ...alm,
           token0: pool?.token0,
           token1: pool?.token1,
           title,
-          rewards,
           poolFee:
             (pool?.ammName ?? '').toLowerCase() === 'quickswapuni'
               ? pool?.poolFee
