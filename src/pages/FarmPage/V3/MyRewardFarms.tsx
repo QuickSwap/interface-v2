@@ -350,16 +350,13 @@ const MyRewardFarms: React.FC<Props> = ({
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item: any) =>
-      staked ? item.rewards.length > 0 : true,
-    );
     if (farmType.link === 'all') {
-      return farmsFilteredWithRewards;
+      return selectedFarms;
     }
-    return farmsFilteredWithRewards.filter(
+    return selectedFarms.filter(
       (item: any) => item.title && item.title === farmType.link,
     );
-  }, [farmType.link, selectedFarms, staked]);
+  }, [farmType.link, selectedFarms]);
 
   return (
     <>
