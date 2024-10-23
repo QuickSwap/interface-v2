@@ -1,0 +1,59 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.networkSelectionDropdown {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  width: 320px;
+  border: 1px solid $grey38;
+  border-radius: 16px;
+  padding: 16px;
+  backdrop-filter: blur(40px);
+  box-shadow: 0 0 16px 0 $grey21;
+
+  @include media('screen', '<tablet') {
+    top: 70px;
+    right: 5%;
+    width: 90%;
+  }
+}
+
+.networkTypeWrapper {
+  margin: 12px -16px 8px;
+  border-bottom: 1px solid $grey39;
+  & .customTabWrapper {
+    & .MuiTabs-root .MuiTabs-indicator {
+      background-color: $primary;
+    }
+    & button {
+      height: 38px !important;
+      min-height: 38px;
+      padding: 0 4px !important;
+      margin: 0 16px !important;
+    }
+  }
+}
+
+.networkItemWrapper {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  cursor: pointer;
+  margin: 0 -10px;
+  padding: 0 10px;
+  &:hover {
+    background-color: $grey40;
+  }
+  & .networkIcon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    border-radius: 12px;
+  }
+  @include media('screen', '<phone') {
+    padding: 0 12px;
+  }
+}

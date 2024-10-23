@@ -6,7 +6,6 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -17,7 +16,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "useUnknownInCatchVariables": false,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noImplicitAny": false
   },
-  "include": ["src"]
+  "include": ["./src"]
 }

@@ -1,9 +1,13 @@
 import { getAddress } from '@ethersproject/address';
-import { Contract } from '@ethersproject/contracts';
+import { Contract, ContractReceipt } from '@ethersproject/contracts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
+import {
+  JsonRpcSigner,
+  Web3Provider,
+  JsonRpcProvider,
+} from '@ethersproject/providers';
 import {
   CurrencyAmount,
   ChainId,
@@ -18,16 +22,19 @@ import {
 import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
+  NativeCurrency,
 } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { AddressZero } from '@ethersproject/constants';
 import {
   GammaPair,
   GammaPairs,
   GlobalConst,
   GlobalValue,
+  MIN_NATIVE_CURRENCY_FOR_GAS,
   SUPPORTED_CHAINIDS,
+  DefiedgeStrategies,
 } from 'constants/index';
 import { TokenAddressMap } from 'state/lists/hooks';
 import { TokenAddressMap as TokenAddressMapV3 } from 'state/lists/v3/hooks';
@@ -37,22 +44,44 @@ import {
   StakingInfo,
   SyrupBasic,
   SyrupInfo,
-} from 'types';
+  DualStakingBasic,
+  StakingBasic,
+} from 'types/index';
 import { unwrappedToken } from './wrappedCurrency';
 import { useUSDCPriceFromAddress } from './useUSDCPrice';
 import { CallState } from 'state/multicall/hooks';
-import { DualStakingBasic, StakingBasic } from 'types';
-import { Connection, getConnections } from 'connectors';
 import { useActiveWeb3React } from 'hooks';
-import { DLQUICK, EMPTY, OLD_QUICK } from 'constants/v3/addresses';
-import { getConfig } from 'config';
+import {
+  DLQUICK,
+  EMPTY,
+  NATIVE_TOKEN_ADDRESS,
+  OLD_QUICK,
+  bondDexFactories,
+  defaultBondDexFactories,
+} from 'constants/v3/addresses';
+import { getConfig } from 'config/index';
 import { useMemo } from 'react';
 import { TFunction } from 'react-i18next';
-import { Connector } from '@web3-react/types';
 import { useAnalyticsGlobalData } from 'hooks/useFetchAnalyticsData';
+import { SteerVault } from 'hooks/v3/useSteerData';
+import { LiquidityDex, Protocols } from '@ape.swap/apeswap-lists';
+import { DEX } from '@soulsolidity/soulzap-v1';
+import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
+import { FeeAmount } from 'v3lib/utils';
+import { BondToken } from 'types/bond';
+import { ZERO_ADDRESS } from 'constants/v3/misc';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
+
+export function toNativeCurrency(chainId: ChainId | undefined) {
+  if (!chainId) return;
+  return {
+    ...ETHER[chainId],
+    isNative: true,
+    isToken: false,
+  } as NativeCurrency;
+}
 
 export function formatCompact(
   unformatted: number | string | BigNumber | BigNumberish | undefined | null,
@@ -205,9 +234,11 @@ export function maxAmountSpend(
 ): CurrencyAmount | undefined {
   if (!currencyAmount) return undefined;
   if (currencyAmount.currency === ETHER[chainId]) {
-    if (JSBI.greaterThan(currencyAmount.raw, GlobalConst.utils.MIN_ETH)) {
+    if (
+      JSBI.greaterThan(currencyAmount.raw, MIN_NATIVE_CURRENCY_FOR_GAS[chainId])
+    ) {
       return CurrencyAmount.ether(
-        JSBI.subtract(currencyAmount.raw, GlobalConst.utils.MIN_ETH),
+        JSBI.subtract(currencyAmount.raw, MIN_NATIVE_CURRENCY_FOR_GAS[chainId]),
         chainId,
       );
     } else {
@@ -215,6 +246,23 @@ export function maxAmountSpend(
     }
   }
   return currencyAmount;
+}
+
+export function halfAmountSpend(
+  chainId: ChainId,
+  currencyAmount?: CurrencyAmount,
+): CurrencyAmount | undefined {
+  if (!currencyAmount) return undefined;
+  const halfAmount = JSBI.divide(currencyAmount.raw, JSBI.BigInt(2));
+
+  if (currencyAmount.currency === ETHER[chainId]) {
+    if (JSBI.greaterThan(halfAmount, MIN_NATIVE_CURRENCY_FOR_GAS[chainId])) {
+      return CurrencyAmount.ether(halfAmount, chainId);
+    } else {
+      return CurrencyAmount.ether(JSBI.BigInt(0), chainId);
+    }
+  }
+  return new TokenAmount(currencyAmount.currency as Token, halfAmount);
 }
 
 export function isTokensOnList(
@@ -302,23 +350,23 @@ export function isZero(hexNumberString: string): boolean {
 }
 
 export function getSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account: string,
 ): JsonRpcSigner {
   return library.getSigner(account).connectUnchecked();
 }
 
 export function getProviderOrSigner(
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
-): Web3Provider | JsonRpcSigner {
+): Web3Provider | JsonRpcProvider | JsonRpcSigner {
   return account ? getSigner(library, account) : library;
 }
 
 export function getContract(
   address: string,
   ABI: any,
-  library: Web3Provider,
+  library: Web3Provider | JsonRpcProvider,
   account?: string,
 ): Contract {
   if (!isAddress(address) || address === AddressZero) {
@@ -334,7 +382,7 @@ export function getContract(
 
 export function calculateGasMargin(value: BigNumber): BigNumber {
   return value
-    .mul(BigNumber.from(10000).add(BigNumber.from(1000)))
+    .mul(BigNumber.from(10000).add(BigNumber.from(5000)))
     .div(BigNumber.from(10000));
 }
 
@@ -351,7 +399,7 @@ export function calculateGasMarginV3(
     return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
   }
 
-  return value.mul(BigNumber.from(10000 + 2000)).div(BigNumber.from(10000));
+  return value.mul(BigNumber.from(10000 + 5000)).div(BigNumber.from(10000));
 }
 
 export function formatDateFromTimeStamp(
@@ -451,11 +499,12 @@ export function formatNumber(
 }
 
 export function getTokenFromAddress(
-  tokenAddress: string,
-  chainId: ChainId,
+  tokenAddress: string | undefined,
+  chainId: ChainId | undefined,
   tokenMap: TokenAddressMap,
   tokens: Token[],
 ) {
+  if (!tokenAddress || !chainId) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -464,8 +513,9 @@ export function getTokenFromAddress(
       (item) => item.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (!token) {
-      const commonToken = GlobalValue.tokens.COMMON[chainId].find(
-        (token) => token.address.toLowerCase() === tokenAddress.toLowerCase(),
+      const commonToken = (GlobalValue.tokens as any).COMMON[chainId].find(
+        (token: any) =>
+          token.address.toLowerCase() === tokenAddress.toLowerCase(),
       );
       if (!commonToken) {
         return;
@@ -479,10 +529,11 @@ export function getTokenFromAddress(
 }
 
 export function getV3TokenFromAddress(
-  tokenAddress: string,
+  tokenAddress: string | undefined,
   chainId: ChainId,
   tokenMap: TokenAddressMapV3,
 ) {
+  if (!tokenAddress) return;
   const tokenIndex = Object.keys(tokenMap[chainId]).findIndex(
     (address) => address.toLowerCase() === tokenAddress.toLowerCase(),
   );
@@ -529,6 +580,56 @@ export function getChartDates(chartData: any[] | null, durationIndex: number) {
   }
 }
 
+export function getQuickBurnChartDates(
+  chartData: any[] | null,
+  durationIndex: number,
+) {
+  if (chartData) {
+    const now = dayjs().unix();
+    if (durationIndex === GlobalConst.quickBurnChart.ONE_DAY_CHART) {
+      //hourly
+      const hours: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const hour = formatDateFromTimeStamp(
+          value.timestamp,
+          ind === 1 || ind === chartData.length - 1 ? 'M/D HH' : 'HH',
+        );
+        hours.push(hour);
+      });
+      return hours;
+    } else if (durationIndex === GlobalConst.quickBurnChart.ONE_WEEK_CHART) {
+      const dates: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const dateStr = formatDateFromTimeStamp(
+          Number(value.timestamp),
+          ind % 3 === 0 ? 'M/D H:00' : 'H:00',
+        );
+        dates.push(dateStr);
+      });
+      return dates;
+    } else if (durationIndex === GlobalConst.quickBurnChart.ONE_MONTH_CHART) {
+      const dates: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const dateStr = formatDateFromTimeStamp(Number(value.timestamp), 'M/D');
+        dates.push(dateStr);
+      });
+      return dates;
+    } else {
+      const dates: string[] = [];
+      chartData.forEach((value: any, ind: number) => {
+        const dateStr = formatDateFromTimeStamp(
+          Number(value.timestamp),
+          'YYYY M/D',
+        );
+        dates.push(dateStr);
+      });
+      return dates;
+    }
+  } else {
+    return [];
+  }
+}
+
 export function getChartStartTime(durationIndex: number) {
   const utcEndTime = dayjs.utc();
   const months =
@@ -567,6 +668,48 @@ export function getLimitedData(data: any[], count: number) {
   });
   return newArray;
 }
+export function appendedZeroChartData(data: any[], durationIndex) {
+  let newArray: number[][] = [];
+  const now = dayjs().unix();
+  let sum = 0;
+  data.map((value) => {
+    sum += Number(value.amount);
+    newArray.push([Number(value.timestamp * 1000), sum]);
+  });
+
+  if (durationIndex === GlobalConst.quickBurnChart.ONE_DAY_CHART) {
+    const minTimestamp = now - 86400;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+    }
+  } else if (durationIndex === GlobalConst.quickBurnChart.ONE_WEEK_CHART) {
+    const minTimestamp = now - 86400 * 7;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+    }
+  } else if (durationIndex === GlobalConst.quickBurnChart.ONE_MONTH_CHART) {
+    const minTimestamp = now - 86400 * 30;
+    if (newArray.length === 0) {
+      newArray.push([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, 0]);
+    } else {
+      newArray.unshift([minTimestamp * 1000, 0]);
+      newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+    }
+  } else {
+    newArray.push([now * 1000, newArray[newArray.length - 1][1]]);
+  }
+  newArray = newArray.sort((a, b) => a[0] - b[0]);
+  return newArray;
+}
 
 export function getYAXISValuesAnalytics(chartData: any) {
   if (!chartData) return;
@@ -574,7 +717,7 @@ export function getYAXISValuesAnalytics(chartData: any) {
   const minValue = Math.min(...chartData) * 0.99;
   const maxValue = Math.max(...chartData) * 1.01;
   const step = (maxValue - minValue) / 8;
-  const values = [];
+  const values: number[] = [];
   for (let i = 0; i < 9; i++) {
     values.push(maxValue - i * step);
   }
@@ -608,7 +751,9 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     ? chainIdToUse
     : ChainId.MATIC;
   const quickToken = isNew ? DLQUICK[chainIdToUse] : OLD_QUICK[chainIdToUse];
-  const quickPrice = useUSDCPriceFromAddress(quickToken.address);
+  const { price: quickPrice } = useUSDCPriceFromAddress(
+    quickToken?.address ?? '',
+  );
 
   const { data: v3Data } = useAnalyticsGlobalData('v3', chainId);
   const { data: v2Data } = useAnalyticsGlobalData('v2', chainId);
@@ -624,11 +769,12 @@ export function useLairDQUICKAPY(isNew: boolean, lair?: LairInfo) {
     return feePercent;
   }, [v2, v2Data, v3, v3Data]);
 
-  if (!lair || !quickPrice) return '';
+  if (!lair) return '';
+  const lairQuickBalance = Number(lair.totalQuickBalance.toExact());
+  if (!lairQuickBalance || !quickPrice) return '';
 
   const dQUICKAPR =
-    (feesPercent * daysCurrentYear) /
-    (Number(lair.totalQuickBalance.toExact()) * quickPrice);
+    (feesPercent * daysCurrentYear) / (lairQuickBalance * quickPrice);
 
   if (!dQUICKAPR) return '';
   const temp = Math.pow(1 + dQUICKAPR / daysCurrentYear, daysCurrentYear) - 1;
@@ -647,16 +793,9 @@ export function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-export function getWalletKeys(connector: Connector): Connection[] {
-  const { ethereum } = window as any;
-  const connections = getConnections();
-
-  return connections.filter((option) => option.connector === connector);
-}
-
 export function getTokenAddress(token: Token | undefined) {
   if (!token) return;
-  if (token.symbol?.toLowerCase() === 'wmatic') return 'ETH';
+  if (token.symbol?.toLowerCase() === 'wpol') return 'ETH';
   return token.address;
 }
 
@@ -951,96 +1090,6 @@ export const getEternalFarmFromTokens = async (
   }
 };
 
-const gammaChainName = (chainId?: ChainId) => {
-  switch (chainId) {
-    case ChainId.ZKEVM:
-      return 'polygon-zkevm';
-    default:
-      return 'polygon';
-  }
-};
-
-export const getGammaData = async (chainId?: ChainId) => {
-  if (!chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/hypervisors/allData`,
-    );
-    const gammaData = await data.json();
-    return gammaData;
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/hypervisors/allData`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
-export const getGammaPositions = async (
-  account?: string,
-  chainId?: ChainId,
-) => {
-  if (!account || !chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/user/${account}`,
-    );
-    const positions = await data.json();
-    return positions[account.toLowerCase()];
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/user/${account}`,
-      );
-      const positions = await data.json();
-      return positions[account.toLowerCase()];
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
-export const getGammaRewards = async (chainId?: ChainId) => {
-  if (!chainId) return null;
-  try {
-    const data = await fetch(
-      `${process.env.REACT_APP_GAMMA_API_ENDPOINT}/quickswap/${gammaChainName(
-        chainId,
-      )}/allRewards2`,
-    );
-    const gammaData = await data.json();
-    return gammaData;
-  } catch {
-    try {
-      const data = await fetch(
-        `${
-          process.env.REACT_APP_GAMMA_API_ENDPOINT_BACKUP
-        }/quickswap/${gammaChainName(chainId)}/allRewards2`,
-      );
-      const gammaData = await data.json();
-      return gammaData;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-};
-
 export const getUnipilotPositions = async (
   account?: string,
   chainId?: ChainId,
@@ -1053,7 +1102,7 @@ export const getUnipilotPositions = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot positions`,
+        errorText || res.statusText || `Failed to get A51 Finance positions`,
       );
     }
     const data = await res.json();
@@ -1074,7 +1123,7 @@ export const getUnipilotFarms = async (chainId?: ChainId) => {
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot farms`,
+        errorText || res.statusText || `Failed to get A51 Finance farms`,
       );
     }
     const data = await res.json();
@@ -1100,7 +1149,7 @@ export const getUnipilotFarmData = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot farms`,
+        errorText || res.statusText || `Failed to get A51 Finance farms`,
       );
     }
     const data = await res.json();
@@ -1124,7 +1173,7 @@ export const getUnipilotUserFarms = async (
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(
-        errorText || res.statusText || `Failed to get unipilot user farms`,
+        errorText || res.statusText || `Failed to get A51 Finance user farms`,
       );
     }
     const data = await res.json();
@@ -1150,6 +1199,7 @@ export const getGammaPairsForTokens = (
   chainId?: ChainId,
   address0?: string,
   address1?: string,
+  feeAmount?: FeeAmount,
 ) => {
   const config = getConfig(chainId);
   const gammaAvailable = config['gamma']['available'];
@@ -1157,9 +1207,19 @@ export const getGammaPairsForTokens = (
     const gammaPairs = GammaPairs[chainId];
     if (!gammaPairs) return;
     const pairs =
-      gammaPairs[address0.toLowerCase() + '-' + address1.toLowerCase()];
+      gammaPairs[
+        address0.toLowerCase() +
+          '-' +
+          address1.toLowerCase() +
+          `${feeAmount ? `-${feeAmount}` : ''}`
+      ];
     const reversedPairs =
-      gammaPairs[address1.toLowerCase() + '-' + address0.toLowerCase()];
+      gammaPairs[
+        address1.toLowerCase() +
+          '-' +
+          address0.toLowerCase() +
+          `${feeAmount ? `-${feeAmount}` : ''}`
+      ];
     if (pairs) {
       return { reversed: false, pairs };
     } else if (reversedPairs) {
@@ -1168,4 +1228,273 @@ export const getGammaPairsForTokens = (
     return;
   }
   return;
+};
+
+export const getAllDefiedgeStrategies = (chainId?: ChainId) => {
+  const config = getConfig(chainId);
+  const defiedgeAvailable = config['defiedge']['available'];
+  if (defiedgeAvailable && chainId) {
+    return DefiedgeStrategies[chainId] ?? [];
+  }
+  return [];
+};
+
+export enum LiquidityProtocol {
+  Both = 1,
+  V2 = 2,
+  V3 = 3,
+  Algebra = 4,
+  Gamma = 5,
+  Steer = 6,
+  Solidly = 7,
+  XFAI = 8,
+}
+
+export function getPriceGetterCallData(
+  tokens: BondToken[],
+  chainId: ChainId,
+  lpTokens: boolean,
+) {
+  return Object.values(tokens).map((token) => {
+    const liquidityDex = token.liquidityDex?.[chainId];
+    let dexFactory;
+    let protocol = 2;
+    let factoryV2 = defaultBondDexFactories?.[chainId]?.[2] ?? ZERO_ADDRESS;
+    let factoryV3 = defaultBondDexFactories?.[chainId]?.[3] ?? ZERO_ADDRESS;
+    let factoryAlgebra =
+      defaultBondDexFactories?.[chainId]?.[4] ?? ZERO_ADDRESS;
+    let factorySolidly =
+      defaultBondDexFactories?.[chainId]?.[7] ?? ZERO_ADDRESS;
+    if (liquidityDex) {
+      dexFactory = bondDexFactories[chainId]?.[liquidityDex as LiquidityDex];
+      protocol = dexFactory?.protocol ?? Protocols.V2;
+      switch (protocol) {
+        case Protocols.V2:
+          factoryV2 = dexFactory?.factory ?? factoryV2;
+          break;
+        case Protocols.V3:
+          factoryV3 = dexFactory?.factory ?? factoryV3;
+          break;
+        case Protocols.Algebra:
+          factoryAlgebra = dexFactory?.factory ?? factoryAlgebra;
+          break;
+        case Protocols.Solidly:
+          factorySolidly = dexFactory?.factory ?? factorySolidly;
+          break;
+      }
+    }
+
+    const errMsg = `No default dex factory found for retrieving price. For Protocol: ${protocol}.`;
+    switch (protocol as Protocols) {
+      case Protocols.Both:
+        if (factoryV2 === ZERO_ADDRESS || factoryV3 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+      case Protocols.V2:
+        if (factoryV2 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+      case Protocols.V3:
+        if (factoryV3 === ZERO_ADDRESS) {
+          throw new Error(errMsg);
+        }
+        break;
+    }
+    if (lpTokens && protocol == Protocols.Algebra) {
+      protocol = Protocols.Gamma;
+    }
+    if (lpTokens && protocol == Protocols.V3) {
+      protocol = Protocols.Steer;
+    }
+    return [
+      token.address[chainId],
+      protocol,
+      factoryV2,
+      factoryV3,
+      factoryAlgebra,
+      factorySolidly,
+    ];
+  });
+}
+
+export function getFixedValue(value: string, decimals?: number) {
+  if (!value) return '0';
+  const splitedValueArray = value.split('.');
+  let valueStr = value;
+  if (splitedValueArray.length > 1) {
+    const decimalStr = splitedValueArray[1].substring(0, decimals ?? 18);
+    valueStr = `${splitedValueArray[0]}.${decimalStr}`;
+  }
+  return valueStr;
+}
+
+export const convertToTokenValue = (
+  numberString: string,
+  decimals: number,
+): BigNumber => {
+  const num = Number(numberString);
+  if (isNaN(num)) {
+    console.error('Error: numberString to parse is not a number');
+    return parseUnits('0', decimals);
+  }
+
+  const tokenValue = parseUnits(
+    getFixedValue(numberString, decimals),
+    decimals,
+  );
+  return tokenValue;
+};
+
+export const calculatePositionWidth = (
+  currentTick: number,
+  upperTick: number,
+  lowerTick: number,
+): number => {
+  const currentPrice = Math.pow(1.0001, Number(currentTick));
+  const upperPrice = Math.pow(1.0001, Number(upperTick));
+  const lowerPrice = Math.pow(1.0001, Number(lowerTick));
+
+  // Calculate upper and lower bounds width in percentage
+  const upperBoundWidthPercent =
+    ((upperPrice - currentPrice) / currentPrice) * 100;
+  const lowerBoundWidthPercent =
+    ((currentPrice - lowerPrice) / currentPrice) * 100;
+
+  // Calculate average width of the position
+  const positionWidthPercent =
+    (upperBoundWidthPercent + lowerBoundWidthPercent) / 2;
+
+  return Math.abs(positionWidthPercent);
+};
+
+export const percentageToMultiplier = (percentage: number): number => {
+  const multiplier = 1 + percentage / 100;
+  return multiplier;
+};
+
+export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
+  let steerRatio;
+  const steerVaultToken0BalanceNum = Number(
+    formatUnits(steerVault.token0Balance ?? '0', steerVault.token0?.decimals),
+  );
+  const steerVaultToken1BalanceNum = Number(
+    formatUnits(steerVault.token1Balance ?? '0', steerVault.token1?.decimals),
+  );
+  if (steerVaultToken0BalanceNum === 0 && steerVaultToken1BalanceNum === 0) {
+    const price = BigNumber.from(steerVault?.sqrtPriceX96 ?? '0')
+      .pow(2)
+      .mul(BigNumber.from('10').pow(18))
+      .div(BigNumber.from('2').pow(192));
+    const nativeTokenRatio = price.div(BigNumber.from('10').pow(18));
+    if (tokenType === 0 && nativeTokenRatio.gt(BigNumber.from('0'))) {
+      steerRatio = Number(
+        formatUnits(
+          BigNumber.from('10')
+            .pow(18)
+            .div(nativeTokenRatio),
+        ),
+      );
+    } else {
+      steerRatio = Number(formatUnits(nativeTokenRatio));
+    }
+  } else {
+    if (tokenType === 1) {
+      if (steerVaultToken0BalanceNum > 0) {
+        steerRatio = steerVaultToken1BalanceNum / steerVaultToken0BalanceNum;
+      } else {
+        steerRatio = steerVaultToken1BalanceNum;
+      }
+    } else {
+      if (steerVaultToken1BalanceNum > 0) {
+        steerRatio = steerVaultToken0BalanceNum / steerVaultToken1BalanceNum;
+      } else {
+        steerRatio = steerVaultToken0BalanceNum;
+      }
+    }
+  }
+  return steerRatio;
+};
+
+export const getSteerDexName = (chainId?: ChainId) => {
+  if (chainId === ChainId.MATIC) return 'quickswap';
+  if (chainId === ChainId.LAYERX) return 'quickswapalgebra';
+  return 'quickswapv3';
+};
+
+export const searchForBillId = (
+  resp: ContractReceipt,
+  billNftAddress: string,
+  setBondId?: (id: string) => void,
+) => {
+  const { logs } = resp;
+  const findBillNftLog = logs.find(
+    (log: any) => log.address.toLowerCase() === billNftAddress.toLowerCase(),
+  );
+  if (findBillNftLog) {
+    const getBillNftIndex =
+      findBillNftLog.topics[findBillNftLog.topics.length - 1];
+    const convertHexId = parseInt(getBillNftIndex, 16);
+    if (setBondId) {
+      setBondId(convertHexId.toString());
+    }
+  }
+};
+
+export const getLiquidityDEX = (liquidityDEX?: LiquidityDex) => {
+  if (liquidityDEX === LiquidityDex.QuickswapV2) return DEX.QUICKSWAP;
+  if (liquidityDEX === LiquidityDex.ApeSwapV2) return DEX.APEBOND;
+};
+
+export const getCurrencyInfo = ({
+  currencyA,
+  currencyB,
+  pair,
+}: {
+  currencyA: WrappedTokenInfo | null;
+  currencyB?: WrappedTokenInfo | null;
+  pair?: Pair | null;
+}): { address: string; decimals: number; chainId: ChainId } => {
+  if (currencyB) {
+    const {
+      liquidityToken: { address, decimals, chainId } = {
+        address: '',
+        decimals: 18,
+        chainId: ChainId.MATIC,
+      },
+    } = pair || {};
+    return { address, decimals, chainId };
+  } else if (currencyA?.isNative) {
+    return {
+      address: NATIVE_TOKEN_ADDRESS,
+      decimals: currencyA.decimals,
+      chainId: currencyA.chainId,
+    };
+  }
+  const {
+    tokenInfo: { address, decimals, chainId } = {
+      address: '',
+      decimals: 18,
+      chainId: 0,
+    },
+  } = currencyA || {};
+  return {
+    address: address ? address : (currencyA?.address as string),
+    decimals,
+    chainId: !!chainId ? chainId : (currencyA?.chainId as ChainId),
+  };
+};
+
+export function getPerpsSymbol(symbol: string) {
+  return symbol.replace('PERP_', '').replace('_', '/');
+}
+
+export const getDexScreenerChainName = (
+  chainId: ChainId,
+): string | undefined => {
+  const chainsName: { [chainId in ChainId]?: string } = {
+    [ChainId.MATIC]: 'polygon',
+  };
+  return chainsName[chainId];
 };

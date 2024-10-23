@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useCurrency } from 'hooks/Tokens';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { isAddress } from 'utils';
+import { isAddress, getFixedValue } from 'utils';
 import { AppDispatch, AppState } from 'state';
 import { useCurrencyBalances } from 'state/wallet/hooks';
 import {
@@ -39,6 +39,9 @@ import {
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
+import { formatAdvancedPercent } from 'utils/numbers';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -136,7 +139,10 @@ export function tryParseAmount(
     return undefined;
   }
   try {
-    const typedValueParsed = parseUnits(value, currency.decimals).toString();
+    const typedValueParsed = parseUnits(
+      getFixedValue(value, currency.decimals),
+      currency.decimals,
+    ).toString();
     if (typedValueParsed !== '0') {
       return currency instanceof Token
         ? new TokenAmount(currency, JSBI.BigInt(typedValueParsed))
@@ -178,11 +184,15 @@ export function useDerivedSwapInfo(): {
   v2Trade: Trade | undefined;
   inputError?: string;
   v1Trade: Trade | undefined;
+  autoSlippage: number;
 } {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const parsedQuery = useParsedQueryString();
-  const swapType = parsedQuery ? parsedQuery.swapIndex : undefined;
+  const swapType = parsedQuery?.swapIndex;
+  const swapSlippage = parsedQuery?.slippage
+    ? (parsedQuery?.slippage as string)
+    : undefined;
 
   const {
     independentField,
@@ -253,10 +263,22 @@ export function useDerivedSwapInfo(): {
   ] = useUserSlippageTolerance();
   const [slippageManuallySet] = useSlippageManuallySet();
 
+  const autoSlippageAmount = useAutoSlippageTolerance(
+    v2Trade ? v2Trade : undefined,
+  );
+  const autoSlippage =
+    allowedSlippage === SLIPPAGE_AUTO
+      ? Math.ceil(
+          Number(
+            parseFloat(formatAdvancedPercent(autoSlippageAmount)).toFixed(2),
+          ) * 100,
+        )
+      : allowedSlippage;
+
   const slippageAdjustedAmounts =
     v2Trade &&
-    allowedSlippage &&
-    computeSlippageAdjustedAmounts(v2Trade, allowedSlippage);
+    autoSlippage &&
+    computeSlippageAdjustedAmounts(v2Trade, autoSlippage);
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
@@ -276,10 +298,10 @@ export function useDerivedSwapInfo(): {
   useEffect(() => {
     const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
-      stableCoins && stableCoins.length > 0
+      stableCoins && stableCoins?.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
         : [];
-    if (!slippageManuallySet) {
+    if (!swapSlippage && !slippageManuallySet) {
       if (
         inputCurrencyId &&
         outputCurrencyId &&
@@ -288,7 +310,7 @@ export function useDerivedSwapInfo(): {
       ) {
         setUserSlippageTolerance(10);
       } else {
-        setUserSlippageTolerance(50);
+        setUserSlippageTolerance(SLIPPAGE_AUTO);
       }
     }
   }, [
@@ -297,6 +319,7 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
     chainIdToUse,
     slippageManuallySet,
+    swapSlippage,
   ]);
 
   return {
@@ -306,6 +329,7 @@ export function useDerivedSwapInfo(): {
     v2Trade: v2Trade ?? undefined,
     inputError,
     v1Trade: undefined,
+    autoSlippage,
   };
 }
 

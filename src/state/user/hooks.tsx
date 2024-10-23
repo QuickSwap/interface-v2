@@ -1,6 +1,6 @@
-import { ChainId, Pair, Token } from '@uniswap/sdk';
+import { ChainId, JSBI, Pair, Token } from '@uniswap/sdk';
 import flatMap from 'lodash.flatmap';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useActiveWeb3React } from 'hooks';
 import { useAllTokens } from 'hooks/Tokens';
@@ -19,14 +19,17 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
-  updateSelectedWallet,
   updateUserLiquidityHub,
+  updateUserZapSlippage,
+  updateIsInfiniteApproval,
+  updateUserAmlScore,
 } from './actions';
 import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
   V2_PINNED_PAIRS,
 } from 'constants/v3/addresses';
-import { ConnectionType } from 'connectors';
+import { Percent } from '@uniswap/sdk-core';
+import { INITIAL_ZAP_SLIPPAGE } from './reducer';
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -363,23 +366,6 @@ export function useUserSingleHopOnly(): [
   return [singleHopOnly, setSingleHopOnly];
 }
 
-export function useSelectedWallet(): {
-  selectedWallet: ConnectionType | undefined;
-  updateSelectedWallet: (wallet?: ConnectionType) => void;
-} {
-  const selectedWallet = useSelector(
-    (state: AppState) => state.user.selectedWallet,
-  );
-  const dispatch = useDispatch();
-  const _updateSelectedWallet = useCallback(
-    (wallet?: ConnectionType) => {
-      dispatch(updateSelectedWallet({ wallet }));
-    },
-    [dispatch],
-  );
-  return { selectedWallet, updateSelectedWallet: _updateSelectedWallet };
-}
-
 export function useLiquidityHubManager(): [boolean, () => void] {
   const dispatch = useDispatch<AppDispatch>();
   const userLiquidityHubDisabled = useSelector<
@@ -400,6 +386,71 @@ export function useLiquidityHubManager(): [boolean, () => void] {
   return [userLiquidityHubDisabled, toggleSetLiquidityHub];
 }
 
+export function useUserZapSlippageTolerance(): [
+  Percent,
+  (slippageTolerance: Percent) => void,
+] {
+  const userSlippageToleranceRaw = useSelector<
+    AppState,
+    AppState['user']['userZapSlippage']
+  >((state) => {
+    return state.user.userZapSlippage;
+  });
+  const userSlippageTolerance = useMemo(
+    () =>
+      !userSlippageToleranceRaw
+        ? new Percent(50, 10_000)
+        : new Percent(userSlippageToleranceRaw, 10_000),
+    [userSlippageToleranceRaw],
+  );
+
+  const dispatch = useDispatch();
+  const setUserSlippageTolerance = useCallback(
+    (userSlippageTolerance: Percent) => {
+      let value: number;
+      try {
+        value = JSBI.toNumber(userSlippageTolerance.multiply(10_000).quotient);
+      } catch (error) {
+        value = INITIAL_ZAP_SLIPPAGE;
+      }
+      dispatch(
+        updateUserZapSlippage({
+          userZapSlippage: value,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  return useMemo(() => [userSlippageTolerance, setUserSlippageTolerance], [
+    setUserSlippageTolerance,
+    userSlippageTolerance,
+  ]);
+}
+
+export function useIsInfiniteApproval(): [
+  boolean,
+  (isInfiniteApproval: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const isInfiniteApproval = useSelector<
+    AppState,
+    AppState['user']['isInfiniteApproval']
+  >((state) => {
+    return state.user.isInfiniteApproval;
+  });
+
+  const setIsInfiniteApproval = useCallback(
+    (isInfiniteApproval: boolean) => {
+      dispatch(updateIsInfiniteApproval({ isInfiniteApproval }));
+    },
+    [dispatch],
+  );
+
+  return [isInfiniteApproval, setIsInfiniteApproval];
+}
+
 // export function useUserTransactionTTL(): [number, (slippage: number) => void] {
 //   const dispatch = useDispatch<AppDispatch>();
 //   const userDeadline = useSelector<AppState, AppState['user']['userDeadline']>(
@@ -417,3 +468,43 @@ export function useLiquidityHubManager(): [boolean, () => void] {
 
 //   return [userDeadline, setUserDeadline];
 // }
+
+export function useAmlScore() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { account } = useActiveWeb3React();
+  const amlScore = useSelector<AppState, AppState['user']['amlScore']>(
+    (state) => state.user.amlScore,
+  );
+  const [score, setScore] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAmlScore = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/qr-screen?address=${account}`,
+        );
+        if (res.ok) {
+          const ret = await res.json();
+          const newScore = ret.score;
+          setScore(newScore);
+          dispatch(updateUserAmlScore({ score: newScore }));
+        }
+        setIsLoading(false);
+      } catch (e) {
+        setIsLoading(false);
+      }
+    };
+    if (!account) {
+      setScore(0);
+      dispatch(updateUserAmlScore({ score: 0 }));
+    } else if (amlScore > 0) {
+      setScore(amlScore);
+    } else {
+      fetchAmlScore();
+    }
+  }, [account, amlScore, dispatch]);
+
+  return { score, isLoading };
+}

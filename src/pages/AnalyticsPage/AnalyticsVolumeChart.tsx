@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import {
@@ -62,7 +62,7 @@ const AnalyticsVolumeChart: React.FC<{
     return null;
   };
 
-  const { isLoading, data: globalChartData, refetch } = useQuery({
+  const { isLoading, data: globalChartData } = useQuery({
     queryKey: [
       'fetchAnalyticsVolumeChartData',
       durationIndex,
@@ -70,22 +70,8 @@ const AnalyticsVolumeChart: React.FC<{
       chainId,
     ],
     queryFn: fetchChartData,
+    refetchInterval: 60000,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime]);
 
   const liquidityWeeks = useMemo(() => {
     if (globalChartData) {

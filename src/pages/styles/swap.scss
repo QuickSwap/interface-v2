@@ -1,5 +1,5 @@
-@use 'styles/variables' as *;
-@use 'styles/breakpoints' as *;
+@use "styles/variables" as *;
+@use "styles/breakpoints" as *;
 
 .limitOrderPanel {
   & > div {
@@ -11,15 +11,15 @@
   background: $bgPalette;
   border-radius: 16px;
   width: calc(50% - 16px);
-  @include media('screen', '<desktop') {
+  @include media("screen", "<desktop") {
     width: 100%;
     margin-bottom: 16px;
   }
-  @include media('screen', '<tablet') {
+  @include media("screen", "<tablet") {
     width: calc(50% - 16px);
     margin: 0;
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     width: 100%;
     margin-top: 16px;
     margin-bottom: 16px;
@@ -38,8 +38,46 @@
   }
 }
 
-.trade-btn:hover {
-  color: #c7cad9;
+.trade-btn {
+  font-size: 16px;
+  &:hover {
+    color: #c7cad9;
+  }
+}
+
+#swap-menu {
+  > div:nth-child(3) {
+    background-color: #2b2f3e;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    color: #c7cad9;
+  }
+}
+
+.selectedMenuDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #00ff00;
+  margin-right: 6px;
+}
+
+.swap-menu-item {
+  background-color: #2b2f3e;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.swap-menu-item-selected {
+  background-color: #404557 !important;
+  color: #fff !important;
+  border-radius: 10px;
+}
+
+.cross-chain-icon {
+  margin-top: 5px;
 }
 
 .activeSwap {
@@ -55,8 +93,8 @@
   // padding-left: 1rem;
   // padding-right: 1rem;
   border-radius: 2rem;
-  border: 1px solid rgba(130, 177, 255, 0.08);
-  background: rgba(130, 177, 255, 0.03);
+  // border: 1px solid rgba(130, 177, 255, 0.08);
+  // background: rgba(130, 177, 255, 0.03);
   color: #696c80;
 }
 
@@ -66,10 +104,9 @@
 }
 
 .tab {
-  background-color: transparent;
-  border-radius: 2rem;
+  background-color: transparent !important;
   padding: 0 16px;
-  height: 46px;
+  // height: 46px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -80,20 +117,18 @@
 
 .tab:hover {
   cursor: pointer;
-  background: rgba(68, 138, 255, 0.3) !important;
+  // background: rgba(68, 138, 255, 0.3) !important;
   color: white !important;
-  & p {
+  border-radius: 0.5rem;
+  & div {
     color: white;
   }
 }
 
 .activeTab {
-  border-radius: 2rem;
-  border: 1px solid #448aff;
-  background: rgba(68, 138, 255, 0.3);
-  & p {
-    color: #c7cad9;
-  }
+  border-radius: 0.5rem;
+  // background: #fff;
+  color: #282d3d;
 }
 
 .swap-bg-highlight {
@@ -145,7 +180,7 @@
 }
 
 .splitPane {
-  & [data-type='Resizer'] {
+  & [data-type="Resizer"] {
     margin: 8px 0 0;
   }
 }
@@ -250,7 +285,7 @@
       }
     }
   }
-  @include media('screen', '<phone') {
+  @include media("screen", "<phone") {
     flex: none;
   }
 }
@@ -357,10 +392,10 @@ div.buy {
 .btn-swap-widget-disabled {
   cursor: not-allowed;
   background-color: #282d3d;
-  color: 'grey' !important;
+  color: "grey" !important;
 
   &:hover {
-    color: 'grey' !important;
+    color: "grey" !important;
     background: #282d3d !important;
   }
 }
@@ -371,27 +406,54 @@ div.buy {
 }
 
 .swapLimitTabs {
-  background-color: $secondary2;
+  // background-color: $secondary2;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  #swap-button {
+    padding: 8px 0;
+    .MuiButton-label {
+      font-size: 14px;
+    }
+  }
 }
 
 .swapLimitTab {
-  width: 33%;
-  height: 40px;
+  // width: 33%;
+  // height: 40px;
+  padding: 0px 12px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   & small {
-    color: $textSecondary;
+    color: rgba(255, 255, 255, 0.5);
+    // height: 100%;
+    // padding-top: 9px;
+    // padding-left: 6px;
+    // padding-right: 6px;
+  }
+  #swap-button {
+    .MuiButton-label {
+      color: rgba(255, 255, 255, 0.5);
+      // display: -webkit-inline-box;
+    }
+    .MuiButton-endIcon {
+      margin: 0;
+    }
   }
 }
 
 .activeSwapLimitTab {
-  background-color: $grey32;
+  background-color: #1e263d;
   & small {
-    color: $bgPalette;
+    color: #448aff;
+    // border-bottom: 2px solid #448aff;
+  }
+  #swap-button {
+    .MuiButton-label {
+      // display: -webkit-inline-box;
+      color: #448aff;
+    }
   }
 }
 
@@ -444,5 +506,77 @@ div.buy {
     & span {
       font-size: 12.11px;
     }
+  }
+}
+
+
+/// Orbs ///
+ .orbs_SwapStepTitle {
+  font-size: 15px;
+}
+.LiquidityHubSuccessContent {
+  font-size: 16px;
+    a {
+      text-decoration: none;
+      display: inline-flex;
+      gap: 5px;
+      font-weight: 600;
+      color: white;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    span {
+      text-transform: capitalize;
+      font-size: inherit;
+    }
+
+    img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+}
+.LiquidityHubSettings {
+  display: flex;
+  flex-direction: column;
+
+  .bottom-text {
+    max-width: 500px;
+    font-size: 14px;
+    line-height: 23px;
+
+    img {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      display: inline;
+    }
+
+    a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #6381e9;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .more-info {
+      color: inherit;
+      font-weight: 400;
+      text-decoration: underline;
+    }
+  }
+}
+
+.orbs_PoweredBy {
+  margin-top: 30px!important;
+  span {
+    font-size: 15px;
   }
 }

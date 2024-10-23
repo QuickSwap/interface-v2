@@ -25,6 +25,7 @@ import {
   useTransactionAdder,
   useTransactionFinalizer,
 } from 'state/transactions/hooks';
+import { TransactionType } from 'models/enums';
 
 const RemoveV2Liquidity: React.FC<{
   pair: Pair | null;
@@ -221,6 +222,11 @@ const RemoveV2Liquidity: React.FC<{
           });
           addTransaction(response, {
             summary,
+            type: TransactionType.REMOVE_LIQUIDITY,
+            tokens: [
+              currency0IsETH ? ETHER[chainId] : token0,
+              currency1IsETH ? ETHER[chainId] : token1,
+            ],
           });
           try {
             const receipt = await response.wait();

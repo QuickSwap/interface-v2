@@ -1,49 +1,50 @@
 export const getIsInjected = () => Boolean(window.ethereum);
 
 type NonMetaMaskFlag =
-  | 'isBraveWallet'
+  // | 'isBraveWallet'
   | 'isTrustWallet'
   | 'isLedgerConnect'
   | 'isBlockWallet'
   | 'isCypherD'
   | 'isBitKeep'
-  | 'isPhantom'
+  // | 'isPhantom'
   | 'isTrust';
 const allNonMetamaskFlags: NonMetaMaskFlag[] = [
-  'isBraveWallet',
+  // 'isBraveWallet',
   'isTrustWallet',
   'isLedgerConnect',
   'isBlockWallet',
   'isCypherD',
   'isBitKeep',
-  'isPhantom',
+  // 'isPhantom',
   'isTrust',
 ];
 export const getIsMetaMaskWallet = () => {
-  const { ethereum, web3 } = window as any;
+  const { ethereum } = window as any;
 
-  return Boolean(
-    ethereum &&
-      ethereum.isMetaMask &&
-      web3 &&
-      (ethereum.detected && ethereum.detected.length > 0
-        ? ethereum.detected.find(
-            (provider: any) =>
-              provider &&
-              provider.isMetaMask &&
-              !provider.detected &&
-              !allNonMetamaskFlags.some((flag) => provider[flag]),
-          )
-        : ethereum.providers && ethereum.providers.length > 0
-        ? ethereum.providers.find(
-            (provider: any) =>
-              provider &&
-              provider.isMetaMask &&
-              !provider.providers &&
-              !allNonMetamaskFlags.some((flag) => provider[flag]),
-          )
-        : !allNonMetamaskFlags.some((flag) => ethereum[flag])),
-  );
+  return Boolean(ethereum && ethereum.isMetaMask);
+
+  // return Boolean(
+  //   ethereum &&
+  //     ethereum.isMetaMask &&
+  //     (ethereum.detected && ethereum.detected.length > 0
+  //       ? ethereum.detected.find(
+  //           (provider: any) =>
+  //             provider &&
+  //             provider.isMetaMask &&
+  //             !provider.detected &&
+  //             !allNonMetamaskFlags.some((flag) => provider[flag]),
+  //         )
+  //       : ethereum.providers && ethereum.providers.length > 0
+  //       ? ethereum.providers.find(
+  //           (provider: any) =>
+  //             provider &&
+  //             provider.isMetaMask &&
+  //             !provider.providers &&
+  //             !allNonMetamaskFlags.some((flag) => provider[flag]),
+  //         )
+  //       : !allNonMetamaskFlags.some((flag) => ethereum[flag])),
+  // );
 };
 
 export const getIsCoinbaseWallet = () => {

@@ -36,6 +36,7 @@ interface ITokenAmountCard {
   error: string | undefined;
   priceFormat: PriceFormats;
   isBase: boolean;
+  isDual?: boolean;
 }
 
 export function TokenAmountCard({
@@ -51,6 +52,7 @@ export function TokenAmountCard({
   error,
   priceFormat,
   isBase,
+  isDual,
 }: ITokenAmountCard) {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
@@ -132,7 +134,7 @@ export function TokenAmountCard({
     if (!balance || !currency) return t('loading');
 
     if (
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+      isDual &&
       chainId &&
       currency.wrapped.address.toLowerCase() ===
         WETH[chainId].address.toLowerCase()
@@ -144,15 +146,7 @@ export function TokenAmountCard({
     } else {
       return balance.toSignificant();
     }
-  }, [
-    balance,
-    currency,
-    t,
-    liquidityRangeType,
-    chainId,
-    wETHBalance,
-    ethBalance,
-  ]);
+  }, [balance, currency, t, isDual, chainId, wETHBalance, ethBalance]);
 
   return (
     <>
@@ -170,8 +164,7 @@ export function TokenAmountCard({
         {currency ? (
           <Box className='flex flex-col items-start'>
             <div className='token-amount-card-logo'>
-              {liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+              {isDual &&
               chainId &&
               currency.wrapped.address.toLowerCase() ===
                 WETH[chainId].address.toLowerCase() ? (
@@ -184,8 +177,7 @@ export function TokenAmountCard({
                 <CurrencyLogo size='24px' currency={currency} />
               )}
               <p className='weight-600'>
-                {liquidityRangeType ===
-                  GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+                {isDual &&
                 chainId &&
                 currency.wrapped.address.toLowerCase() ===
                   WETH[chainId].address.toLowerCase()

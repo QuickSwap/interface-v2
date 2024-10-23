@@ -6,7 +6,6 @@ import {
   updateBlockNumber,
   ApplicationModal,
   setOpenModal,
-  updateEthPrice,
   addBookMarkToken,
   removeBookmarkToken,
   updateBookmarkTokens,
@@ -16,8 +15,11 @@ import {
   updateTokenDetails,
   updateMaticPrice,
   updateIsV2,
-  updateUDDomain,
+  updateIsLpLock,
+  updateSoulZap,
+  updateOpenNetworkSelection,
 } from './actions';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
 
 type PopupList = Array<{
   key: string;
@@ -57,7 +59,9 @@ export interface ApplicationState {
   readonly tokenChartData: any;
   readonly tokenDetails: TokenDetail[];
   readonly isV2: boolean | undefined;
-  readonly udDomain: string | undefined;
+  readonly isLpLock: boolean | undefined;
+  readonly soulZap: SoulZap_UniV2_ApeBond | null | undefined;
+  readonly openNetworkSelection: boolean;
 }
 
 const initialState: ApplicationState = {
@@ -73,7 +77,9 @@ const initialState: ApplicationState = {
   tokenChartData: null,
   tokenDetails: [],
   isV2: undefined,
-  udDomain: undefined,
+  isLpLock: undefined,
+  soulZap: undefined,
+  openNetworkSelection: false,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -115,16 +121,6 @@ export default createReducer(initialState, (builder) =>
         }
       });
     })
-    .addCase(
-      updateEthPrice,
-      (state, { payload: { price, oneDayPrice, ethPriceChange } }) => {
-        state.ethPrice = {
-          price,
-          oneDayPrice,
-          ethPriceChange,
-        };
-      },
-    )
     .addCase(
       updateMaticPrice,
       (state, { payload: { price, oneDayPrice, maticPriceChange } }) => {
@@ -190,7 +186,13 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateIsV2, (state, { payload }) => {
       state.isV2 = payload;
     })
-    .addCase(updateUDDomain, (state, { payload }) => {
-      state.udDomain = payload;
+    .addCase(updateIsLpLock, (state, { payload }) => {
+      state.isLpLock = payload;
+    })
+    .addCase(updateSoulZap, (state, { payload }) => {
+      state.soulZap = payload;
+    })
+    .addCase(updateOpenNetworkSelection, (state, { payload }) => {
+      state.openNetworkSelection = payload;
     }),
 );

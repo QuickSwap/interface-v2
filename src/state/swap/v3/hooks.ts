@@ -29,7 +29,7 @@ import {
 import useENS from 'hooks/useENS';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { AppState } from 'state';
-import { isAddress } from 'utils';
+import { isAddress, getFixedValue } from 'utils';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import {
@@ -39,6 +39,8 @@ import {
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { ChainId } from '@uniswap/sdk';
 import { GlobalData } from 'constants/index';
+import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {
@@ -111,14 +113,8 @@ export function tryParseAmount<T extends Currency>(
     return undefined;
   }
   try {
-    const splitedValueArray = value.split('.');
-    let valueStr = value;
-    if (splitedValueArray.length > 1) {
-      const decimalStr = splitedValueArray[1].substring(0, currency.decimals);
-      valueStr = `${splitedValueArray[0]}.${decimalStr}`;
-    }
     const typedValueParsed = parseUnits(
-      value !== 'NaN' ? valueStr : '0',
+      value !== 'NaN' ? getFixedValue(value, currency.decimals) : '0',
       currency.decimals,
     ).toString();
     if (typedValueParsed !== '0') {
@@ -240,10 +236,11 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
   ] = useUserSlippageTolerance();
   const [slippageManuallySet] = useSlippageManuallySet();
-  const allowedSlippage = new Percent(
-    JSBI.BigInt(allowedSlippageNum),
-    JSBI.BigInt(10000),
-  );
+  const autoSlippage = useAutoSlippageTolerance(v3Trade.trade);
+  const allowedSlippage =
+    allowedSlippageNum === SLIPPAGE_AUTO
+      ? autoSlippage
+      : new Percent(JSBI.BigInt(allowedSlippageNum), JSBI.BigInt(10000));
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
@@ -255,13 +252,17 @@ export function useDerivedSwapInfo(): {
     inputError = `Insufficient ${amountIn.currency.symbol} balance`;
   }
 
+  const parsedQs = useParsedQueryString();
+  const swapSlippage = parsedQs?.slippage
+    ? (parsedQs?.slippage as string)
+    : undefined;
   useEffect(() => {
     const stableCoins = GlobalData.stableCoins[chainIdToUse];
     const stableCoinAddresses =
       stableCoins && stableCoins.length > 0
         ? stableCoins.map((token) => token.address.toLowerCase())
         : [];
-    if (!slippageManuallySet) {
+    if (!swapSlippage && !slippageManuallySet) {
       if (
         inputCurrencyId &&
         outputCurrencyId &&
@@ -270,7 +271,7 @@ export function useDerivedSwapInfo(): {
       ) {
         setUserSlippageTolerance(10);
       } else {
-        setUserSlippageTolerance(50);
+        setUserSlippageTolerance(SLIPPAGE_AUTO);
       }
     }
   }, [
@@ -279,6 +280,7 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
     chainIdToUse,
     slippageManuallySet,
+    swapSlippage,
   ]);
 
   return {
@@ -399,8 +401,7 @@ export function useDefaultsFromURLSearch():
       inputCurrencyId: parsed[Field.INPUT].currencyId,
       outputCurrencyId: parsed[Field.OUTPUT].currencyId,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, chainId]);
+  }, [dispatch, chainId, parsedQs]);
 
   return result;
 }

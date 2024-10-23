@@ -1,32 +1,49 @@
 /* config-overrides.js */
-
-module.exports = {
-  // The function to use to create a webpack dev server configuration when running the development
-  // server with 'npm run start' or 'yarn start'.
-  // Example: set the dev server to use a specific certificate in https.
-  devServer: function(configFunction) {
-    // Return the replacement function for create-react-app to use to generate the Webpack
-    // Development Server config. "configFunction" is the function that would normally have
-    // been used to generate the Webpack Development server config - you can use it to create
-    // a starting configuration to then modify instead of having to create a config from scratch.
-    return function(proxy, allowedHost) {
-      // Create the default config by calling configFunction with the proxy/allowedHost parameters
-      const config = configFunction(proxy, allowedHost);
-
-      config.headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Allow-Headers':
-          'X-Requested-With, content-type, Authorization',
-      };
-
-      // Return your customised Webpack Development Server config.
-      return config;
-    };
-  },
-  // Disable parallel build
-  terseDisableParallel: (config) => {
-    config.optimization.minimizer[0].parallel = false;
-    return config;
-  },
+const webpack = require('webpack');
+module.exports = function override(config) {
+  config.module.rules.push({
+    test: /\.mjs$/,
+    include: /node_modules/,
+    type: 'javascript/auto',
+  });
+  const fallback = config.resolve.fallback || {};
+  Object.assign(fallback, {
+    axios: false,
+    fs: false,
+    crypto: false, // require.resolve("crypto-browserify") can be polyfilled here if needed
+    stream: false, // require.resolve("stream-browserify") can be polyfilled here if needed
+    assert: false, // require.resolve("assert") can be polyfilled here if needed
+    http: false, // require.resolve("stream-http") can be polyfilled here if needed
+    https: false, // require.resolve("https-browserify") can be polyfilled here if needed
+    os: false, // require.resolve("os-browserify") can be polyfilled here if needed
+    url: false, // require.resolve("url") can be polyfilled here if needed
+    zlib: false, // require.resolve("browserify-zlib") can be polyfilled here if needed
+  });
+  config.resolve.fallback = fallback;
+  config.plugins = (config.plugins || []).concat([
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
+  ]);
+  config.ignoreWarnings = [/Failed to parse source map/];
+  config.module.rules.push({
+    test: /\.(js|mjs|jsx)$/,
+    enforce: 'pre',
+    loader: require.resolve('source-map-loader'),
+    resolve: {
+      fullySpecified: false,
+    },
+  });
+  config.module.rules = config.module.rules.map((rule) => {
+    if (rule.oneOf instanceof Array) {
+      rule.oneOf[rule.oneOf.length - 1].exclude = [
+        /\.(js|mjs|jsx|cjs|ts|tsx)$/,
+        /\.html$/,
+        /\.json$/,
+      ];
+    }
+    return rule;
+  });
+  return config;
 };

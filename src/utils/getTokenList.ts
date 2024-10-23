@@ -15,6 +15,7 @@ const tokenListValidator = new Ajv({ allErrors: true }).compile(schema);
 export default async function getTokenList(
   listUrl: string,
   resolveENSContentHash: (ensName: string) => Promise<string>,
+  skipValidation?: boolean,
 ): Promise<TokenList> {
   const parsedENS = parseENSAddress(listUrl);
   let urls: string[];
@@ -56,16 +57,29 @@ export default async function getTokenList(
       continue;
     }
 
-    const json = await response.json();
-    if (!tokenListValidator(json)) {
-      const validationErrors: string =
-        tokenListValidator.errors?.reduce<string>((memo, error) => {
-          const add = `${error.dataPath} ${error.message ?? ''}`;
-          return memo.length > 0 ? `${memo}; ${add}` : `${add}`;
-        }, '') ?? 'unknown error';
-      throw new Error(`Token list failed validation: ${validationErrors}`);
+    try {
+      // The content of the result is sometimes invalid even with a 200 status code.
+      // A response can be invalid if it's not a valid JSON or if it doesn't match the TokenList schema.
+      const json = await response.json();
+      const list = skipValidation ? json : tokenListValidator(json);
+
+      if (!list) {
+        console.log(tokenListValidator.errors);
+        const validationErrors: string =
+          tokenListValidator.errors?.reduce<string>((memo, error) => {
+            const add = `${error.dataPath} ${error.message ?? ''}`;
+            return memo.length > 0 ? `${memo}; ${add}` : `${add}`;
+          }, '') ?? 'unknown error';
+        throw new Error(`Token list failed validation: ${validationErrors}`);
+      }
+      return list;
+    } catch (error) {
+      console.debug(
+        `failed to parse and validate list response: ${listUrl} (${url})`,
+        error,
+      );
+      continue;
     }
-    return json;
   }
   throw new Error('Unrecognized list URL protocol.');
 }

@@ -18,6 +18,7 @@ import {
   useAnalyticsTopPairs,
   useAnalyticsTopTokens,
 } from 'hooks/useFetchAnalyticsData';
+import { LiquidityHubAnalytics } from 'components';
 
 dayjs.extend(utc);
 
@@ -42,7 +43,13 @@ const AnalyticsOverview: React.FC = () => {
     chainId,
   );
 
-  return (
+  const isLiquidityHub = version === 'liquidityhub';
+
+  return isLiquidityHub ? (
+    <Box width='100%' mb={3}>
+      <LiquidityHubAnalytics />
+    </Box>
+  ) : (
     <Box width='100%' mb={3}>
       {(chainId === ChainId.DOGECHAIN || chainId === ChainId.MATIC) && (
         <AnalyticsExtraInfo data={globalData} chainId={chainId} />

@@ -11,7 +11,6 @@ import TransactionConfirmationModal, {
 } from 'components/TransactionConfirmationModal';
 import { useActiveWeb3React } from 'hooks';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { Bound, Field } from 'state/mint/v3/actions';
 import {
   useTransactionAdder,
@@ -39,7 +38,7 @@ import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
 import { maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { calculateGasMarginV3 } from 'utils';
 import { useToken } from 'hooks/v3/Tokens';
-import { JSBI } from '@uniswap/sdk';
+import { JSBI, Token } from '@uniswap/sdk';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import { DoubleCurrencyLogo, CurrencyLogo } from 'components';
@@ -48,6 +47,9 @@ import RangeBadge from 'components/v3/Badge/RangeBadge';
 import RateToggle from 'components/v3/RateToggle';
 import { formatTickPrice } from 'utils/v3/formatTickPrice';
 import { unwrappedToken } from 'utils/unwrappedToken';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
 
 interface IncreaseLiquidityV3Props {
   positionDetails: PositionPool;
@@ -59,7 +61,7 @@ export default function IncreaseLiquidityV3({
   const { t } = useTranslation();
 
   const expertMode = useIsExpertMode();
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   const { chainId, account, library } = useActiveWeb3React();
   const { position: existingPosition } = useDerivedPositionInfo(
@@ -264,6 +266,13 @@ export default function IncreaseLiquidityV3({
               );
               addTransaction(response, {
                 summary,
+                type: TransactionType.ADDED_LIQUIDITY,
+                tokens: [
+                  ((baseCurrency as unknown) as any)?.address ??
+                    wrappedCurrency(Token.ETHER[chainId], chainId),
+                  ((quoteCurrency as unknown) as any)?.address ??
+                    wrappedCurrency(Token.ETHER[chainId], chainId),
+                ],
               });
               setTxHash(response.hash);
               ReactGA.event({
@@ -590,7 +599,7 @@ export default function IncreaseLiquidityV3({
           }
           onClick={() => {
             if (!account) {
-              toggleWalletModal();
+              open();
             } else if (expertMode) {
               onAdd();
             } else {

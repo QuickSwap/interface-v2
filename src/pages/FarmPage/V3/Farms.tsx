@@ -1,33 +1,52 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Box,
+  useMediaQuery,
+  useTheme,
+  Select,
+  MenuItem,
+} from '@material-ui/core';
 import CustomSelector from 'components/v3/CustomSelector';
-import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import EternalFarmsPage from 'pages/EternalFarmsPage';
-import GammaFarmsPage from 'pages/GammaFarmsPage';
 import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
-import { SearchInput, SortColumns, CustomSwitch } from 'components';
+import { SearchInput, CustomSwitch, ToggleSwitch } from 'components';
+import AllMerklFarms from './AllMerklFarms';
+import MyRewardFarms from './MyRewardFarms';
+import { getConfig } from 'config/index';
+import AllV3Farms from './AllV3Farms';
+import { MerklClaimAll } from './MerklClaimAll';
+import { FeeAmount } from 'v3lib/utils';
+import 'components/styles/FarmMain.scss';
 import { GlobalConst } from 'constants/index';
-import { useUnipilotFarms } from 'hooks/v3/useUnipilotFarms';
-import UnipilotFarmsPage from 'pages/UnipilotFarmsPage';
-import { getAllGammaPairs } from 'utils';
 
-interface FarmCategory {
-  id: number;
-  text: string;
-  link: string;
-  hasSeparator?: boolean;
+export interface V3Farm {
+  token0?: Token;
+  token1?: Token;
+  title?: string;
+  tvl: number;
+  rewards: {
+    amount: number;
+    token: { address: string; symbol: string; decimals: number };
+  }[];
+  rewardUSD: number;
+  poolAPR: number;
+  farmAPR: number;
+  type: string;
+  loading?: boolean;
+  fee?: FeeAmount;
 }
 
 export default function Farms() {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const config = getConfig(chainId);
+  const merklAvailable = config['farm']['merkl'];
 
   const parsedQuery = useParsedQueryString();
   const farmStatus =
@@ -39,15 +58,11 @@ export default function Farms() {
 
   const history = useHistory();
 
-  const allGammaFarms = getAllGammaPairs(chainId).filter(
-    (item) => item.ableToFarm,
+  const [searchValue, setSearchValue] = useState('');
+  const [selectedSort, setSelectedSort] = useState(
+    GlobalConst.utils.v3FarmSortBy.pool,
   );
-
-  const { data: unipilotFarmsArray } = useUnipilotFarms(chainId);
-  const unipilotFarms = useMemo(() => {
-    if (!unipilotFarmsArray) return [];
-    return unipilotFarmsArray;
-  }, [unipilotFarmsArray]);
+  const [isOld, setIsOld] = useState(true);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -66,45 +81,41 @@ export default function Farms() {
   };
 
   const currentTabQueried =
-    parsedQuery && parsedQuery.tab
-      ? (parsedQuery.tab as string)
-      : allGammaFarms.length > 0
-      ? 'gamma-farms'
-      : unipilotFarms.length > 0
-      ? 'unipilot-farms'
-      : 'eternal-farms';
+    parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'farms';
 
   const v3FarmCategories = useMemo(() => {
-    const farmCategories: FarmCategory[] = [
-      {
-        text: t('myFarms'),
-        id: 0,
-        link: 'my-farms',
-      },
-      {
-        text: t('quickswapFarms'),
-        id: 1,
-        link: 'eternal-farms',
-      },
-    ];
-    if (allGammaFarms.length > 0) {
-      farmCategories.push({
-        text: t('gammaFarms'),
-        id: 2,
-        link: 'gamma-farms',
-        hasSeparator: true,
-      });
-    }
-    if (unipilotFarms.length > 0) {
-      farmCategories.push({
-        text: t('unipilotFarms'),
-        id: 3,
-        link: 'unipilot-farms',
-        hasSeparator: true,
-      });
-    }
-    return farmCategories;
-  }, [t, allGammaFarms, unipilotFarms]);
+    return isOld
+      ? [
+          {
+            text: t('allFarms'),
+            id: 1,
+            link: 'farms',
+          },
+          {
+            text: t('myrewards'),
+            id: 0,
+            link: 'my-rewards',
+          },
+          {
+            text: t('myFarms'),
+            id: 2,
+            link: 'my-farms',
+          },
+        ]
+      : [
+          {
+            text: t('allFarms'),
+            id: 1,
+            link: 'farms',
+          },
+          {
+            text: t('myrewards'),
+            id: 0,
+            link: 'my-rewards',
+          },
+        ];
+  }, [t, isOld]);
+
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
       history.push(`?tab=${selected?.link}`);
@@ -123,38 +134,6 @@ export default function Farms() {
     }
   }, [currentTabQueried, v3FarmCategories]);
 
-  const farmFilters = useMemo(
-    () => [
-      {
-        text: t('allFarms'),
-        id: GlobalConst.utils.v3FarmFilter.allFarms,
-      },
-      {
-        text: t('stablecoins'),
-        id: GlobalConst.utils.v3FarmFilter.stableCoin,
-      },
-      {
-        text: t('blueChips'),
-        id: GlobalConst.utils.v3FarmFilter.blueChip,
-      },
-      {
-        text: t('stableLPs'),
-        id: GlobalConst.utils.v3FarmFilter.stableLP,
-      },
-      {
-        text: t('otherLPs'),
-        id: GlobalConst.utils.v3FarmFilter.otherLP,
-      },
-    ],
-    [t],
-  );
-  const [farmFilter, setFarmFilter] = useState(farmFilters[0].id);
-
-  const [searchValue, setSearchValue] = useState('');
-
-  const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
-  const [sortDesc, setSortDesc] = useState(false);
-
   const farmStatusItems = [
     {
       text: t('active'),
@@ -172,132 +151,154 @@ export default function Farms() {
     },
   ];
 
-  const sortColumns = [
+  const sortItems = [
     {
-      text: t('pool'),
-      index: GlobalConst.utils.v3FarmSortBy.pool,
-      width: 0.3,
-      justify: 'flex-start',
+      label: t('pool'),
+      value: GlobalConst.utils.v3FarmSortBy.pool,
     },
     {
-      text: t('tvl'),
-      index: GlobalConst.utils.v3FarmSortBy.tvl,
-      width: 0.2,
-      justify: 'flex-start',
+      label: t('tvl'),
+      value: GlobalConst.utils.v3FarmSortBy.tvl,
     },
     {
-      text: t('rewards'),
-      index: GlobalConst.utils.v3FarmSortBy.rewards,
-      width: 0.3,
-      justify: 'flex-start',
+      label: t('apr'),
+      value: GlobalConst.utils.v3FarmSortBy.apr,
     },
     {
-      text: t('apr'),
-      index: GlobalConst.utils.v3FarmSortBy.apr,
-      width: 0.2,
-      justify: 'flex-start',
+      label: t('rewards'),
+      value: GlobalConst.utils.v3FarmSortBy.rewards,
     },
   ];
 
-  const sortByDesktopItems = sortColumns.map((item) => {
-    return {
-      ...item,
-      onClick: () => {
-        if (sortBy === item.index) {
-          setSortDesc(!sortDesc);
-        } else {
-          setSortBy(item.index);
-          setSortDesc(false);
-        }
-      },
-    };
-  });
+  const poolId =
+    parsedQuery && parsedQuery.pool ? parsedQuery.pool.toString() : undefined;
+
+  const token0 =
+    parsedQuery && parsedQuery.token0
+      ? parsedQuery.token0.toString()
+      : undefined;
+
+  const token1 =
+    parsedQuery && parsedQuery.token1
+      ? parsedQuery.token1.toString()
+      : undefined;
+
+  const isAllFarms = merklAvailable ? !!poolId : !!token0 && !!token1;
+
+  useEffect(() => {
+    history.push('/farm');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId]);
 
   return (
-    <Box className='bg-palette' borderRadius={10}>
-      <Box pt={2} px={2} className='flex flex-wrap justify-between'>
-        <CustomSelector
-          height={36}
-          items={v3FarmCategories}
-          selectedItem={selectedFarmCategory}
-          handleChange={onChangeFarmCategory}
-        />
-        <Box
-          className='flex items-center flex-wrap'
-          width={isMobile ? '100%' : 'auto'}
-        >
-          {selectedFarmCategory.id !== 0 && (
-            <Box mt={isMobile ? 2 : 0} width={isMobile ? '100%' : 160}>
-              <CustomSwitch width='100%' height={40} items={farmStatusItems} />
-            </Box>
-          )}
-          <Box
-            mt={isMobile ? 2 : 0}
-            ml={isMobile ? 0 : 2}
-            width={isMobile ? '100%' : 200}
-          >
-            <SearchInput
-              placeholder='Search'
-              value={searchValue}
-              setValue={setSearchValue}
-              isIconAfter
-            />
-          </Box>
+    <>
+      <Box className='pageHeading'>
+        <Box className='flex row items-center'>
+          <h1 className='h4'>{t('farms')}</h1>
         </Box>
       </Box>
-
-      {selectedFarmCategory.id !== 0 && (
-        <>
-          <Box mt={2} pl='12px' className='bg-secondary1'>
-            <CustomTabSwitch
-              items={farmFilters}
-              value={farmFilter}
-              handleTabChange={setFarmFilter}
-              height={50}
+      {merklAvailable && <MerklClaimAll />}
+      <Box className='bg-palette' borderRadius={10}>
+        {!isAllFarms && (
+          <Box
+            pt={2}
+            px={2}
+            className='flex flex-wrap justify-between'
+            gridGap={16}
+          >
+            <CustomSelector
+              height={36}
+              items={v3FarmCategories}
+              selectedItem={selectedFarmCategory}
+              handleChange={onChangeFarmCategory}
             />
-          </Box>
-          {!isMobile && (
-            <Box mt={2} px={3.5}>
-              <Box width='90%'>
-                <SortColumns
-                  sortColumns={sortByDesktopItems}
-                  selectedSort={sortBy}
-                  sortDesc={sortDesc}
+            {isMobile && !poolId && (
+              <Box className='flex items-center' gridGap={6}>
+                <small className='text-secondary'>{t('oldFarms')}</small>
+                <ToggleSwitch
+                  toggled={isOld}
+                  onToggle={() => setIsOld(!isOld)}
                 />
               </Box>
+            )}
+            <Box
+              className={
+                isMobile
+                  ? 'flex items-center flex-wrap justify-between'
+                  : 'flex items-center flex-wrap'
+              }
+              width={isMobile ? '100%' : 'auto'}
+              gridGap='16px'
+            >
+              <Box width={isMobile ? 150 : 200}>
+                <SearchInput
+                  placeholder='Search'
+                  value={searchValue}
+                  setValue={setSearchValue}
+                  isIconAfter={false}
+                />
+              </Box>
+              {!(isMobile && poolId) && (
+                <Box className='sortSelectBox'>
+                  <label>Sort by: </label>
+                  <Select value={selectedSort} className='sortSelect'>
+                    {sortItems.map((item) => (
+                      <MenuItem
+                        key={item.value}
+                        value={item.value}
+                        onClick={() => {
+                          setSelectedSort(item.value);
+                        }}
+                      >
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              )}
+              {!isMobile && (
+                <Box className='flex items-center' gridGap={6}>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <ToggleSwitch
+                    toggled={isOld}
+                    onToggle={() => setIsOld(!isOld)}
+                  />
+                </Box>
+              )}
+              {selectedFarmCategory.id !== 0 && !merklAvailable && (
+                <Box width={isMobile ? '100%' : 160}>
+                  <CustomSwitch
+                    width='100%'
+                    height={40}
+                    items={farmStatusItems}
+                  />
+                </Box>
+              )}
             </Box>
-          )}
-        </>
-      )}
+          </Box>
+        )}
 
-      {selectedFarmCategory?.id === 0 && (
-        <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
-      )}
-      {selectedFarmCategory?.id === 1 && (
-        <EternalFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-          chainId={chainIdToUse}
-        />
-      )}
-      {selectedFarmCategory?.id === 2 && (
-        <GammaFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-        />
-      )}
-      {selectedFarmCategory?.id === 3 && (
-        <UnipilotFarmsPage
-          farmFilter={farmFilter}
-          search={searchValue}
-          sortBy={sortBy}
-          sortDesc={sortDesc}
-        />
-      )}
-    </Box>
+        {selectedFarmCategory?.id === 0 && (
+          <MyRewardFarms
+            searchValue={searchValue}
+            farmStatus={farmStatus}
+            sortValue={selectedSort}
+          />
+        )}
+        {selectedFarmCategory.id === 1 &&
+          (merklAvailable ? (
+            <AllMerklFarms
+              searchValue={searchValue}
+              farmStatus={farmStatus}
+              sortValue={selectedSort}
+            />
+          ) : (
+            <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
+          ))}
+        {selectedFarmCategory.id === 2 && (
+          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+        )}
+      </Box>
+    </>
   );
 }

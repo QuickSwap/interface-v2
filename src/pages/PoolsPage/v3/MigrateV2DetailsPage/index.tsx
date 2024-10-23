@@ -51,10 +51,11 @@ import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { ReportProblemOutlined } from '@material-ui/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import { calculateGasMargin } from 'utils';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { GlobalConst } from 'constants/index';
 import RemoveV2Liquidity from './RemoveV2Liquidity';
 import AddGammaLiquidity from './AddGammaLiquidity';
+import { TransactionType } from 'models/enums';
 
 export default function MigrateV2DetailsPage() {
   const { t } = useTranslation();
@@ -523,6 +524,7 @@ export default function MigrateV2DetailsPage() {
 
             addTransaction(response, {
               summary: `Migrating ${currency0.symbol}-${currency1.symbol} LP to V3`,
+              type: TransactionType.SWAPPED,
             });
             setPendingMigrationHash(response.hash);
             setConfirmingMigration(false);

@@ -1,0 +1,106 @@
+{
+  "v3": true,
+  "v2": false,
+  "rpc": "https://rpc.immutable.com",
+  "blockExplorer": "https://explorer.immutable.com",
+  "bridgeUrl": "https://toolkit.immutable.com/bridge/",
+  "networkName": "Immutable zkEVM Mainnet",
+  "aprAPINetwork": "imx",
+  "chainId": 13371,
+  "isMainnet": true,
+  "visible": true,
+  "nativeCurrencyImage": "/tIMX_zkevm.jpg",
+  "nativeCurrency": {
+    "name": "IMX",
+    "symbol": "IMX",
+    "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/immutable_cover_img.svg",
+    "supportedChains": ["/bridge/eth.svg", "/bridge/zkevm.webp"]
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": false,
+    "limitOrder": false,
+    "liquidityHub": false,
+    "crossChain": true
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "quickswap": false,
+    "merkl": true,
+    "available": true
+  },
+  "lair": {
+    "available": false,
+    "oldLair": false,
+    "newLair": false,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  },
+  "hydra": {
+    "available": false
+  },
+  "perpsV2": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": true
+  },
+  "unipilot": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "lpLock": {
+    "available": false
+  },
+  "maxChunks": 50,
+  "blocksPerFetch": 25
+}

@@ -1,0 +1,571 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.perpsTokenSelect {
+  cursor: pointer;
+  border-right: 1px solid $divider;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.perpsTokenSearchTable {
+  padding: 0 16px;
+  width: 100%;
+  flex: 1;
+  max-height: 500px;
+  overflow: auto;
+  margin-bottom: 20px;
+  & table {
+    & th,
+    & td {
+      padding: 6px 8px;
+    }
+    & tbody tr {
+      cursor: pointer;
+    }
+  }
+}
+
+.perpsV2Container {
+  display: flex;
+  width: 100%;
+}
+
+.kingFooter {
+  display: flex;
+  flex-direction: column;
+}
+
+.portfolio_status {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  border-bottom: 1px solid $divider;
+  padding: 16px;
+}
+
+.perpsBottomDropdown {
+  & > div {
+    padding: 0 12px;
+    border: 1px solid white !important;
+    border-radius: 12px;
+    &::before,
+    &::after {
+      display: none;
+    }
+    & svg {
+      color: white;
+    }
+    & .MuiSelect-select {
+      &:hover {
+        border: none;
+      }
+    }
+  }
+}
+
+.perpsBottomDropdownItem {
+  padding: 4px 16px;
+}
+
+.orders {
+  display: flex;
+  flex-direction: column;
+}
+.order {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+}
+.footer_data {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  height: 2vh;
+  color: #ccced9;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 12px;
+}
+.selected {
+  border-bottom: 1px solid #fff;
+  color: white;
+}
+
+.leverageManageButton {
+  background-color: $primaryLight;
+  color: $primary;
+  height: 26px;
+  border-radius: 6px;
+  &:hover {
+    background-color: $primaryLight;
+  }
+  & span {
+    font-size: 12px;
+  }
+}
+
+.leverageGradient {
+  width: 100%;
+  height: 8px;
+  border-radius: 8px;
+  background-image: linear-gradient(to right, #24403a, #3f3c2f 48%, #402230);
+}
+
+.leverageTypesWrapper {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  & div {
+    width: 50%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+
+.leverageInputWrapper {
+  height: 36px;
+  background-color: $bgPalette;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  & div {
+    display: flex;
+    flex: 1;
+    & input {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      color: $textPrimary;
+      appearance: none;
+      text-align: right;
+      border: none;
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.leverageSquareWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 2px;
+  background-color: $secondary1;
+  & .leverageSquare {
+    width: 11px;
+    height: 11px;
+    border: 2px solid $secondary1;
+    transform: rotate(45deg);
+    cursor: pointer;
+    position: absolute;
+    background-color: $bgColor;
+    &.filledSquare {
+      background-color: $textSecondary;
+      border: 2px solid $textSecondary;
+    }
+  }
+  & .coloredSlider {
+    width: calc(100% + 12px);
+    margin-left: -8px;
+    margin-right: -4px;
+    margin-top: 4px;
+    & .MuiSlider-rail {
+      // background-color: transparent;
+    }
+    & .MuiSlider-track {
+      background-color: $textSecondary;
+    }
+    & .MuiSlider-thumb {
+      background-color: white;
+      border: 2px solid $textSecondary;
+      transform: rotate(45deg);
+      border-radius: 0;
+      width: 13px;
+      height: 13px;
+      margin-top: -5px;
+    }
+  }
+}
+
+.leverageSubmitButton {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  & span {
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+}
+
+.leverageDetailsArrow {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.radio-wrapper {
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  border: 1px solid $textSecondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & div {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background-color: $textPrimary;
+  }
+}
+
+.checkbox-wrapper {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $textSecondary;
+  border-radius: 2px;
+  &.checkbox-wrapper-filled {
+    border: 1px solid $textPrimary;
+    background-color: $textPrimary;
+  }
+}
+
+.perpsConfirmButton,
+.perpsCancelButton {
+  width: 50%;
+  height: 40px;
+  border-radius: 8px;
+}
+
+.perpsCancelButton {
+  background-color: $secondary1;
+  &:hover {
+    background-color: $secondary1;
+  }
+}
+
+.perpsFooterTable {
+  width: 100%;
+  overflow: auto;
+  & table {
+    min-width: 100%;
+    & th small,
+    & td small {
+      white-space: nowrap;
+    }
+  }
+}
+
+.orderTableActionButton {
+  height: 30px;
+  // background-color: transparent;
+  border: 1px solid $textPrimary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  min-width: unset;
+  padding: 6px 8px;
+  &:hover {
+    background-color: transparent;
+  }
+  & span {
+    font-size: 14px;
+  }
+}
+
+.perpsTableInput {
+  background-color: $secondary1;
+  outline: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 14px;
+  max-width: 120px;
+}
+
+.perpsFooterPagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+}
+
+.perpFooterPaginationPage {
+  display: flex;
+  align-items: center;
+  & > div {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.perpsNotification {
+  .MuiSnackbar-root {
+    top: 100px;
+    & .MuiSnackbarContent-message {
+      width: 100%;
+    }
+    & > div {
+      background-color: $bgPalette;
+      backdrop-filter: blur(30px);
+      border: 1px solid $grey34;
+      border-radius: 16px;
+      & p {
+        color: $textPrimary;
+      }
+    }
+  }
+}
+
+.accountManageModalWrapper {
+  max-width: 1120px;
+}
+
+.accountPanelWrapper {
+  padding: 16px;
+  border-radius: 10px;
+  background: $secondary1;
+
+  & .leverageSquareWrapper {
+    background-color: $grey12;
+  }
+  & .leverageSquare {
+    border: 2px solid $grey12;
+    background-color: $secondary1;
+  }
+
+  & .accountPanelRow {
+    display: flex;
+    & > span:first-child {
+      min-width: 150px;
+      color: $textSecondary;
+    }
+  }
+}
+
+.accountPanelButton {
+  border: 1px solid $primary;
+  border-radius: 5px;
+  // background-color: transparent;
+  padding: 2px 8px;
+  min-width: unset;
+  &:hover {
+    background-color: transparent;
+  }
+  & span {
+    color: $primary;
+    font-size: 12px;
+  }
+}
+
+.accountManageLiquidations {
+  background: $secondary1;
+  border-radius: 10px;
+  overflow-x: scroll;
+  & table {
+    width: 100%;
+    min-width: 700px;
+    & th {
+      padding: 16px;
+      color: $textSecondary;
+      border-bottom: 1px solid $divider;
+    }
+    & td {
+      padding: 6px 16px;
+    }
+    & th,
+    & td {
+      text-align: left;
+      font-weight: 500;
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
+}
+
+.perpsAPIKeyTableWrapper {
+  border-top: 1px solid $divider;
+  padding-top: 16px;
+  margin-top: 12px;
+  overflow-x: auto;
+  & table {
+    width: 100%;
+    min-width: 560px;
+    & th {
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      color: $textSecondary;
+    }
+    & th,
+    & td {
+      padding: 6px 0;
+      & button {
+        height: 24px;
+        &.MuiButton-outlined {
+          // background-color: transparent;
+          border: 1px solid $primary;
+          & span {
+            color: $primary;
+          }
+        }
+        & span {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+.orderlyIPRestrictionInput {
+  & input {
+    border: none;
+    outline: none;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+    background-color: $secondary1;
+    font-size: 16px;
+  }
+}
+
+.orderlyAPIKeyModalWrapper {
+  max-width: 420px;
+  & small {
+    word-break: break-all;
+  }
+}
+
+.orderbookTradeTable {
+  padding: 7px 16px;
+  & table {
+    width: 100%;
+    & tr th,
+    & tr td {
+      padding: 3px 0;
+    }
+  }
+}
+
+.orderTypeMenu {
+  .customMenuHeader {
+    height: 36px;
+    border-radius: 8px;
+    background-color: $bgPalette;
+    border: none;
+    padding: 0 8px 0 12px;
+    color: $successMain;
+    & small {
+      font-size: 12px;
+    }
+    & svg {
+      width: 20px;
+    }
+  }
+  & .customMenuContent {
+    border-radius: 8px;
+    padding: 6px;
+    background-color: $bgPalette;
+    border: 1px solid $secondary1;
+    & > div {
+      border-radius: 6px;
+      padding: 6px;
+      margin: 0;
+      &.customMenuSelectedItem small {
+        color: $successMain;
+      }
+      & small {
+        font-size: 12px;
+      }
+      &:hover {
+        background-color: $secondary3;
+        & small {
+          color: $textPrimary;
+        }
+      }
+    }
+  }
+}
+
+.tpslWrapper {
+  .leverageSquare {
+    background-color: $bgPalette;
+  }
+}
+
+.tpslInputWrapper {
+  background-color: $secondary1;
+  height: 40px;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  & input {
+    background-color: transparent;
+    outline: none;
+    text-align: right;
+    width: 100%;
+  }
+  & small {
+    white-space: nowrap;
+  }
+}
+
+.tpslPositionButton {
+  height: 40px;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tpslButtonWrapper {
+  display: flex;
+  & button {
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+  }
+}
+
+.tpSLDropdown {
+  position: fixed;
+  margin-top: 160px;
+  margin-left: -8px;
+  background-color: $secondary1;
+  border-radius: 8px;
+  padding: 6px;
+  z-index: 5;
+  & > div {
+    padding: 6px;
+    min-width: 120px;
+    border-radius: 6px;
+    &:hover {
+      background-color: $bgPalette;
+    }
+  }
+}

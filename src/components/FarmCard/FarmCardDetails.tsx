@@ -3,7 +3,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
-import { StakingInfo, DualStakingInfo } from 'types';
+import { StakingInfo, DualStakingInfo } from 'types/index';
 import { TokenAmount, Pair } from '@uniswap/sdk';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { usePairContract, useStakingContract } from 'hooks/useContract';
@@ -35,7 +35,7 @@ import {
   formatNumber,
   calculateGasMargin,
 } from 'utils';
-import CircleInfoIcon from 'assets/images/circleinfo.svg';
+import { TransactionType } from 'models/enums';
 
 const FarmCardDetails: React.FC<{
   stakingInfo: StakingInfo | DualStakingInfo;
@@ -120,6 +120,7 @@ const FarmCardDetails: React.FC<{
         }
         addTransaction(response, {
           summary: t('withdrawliquidity'),
+          type: TransactionType.RECEIVED,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -143,6 +144,7 @@ const FarmCardDetails: React.FC<{
         });
         addTransaction(response, {
           summary: t('claimrewards'),
+          type: TransactionType.CLAIMED_REWARDS,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {
@@ -194,6 +196,7 @@ const FarmCardDetails: React.FC<{
         );
         addTransaction(response, {
           summary: t('depositliquidity'),
+          type: TransactionType.SEND,
         });
         const receipt = await response.wait();
         finalizedTransaction(receipt, {

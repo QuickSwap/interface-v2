@@ -1,19 +1,26 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useDebounce from 'hooks/useDebounce';
 import useIsWindowVisible from 'hooks/useIsWindowVisible';
-import { updateBlockNumber } from './actions';
-import { useEthPrice, useMaticPrice } from './hooks';
-import { getEthPrice } from 'utils';
-import { getMaticPrice } from 'utils/v3-graph';
+import { updateBlockNumber, updateSoulZap } from './actions';
 import { useActiveWeb3React } from 'hooks';
+import { SoulZap_UniV2_ApeBond } from '@soulsolidity/soulzap-v1';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { RPC_PROVIDERS, rpcMap } from 'constants/providers';
+import { ChainId } from '@uniswap/sdk';
 
 export default function Updater(): null {
-  const { library, chainId, connector } = useActiveWeb3React();
+  const {
+    library: web3ModalLibrary,
+    currentChainId,
+    chainId,
+    provider,
+    account,
+  } = useActiveWeb3React();
+  const libraryFromChain = RPC_PROVIDERS[chainId];
+  const library = web3ModalLibrary ?? libraryFromChain;
 
   const dispatch = useDispatch();
-  const { updateEthPrice } = useEthPrice();
-  const { updateMaticPrice } = useMaticPrice();
 
   const windowVisible = useIsWindowVisible();
 
@@ -21,74 +28,31 @@ export default function Updater(): null {
     chainId: number | undefined;
     blockNumber: number | null;
   }>({
-    chainId,
+    chainId: currentChainId,
     blockNumber: null,
   });
-
-  const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
   const blockNumberCallback = useCallback(
     (blockNumber: number) => {
       setState((state) => {
-        if (chainId === state.chainId) {
+        if (currentChainId === state.chainId) {
           if (typeof state.blockNumber !== 'number')
-            return { chainId, blockNumber };
+            return { chainId: currentChainId, blockNumber };
           return {
-            chainId,
+            chainId: currentChainId,
             blockNumber,
           };
         }
         return state;
       });
     },
-    [chainId, setState],
+    [currentChainId, setState],
   );
-
-  // this is for refreshing eth price every 10 mins
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const _currentTime = Math.floor(Date.now() / 1000);
-      setCurrentTime(_currentTime);
-    }, 600000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (!chainId || state.chainId !== chainId) return;
-    const fetchMaticPrice = async () => {
-      try {
-        const [
-          maticPrice,
-          maticOneDayPrice,
-          maticPriceChange,
-        ] = await getMaticPrice(chainId);
-        updateMaticPrice({
-          price: maticPrice,
-          oneDayPrice: maticOneDayPrice,
-          maticPriceChange,
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    const fetchETHPrice = async () => {
-      try {
-        const [price, oneDayPrice, ethPriceChange] = await getEthPrice(chainId);
-        updateEthPrice({ price, oneDayPrice, ethPriceChange });
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchMaticPrice();
-    fetchETHPrice();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, chainId, state.chainId]);
 
   // attach/detach listeners
   useEffect(() => {
-    if (!library || !chainId || !windowVisible) return undefined;
-
-    setState({ chainId, blockNumber: null });
+    setState({ chainId: currentChainId, blockNumber: null });
+    if (!library || !windowVisible) return undefined;
 
     library
       .getBlockNumber()
@@ -102,54 +66,67 @@ export default function Updater(): null {
 
     library.on('block', blockNumberCallback);
 
-    if (connector.provider) {
-      connector.provider.on('chainChanged', () => {
-        setTimeout(() => {
-          document.location.reload();
-        }, 1500);
+    if (web3ModalLibrary) {
+      web3ModalLibrary.on('network', (newNetwork) => {
+        if (state.chainId && newNetwork.chainId !== state.chainId) {
+          setTimeout(() => {
+            document.location.reload();
+          }, 1500);
+        }
       });
     }
 
     return () => {
       library.removeListener('block', blockNumberCallback);
-      if (connector.provider) {
-        connector.provider.removeListener('chainChanged', () => {
-          setTimeout(() => {
-            document.location.reload();
-          }, 1500);
+      if (web3ModalLibrary) {
+        web3ModalLibrary.removeListener('network', (newNetwork) => {
+          if (state.chainId && newNetwork.chainId !== state.chainId) {
+            setTimeout(() => {
+              document.location.reload();
+            }, 1500);
+          }
         });
       }
     };
-  }, [
-    dispatch,
-    chainId,
-    library,
-    blockNumberCallback,
-    windowVisible,
-    connector,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChainId, chainId, windowVisible]);
 
   const debouncedState = useDebounce(state, 100);
 
   useEffect(() => {
-    if (
-      !debouncedState.chainId ||
-      !debouncedState.blockNumber ||
-      !windowVisible
-    )
-      return;
+    if (!chainId || !debouncedState.blockNumber || !windowVisible) return;
     dispatch(
       updateBlockNumber({
-        chainId: debouncedState.chainId,
+        chainId,
         blockNumber: debouncedState.blockNumber,
       }),
     );
-  }, [
-    windowVisible,
-    dispatch,
-    debouncedState.blockNumber,
-    debouncedState.chainId,
-  ]);
+  }, [windowVisible, dispatch, debouncedState.blockNumber, chainId]);
+
+  const ethersProvider = useMemo(() => {
+    if (chainId) return new JsonRpcProvider(rpcMap?.[chainId]);
+  }, [chainId]);
+
+  const soulZapSupportChainId = [ChainId.MATIC];
+  useEffect(() => {
+    // Ensuring instance is only created on the client-side
+    if (
+      typeof window !== 'undefined' &&
+      chainId &&
+      provider &&
+      ethersProvider &&
+      soulZapSupportChainId.includes(chainId)
+    ) {
+      console.log('Initiating soul zap instance');
+      // web3 provider is works funny if user is not connected, so in those cases we use ethers instead
+      const soulZapInstance = new SoulZap_UniV2_ApeBond(
+        chainId as number,
+        account ? provider.getSigner() : ethersProvider,
+      );
+      dispatch(updateSoulZap(soulZapInstance));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, account]);
 
   return null;
 }

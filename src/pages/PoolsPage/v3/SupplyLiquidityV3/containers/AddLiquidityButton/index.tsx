@@ -1,6 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AML_SCORE_THRESHOLD } from 'config';
 import {
+  useDefiedgeStrategyContract,
   useGammaUNIProxyContract,
+  useSteerPeripheryContract,
   useUNIV3NFTPositionManagerContract,
   useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
@@ -8,7 +12,11 @@ import {
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { useActiveWeb3React } from 'hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useIsExpertMode,
+  useUserSlippageTolerance,
+  useAmlScore,
+} from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
@@ -27,7 +35,8 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import { Field } from 'state/mint/actions';
 import { Bound, setAddLiquidityTxHash } from 'state/mint/v3/actions';
 import { useIsNetworkFailedImmediate } from 'hooks/v3/useIsNetworkFailed';
-import { ETHER, JSBI, WETH } from '@uniswap/sdk';
+import { ChainId, ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
+import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
@@ -53,6 +62,11 @@ import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { useCurrencyBalance } from 'state/wallet/hooks';
 import { formatUnits } from 'ethers/lib/utils';
+import { ZERO } from 'v3lib/utils';
+import { Presets } from 'state/mint/v3/reducer';
+import { TransactionType } from 'models/enums';
+import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -71,6 +85,7 @@ export function AddLiquidityButton({
   title,
   setRejected,
 }: IAddLiquidityButton) {
+  const history = useHistory();
   const { t } = useTranslation();
   const { chainId, library, account } = useActiveWeb3React();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -107,6 +122,8 @@ export function AddLiquidityButton({
   const isNetworkFailed = useIsNetworkFailedImmediate();
 
   const [allowedSlippage] = useUserSlippageTolerance();
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const allowedSlippagePercent: Percent = useMemo(() => {
     return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
   }, [allowedSlippage]);
@@ -118,6 +135,7 @@ export function AddLiquidityButton({
     chainId,
     baseCurrency?.wrapped.address,
     quoteCurrency?.wrapped.address,
+    mintInfo.feeAmount,
   );
   const gammaPair = gammaPairData?.pairs;
   const gammaPairAddress =
@@ -140,8 +158,10 @@ export function AddLiquidityButton({
       !amountA ||
       !amountB ||
       !chainId ||
-      mintInfo.liquidityRangeType !==
-        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
+      (mintInfo.liquidityRangeType !==
+        GlobalConst.v3LiquidityRangeType.GAMMA_RANGE &&
+        mintInfo.liquidityRangeType !==
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE)
     )
       return;
     if (
@@ -181,7 +201,14 @@ export function AddLiquidityButton({
   ]);
 
   const uniPilotVaultAddress = mintInfo.presetRange?.address;
-  const uniPilotVaultContract = useUniPilotVaultContract(uniPilotVaultAddress);
+  const defiedgeStrategyAddress = mintInfo.presetRange?.address;
+  const defiedgeStrategyContract = useDefiedgeStrategyContract(
+    defiedgeStrategyAddress,
+  );
+  const vaultAddress = mintInfo.presetRange?.address;
+  const uniPilotVaultContract = useUniPilotVaultContract(vaultAddress);
+
+  const steerPeripheryContract = useSteerPeripheryContract();
 
   const [approvalA] = useApproveCallback(
     mintInfo.parsedAmounts[Field.CURRENCY_A],
@@ -192,6 +219,12 @@ export function AddLiquidityButton({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
@@ -204,29 +237,35 @@ export function AddLiquidityButton({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
         ? uniPilotVaultAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+        ? defiedgeStrategyAddress
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE
+        ? steerPeripheryContract?.address
         : positionManagerAddress
       : undefined,
   );
 
   const isReady = useMemo(() => {
-    return Boolean(
-      (mintInfo.depositADisabled
-        ? true
-        : approvalA === ApprovalState.APPROVED) &&
-        (mintInfo.depositBDisabled
+    return (
+      mintInfo.presetRange?.type !== Presets.OUT_OF_RANGE &&
+      Boolean(
+        (mintInfo.depositADisabled
           ? true
-          : approvalB === ApprovalState.APPROVED) &&
-        !mintInfo.errorMessage &&
-        !mintInfo.invalidRange &&
-        !txHash &&
-        !isNetworkFailed &&
-        (amountToWrap ? !wrappingETH : true),
+          : approvalA === ApprovalState.APPROVED) &&
+          (mintInfo.depositBDisabled
+            ? true
+            : approvalB === ApprovalState.APPROVED) &&
+          !mintInfo.errorMessage &&
+          !mintInfo.invalidRange &&
+          !txHash &&
+          !isNetworkFailed &&
+          (amountToWrap ? !wrappingETH : true),
+      )
     );
   }, [
-    mintInfo.depositADisabled,
-    mintInfo.depositBDisabled,
-    mintInfo.errorMessage,
-    mintInfo.invalidRange,
+    mintInfo,
     approvalA,
     approvalB,
     txHash,
@@ -255,6 +294,11 @@ export function AddLiquidityButton({
     if (!chainId || !library || !account || !wethContract || !amountToWrap)
       return;
 
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+
     setWrappingETH(true);
     try {
       const wrapEstimateGas = await wethContract.estimateGas.deposit({
@@ -272,6 +316,8 @@ export function AddLiquidityButton({
       )} ETH to WETH`;
       addTransaction(wrapResponse, {
         summary,
+        type: TransactionType.WRAP,
+        tokens: [ETHER[chainId]],
       });
       const receipt = await wrapResponse.wait();
       finalizedTransaction(receipt, {
@@ -288,6 +334,11 @@ export function AddLiquidityButton({
     if (!chainId || !library || !account) return;
 
     if (!baseCurrency || !quoteCurrency) {
+      return;
+    }
+
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
       return;
     }
 
@@ -333,6 +384,8 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -361,6 +414,99 @@ export function AddLiquidityButton({
             : t('errorInTx'),
         );
       }
+    }
+    if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.STEER_RANGE
+    ) {
+      if (
+        !steerPeripheryContract ||
+        !mintInfo.presetRange ||
+        !mintInfo.presetRange.tokenStr
+      )
+        return;
+      const baseCurrencyAddress = baseCurrency.wrapped
+        ? baseCurrency.wrapped.address.toLowerCase()
+        : undefined;
+      const quoteCurrencyAddress = quoteCurrency.wrapped
+        ? quoteCurrency.wrapped.address.toLowerCase()
+        : undefined;
+      const steerToken0Address = mintInfo.presetRange.tokenStr.split('-')[0];
+      if (
+        !amountA ||
+        !amountB ||
+        !vaultAddress ||
+        !baseCurrencyAddress ||
+        !quoteCurrencyAddress
+      )
+        return;
+      setRejected && setRejected(false);
+      setAttemptingTxn(true);
+      try {
+        const estimatedGas = await steerPeripheryContract.estimateGas.deposit(
+          vaultAddress,
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          0,
+          0,
+          account,
+        );
+        const response: TransactionResponse = await steerPeripheryContract.deposit(
+          vaultAddress,
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA
+            : amountB
+          ).numerator.toString(),
+          (steerToken0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB
+            : amountA
+          ).numerator.toString(),
+          0,
+          0,
+          account,
+          { gasLimit: calculateGasMarginV3(chainId, estimatedGas) },
+        );
+        const summary = mintInfo.noLiquidity
+          ? t('createPoolandaddLiquidity', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            })
+          : t('addLiquidityWithTokens', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            });
+        setAttemptingTxn(false);
+        setTxPending(true);
+        addTransaction(response, {
+          summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
+        });
+        dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary,
+        });
+        setTxPending(false);
+        handleAddLiquidity();
+      } catch (error) {
+        console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
+        setAttemptingTxn(false);
+        setTxPending(false);
+        setAddLiquidityErrorMessage(t('errorInTx'));
+      }
     } else if (
       mintInfo.liquidityRangeType ===
       GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
@@ -383,7 +529,7 @@ export function AddLiquidityButton({
       if (
         !amountA ||
         !amountB ||
-        !uniPilotVaultAddress ||
+        !vaultAddress ||
         !baseCurrencyAddress ||
         !quoteCurrencyAddress
       )
@@ -444,6 +590,117 @@ export function AddLiquidityButton({
         setTxPending(true);
         addTransaction(response, {
           summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
+        });
+        dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+        const receipt = await response.wait();
+        finalizedTransaction(receipt, {
+          summary,
+        });
+        setTxPending(false);
+        handleAddLiquidity();
+      } catch (error) {
+        console.error('Failed to send transaction', error);
+        const errorMsg =
+          error && error.message
+            ? error.message.toLowerCase()
+            : error && error.data && error.data.message
+            ? error.data.message.toLowerCase()
+            : '';
+        setAttemptingTxn(false);
+        setTxPending(false);
+        setAddLiquidityErrorMessage(t('errorInTx'));
+      }
+    } else if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
+    ) {
+      if (
+        !defiedgeStrategyContract ||
+        !mintInfo.presetRange ||
+        !mintInfo.presetRange.tokenStr
+      )
+        return;
+      const baseCurrencyAddress = baseCurrency.wrapped
+        ? baseCurrency.wrapped.address.toLowerCase()
+        : undefined;
+      const quoteCurrencyAddress = quoteCurrency.wrapped
+        ? quoteCurrency.wrapped.address.toLowerCase()
+        : undefined;
+
+      const token0Address = mintInfo.presetRange.tokenStr.split('-')[0];
+
+      if (
+        !defiedgeStrategyAddress ||
+        !baseCurrencyAddress ||
+        !quoteCurrencyAddress
+      )
+        return;
+
+      setRejected && setRejected(false);
+
+      setAttemptingTxn(true);
+
+      const zeroCurrencyAmount = CurrencyAmount.fromRawAmount(quoteCurrency, 0);
+
+      try {
+        const estimatedGas = await defiedgeStrategyContract.estimateGas.mint(
+          (token0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA ?? zeroCurrencyAmount
+            : amountB ?? zeroCurrencyAmount
+          ).numerator.toString(),
+          (token0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB ?? zeroCurrencyAmount
+            : amountA ?? zeroCurrencyAmount
+          ).numerator.toString(),
+          '0',
+          '0',
+          '0',
+          {
+            value: baseCurrency.isNative
+              ? (amountA ?? zeroCurrencyAmount).numerator.toString()
+              : quoteCurrency.isNative
+              ? (amountB ?? zeroCurrencyAmount).numerator.toString()
+              : '0',
+          },
+        );
+        const response: TransactionResponse = await defiedgeStrategyContract.mint(
+          (token0Address.toLowerCase() === baseCurrencyAddress
+            ? amountA ?? zeroCurrencyAmount
+            : amountB ?? zeroCurrencyAmount
+          ).numerator.toString(),
+          (token0Address.toLowerCase() === baseCurrencyAddress
+            ? amountB ?? zeroCurrencyAmount
+            : amountA ?? zeroCurrencyAmount
+          ).numerator.toString(),
+          '0',
+          '0',
+          '0',
+          {
+            gasLimit: calculateGasMargin(estimatedGas),
+            value: baseCurrency.isNative
+              ? (amountA ?? zeroCurrencyAmount).numerator.toString()
+              : quoteCurrency.isNative
+              ? (amountB ?? zeroCurrencyAmount).numerator.toString()
+              : '0',
+          },
+        );
+        const summary = mintInfo.noLiquidity
+          ? t('createPoolandaddLiquidity', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            })
+          : t('addLiquidityWithTokens', {
+              symbolA: baseCurrency?.symbol,
+              symbolB: quoteCurrency?.symbol,
+            });
+        setAttemptingTxn(false);
+        setTxPending(true);
+        addTransaction(response, {
+          summary,
+          type: TransactionType.ADDED_LIQUIDITY,
+          tokens: [baseCurrency, quoteCurrency],
         });
         dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
         const receipt = await response.wait();
@@ -529,6 +786,13 @@ export function AddLiquidityButton({
                     });
                 addTransaction(response, {
                   summary,
+                  type: TransactionType.ADDED_LIQUIDITY,
+                  tokens: [
+                    ((baseCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                    ((quoteCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                  ],
                 });
 
                 dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
@@ -636,11 +900,20 @@ export function AddLiquidityButton({
               {baseCurrency?.symbol}-{quoteCurrency?.symbol}
             </h4>
           </Box>
-          <RangeBadge
-            removed={false}
-            withTooltip={false}
-            inRange={!mintInfo.outOfRange}
-          />
+          {mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ? (
+            <RangeBadge
+              removed={false}
+              withTooltip={false}
+              inRange={!mintInfo.outOfRange}
+            />
+          ) : mintInfo.presetRange?.title ? (
+            <div className='automatic-liquidity-range'>
+              {mintInfo.presetRange?.title} {t('range').toLowerCase()}
+            </div>
+          ) : (
+            <></>
+          )}
         </Box>
         <Box
           mt='20px'
@@ -686,7 +959,11 @@ export function AddLiquidityButton({
               width={priceUpper ? '49%' : '100%'}
             >
               <p>{t('minPrice')}</p>
-              <h6>{priceLower.toSignificant()}</h6>
+              <h6>
+                {mintInfo.ticksAtLimit[Bound.LOWER]
+                  ? '0'
+                  : priceLower.toSignificant()}
+              </h6>
               <p>
                 {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
@@ -702,8 +979,12 @@ export function AddLiquidityButton({
               className='v3-supply-liquidity-price-wrapper'
               width={priceLower ? '49%' : '100%'}
             >
-              <p>{t('minPrice')}</p>
-              <h6>{priceUpper.toSignificant()}</h6>
+              <p>{t('maxPrice')}</p>
+              <h6>
+                {mintInfo.ticksAtLimit[Bound.UPPER]
+                  ? '∞'
+                  : priceUpper.toSignificant()}
+              </h6>
               <p>
                 {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
               </p>
@@ -776,10 +1057,12 @@ export function AddLiquidityButton({
       )}
       <Button
         className='v3-supply-liquidity-button'
-        disabled={!isReady}
+        disabled={!isReady || isAmlScoreLoading}
         onClick={amountToWrap ? onWrapMatic : onAddLiquidity}
       >
-        {amountToWrap
+        {mintInfo.presetRange?.type === Presets.OUT_OF_RANGE
+          ? t('outrangeText')
+          : amountToWrap
           ? wrappingETH
             ? t('wrappingMATIC', { symbol: ETHER[chainId].symbol })
             : t('wrapMATIC', { symbol: ETHER[chainId].symbol })

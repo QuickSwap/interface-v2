@@ -1,5 +1,10 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Disallow: /@types/
+Disallow: /%23/
+Disallow: /privacy_policy.pdf
+Disallow: /robots.txt
+Disallow: /i/Login
+Disallow: /utils/address
 
 Sitemap: https://quickswap.exchange/sitemap.xml

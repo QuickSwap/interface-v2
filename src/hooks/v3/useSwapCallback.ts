@@ -15,6 +15,7 @@ import { SwapRouter } from 'lib/src/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';
+import { TransactionType } from 'models/enums';
 
 enum SwapCallbackState {
   INVALID,
@@ -80,6 +81,7 @@ function useSwapCallArguments(
 
     swapMethods.push(
       SwapRouter.swapCallParameters(trade, {
+        isUni,
         feeOnTransfer: false,
         recipient,
         slippageTolerance: allowedSlippage,
@@ -322,9 +324,7 @@ export function useSwapCallback(
 
         // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
         const bestCallOption = estimatedCalls.find(
-          (el, ix, list): el is SuccessfulCall =>
-            'gasEstimate' in el &&
-            (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
+          (el): el is SuccessfulCall => 'gasEstimate' in el,
         );
 
         // check if any calls errored with a recognizable error
@@ -378,6 +378,7 @@ export function useSwapCallback(
 
             addTransaction(response, {
               summary: withVersion,
+              type: TransactionType.SWAPPED,
             });
 
             return { response, summary: withVersion };

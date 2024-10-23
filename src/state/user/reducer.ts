@@ -17,12 +17,15 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
-  updateSelectedWallet,
   updateUserLiquidityHub,
+  updateUserZapSlippage,
+  updateIsInfiniteApproval,
+  updateUserAmlScore,
 } from './actions';
-import { ConnectionType } from 'connectors';
 
 const currentTimestamp = () => new Date().getTime();
+export const INITIAL_ZAP_SLIPPAGE = 100;
+export const SLIPPAGE_AUTO = 0;
 
 export interface UserState {
   // the timestamp of the last updateVersion action
@@ -59,7 +62,10 @@ export interface UserState {
   URLWarningVisible: boolean;
   // v3 user states
   userSingleHopOnly: boolean; // only allow swaps on direct pairs
-  selectedWallet?: ConnectionType;
+  userZapSlippage: number;
+  isInfiniteApproval: boolean;
+
+  amlScore: number;
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -80,7 +86,9 @@ export const initialState: UserState = {
   timestamp: currentTimestamp(),
   URLWarningVisible: true,
   userSingleHopOnly: false,
-  selectedWallet: undefined,
+  userZapSlippage: INITIAL_ZAP_SLIPPAGE,
+  isInfiniteApproval: false,
+  amlScore: 0,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -173,10 +181,16 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateSlippageManuallySet, (state, action) => {
       state.slippageManuallySet = action.payload.slippageManuallySet;
     })
-    .addCase(updateSelectedWallet, (state, action) => {
-      state.selectedWallet = action.payload.wallet;
-    })
     .addCase(updateUserLiquidityHub, (state, action) => {
       state.userLiquidityHubDisabled = action.payload.userLiquidityHubDisabled;
+    })
+    .addCase(updateUserZapSlippage, (state, action) => {
+      state.userZapSlippage = action.payload.userZapSlippage;
+    })
+    .addCase(updateIsInfiniteApproval, (state, action) => {
+      state.isInfiniteApproval = action.payload.isInfiniteApproval;
+    })
+    .addCase(updateUserAmlScore, (state, action) => {
+      state.amlScore = action.payload.score;
     }),
 );

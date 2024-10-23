@@ -45,7 +45,9 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
     trade ? trade.inputAmount.currency : inputCurrency,
     chainId,
   );
-  const usdPrice = useUSDCPriceFromAddress(wrappedToken?.address ?? '');
+  const { price: usdPrice } = useUSDCPriceFromAddress(
+    wrappedToken?.address ?? '',
+  );
 
   const pct = basisPointsToPercent(allowedSlippage);
 

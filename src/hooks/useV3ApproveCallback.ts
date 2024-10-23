@@ -1,16 +1,17 @@
-import { MaxUint256 } from '@ethersproject/constants';
 import { TransactionResponse } from '@ethersproject/providers';
 import {
   Currency,
   CurrencyAmount,
+  MaxUint256,
   Percent,
   TradeType,
 } from '@uniswap/sdk-core';
 import { Trade as V3Trade } from 'lib/src/trade';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,
   UNI_SWAP_ROUTER,
+  ZAP_ADDRESS,
 } from '../constants/v3/addresses';
 import {
   useHasPendingApproval,
@@ -18,8 +19,11 @@ import {
 } from '../state/transactions/hooks';
 import { useTokenContract } from './useContract';
 import { useActiveWeb3React } from 'hooks';
-import { useTokenAllowance } from './useTokenAllowance';
+import { useV3TokenAllowance } from './useTokenAllowance';
 import { calculateGasMargin } from 'utils';
+import { MergedZap } from 'state/zap/actions';
+import { useIsInfiniteApproval } from 'state/user/hooks';
+import { TransactionType } from 'models/enums';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -33,11 +37,12 @@ export function useApproveCallback(
   amountToApprove?: CurrencyAmount<Currency>,
   spender?: string,
 ): [ApprovalState, () => Promise<void>] {
+  const [isApproved, setApproved] = useState(false);
   const { account, chainId } = useActiveWeb3React();
   const token = amountToApprove?.currency?.isToken
     ? amountToApprove.currency
     : undefined;
-  const currentAllowance = useTokenAllowance(
+  const currentAllowance = useV3TokenAllowance(
     token,
     account ?? undefined,
     spender,
@@ -51,16 +56,19 @@ export function useApproveCallback(
     // we might not have enough data to know whether or not we need to approve
     if (!currentAllowance) return ApprovalState.UNKNOWN;
 
+    if (isApproved) return ApprovalState.APPROVED;
+
     // amountToApprove will be defined if currentAllowance is
     return currentAllowance.lessThan(amountToApprove)
       ? pendingApproval
         ? ApprovalState.PENDING
         : ApprovalState.NOT_APPROVED
       : ApprovalState.APPROVED;
-  }, [amountToApprove, currentAllowance, pendingApproval, spender]);
+  }, [amountToApprove, currentAllowance, pendingApproval, spender, isApproved]);
 
   const tokenContract = useTokenContract(token?.address);
   const addTransaction = useTransactionAdder();
+  const [isInfiniteApproval] = useIsInfiniteApproval();
 
   const approve = useCallback(async (): Promise<void> => {
     if (approvalState !== ApprovalState.NOT_APPROVED) {
@@ -92,9 +100,13 @@ export function useApproveCallback(
       return;
     }
 
+    const approveAmount = isInfiniteApproval
+      ? MaxUint256.toString()
+      : amountToApprove.quotient.toString();
+
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas
-      .approve(spender, MaxUint256)
+      .approve(spender, approveAmount)
       .catch(() => {
         // general fallback for tokens who restrict approval amounts
         useExact = true;
@@ -107,17 +119,28 @@ export function useApproveCallback(
     return tokenContract
       .approve(
         spender,
-        useExact ? amountToApprove.quotient.toString() : MaxUint256,
+        useExact || !isInfiniteApproval
+          ? amountToApprove.quotient.toString()
+          : approveAmount,
         {
           gasLimit: calculateGasMargin(estimatedGas),
         },
       )
-      .then((response: TransactionResponse) => {
+      .then(async (response: TransactionResponse) => {
         addTransaction(response, {
           summary:
             `Approve ` + (amountToApprove.currency.symbol || `LP-tokens`),
           approval: { tokenAddress: token.address, spender: spender },
+          type: TransactionType.APPROVED,
         });
+        try {
+          await response.wait();
+          setApproved(true);
+        } catch (e) {
+          setApproved(false);
+          console.debug('Failed to approve token', e);
+          throw e;
+        }
       })
       .catch((error: Error) => {
         console.debug('Failed to approve token', error);
@@ -125,12 +148,13 @@ export function useApproveCallback(
       });
   }, [
     approvalState,
+    chainId,
     token,
     tokenContract,
     amountToApprove,
     spender,
+    isInfiniteApproval,
     addTransaction,
-    chainId,
   ]);
 
   return [approvalState, approve];
@@ -163,4 +187,21 @@ export function useApproveCallbackFromTrade(
         : undefined
       : undefined,
   );
+}
+
+export function useApproveCallbackFromZap(
+  zap?: MergedZap,
+): [ApprovalState, () => Promise<void>] {
+  const { chainId } = useActiveWeb3React();
+
+  const inAmount = zap?.currencyIn?.currency
+    ? CurrencyAmount.fromRawAmount(
+        zap?.currencyIn?.currency,
+        zap.currencyIn?.inputAmount,
+      )
+    : undefined;
+
+  const spender = chainId ? ZAP_ADDRESS[chainId] : undefined;
+
+  return useApproveCallback(inAmount, spender);
 }

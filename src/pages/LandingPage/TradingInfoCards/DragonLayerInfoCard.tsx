@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import React, { useMemo, useState } from 'react';
 import { DLQUICK } from 'constants/v3/addresses';
 import { useNewLairInfo } from 'state/stake/hooks';
@@ -7,6 +7,7 @@ import { formatCompact, useLairDQUICKAPY } from 'utils';
 import { Skeleton } from '@material-ui/lab';
 import { StakeQuickModal } from 'components';
 import { useTranslation } from 'react-i18next';
+import { useActiveWeb3React } from 'hooks';
 
 interface DragonLayerInfoCardProps {
   chainId: any;
@@ -17,6 +18,7 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   chainId,
   config = {},
 }) => {
+  const { account } = useActiveWeb3React();
   const { t } = useTranslation();
   const lairInfo = useNewLairInfo();
   const dQUICKAPY = useLairDQUICKAPY(true, lairInfo);
@@ -28,7 +30,10 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
   const oldLair = config['lair']?.oldLair;
   const newLair = config['lair']?.newLair;
 
-  const quickPrice = useUSDCPriceFromAddress(quickToken?.address);
+  const {
+    loading: loadingQuickPrice,
+    price: quickPrice,
+  } = useUSDCPriceFromAddress(quickToken?.address ?? '');
 
   const rewards = useMemo(() => {
     if (lairInfo && quickPrice) {
@@ -43,6 +48,8 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
     return '0';
   }, [lairInfo, quickPrice]);
 
+  const loading = lairInfo?.loading || loadingQuickPrice;
+
   return (
     <>
       {openStakeModal && (
@@ -54,23 +61,43 @@ const DragonLayerInfoCard: React.FC<DragonLayerInfoCardProps> = ({
       )}
       {(oldLair || newLair) && (
         <Box className='tradingSection' pt='20px'>
-          {dQUICKAPY ? (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Typography
+              className='text-uppercase'
+              style={{ fontSize: '11px', fontWeight: 600 }}
+            >
+              {t('dragonslair')}{' '}
+            </Typography>
+            {account && (
+              <h4
+                style={{ marginBottom: '12px', marginTop: '0' }}
+                onClick={() => setOpenStakeModal(true)}
+              >
+                {t('stake')} {'>'}
+              </h4>
+            )}
+          </Box>
+          {loading ? (
+            <Skeleton variant='rect' width={100} height={45} />
+          ) : (
             <Box>
-              <Box display='flex'>
-                <h6>$</h6>
+              {/* <Box display='flex'>
+                <sup>$</sup>
                 <h3>{rewards}</h3>
-              </Box>
-              <Box className='text-success text-center'>
-                <small>{dQUICKAPY}%</small>
+              </Box> */}
+              <Box className='text-success'>
+                <Typography style={{ fontSize: '20px', color: '#1fb85f' }}>
+                  {dQUICKAPY}%
+                </Typography>
               </Box>
             </Box>
-          ) : (
-            <Skeleton variant='rect' width={100} height={45} />
           )}
-          <p>{t('dragonslair')}</p>
-          <h4 onClick={() => setOpenStakeModal(true)}>
-            {t('stake')} {'>'}
-          </h4>
         </Box>
       )}
     </>

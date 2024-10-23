@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, useMediaQuery } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { SyrupInfo } from 'types';
+import { SyrupInfo } from 'types/index';
 import { unwrappedToken } from 'utils/wrappedCurrency';
 import { CurrencyLogo } from 'components';
 import { formatCompact, formatTokenAmount, getEarnedUSDSyrup } from 'utils';

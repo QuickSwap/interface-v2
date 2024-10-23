@@ -1,17 +1,24 @@
 {
   "v3": true,
   "v2": true,
-  "rpc": "https://rpc-sg.dogechain.dog",
+  "rpc": "https://rpc.dogechain.dog",
   "blockExplorer": "https://explorer.dogechain.dog",
+  "bridgeUrl": "https://dive.dogechain.dog/bridge",
   "aprAPINetwork": "DogeChain",
   "networkName": "DogeChain",
   "isMainnet": true,
+  "visible": true,
   "chainId": 2000,
   "nativeCurrencyImage": "/doge.png",
   "nativeCurrency": {
     "name": "Wrapped Doge",
     "symbol": "WDOGE",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/dogchain_cover_img.webp",
+    "supportedChains": ["/bridge/dog_coin.webp"],
+    "isBigCoverImg": true
   },
   "swap": {
     "available": true,
@@ -25,6 +32,8 @@
     "available": true
   },
   "farm": {
+    "quickswap": true,
+    "merkl": false,
     "available": true
   },
   "lair": {
@@ -40,6 +49,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": true
   },
   "lending": {
@@ -58,7 +68,13 @@
     "available": false
   },
   "perps": {
-    "available": true
+    "available": false
+  },
+  "hydra": {
+    "available": false
+  },
+  "perpsV2": {
+    "available": false
   },
   "bos": {
     "available": false
@@ -68,5 +84,23 @@
   },
   "unipilot": {
     "available": true
+  },
+  "defiedge": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "lpLock": {
+    "available": false
   }
 }

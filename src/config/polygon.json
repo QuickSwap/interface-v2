@@ -3,14 +3,25 @@
   "v2": true,
   "rpc": "https://polygon-rpc.com/",
   "blockExplorer": "https://polygonscan.com",
+  "bridgeUrl": "https://portal.polygon.technology/bridge",
   "chainId": 137,
   "isMainnet": true,
+  "visible": true,
   "networkName": "Polygon",
   "nativeCurrencyImage": "/polygon-pos.svg",
   "nativeCurrency": {
     "name": "Matic Token",
     "symbol": "MATIC",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/polygon_cover_img.webp",
+    "supportedChains": [
+      "/bridge/eth.svg",
+      "/bridge/polygon.svg",
+      "/bridge/zkevm.webp"
+    ],
+    "isBigCoverImg": true
   },
   "swap": {
     "available": true,
@@ -25,6 +36,8 @@
     "available": true
   },
   "farm": {
+    "quickswap": true,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -40,6 +53,7 @@
     "available": true
   },
   "analytics": {
+    "liquidityHub": true,
     "available": true
   },
   "lending": {
@@ -58,6 +72,12 @@
     "available": false
   },
   "perps": {
+    "available": false
+  },
+  "hydra": {
+    "available": false
+  },
+  "perpsV2": {
     "available": true
   },
   "bos": {
@@ -68,5 +88,26 @@
   },
   "unipilot": {
     "available": false
-  }
+  },
+  "defiedge": {
+    "available": true
+  },
+  "bonds": {
+    "available": true
+  },
+  "steer": {
+    "available": true
+  },
+  "dappos": {
+    "available": true
+  },
+  "ichi": {
+    "available": true
+  },
+  "lpLock": {
+    "available": true
+  },
+  "maxHops": 3,
+  "maxChunks": 400,
+  "blocksPerFetch": 30
 }

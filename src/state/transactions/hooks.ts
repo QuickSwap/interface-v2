@@ -11,15 +11,21 @@ import { AppDispatch, AppState } from 'state';
 import { addTransaction, finalizeTransaction } from './actions';
 import { TransactionDetails } from './reducer';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
+import { Currency } from '@uniswap/sdk';
+
+interface TransactionData {
+  summary?: string;
+  approval?: { tokenAddress: string; spender: string };
+  claim?: { recipient: string };
+  type?: string;
+  tokens?: any[];
+}
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
-  response: TransactionResponse,
-  customData?: {
-    summary?: string;
-    approval?: { tokenAddress: string; spender: string };
-    claim?: { recipient: string };
-  },
+  response?: TransactionResponse,
+  customData?: TransactionData,
+  txHash?: string,
 ) => void {
   const { chainId, account } = useActiveWeb3React();
   const dispatch = useDispatch<AppDispatch>();
@@ -27,27 +33,36 @@ export function useTransactionAdder(): (
 
   return useCallback(
     async (
-      response: TransactionResponse,
+      response?: TransactionResponse,
       {
         summary,
         approval,
         claim,
+        type,
+        tokens,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        type?: string;
+        tokens?: any[];
       } = {},
+      txHash?: string,
     ) => {
       if (!account || !chainId) return;
+      const hash = response ? response.hash : txHash;
 
-      const { hash } = response;
       if (!hash) {
         throw Error('No transaction hash found.');
       }
       if (arcxSDK) {
         await arcxSDK.transaction({
           chainId,
+          account,
           transactionHash: hash,
+          metadata: {
+            action: summary,
+          },
         });
       }
       dispatch(
@@ -58,6 +73,8 @@ export function useTransactionAdder(): (
           approval,
           summary,
           claim,
+          type,
+          tokens,
         }),
       );
     },
@@ -71,6 +88,7 @@ export function useTransactionFinalizer(): (
     summary?: string;
     approval?: { tokenAddress: string; spender: string };
     claim?: { recipient: string };
+    type?: string;
   },
 ) => void {
   const { chainId, account } = useActiveWeb3React();
@@ -82,10 +100,12 @@ export function useTransactionFinalizer(): (
       receipt: TransactionReceipt,
       {
         summary,
+        type,
       }: {
         summary?: string;
         claim?: { recipient: string };
         approval?: { tokenAddress: string; spender: string };
+        type?: string;
       } = {},
     ) => {
       if (!account) return;
@@ -210,3 +230,24 @@ export function useLastTransactionHash() {
     .filter((tx) => tx.receipt);
   return sortedTransactions.length > 0 ? sortedTransactions[0].hash : '';
 }
+
+export const useSignTransaction = () => {
+  const { provider } = useActiveWeb3React();
+
+  const addTransaction = useTransactionAdder();
+
+  const signTransaction = async ({
+    dataToSign,
+    txInfo,
+  }: {
+    dataToSign: any;
+    txInfo: TransactionData;
+  }): Promise<string | undefined> => {
+    const tx = await provider?.getSigner().sendTransaction(dataToSign);
+    if (tx) {
+      addTransaction(tx, txInfo);
+    }
+    return tx?.hash;
+  };
+  return { signTransaction };
+};

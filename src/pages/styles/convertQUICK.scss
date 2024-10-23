@@ -1,11 +1,19 @@
 @use 'styles/variables' as *;
 
-.convertQUICKWrapper {
+.convert-page {
   background: $bgColor;
+  border: 1px solid $secondary1;
+}
+
+.widget-header {
+  margin: 24px;
+  font-size: 18px;
+ }
+
+.convertQUICKWrapper {
   margin-top: 24px;
   padding: 24px;
   border-radius: 20px;
-  border: 1px solid $secondary1;
 }
 
 .iconWrapper {

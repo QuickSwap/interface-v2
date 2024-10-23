@@ -1,7 +1,6 @@
 @use 'styles/variables' as *;
 
 .switchItem {
-  width: 50%;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -12,6 +11,7 @@
     color: $textSecondary;
   }
 }
+
 .activeSwitchItem {
   background: $secondary1;
   & p {

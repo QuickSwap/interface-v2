@@ -2,7 +2,7 @@ import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { HypeLabAds, SettingsModal } from 'components';
 import { useActiveWeb3React, useIsProMode } from 'hooks';
 import 'pages/styles/swap.scss';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useIsV2 } from 'state/application/hooks';
 import { Field } from 'state/swap/actions';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
@@ -13,6 +13,7 @@ import SwapPageHeader from './SwapPageHeader';
 import SwapProMain from './SwapProMain';
 import { useQuery } from '@tanstack/react-query';
 import { LiquidityHubAd } from './LiquidityHubAd';
+import { getConfig } from 'config/index';
 
 const SwapPage: React.FC = () => {
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -26,9 +27,22 @@ const SwapPage: React.FC = () => {
   const token2 = wrappedCurrency(currencies[Field.OUTPUT], chainId);
 
   const { breakpoints } = useTheme();
-  const tabletWindowSize = useMediaQuery(breakpoints.down('sm'));
+  const isTablet = useMediaQuery(breakpoints.down('sm'));
   const token1V3 = wrappedCurrencyV3(currenciesV3[Field.INPUT], chainId);
   const token2V3 = wrappedCurrencyV3(currenciesV3[Field.OUTPUT], chainId);
+
+  const config = getConfig(chainId);
+  const showSwap = config['swap']['available'];
+
+  if (!showSwap) {
+    location.href = '/';
+  }
+
+  useEffect(() => {
+    if (!showSwap) {
+      location.href = '/';
+    }
+  }, [showSwap]);
 
   const getPairId = async () => {
     if (token1 && token2) {
@@ -70,10 +84,7 @@ const SwapPage: React.FC = () => {
         />
       )}
 
-      <SwapPageHeader proMode={isProMode} />
-      <Box margin='24px auto'>
-        <HypeLabAds />
-      </Box>
+      <SwapPageHeader proMode={isProMode} isTablet={isTablet} />
 
       {isProMode ? (
         <SwapProMain
@@ -84,16 +95,21 @@ const SwapPage: React.FC = () => {
         />
       ) : (
         <>
+          <Box sx={{ maxWidth: '1536px', margin: '12px auto' }}>
+            <SwapDefaultMode
+              token1={isV2 ? token1 : token1V3}
+              token2={isV2 ? token2 : token2V3}
+            />
+          </Box>
           <Box mb={1} sx={{ display: { xs: 'block', md: 'none' } }}>
             <LiquidityHubAd />
           </Box>
-
-          <SwapDefaultMode
-            token1={isV2 ? token1 : token1V3}
-            token2={isV2 ? token2 : token2V3}
-          />
         </>
       )}
+
+      <Box margin='24px auto'>
+        <HypeLabAds />
+      </Box>
     </Box>
   );
 };

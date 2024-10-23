@@ -1,9 +1,10 @@
-import React, { ReactChild } from 'react';
+import React, { ReactElement } from 'react';
 import { Box, useMediaQuery, TableRow, TableCell } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { ArrowUpward, ArrowDownward } from '@material-ui/icons';
 import { DataTable } from 'components';
 import 'components/styles/CustomTable.scss';
+import CustomTableMobile from './CustomTableMobile';
 
 export interface CustomTableProps<T> {
   emptyMessage?: string;
@@ -13,7 +14,7 @@ export interface CustomTableProps<T> {
   data: any;
   defaultOrderBy?: T;
   defaultOrder?: 'asc' | 'desc';
-  mobileHTML: (item: any, index: number) => ReactChild;
+  mobileHTML: (item: any, index: number) => ReactElement;
   desktopHTML: (
     item: any,
     index: number,
@@ -39,11 +40,7 @@ const CustomTable: React.FC<CustomTableProps<any>> = ({
   return (
     <Box className='tableContainer'>
       {mobileWindowSize ? (
-        <>
-          {data.map((item: any, index: number) => (
-            <Box key={index}>{mobileHTML(item, index)}</Box>
-          ))}
-        </>
+        <CustomTableMobile data={data} mobileHTML={mobileHTML} />
       ) : (
         <DataTable
           defaultOrderBy={defaultOrderBy}

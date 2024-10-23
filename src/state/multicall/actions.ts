@@ -61,3 +61,7 @@ export const updateMulticallResults = createAction<{
     [callKey: string]: string | null;
   };
 }>('multicall/updateMulticallResults');
+export const addListenerOptions = createAction<{
+  chainId: number;
+  blocksPerFetch: number;
+}>('multicall/addListenerOptions');

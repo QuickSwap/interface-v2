@@ -20,7 +20,9 @@ export enum V3TradeState {
 }
 
 const QUOTE_GAS_OVERRIDES: { [chainId: number]: number } = {
-  [ChainId.ZKEVM]: 100_000_000,
+  [ChainId.ZKEVM]: 20_000_000,
+  [ChainId.ASTARZKEVM]: 100_000_000,
+  [ChainId.MANTA]: 20_000_000,
 };
 
 const DEFAULT_GAS_QUOTE = 2_000_000;
@@ -146,9 +148,7 @@ export function useBestV3TradeExactIn(
       };
     }
 
-    const isSyncing = quotesResults
-      .concat(uniQuotesResults)
-      .some(({ syncing }) => syncing);
+    const isSyncing = quotesResults.some(({ syncing }) => syncing);
 
     return {
       state: isSyncing ? V3TradeState.SYNCING : V3TradeState.VALID,
@@ -162,14 +162,7 @@ export function useBestV3TradeExactIn(
         ),
       }),
     };
-  }, [
-    amountIn,
-    currencyOut,
-    quotesResults,
-    routes,
-    routesLoading,
-    uniQuotesResults,
-  ]);
+  }, [amountIn, currencyOut, quotesResults, routes, routesLoading]);
 
   return useMemo(() => {
     return trade;

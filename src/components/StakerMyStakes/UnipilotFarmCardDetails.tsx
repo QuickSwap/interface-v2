@@ -12,7 +12,12 @@ import { CurrencyLogo, NumericalInput } from 'components';
 import { Token } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useSelectedTokenList } from 'state/lists/hooks';
-import { calculateGasMargin, formatNumber, getTokenFromAddress } from 'utils';
+import {
+  calculateGasMargin,
+  formatNumber,
+  getFixedValue,
+  getTokenFromAddress,
+} from 'utils';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   useTransactionAdder,
@@ -26,12 +31,11 @@ import {
   useUniPilotVaultContract,
   useUnipilotFarmingContract,
 } from 'hooks/useContract';
-import { useUnipilotFarmAPR } from 'hooks/v3/useUnipilotFarms';
+import { TransactionType } from 'models/enums';
 
 const UnipilotFarmCardDetails: React.FC<{
   data: any;
-  farmData: any;
-}> = ({ data, farmData }) => {
+}> = ({ data }) => {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
   const addTransaction = useTransactionAdder();
@@ -194,12 +198,12 @@ const UnipilotFarmCardDetails: React.FC<{
     const estimatedGas = await farmingContract.estimateGas.stake(
       stakeAmount === lpBalance
         ? lpBalanceBN
-        : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        : parseUnits(getFixedValue(stakeAmount), 18),
     );
     const response = await farmingContract.stake(
       stakeAmount === lpBalance
         ? lpBalanceBN
-        : parseUnits(Number(stakeAmount).toFixed(18), 18),
+        : parseUnits(getFixedValue(stakeAmount), 18),
       {
         gasLimit: calculateGasMargin(estimatedGas),
       },
@@ -207,6 +211,7 @@ const UnipilotFarmCardDetails: React.FC<{
 
     addTransaction(response, {
       summary: t('depositliquidity'),
+      type: TransactionType.SEND,
     });
     const receipt = await response.wait();
     finalizedTransaction(receipt, {
@@ -226,10 +231,10 @@ const UnipilotFarmCardDetails: React.FC<{
         });
       } else {
         const estimatedGas = await farmingContract.estimateGas.withdraw(
-          parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          parseUnits(getFixedValue(unStakeAmount), 18),
         );
         response = await farmingContract.withdraw(
-          parseUnits(Number(unStakeAmount).toFixed(18), 18),
+          parseUnits(getFixedValue(unStakeAmount), 18),
           {
             gasLimit: calculateGasMargin(estimatedGas),
           },
@@ -237,6 +242,7 @@ const UnipilotFarmCardDetails: React.FC<{
       }
       addTransaction(response, {
         summary: t('withdrawliquidity'),
+        type: TransactionType.WITHDRAW_LIQUIDITY,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -260,6 +266,7 @@ const UnipilotFarmCardDetails: React.FC<{
 
       addTransaction(response, {
         summary: t('claimrewards'),
+        type: TransactionType.CLAIMED_REWARDS,
       });
       const receipt = await response.wait();
       finalizedTransaction(receipt, {
@@ -292,9 +299,6 @@ const UnipilotFarmCardDetails: React.FC<{
     }
     return Number(reward) === 0 || attemptClaiming;
   }, [attemptClaiming, data.isDualReward, reward, rewardA, rewardB]);
-
-  const vaultAPR = farmData ? Number(farmData['stats'] ?? 0) : 0;
-  const farmAPR = useUnipilotFarmAPR(data);
 
   const rewardRateA =
     data.rewardRate && data.rewardRate.rateA && data.rewardRate.tokenA
@@ -346,13 +350,13 @@ const UnipilotFarmCardDetails: React.FC<{
           <Box className='flex justify-between' mb={2}>
             <small className='text-secondary'>{t('vaultAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(vaultAPR)}%
+              {formatNumber(data.poolAPR)}%
             </small>
           </Box>
           <Box className='flex justify-between'>
             <small className='text-secondary'>{t('farmAPR')}</small>
             <small className='text-success weight-600'>
-              {formatNumber(farmAPR)}%
+              {formatNumber(data.farmAPR)}%
             </small>
           </Box>
         </Box>

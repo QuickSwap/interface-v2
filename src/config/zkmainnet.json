@@ -3,28 +3,41 @@
   "v2": false,
   "rpc": "https://zkevm-rpc.com",
   "blockExplorer": "https://zkevm.polygonscan.com",
+  "bridgeUrl": "https://portal.polygon.technology/bridge",
   "networkName": "Polygon zkEVM",
   "aprAPINetwork": "zkevm",
   "chainId": 1101,
   "isMainnet": true,
-  "nativeCurrencyImage": "/zkevm.svg",
+  "visible": true,
+  "nativeCurrencyImage": "/zkevm.png",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/polygon_cover_img.webp",
+    "supportedChains": [
+      "/bridge/eth.svg",
+      "/bridge/polygon.svg",
+      "/bridge/zkevm.webp"
+    ],
+    "isBigCoverImg": true
   },
   "swap": {
     "available": true,
     "bestTrade": true,
     "proMode": false,
     "limitOrder": false,
-    "liquidityHub": false,
+    "liquidityHub": true,
     "crossChain": false
   },
   "pools": {
     "available": true
   },
   "farm": {
+    "quickswap": true,
+    "merkl": true,
     "available": true
   },
   "lair": {
@@ -40,6 +53,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": true
   },
   "lending": {
@@ -60,6 +74,12 @@
   "perps": {
     "available": true
   },
+  "hydra": {
+    "available": true
+  },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": true
   },
@@ -68,5 +88,25 @@
   },
   "unipilot": {
     "available": false
-  }
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": true
+  },
+  "defiedge": {
+    "available": false
+  },
+  "lpLock": {
+    "available": false
+  },
+  "maxChunks": 70,
+  "blocksPerFetch": 25
 }

@@ -18,16 +18,12 @@ import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
 import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
-import { useUserSlippageTolerance } from 'state/user/hooks';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
 import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { BigNumber } from 'ethers';
-import {
-  liquidityHubAnalytics,
-  useLiquidityHubCallback,
-} from 'components/Swap/LiquidityHub';
+import { TransactionType } from 'models/enums';
 
 export enum SwapCallbackState {
   INVALID,
@@ -55,6 +51,7 @@ const convertToEthersTransaction = (
 // returns a function that will execute a swap, if the parameters are all valid
 // and the user has approved the slippage adjusted input amount for the trade
 export function useParaswapCallback(
+  allowedSlippage: number,
   priceRoute: OptimalRate | null | undefined,
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
   inputCurrency?: Currency,
@@ -68,14 +65,10 @@ export function useParaswapCallback(
 } {
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
-  const [allowedSlippage] = useUserSlippageTolerance();
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
 
   const addTransaction = useTransactionAdder();
-  const liquidutyHubCallback = useLiquidityHubCallback(
-    priceRoute?.srcToken,
-    priceRoute?.destToken,
-  );
+
   const { address: recipientAddress } = useENS(recipientAddressOrName);
   const recipient =
     recipientAddressOrName === null ? account : recipientAddress;
@@ -144,23 +137,6 @@ export function useParaswapCallback(
           recipientAddressOrName,
         });
 
-        const liquidityHubResult = await liquidutyHubCallback(
-          maxSrcAmount,
-          minDestAmount,
-          outputCurrency?.decimals,
-        );
-
-        if (liquidityHubResult) {
-          addTransaction(liquidityHubResult, {
-            summary,
-          });
-
-          return {
-            response: liquidityHubResult,
-            summary,
-          };
-        }
-
         let txParams;
 
         try {
@@ -177,7 +153,7 @@ export function useParaswapCallback(
         } catch (e) {
           console.log(e);
           throw new Error(
-            'For rebase or taxed tokens, try market V2 instead of best trade.',
+            'For rebase or taxed tokens, try market V2 instead of best trade. Ensure that you are using the correct slippage.',
           );
         }
 
@@ -220,9 +196,9 @@ export function useParaswapCallback(
 
         try {
           const response = await signer.sendTransaction(ethersTxParams);
-          liquidityHubAnalytics.onDexSwapSuccess(response.hash);
           addTransaction(response, {
             summary,
+            type: TransactionType.SWAPPED,
           });
 
           return { response, summary };
@@ -251,7 +227,6 @@ export function useParaswapCallback(
     inputCurrency,
     outputCurrency,
     allowedSlippage,
-    liquidutyHubCallback,
   ]);
 }
 

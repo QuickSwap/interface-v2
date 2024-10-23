@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import { Box, Button } from '@material-ui/core';
-import { useUniV3Positions, useV3Positions } from 'hooks/v3/useV3Positions';
+import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
-import usePrevious, { usePreviousNonEmptyArray } from 'hooks/usePrevious';
 import PositionList from './components/PositionList';
 import { PositionPool } from 'models/interfaces';
-import { useWalletModalToggle } from 'state/application/hooks';
 import { useTranslation } from 'react-i18next';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 const MyQuickswapPoolsV3: React.FC<{
   hideFarmingPositions: boolean;
@@ -15,18 +14,11 @@ const MyQuickswapPoolsV3: React.FC<{
 }> = ({ hideFarmingPositions, userHideClosedPositions }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
-  const {
-    positions: algebraPositions,
-    loading: algebraPositionsLoading,
-  } = useV3Positions(account);
-  const {
-    positions: uniV3Positions,
-    loading: uniV3PositionsLoading,
-  } = useUniV3Positions(account);
-  const positionsLoading = algebraPositionsLoading || uniV3PositionsLoading;
-  const positions = (algebraPositions ?? []).concat(uniV3Positions ?? []);
-
-  const prevAccount = usePrevious(account);
+  const { positions, loading: positionsLoading } = useV3Positions(
+    account,
+    userHideClosedPositions,
+    hideFarmingPositions,
+  );
 
   const [openPositions, closedPositions] = positions?.reduce<
     [PositionPool[], PositionPool[]]
@@ -62,23 +54,13 @@ const MyQuickswapPoolsV3: React.FC<{
     ],
   );
 
-  const prevFilteredPositions = usePreviousNonEmptyArray(filteredPositions);
-  const _filteredPositions = useMemo(() => {
-    if (account !== prevAccount) return filteredPositions;
-
-    if (filteredPositions.length === 0 && prevFilteredPositions) {
-      return prevFilteredPositions;
-    }
-    return filteredPositions;
-  }, [prevFilteredPositions, filteredPositions, account, prevAccount]);
-
   const newestPosition = useMemo(() => {
-    return Math.max(..._filteredPositions.map((position) => +position.tokenId));
-  }, [_filteredPositions]);
+    return Math.max(...filteredPositions.map((position) => +position.tokenId));
+  }, [filteredPositions]);
 
   const showConnectAWallet = Boolean(!account);
 
-  const toggleWalletModal = useWalletModalToggle();
+  const { open } = useWeb3Modal();
 
   return (
     <Box>
@@ -87,9 +69,9 @@ const MyQuickswapPoolsV3: React.FC<{
           <Box className='flex justify-center'>
             <Loader stroke='white' size={'2rem'} />
           </Box>
-        ) : _filteredPositions && _filteredPositions.length > 0 ? (
+        ) : filteredPositions && filteredPositions.length > 0 ? (
           <PositionList
-            positions={_filteredPositions.sort((posA, posB) =>
+            positions={filteredPositions.sort((posA, posB) =>
               Number(+posA.tokenId < +posB.tokenId),
             )}
             newestPosition={newestPosition}
@@ -99,7 +81,7 @@ const MyQuickswapPoolsV3: React.FC<{
             <p>{t('noLiquidityPositions')}.</p>
             {showConnectAWallet && (
               <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={toggleWalletModal}>
+                <Button fullWidth onClick={() => open()}>
                   {t('connectWallet')}
                 </Button>
               </Box>

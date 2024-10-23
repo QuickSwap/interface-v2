@@ -75,3 +75,54 @@ export function warningSeverity(
   }
   return 0;
 }
+
+export function computeZapPriceBreakdown(
+  trade?: V3Trade<Currency, Currency, TradeType> | null,
+): {
+  priceImpactWithoutFee: Percent | undefined;
+  realizedLPFee: CurrencyAmount<Currency> | undefined | null;
+} {
+  const baseFee = new Percent(JSBI.BigInt(20), JSBI.BigInt(10000));
+  const inputFractionAfterFee = ONE_HUNDRED_PERCENT.subtract(baseFee);
+
+  // for each hop in our trade, take away the x*y=k price impact from 0.3% fees
+  // e.g. for 3 tokens/2 hops: 1 - ((1 - .03) * (1-.03))
+  const realizedLPFee = !trade
+    ? undefined
+    : ONE_HUNDRED_PERCENT.subtract(
+        // @ts-ignore
+        trade.routes?.[0]?.pairs.reduce<Fraction>(
+          (currentFee: Fraction): Fraction =>
+            currentFee.multiply(inputFractionAfterFee),
+          ONE_HUNDRED_PERCENT,
+        ),
+      );
+
+  // remove lp fees from price impact
+  const priceImpactWithoutFeeFraction =
+    trade && realizedLPFee
+      ? trade.priceImpact.subtract(realizedLPFee)
+      : undefined;
+
+  // the x*y=k impact
+  const priceImpactWithoutFeePercent = priceImpactWithoutFeeFraction
+    ? new Percent(
+        priceImpactWithoutFeeFraction?.numerator,
+        priceImpactWithoutFeeFraction?.denominator,
+      )
+    : undefined;
+
+  // the amount of the input that accrues to LPs
+  const realizedLPFeeAmount =
+    realizedLPFee &&
+    trade &&
+    CurrencyAmount.fromRawAmount(
+      trade.inputAmount.currency,
+      trade.inputAmount.multiply(realizedLPFee).quotient,
+    );
+
+  return {
+    priceImpactWithoutFee: priceImpactWithoutFeePercent,
+    realizedLPFee: realizedLPFeeAmount,
+  };
+}

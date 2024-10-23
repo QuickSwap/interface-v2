@@ -17,15 +17,17 @@ export default function useUSDCPrice(
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
 
   const USDC_TOKEN = USDC[chainIdToUse];
-  const USDC_V3_TOKEN = toV3Token(USDC_TOKEN);
-  const STABLECOIN_AMOUNT_OUT_ALL: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(
-    USDC_V3_TOKEN,
-    1,
-  );
-  const STABLECOIN_AMOUNT_OUT_FILTERED: CurrencyAmount<Token> = CurrencyAmount.fromRawAmount(
-    USDC_V3_TOKEN,
-    100_000e1,
-  );
+  const USDC_V3_TOKEN = USDC_TOKEN ? toV3Token(USDC_TOKEN) : undefined;
+  const STABLECOIN_AMOUNT_OUT_ALL:
+    | CurrencyAmount<Token>
+    | undefined = USDC_V3_TOKEN
+    ? CurrencyAmount.fromRawAmount(USDC_V3_TOKEN, 1)
+    : undefined;
+  const STABLECOIN_AMOUNT_OUT_FILTERED:
+    | CurrencyAmount<Token>
+    | undefined = USDC_V3_TOKEN
+    ? CurrencyAmount.fromRawAmount(USDC_V3_TOKEN, 100_000e1)
+    : undefined;
 
   const amountOut = chainId
     ? allLiquidity

@@ -4,7 +4,7 @@ import { ChainId, TokenAmount } from '@uniswap/sdk';
 import { TransactionResponse } from '@ethersproject/providers';
 import { CustomModal, ColoredSlider, NumericalInput } from 'components';
 import { useDerivedSyrupInfo } from 'state/stake/hooks';
-import { SyrupInfo } from 'types';
+import { SyrupInfo } from 'types/index';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import { useTokenBalance } from 'state/wallet/hooks';
 import { useActiveWeb3React } from 'hooks';
@@ -27,6 +27,7 @@ import {
   calculateGasMargin,
 } from 'utils';
 import { useTranslation } from 'react-i18next';
+import { TransactionType } from 'models/enums';
 
 interface StakeSyrupModalProps {
   open: boolean;
@@ -114,6 +115,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           );
           addTransaction(response, {
             summary: `${t('deposit')} ${syrup.stakingToken.symbol}`,
+            type: TransactionType.SEND,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {
@@ -147,6 +149,7 @@ const StakeSyrupModal: React.FC<StakeSyrupModalProps> = ({
           );
           addTransaction(response, {
             summary: t('depositliquidity'),
+            type: TransactionType.SEND,
           });
           const receipt = await response.wait();
           finalizedTransaction(receipt, {

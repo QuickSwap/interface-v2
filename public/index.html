@@ -10,8 +10,10 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="QuickSwap is a next-gen #DEX for #DeFi. Trade at lightning-fast speeds with near-zero gas fees."
+      content="QuickSwap is a next-gen DEX and DeFi ecosystem. Trade at lightning-fast speeds with near-zero gas fees. Access perps with up to 50x leverage."
     />
+    <meta property="og:title" content="QuickSwap" />
+    <meta property="og:site_name" content="https://quickswap.exchange" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo_circle.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -29,12 +31,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Quickswap - Leading DEX on Polygon</title>
-    <script
-      type="text/javascript"
-      src="https://app.web3ads.net/main.js"
-      async
-    ></script>
+    <title>QuickSwap - Leading DEX on Polygon</title>
     <!-- Google tag (gtag.js) -->
     <script
       async
@@ -49,7 +46,29 @@
 
       gtag('config', 'G-L7F0MLF9R2');
     </script>
+    <script src="https://api.hypelab.com/v1/scripts/hp-sdk.js?v=0"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        HypeLab.initialize({
+          URL: 'https://api.hypelab.com',
+          propertySlug: '81c00452a9',
+          environment: 'production',
+        });
+      });
+    </script>
+    <script>
+      var script = document.createElement('script');
+      script.defer = true;
+      script.crossOrigin = 'anonymous';
+      script.src =
+        'https://cdn.markfi.xyz/scripts/analytics/0.11.18/cookie3.analytics.min.js';
+      script.setAttribute('site-id', '9a9e2391-5736-4697-b63f-600bc63de8ad');
+      script.integrity =
+        'sha384-5ACBVBmg9LPRTQ7zWLnt2g6dUyFA8qNGkveZ0dAUcasaImV008rHYh1AdBarFCcK';
+      document.getElementsByTagName('head')[0].appendChild(script);
+    </script>
   </head>
+
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>

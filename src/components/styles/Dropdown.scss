@@ -1,0 +1,27 @@
+@use 'styles/variables' as *;
+@use 'styles/breakpoints' as *;
+
+.dropdownWrapper {
+  background-color: $grey12;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.dropdownItemsWrapper {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 10px;
+  width: fit-content;
+  top: calc(100% + 10px);
+  right: 0;
+  background: $grey12;
+  padding: 8px;
+  z-index: 12;
+}
+
+.dropdownItem {
+  width: 100%;
+  cursor: pointer;
+}

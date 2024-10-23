@@ -1,4 +1,4 @@
-import { SyrupListInfo } from 'types';
+import { SyrupListInfo } from 'types/index';
 import contenthashToUri from './contenthashToUri';
 import { parseENSAddress } from './parseENSAddress';
 import uriToHttp from './uriToHttp';

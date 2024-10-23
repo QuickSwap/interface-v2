@@ -3,15 +3,21 @@
   "v2": false,
   "rpc": "https://pacific-rpc.manta.network/http",
   "blockExplorer": "https://pacific-explorer.manta.network",
+  "bridgeUrl": "https://pacific-bridge.manta.network/",
   "networkName": "Manta Pacific L2 Rollup",
   "aprAPINetwork": "manta",
   "chainId": 169,
   "isMainnet": true,
+  "visible": true,
   "nativeCurrencyImage": "/manta.svg",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "bridgeCoverImg": "/bridge/manta_cover_img.svg",
+    "supportedChains": ["/bridge/eth.svg", "/bridge/mata.webp"]
   },
   "swap": {
     "available": true,
@@ -25,7 +31,9 @@
     "available": true
   },
   "farm": {
-    "available": false
+    "quickswap": false,
+    "merkl": true,
+    "available": true
   },
   "lair": {
     "available": false,
@@ -40,6 +48,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": true
   },
   "lending": {
@@ -60,13 +69,39 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": true
+  },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": false
   },
   "gamma": {
-    "available": false
+    "available": true
   },
   "unipilot": {
     "available": false
-  }
+  },
+  "defiedge": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": true
+  },
+  "dappos": {
+    "available": true
+  },
+  "ichi": {
+    "available": false
+  },
+  "lpLock": {
+    "available": false
+  },
+  "maxChunks": 70,
+  "blocksPerFetch": 25
 }

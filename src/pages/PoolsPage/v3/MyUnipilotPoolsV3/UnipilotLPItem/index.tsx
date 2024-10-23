@@ -6,33 +6,18 @@ import { unipilotVaultTypes } from 'constants/index';
 import './index.scss';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import UnipilotLPItemDetails from '../UnipilotLPItemDetails';
-import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
 import { useHistory } from 'react-router-dom';
-import { useSelectedTokenList } from 'state/lists/hooks';
-import { getTokenFromAddress } from 'utils';
+import { UnipilotPosition } from 'hooks/v3/useV3Positions';
 
-const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
+const UnipilotLPItem: React.FC<{ position: UnipilotPosition }> = ({
+  position,
+}) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
   const [expanded, setExpanded] = useState(false);
   const history = useHistory();
   const farmingLink = `/farm/v3?tab=my-farms`;
-
-  const tokenMap = useSelectedTokenList();
-  const token0 = getTokenFromAddress(
-    position.vault.quickswapPool.token0.id,
-    chainId,
-    tokenMap,
-    [],
-  );
-  const token1 = getTokenFromAddress(
-    position.vault.quickswapPool.token1.id,
-    chainId,
-    tokenMap,
-    [],
-  );
-  const positionDetail = { ...position, token0, token1 };
+  const { token0, token1 } = position;
 
   return (
     <Box className='unipilot-liquidity-item'>
@@ -53,9 +38,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
             </>
           )}
           <Box ml={1.5} className='unipilot-liquidity-range'>
-            <small>
-              {unipilotVaultTypes[Number(position.vault.strategyId) - 1]}
-            </small>
+            <small>{unipilotVaultTypes[position.strategyId - 1]}</small>
           </Box>
           {position && position.farming && (
             <Box
@@ -87,7 +70,7 @@ const UnipilotLPItem: React.FC<{ position: any }> = ({ position }) => {
       </Box>
       {expanded && position && (
         <Box mt={2}>
-          <UnipilotLPItemDetails position={positionDetail} />
+          <UnipilotLPItemDetails position={position} />
         </Box>
       )}
     </Box>

@@ -1,12 +1,13 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": "https://rpc.zkatana.gelato.digital",
+  "rpc": "https://rpc.startale.com/zkatana",
   "blockExplorer": "https://zkatana.blockscout.com",
   "networkName": "zKatana",
   "aprAPINetwork": "zkatana",
   "chainId": 1261120,
-  "isMainnet": true,
+  "isMainnet": false,
+  "visible": false,
   "nativeCurrencyImage": "/zkartana.png",
   "nativeCurrency": {
     "name": "Ether",
@@ -25,6 +26,8 @@
     "available": true
   },
   "farm": {
+    "quickswap": false,
+    "merkl": false,
     "available": false
   },
   "lair": {
@@ -40,6 +43,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": false
   },
   "lending": {
@@ -60,6 +64,12 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": false
+  },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": false
   },
@@ -67,6 +77,24 @@
     "available": false
   },
   "unipilot": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "lpLock": {
     "available": false
   }
 }

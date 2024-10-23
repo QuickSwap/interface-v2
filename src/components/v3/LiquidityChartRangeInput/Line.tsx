@@ -27,7 +27,7 @@ export const Line = ({
           y={0}
           width={53}
           height={15}
-          fill={'#2797FF'}
+          fill={'#ff7847'}
           rx={4}
         />
         <text fill={'white'} fontSize={9} x={xScale(value) - 18} y={11}>

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Box, Button } from '@material-ui/core';
+import { AML_SCORE_THRESHOLD } from 'config';
 import {
   CurrencyInput,
   TransactionErrorContent,
@@ -7,10 +9,6 @@ import {
   ConfirmationModalContent,
   DoubleCurrencyLogo,
 } from 'components';
-import {
-  useNetworkSelectionModalToggle,
-  useWalletModalToggle,
-} from 'state/application/hooks';
 import { TransactionResponse } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import ReactGA from 'react-ga';
@@ -22,7 +20,7 @@ import {
   TokenAmount,
   ChainId,
 } from '@uniswap/sdk';
-import { useActiveWeb3React } from 'hooks';
+import { useActiveWeb3React, useConnectWallet } from 'hooks';
 import { useRouterContract } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback';
@@ -38,25 +36,34 @@ import {
   useMintState,
 } from 'state/mint/hooks';
 import { useTokenBalance } from 'state/wallet/hooks';
-import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useIsExpertMode,
+  useUserSlippageTolerance,
+  useAmlScore,
+} from 'state/user/hooks';
 import {
   maxAmountSpend,
   calculateSlippageAmount,
   calculateGasMargin,
   useIsSupportedNetwork,
   formatTokenAmount,
+  halfAmountSpend,
 } from 'utils';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ReactComponent as AddLiquidityIcon } from 'assets/images/AddLiquidityIcon.svg';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useCurrency } from 'hooks/Tokens';
+import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useParams } from 'react-router-dom';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { TransactionType } from 'models/enums';
 
 const AddLiquidity: React.FC<{
   currencyBgClass?: string;
 }> = ({ currencyBgClass }) => {
+  const history = useHistory();
   const { t } = useTranslation();
   const [addLiquidityErrorMessage, setAddLiquidityErrorMessage] = useState<
     string | null
@@ -66,11 +73,17 @@ const AddLiquidity: React.FC<{
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const nativeCurrency = Token.ETHER[chainIdToUse];
+  const { autoSlippage } = useDerivedSwapInfo();
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txPending, setTxPending] = useState(false);
-  const [allowedSlippage] = useUserSlippageTolerance();
+  let [allowedSlippage] = useUserSlippageTolerance();
+  allowedSlippage =
+    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+
+  const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
+
   const deadline = useTransactionDeadline();
   const [txHash, setTxHash] = useState('');
   const addTransaction = useTransactionAdder();
@@ -141,6 +154,16 @@ const AddLiquidity: React.FC<{
     };
   }, {});
 
+  const halfAmounts: { [field in Field]?: TokenAmount } = [
+    Field.CURRENCY_A,
+    Field.CURRENCY_B,
+  ].reduce((accumulator, field) => {
+    return {
+      ...accumulator,
+      [field]: halfAmountSpend(chainIdToUse, currencyBalances[field]),
+    };
+  }, {});
+
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: noLiquidity
@@ -148,9 +171,6 @@ const AddLiquidity: React.FC<{
       : parsedAmounts[dependentField]?.toExact() ?? '',
   };
 
-  const { ethereum } = window as any;
-  const toggleWalletModal = useWalletModalToggle();
-  const toggleNetworkSelectionModal = useNetworkSelectionModalToggle();
   const [approvingA, setApprovingA] = useState(false);
   const [approvingB, setApprovingB] = useState(false);
   const [approvalA, approveACallback] = useApproveCallback(
@@ -228,6 +248,11 @@ const AddLiquidity: React.FC<{
   }, [currency1Id]);
 
   const onAdd = () => {
+    if (amlScore > AML_SCORE_THRESHOLD) {
+      history.push('/forbidden');
+      return;
+    }
+
     setAddLiquidityErrorMessage(null);
     setTxHash('');
     if (expertMode) {
@@ -327,6 +352,13 @@ const AddLiquidity: React.FC<{
 
           addTransaction(response, {
             summary,
+            type: TransactionType.ADDED_LIQUIDITY,
+            tokens: [
+              wrappedCurrency(currencies[Field.CURRENCY_A], chainId)?.address ??
+                '',
+              wrappedCurrency(currencies[Field.CURRENCY_B], chainId)?.address ??
+                '',
+            ],
           });
 
           setTxHash(response.hash);
@@ -364,13 +396,7 @@ const AddLiquidity: React.FC<{
       });
   };
 
-  const connectWallet = () => {
-    if (!isSupportedNetwork) {
-      toggleNetworkSelectionModal();
-    } else {
-      toggleWalletModal();
-    }
-  };
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false);
@@ -463,11 +489,9 @@ const AddLiquidity: React.FC<{
           onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
         }
         onHalf={() => {
-          const maxAmount = maxAmounts[Field.CURRENCY_A];
-          if (maxAmount) {
-            onFieldAInput(
-              maxAmount.divide('2').toFixed(maxAmount.currency.decimals),
-            );
+          const halfAmount = halfAmounts[Field.CURRENCY_A];
+          if (halfAmount) {
+            onFieldAInput(halfAmount.toExact());
           }
         }}
         handleCurrencySelect={handleCurrencyASelect}

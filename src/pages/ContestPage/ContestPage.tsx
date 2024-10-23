@@ -20,7 +20,7 @@ import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { formatNumber } from 'utils';
 import { getFormattedLeaderBoardData } from 'lib/src/leaderboard';
 import { useActiveWeb3React } from 'hooks';
-import { getConfig } from 'config';
+import { getConfig } from 'config/index';
 import { useHistory } from 'react-router-dom';
 import { ChainId } from '@uniswap/sdk';
 dayjs.extend(utc);
@@ -53,6 +53,10 @@ const ContestPage: React.FC = () => {
   const config = getConfig(chainId);
   const showLeaderBoard = config['leaderboard']['available'];
   const history = useHistory();
+
+  if (!showLeaderBoard) {
+    location.href = '/';
+  }
 
   useEffect(() => {
     if (!showLeaderBoard) {
