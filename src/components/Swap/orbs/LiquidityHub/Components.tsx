@@ -103,7 +103,7 @@ const SwapPrice = ({ quote }: { quote: Quote | null }) => {
     const price = inverted ? 1 / priceFor1Token : priceFor1Token;
 
     return price;
-  }, [inverted, parsedAmount?.toExact(), parsedOutAmount?.toExact()]);
+  }, [inverted, parsedAmount, parsedOutAmount]);
 
   const toggleInverted = useCallback(() => {
     setInverted((prev) => !prev);
