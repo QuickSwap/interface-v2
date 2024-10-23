@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@material-ui/core';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import {
+  Box,
+  Paper,
+  TableRow,
+  TableHead,
+  TableContainer,
+  TableCell,
+  TableBody,
+  Table,
+  styled,
+} from '@material-ui/core';
 
 function createData(
   name: string,
@@ -91,10 +94,7 @@ export const HistoricalTable: React.FC<{
             </TableHead>
             <TableBody>
               {data.map((row) => (
-                <TableRow
-                  key={row.date}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
+                <StyledTableRow key={row.date}>
                   <TableCell className='text-light'>{row.date}</TableCell>
                   <TableCell className='text-light' align='center'>
                     {row.price.toFixed(3)}
@@ -112,7 +112,7 @@ export const HistoricalTable: React.FC<{
                   >
                     {row.change.toFixed(2)}%
                   </TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>
@@ -121,3 +121,9 @@ export const HistoricalTable: React.FC<{
     </Box>
   );
 };
+
+const StyledTableRow = styled(TableRow)({
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+});
