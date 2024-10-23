@@ -7,6 +7,7 @@ import manta from './manta.json';
 import zkartana from './zkartana.json';
 import tIMX from './tIMX.json';
 import qlpmanager from './qlpmanager.json';
+import bttc from './bttc.json';
 import x1 from './x1.json';
 import IMX from './imx.json';
 import astarZkevm from './astarzkevm.json';
@@ -22,6 +23,7 @@ const configs: any = {
   [ChainId.ZKEVM]: zkmainnet,
   [ChainId.MANTA]: manta,
   [ChainId.ZKATANA]: zkartana,
+  [ChainId.BTTC]: bttc,
   [ChainId.TIMX]: tIMX,
   [ChainId.X1]: x1,
   [ChainId.IMX]: IMX,

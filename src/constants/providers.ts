@@ -15,7 +15,7 @@ export const rpcMap = {
   [ChainId.KAVA]: '',
   [ChainId.MANTA]: 'https://pacific-rpc.manta.network/http',
   [ChainId.ZKATANA]: 'https://rpc.zkatana.gelato.digital',
-  [ChainId.BTTC]: '',
+  [ChainId.BTTC]: 'https://rpc.bt.io',
   [ChainId.TIMX]: 'https://rpc.testnet.immutable.com',
   [ChainId.X1]: 'https://testrpc.x1.tech',
   [ChainId.IMX]: 'https://rpc.immutable.com',
