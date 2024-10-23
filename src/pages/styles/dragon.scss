@@ -268,10 +268,9 @@
   border-radius: 12px;
   border: unset;
   color: #f6f6f9;
-}
-
-.MuiButton-root {
-  width: 100%;
+  & .MuiButton-root {
+    width: 100%;
+  }
 }
 
 .dragonInfoWrapper {
@@ -432,20 +431,20 @@
     gap: 12px;
 
     h5 {
-      font-size: 20px
+      font-size: 20px;
     }
     small {
       font-size: 14px;
       color: #7d95b8;
     }
   }
-  .chart-type{
+  .chart-type {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-top: 18px;
 
-    .chart-type-button{
+    .chart-type-button {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -454,11 +453,11 @@
       cursor: pointer;
       font-size: 12px;
     }
-    .selected{
+    .selected {
       border-radius: 10px;
       background-color: #374769;
     }
-    .unselected{
+    .unselected {
       color: #6880a3;
     }
   }

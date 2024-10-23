@@ -24,7 +24,7 @@ export const useGetLogoCallback = () => {
         return '/' + currency?.symbol + '.png';
       }
       const token = wrappedCurrency(currency, chainId);
-      if ((token as any).tokenInfo.logoURI) {
+      if ((token as any)?.tokenInfo?.logoURI) {
         return (token as any).tokenInfo.logoURI;
       }
       const address = token?.address;

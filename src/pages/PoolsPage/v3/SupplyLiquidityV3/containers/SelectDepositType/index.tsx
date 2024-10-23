@@ -130,7 +130,7 @@ export function SelectDepositType({
   return (
     <Box className='deposit_type'>
       {/* <small className='weight-600'>{t('selectPair')}</small> */}
-      <p>1. {t('selectDepositType')}</p>
+      <p>{t('selectDepositType')}</p>
       <Box mt={1.5} mb={1.5} gridGap={16} className='flex items-center'>
         {depositType.map((item, index) => {
           const isSelected = item.value === selectedDepositType;
