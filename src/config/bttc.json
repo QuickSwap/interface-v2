@@ -7,6 +7,7 @@
   "aprAPINetwork": "bttc",
   "chainId": 199,
   "isMainnet": true,
+  "visible": true,
   "nativeCurrencyImage": "/BTT.png",
   "nativeCurrency": {
     "name": "BitTorrent Token",
@@ -25,6 +26,8 @@
     "available": true
   },
   "farm": {
+    "quickswap": false,
+    "merkl": false,
     "available": false
   },
   "lair": {
@@ -40,6 +43,7 @@
     "available": false
   },
   "analytics": {
+    "liquidityHub": false,
     "available": true
   },
   "lending": {
@@ -60,6 +64,12 @@
   "perps": {
     "available": false
   },
+  "hydra": {
+    "available": false
+  },
+  "perpsV2": {
+    "available": false
+  },
   "bos": {
     "available": false
   },
@@ -68,5 +78,25 @@
   },
   "unipilot": {
     "available": false
-  }
+  },
+  "defiedge": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "lpLock": {
+    "available": false
+  },
+  "maxChunks": 20,
+  "blocksPerFetch": 25
 }
