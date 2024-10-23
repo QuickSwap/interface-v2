@@ -351,6 +351,10 @@ export const useGetMerklFarms = () => {
         pool: distributions[0]['mainParameter'],
         token0: distributions[0]['campaignParameters']['token0'],
         token1: distributions[0]['campaignParameters']['token1'],
+        poolFee:
+          (distributions?.[0]?.ammName ?? '').toLowerCase() === 'quickswapuni'
+            ? distributions[0]['campaignParameters']['poolFee']
+            : undefined,
         symbolToken0: distributions[0]['symbolToken0'],
         symbolToken1: distributions[0]['symbolToken1'],
         distributions,
@@ -578,6 +582,40 @@ export const useMerklFarms = () => {
       loadingICHI,
     farms,
   };
+};
+
+export const useGetMerklRewards = (
+  chainId: ChainId,
+  account: string | undefined,
+) => {
+  const tokenMap = useSelectedTokenList();
+  const fetchUserRewardsMerklFarms = async () => {
+    if (!account) {
+      return [];
+    }
+    const res = await fetch(
+      `${process.env.REACT_APP_MERKL_API_URL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
+    );
+    const retData = await res.json();
+    const data: any[] = [];
+    for (const [key, value] of Object.entries<any>(retData)) {
+      const token = getTokenFromAddress(key, chainId, tokenMap, []);
+      data.push({
+        address: key,
+        reasons: value.reasons,
+        decimals: value.decimals,
+        unclaimed: Number(formatUnits(value.unclaimed, value.decimals)),
+        symbol: value.symbol,
+        token,
+      });
+    }
+    return data;
+  };
+  return useQuery({
+    queryKey: ['fetchUserRewardsMerklFarms', chainId, account],
+    queryFn: fetchUserRewardsMerklFarms,
+    refetchInterval: 60000,
+  });
 };
 
 export const useGammaFarmsFiltered = (

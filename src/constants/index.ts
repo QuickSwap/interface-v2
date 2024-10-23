@@ -216,7 +216,6 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.IMX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
-  [ChainId.ETHEREUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16)),
 };
 
 export const GlobalConst = {
@@ -2929,7 +2928,7 @@ export const BOND_QUERY_KEYS = {
 export const zapInputTokens: Partial<Record<ChainId, BondToken[]>> = {
   [ChainId.MATIC]: [
     {
-      symbol: 'wMATIC',
+      symbol: 'WPOL',
       address: {
         [ChainId.MATIC]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
       },

@@ -35,7 +35,6 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.IMX]: [WETH[ChainId.IMX]],
   [ChainId.ASTARZKEVM]: [WETH[ChainId.ASTARZKEVM]],
   [ChainId.LAYERX]: [WETH[ChainId.LAYERX]],
-  [ChainId.ETHEREUM]: [WETH[ChainId.ETHEREUM]],
 };
 
 export const toV2Token = (t: {
@@ -414,8 +413,8 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
     ChainId.MATIC,
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     18,
-    'WMATIC',
-    'Wrapped Matic',
+    'WPOL',
+    'Wrapped Polygon Ecosystem Token',
   ),
   [ChainId.DOGECHAIN]: new TokenV3(
     ChainId.DOGECHAIN,

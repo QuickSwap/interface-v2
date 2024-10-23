@@ -795,7 +795,7 @@ export function escapeRegExp(string: string): string {
 
 export function getTokenAddress(token: Token | undefined) {
   if (!token) return;
-  if (token.symbol?.toLowerCase() === 'wmatic') return 'ETH';
+  if (token.symbol?.toLowerCase() === 'wpol') return 'ETH';
   return token.address;
 }
 
