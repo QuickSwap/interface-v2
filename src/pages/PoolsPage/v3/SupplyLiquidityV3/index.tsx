@@ -45,6 +45,7 @@ import SelectFeeTier from './containers/SelectFeeTier';
 import { SelectDepositType } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectDepositType';
 import { useSingleTokenVault } from 'state/singleToken/hooks';
 import { SingleTokenSupplyLiquidity } from 'pages/PoolsPage/SingleToken/SupplyLiquidity';
+import { getConfig } from 'config/index';
 
 const useStyles = makeStyles(() => ({
   formControl: {
@@ -132,6 +133,9 @@ export function SupplyLiquidityV3() {
         ? chainInfo.nativeCurrencySymbol.toLowerCase()
         : (parsedQuery.currency1 as string)
       : undefined;
+
+  const config = getConfig(chainId);
+  const ichiAvailable = config?.['ichi']?.['available'];
 
   const [currencyIdA, setCurrencyIdA] = useState(currencyIdAParam);
   const [currencyIdB, setCurrencyIdB] = useState(currencyIdBParam);
@@ -381,17 +385,19 @@ export function SupplyLiquidityV3() {
         </Box>
       </Box>
       <Box mt={2}>
-        <SelectDepositType
-          selectedDepositType={selectedDepositType}
-          setSelectedDepositType={setSelectedDepositType}
-          baseCurrency={baseCurrency}
-          quoteCurrency={quoteCurrency}
-          mintInfo={mintInfo}
-          handleCurrencyASelect={handleCurrencyASelect}
-          handleCurrencyBSelect={handleCurrencyBSelect}
-          handlePopularPairSelection={resetState}
-          priceFormat={priceFormat}
-        />
+        {ichiAvailable && (
+          <SelectDepositType
+            selectedDepositType={selectedDepositType}
+            setSelectedDepositType={setSelectedDepositType}
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            mintInfo={mintInfo}
+            handleCurrencyASelect={handleCurrencyASelect}
+            handleCurrencyBSelect={handleCurrencyBSelect}
+            handlePopularPairSelection={resetState}
+            priceFormat={priceFormat}
+          />
+        )}
         {(!account || !isSupportedNetwork) && (
           <Button
             className='v3-supply-liquidity-button'
