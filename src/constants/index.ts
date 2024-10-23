@@ -2708,11 +2708,7 @@ export const GlobalData = {
       USDT[ChainId.LAYERX],
       DAI[ChainId.LAYERX],
     ],
-    [ChainId.ETHEREUM]: [
-      USDC[ChainId.ETHEREUM],
-      USDT[ChainId.ETHEREUM],
-      DAI[ChainId.ETHEREUM],
-    ],
+    [ChainId.ETHEREUM]: [],
   },
   blueChips: {
     [ChainId.MATIC]: [

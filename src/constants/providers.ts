@@ -21,7 +21,7 @@ export const rpcMap = {
   [ChainId.IMX]: 'https://rpc.immutable.com',
   [ChainId.ASTARZKEVM]: 'https://rpc.startale.com/astar-zkevm',
   [ChainId.LAYERX]: 'https://rpc.xlayer.tech',
-  [ChainId.ETHEREUM]: 'https://mainnet.infura.io/v3/',
+  [ChainId.ETHEREUM]: 'https://eth.llamarpc.com	',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
