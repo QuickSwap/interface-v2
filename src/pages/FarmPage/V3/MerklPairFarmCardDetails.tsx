@@ -8,7 +8,10 @@ import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
 import { useGammaPosition } from 'hooks/v3/useGammaData';
 import { usePool } from 'hooks/v3/usePools';
 import { useSteerPosition } from 'hooks/v3/useSteerData';
-import { useV3PositionsFromPool } from 'hooks/v3/useV3Farms';
+import {
+  useGetMerklRewards,
+  useV3PositionsFromPool,
+} from 'hooks/v3/useV3Farms';
 import IncreaseDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/IncreaseDefiedgeLiquidityModal';
 import WithdrawDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/WithdrawDefiedgeLiquidityModal';
 import IncreaseGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/IncreaseGammaLiquidityModal';
@@ -32,6 +35,7 @@ import TotalAPRTooltip from 'components/TotalAPRToolTip';
 import APRHover from 'assets/images/aprHover.png';
 import { toV3Token } from 'constants/v3/addresses';
 import { useClaimMerklRewards } from 'hooks/useClaimMerklRewards';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface Props {
   farm: any;
@@ -39,7 +43,7 @@ interface Props {
 
 export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
 
@@ -76,6 +80,11 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     farm?.token0?.address,
     farm?.token1?.address,
     farm?.poolFee ? Number(farm.poolFee) * 10000 : undefined,
+  );
+
+  const { isLoading: loadingRewards, data: merklRewards } = useGetMerklRewards(
+    chainId,
+    account,
   );
 
   const [selectedQSNFTId, setSelectedQSNFTId] = useState('');
@@ -219,7 +228,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     loading: loadingRewardTokenPrices,
     prices: rewardTokenPrices,
   } = useUSDCPricesFromAddresses(
-    farm.rewards.map((reward: any) => reward.address),
+    (merklRewards ?? []).map((reward: any) => reward.address),
   );
 
   const rewardKey = useMemo(() => {
@@ -235,24 +244,33 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     return farmType;
   }, [farm.almAddress, farmType, isQuickswap, selectedQSNFTId]);
 
-  const rewardUSD = farm.rewards.reduce(
+  const rewards = (merklRewards ?? [])
+    .map((reward) => {
+      return {
+        ...reward,
+        reasons: Number(
+          formatUnits(
+            reward?.reasons?.[rewardKey]?.unclaimed ?? '0',
+            reward?.decimals,
+          ),
+        ),
+      };
+    })
+    .filter((reward) => reward.reasons > 0);
+
+  const rewardUSD = rewards.reduce(
     (total: number, reward: any) =>
       total +
       (rewardTokenPrices?.find(
         (item) => item.address.toLowerCase() === reward.address.toLowerCase(),
       )?.price ?? 0) *
-        reward.breakdownOfUnclaimed[rewardKey],
+        reward.reasons,
     0,
   );
 
   const { claiming, claimReward } = useClaimMerklRewards();
 
-  const isClaimable =
-    farm.rewards.length > 0 &&
-    farm.rewards.filter(
-      (reward: any) => reward.breakdownOfUnclaimed[rewardKey] > 0,
-    ).length > 0 &&
-    !claiming;
+  const isClaimable = rewards.length > 0 && !claiming;
 
   return (
     <Box padding={2} className='v3PairFarmCardDetailsWrapper'>
@@ -476,7 +494,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
           >
             <Box className='flex justify-between'>
               <small>{t('myrewards')}</small>
-              {loadingRewardTokenPrices ? (
+              {loadingRewardTokenPrices || loadingRewards ? (
                 <Skeleton width={100} height={22} />
               ) : (
                 <small className='text-secondary'>
@@ -486,7 +504,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
             </Box>
             <Box className='flex items-end justify-between'>
               <Box className='flex flex-col' gridGap={8}>
-                {farm.rewards.map((reward: any) => {
+                {rewards.map((reward: any) => {
                   const token = getTokenFromAddress(
                     reward.address,
                     chainId,
@@ -501,8 +519,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                     >
                       <CurrencyLogo currency={token} />
                       <small>
-                        {formatNumber(reward.breakdownOfUnclaimed[rewardKey])}{' '}
-                        {token?.symbol}
+                        {formatNumber(reward.reasons)} {token?.symbol}
                       </small>
                     </Box>
                   );

@@ -508,3 +508,75 @@ div.buy {
     }
   }
 }
+
+
+/// Orbs ///
+ .orbs_SwapStepTitle {
+  font-size: 15px;
+}
+.LiquidityHubSuccessContent {
+  font-size: 16px;
+    a {
+      text-decoration: none;
+      display: inline-flex;
+      gap: 5px;
+      font-weight: 600;
+      color: white;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    span {
+      text-transform: capitalize;
+      font-size: inherit;
+    }
+
+    img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+}
+.LiquidityHubSettings {
+  display: flex;
+  flex-direction: column;
+
+  .bottom-text {
+    max-width: 500px;
+    font-size: 14px;
+    line-height: 23px;
+
+    img {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      display: inline;
+    }
+
+    a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #6381e9;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .more-info {
+      color: inherit;
+      font-weight: 400;
+      text-decoration: underline;
+    }
+  }
+}
+
+.orbs_PoweredBy {
+  margin-top: 30px!important;
+  span {
+    font-size: 15px;
+  }
+}

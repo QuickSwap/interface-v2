@@ -21,9 +21,9 @@ import {
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
-import { LiquidityHubTxSettings } from 'components/Swap/LiquidityHub';
 import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { isMobile } from 'react-device-detect';
+import { LiquidityHubSettings } from 'components/Swap/orbs/LiquidityHub/Components';
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -385,7 +385,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           />
         </Box>
         <Divider />
-        <LiquidityHubTxSettings />
+        <LiquidityHubSettings />
         <Box mt={2.5} className='flex items-center justify-between'>
           <p>{t('language')}</p>
           <Box className='flex items-center'>
