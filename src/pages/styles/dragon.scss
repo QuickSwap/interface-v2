@@ -41,15 +41,38 @@
   right: 0px;
   bottom: 0px;
   left: 0px;
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: pointer;
-  transition: all 300ms ease-in-out;
+  animation: fadeOut 1.5s linear;
+}
+
+.dragonHeader:hover:before{
+  opacity: 1;
 }
 
 .dragonEggHatched.dragonHeader::before{
   background-image: url('../../assets/images/animated-egg-render.gif');
   opacity: 1;
   right: -15px;
+  animation: fadeIn 1.5s linear;
+}
+
+@keyframes fadeIn{
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut{
+  100% {
+    opacity: 1;
+  }
+  0% {
+    opacity: 0;
+  }
 }
 
 .dragonHeader {
