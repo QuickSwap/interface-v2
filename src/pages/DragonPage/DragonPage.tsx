@@ -127,9 +127,13 @@ const DragonPage: React.FC = () => {
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>
-      <Grid container className={`dragonHeader ${isMobile ? 'mobile' : ''} ${
+      <Grid
+        container
+        className={`dragonHeader ${isMobile ? 'mobile' : ''} ${
           dragonEggHatched ? 'dragonEggHatched' : ''
-        }`} onClick={changeDragonEggAnimation} >
+        }`}
+        onClick={changeDragonEggAnimation}
+      >
         <Grid item xs={12}>
           <Box className='dragonWrapper-title'>
             <h5>{t('dragonLair')}</h5>

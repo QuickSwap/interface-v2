@@ -73,9 +73,12 @@ const AnalyticsOverview: React.FC = () => {
         </Grid>
       </Grid>
       <Box mt={4}>
-        <Box className={`flex flex-wrap panel dragonHeader ${
+        <Box
+          className={`flex flex-wrap panel dragonHeader ${
             dragonEggHatched ? 'dragonEggHatched' : ''
-          }`} onClick={changeDragonEggAnimation} >
+          }`}
+          onClick={changeDragonEggAnimation}
+        >
           {globalDataLoading ? (
             <Skeleton width='80%' height={20} />
           ) : globalData ? (
