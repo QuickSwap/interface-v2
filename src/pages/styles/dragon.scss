@@ -33,7 +33,7 @@
 .dragonHeader::before {
   content: '';
   position: absolute;
-  background-image: url('../../assets/images/DragonBgNew.png');
+  background-image: url('../../assets/images/unhatched-egg.png');
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: top right;
@@ -42,6 +42,14 @@
   bottom: 0px;
   left: 0px;
   opacity: 0.5;
+  cursor: pointer;
+  transition: all 300ms ease-in-out;
+}
+
+.dragonEggHatched.dragonHeader::before{
+  background-image: url('../../assets/images/animated-egg-render.gif');
+  opacity: 1;
+  right: -15px;
 }
 
 .dragonHeader {

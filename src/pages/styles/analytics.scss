@@ -43,6 +43,14 @@
   }
 }
 
+.panel.dragonHeader{
+  position: relative;
+  border-radius: 16px;
+  padding: 22px 24px;
+  background-color: #322751;
+  min-height: 200px;
+}
+
 .analyticsVolumeChart {
   width: 100%;
   height: 100%;
