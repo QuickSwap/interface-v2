@@ -43,17 +43,17 @@
   left: 0px;
   opacity: 0.3;
   cursor: pointer;
-  animation: fadeOut 1.5s linear;
 }
 
 .dragonHeader:hover:before{
   opacity: 1;
+  animation: fadeOut 1s linear;
 }
 
 .dragonEggHatched.dragonHeader::before{
-  background-image: url('../../assets/images/animated-egg-render.gif');
+  background-image: url('../../assets/images/egg-hatched.png');
   opacity: 1;
-  right: -15px;
+  right: -5px;
   animation: fadeIn 1.5s linear;
 }
 
