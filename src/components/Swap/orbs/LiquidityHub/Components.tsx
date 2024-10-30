@@ -12,6 +12,8 @@ import { useDerivedSwapInfo } from 'state/swap/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
 import BN from 'bignumber.js';
 import { Field } from 'state/swap/actions';
+import chart from 'assets/images/icons/chart.svg';
+
 import {
   Currency,
   JSBI,
@@ -87,7 +89,7 @@ export const LiquidityHubSettings = () => {
   );
 };
 
-const SwapPrice = ({ quote }: { quote: Quote | null }) => {
+export const SwapPrice = ({ quote }: { quote?: Quote | null }) => {
   const { t } = useTranslation();
   const { parsedAmount, currencies } = useDerivedSwapInfo();
   const inCurrency = currencies.INPUT;
@@ -100,6 +102,7 @@ const SwapPrice = ({ quote }: { quote: Quote | null }) => {
 
     const priceFor1Token =
       Number(parsedOutAmount.toExact()) / Number(parsedAmount?.toExact());
+
     const price = inverted ? 1 / priceFor1Token : priceFor1Token;
 
     return price;
@@ -108,6 +111,8 @@ const SwapPrice = ({ quote }: { quote: Quote | null }) => {
   const toggleInverted = useCallback(() => {
     setInverted((prev) => !prev);
   }, []);
+
+  if (!quote) return null;
 
   return (
     <Box
@@ -121,6 +126,7 @@ const SwapPrice = ({ quote }: { quote: Quote | null }) => {
       }}
     >
       <Box className='swapPrice'>
+        <img src={chart} alt='chart' />
         <small>
           1 {inverted ? outCurrency?.symbol : inCurrency?.symbol} ={' '}
           {formatNumber(price, 5)}{' '}
@@ -143,7 +149,6 @@ export const LiquidityHubSwapDetails = ({
 
   return (
     <>
-      <SwapPrice quote={quote} />
       <Box
         mt={1.5}
         sx={{

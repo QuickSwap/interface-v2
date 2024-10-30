@@ -24,6 +24,7 @@ import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { BigNumber } from 'ethers';
 import { TransactionType } from 'models/enums';
+import { useLiquidityHubSDK } from 'components/Swap/orbs/LiquidityHub/hooks';
 
 export enum SwapCallbackState {
   INVALID,
@@ -66,6 +67,7 @@ export function useParaswapCallback(
   const { account, chainId, library } = useActiveWeb3React();
   const paraswap = useParaswap();
   const { onBestRoute, onSetSwapDelay } = useSwapActionHandlers();
+  const liquidityHubSDK = useLiquidityHubSDK();
 
   const addTransaction = useTransactionAdder();
 
@@ -200,7 +202,12 @@ export function useParaswapCallback(
             summary,
             type: TransactionType.SWAPPED,
           });
-
+          liquidityHubSDK.analytics.onTradeSuccess(
+            priceRoute.destAmount,
+            priceRoute.destUSD,
+            'dex',
+            'paraswap',
+          );
           return { response, summary };
         } catch (error) {
           if (error?.code === 'ACTION_REJECTED') {
