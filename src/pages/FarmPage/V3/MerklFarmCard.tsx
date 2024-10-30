@@ -35,19 +35,22 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
     )
     .map((item: any) => {
       const rewardDuration =
-        (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+        Number(item?.endTimestamp ?? 0) - Number(item?.startTimestamp ?? 0);
       const dailyAmount =
         rewardDuration > 0
-          ? ((BigInt(item?.amount) ?? BigInt(0)) / BigInt(rewardDuration)) *
-            BigInt(3600) *
-            BigInt(24)
-          : BigInt(0);
+          ? (Number(
+              formatUnits(
+                item?.amount ?? '0',
+                Number(farm.decimalsRewardToken),
+              ),
+            ) /
+              rewardDuration) *
+            3600 *
+            24
+          : 0;
       return {
         ...item,
-        dailyAmount: formatUnits(
-          dailyAmount.toString(),
-          farm.decimalsRewardToken,
-        ),
+        dailyAmount,
         symbolRewardToken: farm.symbolRewardToken,
       };
     })
