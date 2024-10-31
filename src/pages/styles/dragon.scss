@@ -33,7 +33,6 @@
 .dragonHeader::before {
   content: '';
   position: absolute;
-  background-image: url('../../assets/images/unhatched-egg.png');
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: top right;
@@ -48,13 +47,6 @@
 .dragonHeader:hover:before{
   opacity: 1;
   animation: fadeOut 1s linear;
-}
-
-.dragonEggHatched.dragonHeader::before{
-  background-image: url('../../assets/images/egg-hatched.png');
-  opacity: 1;
-  right: -5px;
-  animation: fadeIn 1.5s linear;
 }
 
 @keyframes fadeIn{

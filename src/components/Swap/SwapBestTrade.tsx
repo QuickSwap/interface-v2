@@ -27,7 +27,12 @@ import {
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
 import { useHistory } from 'react-router-dom';
-import { CurrencyInput, ConfirmSwapModal, AddressInput } from 'components';
+import {
+  CurrencyInput,
+  ConfirmSwapModal,
+  AddressInput,
+  Eggs,
+} from 'components';
 import {
   useActiveWeb3React,
   useConnectWallet,
@@ -1510,6 +1515,7 @@ const SwapBestTrade: React.FC<{
           console.log('sub');
         }}
       />
+      <Eggs type={2}></Eggs>
       {isLiquidityHubOnly && <PoweredByOrbs />}
     </Box>
   );

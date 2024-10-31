@@ -5,7 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { ArrowForwardIos } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { TokensTable, PairTable } from 'components';
+import { TokensTable, PairTable, Eggs } from 'components';
 import AnalyticsInfo from './AnalyticsInfo';
 import AnalyticsLiquidityChart from './AnalyticsLiquidityChart';
 import AnalyticsVolumeChart from './AnalyticsVolumeChart';
@@ -74,10 +74,8 @@ const AnalyticsOverview: React.FC = () => {
       </Grid>
       <Box mt={4}>
         <Box
-          className={`flex flex-wrap panel dragonHeader ${
-            dragonEggHatched ? 'dragonEggHatched' : ''
-          }`}
-          onClick={changeDragonEggAnimation}
+          className={`flex flex-wrap panel`}
+          sx={{ minHeight: '180px', position: 'relative' }}
         >
           {globalDataLoading ? (
             <Skeleton width='80%' height={20} />
@@ -86,6 +84,16 @@ const AnalyticsOverview: React.FC = () => {
           ) : (
             <></>
           )}
+          <Box
+            sx={{
+              position: 'absolute',
+              width: '200px',
+              top: 0,
+              right: 0,
+            }}
+          >
+            <Eggs type={4}></Eggs>
+          </Box>
         </Box>
       </Box>
       <Box mt={4}>
