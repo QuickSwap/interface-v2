@@ -47,6 +47,7 @@ const Eggs: React.FC<EggTypeProp> = ({ type }) => {
                   href='https://twitter.com/QuickswapDEX/'
                   target='_blank'
                   rel='noreferrer'
+                  className='more-info'
                 />
               ),
             }}
