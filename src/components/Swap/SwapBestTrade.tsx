@@ -87,18 +87,16 @@ import { useWalletInfo } from '@web3modal/ethers5/react';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
 import {
+  useIsLhPureAggregationMode,
   useIsLiquidityHubTrade,
   useLiquidityHubQuote,
 } from './orbs/LiquidityHub/hooks';
 import { LiquidityHubSwapConfirmation } from './orbs/LiquidityHub/LiquidityHubSwapConfirmation';
-import { isLowInAmountError } from './orbs/utils';
 import { PoweredByOrbs } from '@orbs-network/swap-ui';
-import { LiquidityHubSwapDetails } from './orbs/LiquidityHub/Components';
-
-export const useIsliquidityHubOnly = () => {
-  const { chainId } = useActiveWeb3React();
-  return useMemo(() => [ChainId.ETHEREUM].includes(chainId), [chainId]);
-};
+import {
+  LiquidityHubSwapDetails,
+  SwapPrice,
+} from './orbs/LiquidityHub/Components';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -109,6 +107,7 @@ const SwapBestTrade: React.FC<{
   const isSupportedNetwork = useIsSupportedNetwork();
   const { walletInfo } = useWalletInfo();
   const [liquidityHubDisabled, setLiquidityHubDisabled] = useState(false);
+  const [swappingLiquidityHub, setSwappingLiquidityHub] = useState(false);
   const [showLiquidityHubConfirm, setShowLiquidityHubConfirm] = useState(false);
 
   // token warning stuff
@@ -151,7 +150,7 @@ const SwapBestTrade: React.FC<{
   const { account, chainId, library } = useActiveWeb3React();
   const { independentField, typedValue, recipient } = useSwapState();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
-  const isLiquidityHubOnly = useIsliquidityHubOnly();
+  const isLhPureAggregationMode = useIsLhPureAggregationMode();
 
   const {
     currencyBalances,
@@ -427,7 +426,6 @@ const SwapBestTrade: React.FC<{
     ],
     queryFn: fetchOptimalRate,
     refetchInterval: 5000,
-    enabled: !isLiquidityHubOnly,
   });
 
   const optimalRate = useMemo(() => {
@@ -448,6 +446,7 @@ const SwapBestTrade: React.FC<{
     dexOutAmount: optimalRate?.destAmount,
     disabled: liquidityHubDisabled,
     wrapType,
+    swappingLiquidityHub,
   });
 
   const {
@@ -455,10 +454,12 @@ const SwapBestTrade: React.FC<{
     isLoading: liquidityHubQuoteLoading,
     error: liquidityHubQuoteError,
   } = liquidityHubQuoteQuery;
+  const isLiquidityHubOnly = isLhPureAggregationMode && !liquidityHubQuoteError;
 
   const tradeSrcAmount = isLiquidityHubOnly
     ? liquidityHubQuote?.inAmount
     : optimalRate?.srcAmount;
+
   const tradeDestAmount = isLiquidityHubOnly
     ? liquidityHubQuote?.outAmount
     : optimalRate?.destAmount;
@@ -468,7 +469,7 @@ const SwapBestTrade: React.FC<{
     : loadingOptimalRate;
 
   const isValid = isLiquidityHubOnly
-    ? !liquidityHubQuoteError && !!liquidityHubQuote
+    ? !!liquidityHubQuote
     : !optimalRateError && !!optimalRate;
 
   const parsedAmounts = useMemo(() => {
@@ -593,10 +594,10 @@ const SwapBestTrade: React.FC<{
     optimalRate,
     showWrap,
     isLiquidityHubOnly,
+    liquidityHubQuoteLoading,
   );
 
   const showApproveFlow =
-    !isLiquidityHubOnly &&
     !swapInputError &&
     !showWrap &&
     (showNativeConvert
@@ -638,15 +639,13 @@ const SwapBestTrade: React.FC<{
     inputCurrency,
     outputCurrency,
   );
-  const isLowSrcAmountError =
-    isLiquidityHubOnly && isLowInAmountError(liquidityHubQuoteError);
 
   const paraswapCallbackError = isLiquidityHubOnly
     ? undefined
     : _paraswapCallbackError;
 
   const noRoute = isLiquidityHubOnly
-    ? !liquidityHubQuote?.outAmount
+    ? !liquidityHubQuote
     : !optimalRate || optimalRate.bestRoute.length < 0;
 
   const swapInputAmountWithSlippage =
@@ -712,8 +711,6 @@ const SwapBestTrade: React.FC<{
           : optimalRateError;
       } else if (swapInputError) {
         return swapInputError;
-      } else if (isLowSrcAmountError) {
-        return t('swap');
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return t('insufficientLiquidityTrade');
       } else if (
@@ -754,7 +751,6 @@ const SwapBestTrade: React.FC<{
     wrapInputError,
     wrapType,
     maxImpactAllowed,
-    isLowSrcAmountError,
   ]);
 
   const maxImpactReached = isLiquidityHubOnly
@@ -801,9 +797,6 @@ const SwapBestTrade: React.FC<{
       } else {
         return isSwapError;
       }
-    }
-    if (isLowSrcAmountError) {
-      return true;
     } else {
       return false;
     }
@@ -830,7 +823,6 @@ const SwapBestTrade: React.FC<{
     tradeSrcAmount,
     tradeDestAmount,
     maxImpactReached,
-    isLowSrcAmountError,
   ]);
 
   const [
@@ -1223,10 +1215,6 @@ const SwapBestTrade: React.FC<{
     dispatch(updateUserBalance());
   }, [dispatch, handleTypeInput]);
 
-  const onLiquidityHubSwapInProgress = useCallback((value: boolean) => {
-    setLiquidityHubDisabled(value);
-  }, []);
-
   const handleLiquidityHubConfirmDismiss = useCallback(() => {
     setShowLiquidityHubConfirm(false);
   }, []);
@@ -1250,7 +1238,7 @@ const SwapBestTrade: React.FC<{
         onSwapSuccess={onLiquidityHubSwapSuccess}
         optimalRate={optimalRate}
         allowedSlippage={allowedSlippage}
-        onLiquidityHubSwapInProgress={onLiquidityHubSwapInProgress}
+        onLiquidityHubSwapInProgress={setSwappingLiquidityHub}
       />
       {showConfirm && (
         <ConfirmSwapModal
@@ -1330,7 +1318,7 @@ const SwapBestTrade: React.FC<{
         setAmount={handleTypeOutput}
         color={isProMode ? 'white' : 'secondary'}
         bgClass={isProMode ? 'swap-bg-highlight' : currencyBgClass}
-        disabled={isLiquidityHubOnly}
+        disabled={isLhPureAggregationMode}
       />
       {!showNativeConvert && !showWrap && isExpertMode && (
         <Box className='recipientInput'>
@@ -1374,6 +1362,11 @@ const SwapBestTrade: React.FC<{
                     approvalSubmitted
               }
               onClick={async () => {
+                if (isLiquidityHubTrade) {
+                  setShowLiquidityHubConfirm(true);
+                  return;
+                }
+                // prevent liquidity hub winning after user starts the approval
                 setLiquidityHubDisabled(true);
                 if (showNativeConvert) {
                   setNativeConvertApproving(true);
@@ -1389,6 +1382,7 @@ const SwapBestTrade: React.FC<{
                     await approveCallback();
                     setApproving(false);
                   } catch (err) {
+                    setLiquidityHubDisabled(false);
                     setApproving(false);
                   }
                 }
@@ -1424,51 +1418,55 @@ const SwapBestTrade: React.FC<{
           </Button>
         </Box>
       </Box>
-      {paraRate && (
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gridGap: '4px',
-            marginTop: '16px',
-          }}
-        >
-          <img src={chart} alt='chart' />
-          <Typography
-            style={{
-              fontSize: '13px',
-              color: '#fff',
-              fontWeight: 500,
-              marginBottom: '-2px',
+      {isLiquidityHubOnly ? (
+        <SwapPrice quote={liquidityHubQuote} />
+      ) : (
+        paraRate && (
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gridGap: '4px',
+              marginTop: '16px',
             }}
           >
-            <Box className='swapPrice'>
-              <small>
-                1{' '}
-                {
-                  (mainPrice
-                    ? currencies[Field.INPUT]
-                    : currencies[Field.OUTPUT]
-                  )?.symbol
-                }{' '}
-                = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
-                {
-                  (mainPrice
-                    ? currencies[Field.OUTPUT]
-                    : currencies[Field.INPUT]
-                  )?.symbol
-                }{' '}
-                <PriceExchangeIcon
-                  onClick={() => {
-                    setMainPrice(!mainPrice);
-                  }}
-                />
-              </small>
-            </Box>
-          </Typography>
-        </Box>
+            <img src={chart} alt='chart' />
+            <Typography
+              style={{
+                fontSize: '13px',
+                color: '#fff',
+                fontWeight: 500,
+                marginBottom: '-2px',
+              }}
+            >
+              <Box className='swapPrice'>
+                <small>
+                  1{' '}
+                  {
+                    (mainPrice
+                      ? currencies[Field.INPUT]
+                      : currencies[Field.OUTPUT]
+                    )?.symbol
+                  }{' '}
+                  = {(mainPrice ? paraRate : 1 / paraRate).toLocaleString('us')}{' '}
+                  {
+                    (mainPrice
+                      ? currencies[Field.OUTPUT]
+                      : currencies[Field.INPUT]
+                    )?.symbol
+                  }{' '}
+                  <PriceExchangeIcon
+                    onClick={() => {
+                      setMainPrice(!mainPrice);
+                    }}
+                  />
+                </small>
+              </Box>
+            </Typography>
+          </Box>
+        )
       )}
       {isLiquidityHubOnly ? (
         <LiquidityHubSwapDetails

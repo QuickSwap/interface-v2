@@ -34,12 +34,13 @@ import {
   useConfirmationContext,
   ConfirmationState,
 } from '../ConfirmationModal';
-import useUSDCPrice from 'utils/useUSDCPrice';
+import useUSDCPrice, { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import React, { useState } from 'react';
 import { createContext } from 'react';
 import { useLiquidityHubSDK } from './hooks';
 import useWrapCallback from 'hooks/useWrapCallback';
 import { getSigner } from 'utils';
+import { BigNumber } from 'ethers';
 
 export interface LiquidityHubConfirmationProps {
   inCurrency?: Currency;
@@ -393,6 +394,7 @@ const useLiquidityHubSwapCallback = () => {
   const swapCallback = useSwapCallback();
   const wrapCallback = useWrapFlowCallback();
   const approvalCallback = useApproveCallback();
+  const onTradeSuccess = useOnTradeSuccessCallback();
 
   return useMutation(
     async (updateStore: (value: Partial<ConfirmationState>) => void) => {
@@ -462,6 +464,7 @@ const useLiquidityHubSwapCallback = () => {
         const receipt = await transaction.wait();
         onSwapSuccess();
         updateStore({ swapStatus: SwapStatus.SUCCESS });
+        onTradeSuccess(acceptedQuote);
         return receipt;
       } catch (error) {
         const isRejectedOrTimeout =
@@ -481,6 +484,32 @@ const useLiquidityHubSwapCallback = () => {
         onLiquidityHubSwapInProgress(false);
       }
     },
+  );
+};
+
+const useOnTradeSuccessCallback = () => {
+  const liquidityHubSDK = useLiquidityHubSDK();
+  const { outCurrency } = useLiquidityHubConfirmationContext();
+  const { chainId } = useActiveWeb3React();
+  const outToken = wrappedCurrency(outCurrency, chainId);
+  const outTokenUsdPrice = useUSDCPriceFromAddress(outToken?.address).price;
+
+  return useCallback(
+    async (acceptedQuote: Quote) => {
+      try {
+        if (!outToken) return;
+        const tradeUsdValue = BigNumber.from(acceptedQuote.outAmount)
+          .div(10 ** outToken.decimals)
+          .mul(outTokenUsdPrice)
+          .toString();
+        liquidityHubSDK.analytics.onTradeSuccess(
+          acceptedQuote.outAmount,
+          tradeUsdValue,
+          'liquidity-hub',
+        );
+      } catch (error) {}
+    },
+    [liquidityHubSDK, outTokenUsdPrice, outToken],
   );
 };
 
