@@ -310,6 +310,7 @@ export const V2_ROUTER_ADDRESS: AddressMap = {
 
 export const PARASWAP_PROXY_ROUTER_ADDRESS: AddressMap = {
   [ChainId.MATIC]: '0x216b4b4ba9f3e719726886d34a177484278bfcae',
+  [ChainId.ETHEREUM]: '0x216b4b4ba9f3e719726886d34a177484278bfcae',
   [ChainId.ZKEVM]: '0xc8a21fcd5a100c3ecc037c97e2f9c53a8d3a02a1',
 };
 
