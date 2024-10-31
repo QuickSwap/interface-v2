@@ -33,7 +33,6 @@
 .dragonHeader::before {
   content: '';
   position: absolute;
-  background-image: url('../../assets/images/DragonBgNew.png');
   background-size: auto 100%;
   background-repeat: no-repeat;
   background-position: top right;
@@ -41,7 +40,31 @@
   right: 0px;
   bottom: 0px;
   left: 0px;
-  opacity: 0.5;
+  opacity: 0.3;
+  cursor: pointer;
+}
+
+.dragonHeader:hover:before{
+  opacity: 1;
+  animation: fadeOut 1s linear;
+}
+
+@keyframes fadeIn{
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut{
+  100% {
+    opacity: 1;
+  }
+  0% {
+    opacity: 0;
+  }
 }
 
 .dragonHeader {

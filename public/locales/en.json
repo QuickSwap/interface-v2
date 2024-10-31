@@ -1033,5 +1033,6 @@
   "limitOrder": "Limit Order",
   "created": "Created",
   "create": "Create",
-  "networkFeeHelper": "Network fees are paid for transaction"
+  "networkFeeHelper": "Network fees are paid for transaction",
+  "dragonEggAlert": "Screenshot this and DM  <alink>@QuickswapDEX on X (Twitter)</alink>  for a chance to win prizes! First come, first serve."
 }

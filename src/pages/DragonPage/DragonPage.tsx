@@ -6,7 +6,7 @@ import DragonsSyrup from './DragonsSyrup';
 import QuickBurnChart from './QuickBurnChart';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import { HypeLabAds, CurrencyLogo } from 'components';
+import { HypeLabAds, CurrencyLogo, Eggs } from 'components';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { useNewLairInfo } from 'state/stake/hooks';
@@ -116,12 +116,14 @@ const DragonPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quickPrice, totalSupplyQuick]);
 
+  const [dragonEggHatched, setDragonEggHatched] = useState(false);
+
   return showLair ? (
     <Box width='100%' mb={3}>
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>
-      <Grid container className={`dragonHeader ${isMobile ? 'mobile' : ''}`}>
+      <Grid container className={`dragonHeader`}>
         <Grid item xs={12}>
           <Box className='dragonWrapper-title'>
             <h5>{t('dragonLair')}</h5>
@@ -219,6 +221,15 @@ const DragonPage: React.FC = () => {
             </Box>
           )}
         </Grid>
+        <Box
+          sx={{
+            width: '200px',
+            position: 'absolute',
+            right: 0,
+          }}
+        >
+          <Eggs type={1}></Eggs>
+        </Box>
       </Grid>
       <Grid container spacing={4} style={{ marginTop: '24px' }}>
         <Grid item xs={12} sm={12} md={7}>
