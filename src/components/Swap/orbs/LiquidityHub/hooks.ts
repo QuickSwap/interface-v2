@@ -18,6 +18,11 @@ import { WrapType } from 'hooks/useWrapCallback';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import BN from 'bignumber.js';
 
+export const useIsLhPureAggregationMode = () => {
+  const { chainId } = useActiveWeb3React();
+  return useMemo(() => [ChainId.ETHEREUM].includes(chainId), [chainId]);
+};
+
 export const useLiquidityHubSDK = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId || ChainId.MATIC;
@@ -36,6 +41,7 @@ export const useIsLiquidityHubTrade = (
   optimalRate?: OptimalRate,
   showWrap?: boolean,
   isLiquidityHubOnly?: boolean,
+  liquidityHubQuoteLoading?: boolean,
 ) => {
   const [liquidityHubDisabled] = useLiquidityHubManager();
   const isSupported = useIsLiquidityHubSupported();
@@ -43,6 +49,7 @@ export const useIsLiquidityHubTrade = (
   return useMemo(() => {
     if (showWrap) return false;
     if (isLiquidityHubOnly) return true;
+    if (liquidityHubQuoteLoading) return false;
 
     if (
       swapSide === SwapSide.BUY ||
@@ -68,6 +75,7 @@ export const useIsLiquidityHubTrade = (
     liquidityHubDisabled,
     isLiquidityHubOnly,
     showWrap,
+    liquidityHubQuoteLoading,
   ]);
 };
 
@@ -87,8 +95,9 @@ export const useLiquidityHubQuote = ({
   inCurrency,
   outCurrency,
   dexOutAmount,
-  disabled,
+  disabled: _disabled,
   wrapType,
+  swappingLiquidityHub,
 }: {
   allowedSlippage?: number;
   inAmount?: string;
@@ -97,9 +106,11 @@ export const useLiquidityHubQuote = ({
   dexOutAmount?: string;
   disabled?: boolean;
   wrapType?: WrapType;
+  swappingLiquidityHub: boolean;
 }) => {
   const { account, chainId } = useActiveWeb3React();
   const isNativeCurrency = useIsNativeCurrencyCallback();
+  const isLhPureAggregationMode = useIsLhPureAggregationMode();
 
   const fromToken = wrappedCurrency(inCurrency, chainId)?.address;
   const toToken = useMemo(() => {
@@ -113,27 +124,37 @@ export const useLiquidityHubQuote = ({
   const liquidityHub = useLiquidityHubSDK();
 
   const dexMinAmountOut = useMemo(() => {
+    // since in pure aggregation mode we use paraswap only as a fallback we don't need the dexMinAmountOut
+    if (isLhPureAggregationMode) return;
     return getAmountMinusSlippage(allowedSlippage || 0, dexOutAmount);
-  }, [dexOutAmount, allowedSlippage]);
+  }, [dexOutAmount, allowedSlippage, isLhPureAggregationMode]);
 
-  const queryKey = [
-    'liquidity-hub-quote',
-    fromToken,
-    toToken,
-    inAmount,
-    allowedSlippage,
-    chainId,
-  ];
+  const disabled = isLhPureAggregationMode ? false : _disabled;
+
+  const queryKey = useMemo(() => {
+    return [
+      'liquidity-hub-quote',
+      fromToken,
+      toToken,
+      inAmount,
+      allowedSlippage,
+      chainId,
+      dexMinAmountOut,
+    ];
+  }, [fromToken, toToken, inAmount, allowedSlippage, chainId, dexMinAmountOut]);
 
   const fecthQuoteCallback = useCallback(
     (signal?: AbortSignal) => {
+      if (!fromToken || !toToken || !inAmount || !allowedSlippage) {
+        throw new Error('Invalid input');
+      }
       return liquidityHub.getQuote({
-        fromToken: fromToken!,
-        toToken: toToken!,
-        inAmount: inAmount!,
+        fromToken,
+        toToken,
+        inAmount,
         dexMinAmountOut,
         account,
-        slippage: allowedSlippage! / 100,
+        slippage: allowedSlippage / 100,
         signal,
       });
     },
@@ -145,7 +166,6 @@ export const useLiquidityHubQuote = ({
       dexMinAmountOut,
       account,
       allowedSlippage,
-      queryKey,
     ],
   );
 
@@ -164,15 +184,18 @@ export const useLiquidityHubQuote = ({
       return 10_000;
     },
     staleTime: Infinity,
+    keepPreviousData: inAmount ? true : false,
     enabled:
       !!account &&
       !!inAmount &&
       !!fromToken &&
+      !!chainId &&
       !!toToken &&
       wrapType !== WrapType.WRAP &&
       wrapType !== WrapType.UNWRAP &&
       !disabled &&
       allowedSlippage !== undefined &&
+      !swappingLiquidityHub &&
       isSupported,
   });
 
