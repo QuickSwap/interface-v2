@@ -86,6 +86,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.ZKEVM]: '0x6a1d2eca13222E7ffDDfdf1Df701D41D3E4cC0BE',
   [ChainId.MANTA]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.ZKATANA]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
+  [ChainId.BTTC]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.TIMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.X1]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.IMX]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
@@ -161,6 +162,7 @@ export const UNIV3_QUOTER_ADDRESSES: AddressMap = {
   [ChainId.ZKEVM]: '0xB18FB423Fb241CE0DE345d74904f97D60792FFd8',
   [ChainId.MANTA]: '0x3005827fB92A0cb7D0f65738D6D645d98A4Ad96b',
   [ChainId.ZKATANA]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
+  [ChainId.BTTC]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
   [ChainId.TIMX]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
   [ChainId.X1]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
   [ChainId.IMX]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
@@ -191,6 +193,7 @@ export const UNI_V3_FACTORY_ADDRESS: AddressMap = {
   [ChainId.ZKEVM]: '0xD9a2AD9E927Bd7014116CC5c7328f028D4318178',
   [ChainId.MANTA]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.ZKATANA]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
+  [ChainId.BTTC]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.TIMX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.X1]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.IMX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
@@ -201,6 +204,7 @@ export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
   [ChainId.ZKEVM]: '0x331F3a300b7115A45ba31E3428AC002267BB6D77',
   [ChainId.MANTA]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.ZKATANA]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
+  [ChainId.BTTC]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.TIMX]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.X1]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.IMX]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
@@ -212,6 +216,12 @@ export const UNI_SWAP_ROUTER: AddressMap = {
   [ChainId.ZKEVM]: '0x1E7E4c855520b2106320952A570a3e5E3E618101',
   [ChainId.MANTA]: '0xfdE3eaC61C5Ad5Ed617eB1451cc7C3a0AC197564',
   [ChainId.ZKATANA]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+  [ChainId.BTTC]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
+};
+
+export const GAMMA_UNIPROXY_ADDRESSES: AddressMap = {
+  [ChainId.MATIC]: '0xe0A61107E250f8B5B24bf272baBFCf638569830C',
+  [ChainId.ZKEVM]: '0x66CD859053c458688044d816117D5Bdf42A56813',
   [ChainId.TIMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.X1]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.IMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
@@ -239,6 +249,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.ZKEVM]: '0x61530d6E1c7A47BBB3e48e8b8EdF7569DcFeE121',
   [ChainId.MANTA]: '0x1FD671daC06DF1431E79d772037E93bdB2dfeb48',
   [ChainId.ZKATANA]: '0x61211321E272584d6686F79bb205082C4cDa5d5F',
+  [ChainId.BTTC]: '0xdc55A13b6b61A8fDa5ACDf760D14AF9DA9a38367',
   [ChainId.TIMX]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
   [ChainId.X1]: '0x4857Dfd11c712e862eC362cEee29F7974B70EfcD',
   [ChainId.IMX]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
@@ -452,6 +463,13 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
     'WETH',
     'Wrapped ETHER',
   ),
+  [ChainId.BTTC]: new TokenV3(
+    ChainId.BTTC,
+    '0x23181F21DEa5936e24163FFABa4Ea3B316B57f3C',
+    18,
+    'WBTT',
+    'Wrapped BTT',
+  ),
   [ChainId.TIMX]: new TokenV3(
     ChainId.TIMX,
     '0x1CcCa691501174B4A623CeDA58cC8f1a76dc3439',
@@ -514,6 +532,13 @@ export const USDC: { [chainId: number]: Token } = {
     6,
     'USDC',
     'USD Coin',
+  ),
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0xAE17940943BA9440540940DB0F1877f101D39e8b',
+    6,
+    'USDC.e',
+    'USD Coin_Ethereum',
   ),
   [ChainId.X1]: new Token(
     ChainId.X1,
@@ -579,6 +604,16 @@ export const DAIE: { [chainId: number]: Token } = {
   ),
 };
 
+export const USDCT: { [chainId: number]: Token } = {
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0x935faA2FCec6Ab81265B301a30467Bbc804b43d3',
+    6,
+    'USDC.t',
+    'USD Coin_TRON',
+  ),
+};
+
 export const USDT: { [chainId: number]: Token } = {
   [ChainId.ETHEREUM]: new Token(
     ChainId.ETHEREUM,
@@ -622,6 +657,13 @@ export const USDT: { [chainId: number]: Token } = {
     'USDT',
     'Tether USD',
   ),
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0xE887512ab8BC60BcC9224e1c3b5Be68E26048B8B',
+    6,
+    'USDT.e',
+    'Tether USD_Ethereum',
+  ),
   [ChainId.IMX]: new Token(
     ChainId.IMX,
     '0x68bcc7F1190AF20e7b572BCfb431c3Ac10A936Ab',
@@ -642,6 +684,16 @@ export const USDT: { [chainId: number]: Token } = {
     6,
     'USDT',
     'Tether USD',
+  ),
+};
+
+export const USDTT: { [chainId: number]: Token } = {
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0xdB28719F7f938507dBfe4f0eAe55668903D34a15',
+    6,
+    'USDT.t',
+    'Tether USD_TRON',
   ),
 };
 
@@ -810,6 +862,13 @@ export const ETHER: { [chainId: number]: Token } = {
     18,
     //TODO: this should really have a difference symbol but we use 'ETH' hardcoded to represent native
     //Due to Uniswap SDK implmentation
+    'ETH',
+    'Ether',
+  ),
+  [ChainId.BTTC]: new Token(
+    ChainId.BTTC,
+    '0x1249C65AfB11D179FFB3CE7D4eEDd1D9b98AD006',
+    18,
     'ETH',
     'Ether',
   ),
@@ -1575,6 +1634,7 @@ export const SUGGESTED_BASES: {
     STONE[ChainId.MANTA],
   ],
   [ChainId.ZKATANA]: [WETH[ChainId.ZKATANA], USDC[ChainId.ZKATANA]],
+  [ChainId.BTTC]: [WETH[ChainId.BTTC], USDC[ChainId.BTTC], USDT[ChainId.BTTC]],
   [ChainId.X1]: [WETH[ChainId.X1], USDC[ChainId.X1]],
   [ChainId.TIMX]: [WETH[ChainId.TIMX], USDC[ChainId.TIMX]],
   [ChainId.IMX]: [

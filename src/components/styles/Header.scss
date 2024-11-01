@@ -463,6 +463,9 @@
   position: relative;
   display: flex;
   margin-right: 8px;
+  & img {
+    border-radius: 50%;
+  }
   & .networkActiveDot {
     position: absolute;
     top: -4px;
