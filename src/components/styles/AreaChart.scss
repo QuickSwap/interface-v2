@@ -1,5 +1,19 @@
 @use 'styles/variables' as *;
+@use "styles/breakpoints" as *;
 
+.areaChartContainer {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  @include media('screen', '<phone') {
+    flex-direction: row-reverse;
+  }
+
+  @include media('screen', '<tablet') {
+    flex-direction: row-reverse;
+  }
+}
 .chartContainer {
   flex: 1;
   margin-top: -20px;
