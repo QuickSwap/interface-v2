@@ -247,3 +247,17 @@
     border-radius: 12px;
   }
 }
+
+.sortBondList {
+  @include media('screen', '<phone') {
+    display: none;
+  }
+}
+
+.bondConnectWalletBtn {
+  border-radius: 10px;
+  margin-top: 15px;
+  @include media('screen', '<phone') {
+    width: 100%;
+  }
+}

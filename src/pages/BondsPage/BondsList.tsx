@@ -11,6 +11,7 @@ import { useActiveWeb3React } from 'hooks';
 import { formatUnits } from 'ethers/lib/utils';
 import { BigNumber } from 'ethers';
 import { SortColumns } from 'components';
+import 'pages/styles/bonds.scss';
 
 interface BondsListProps {
   search: string;
@@ -229,7 +230,7 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
   return (
     <Box pb={2} px={3}>
       {showSort && (
-        <Box padding='10px 16px'>
+        <Box padding='10px 16px' className='sortBondList'>
           <SortColumns
             sortColumns={sortByDesktopItems}
             selectedSort={sortBy}
