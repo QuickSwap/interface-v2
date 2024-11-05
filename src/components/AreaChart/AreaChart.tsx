@@ -151,7 +151,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
             width='100%'
             height={height}
           />
-          <Box className='categoryValues' mt={-5} gridGap={8}>
+          <Box className='categoryValues' mt={-5} gridGap={2}>
             {categories.map((val, ind) => (
               <p key={ind}>{val}</p>
             ))}
