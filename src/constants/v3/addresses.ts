@@ -35,6 +35,7 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.IMX]: [WETH[ChainId.IMX]],
   [ChainId.ASTARZKEVM]: [WETH[ChainId.ASTARZKEVM]],
   [ChainId.LAYERX]: [WETH[ChainId.LAYERX]],
+  [ChainId.MINATO]: [WETH[ChainId.MINATO]],
 };
 
 export const toV2Token = (t: {
@@ -92,6 +93,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.ASTARZKEVM]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
   [ChainId.LAYERX]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
   [ChainId.ETHEREUM]: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  [ChainId.MINATO]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
 };
 
 export const defaultBondDexFactories: {
@@ -165,6 +167,7 @@ export const UNIV3_QUOTER_ADDRESSES: AddressMap = {
   [ChainId.X1]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
   [ChainId.IMX]: '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
   [ChainId.ASTARZKEVM]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+  [ChainId.MINATO]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
 };
 
 export const SWAP_ROUTER_ADDRESSES: AddressMap = {
@@ -195,6 +198,7 @@ export const UNI_V3_FACTORY_ADDRESS: AddressMap = {
   [ChainId.X1]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.IMX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
   [ChainId.ASTARZKEVM]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
+  [ChainId.MINATO]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
 };
 
 export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
@@ -205,6 +209,7 @@ export const UNI_NFT_POSITION_MANAGER_ADDRESS: AddressMap = {
   [ChainId.X1]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.IMX]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
   [ChainId.ASTARZKEVM]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
+  [ChainId.MINATO]: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
 };
 
 export const UNI_SWAP_ROUTER: AddressMap = {
@@ -216,6 +221,7 @@ export const UNI_SWAP_ROUTER: AddressMap = {
   [ChainId.X1]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.IMX]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.ASTARZKEVM]: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
+  [ChainId.MINATO]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
 };
 
 export const GAMMA_MASTERCHEF_ADDRESSES: AddressMap[] = [
@@ -244,6 +250,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.IMX]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
   [ChainId.ASTARZKEVM]: '0x81D880BfaB1f7f08816D9bd4571E2f5953532287',
   [ChainId.LAYERX]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
+  [ChainId.MINATO]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
 };
 
 export const V3_MIGRATOR_ADDRESSES: AddressMap = {
@@ -463,6 +470,7 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
   [ChainId.IMX]: toV3Token(WETH[ChainId.IMX]),
   [ChainId.ASTARZKEVM]: toV3Token(WETH[ChainId.ASTARZKEVM]),
   [ChainId.LAYERX]: toV3Token(WETH[ChainId.LAYERX]),
+  [ChainId.MINATO]: toV3Token(WETH[ChainId.MINATO]),
 };
 
 export const USDC: { [chainId: number]: Token } = {
@@ -546,6 +554,13 @@ export const USDC: { [chainId: number]: Token } = {
   [ChainId.LAYERX]: new Token(
     ChainId.LAYERX,
     '0x74b7F16337b8972027F6196A17a631aC6dE26d22',
+    6,
+    'USDC',
+    'USDC',
+  ),
+  [ChainId.MINATO]: new Token(
+    ChainId.MINATO,
+    '0xE9A198d38483aD727ABC8b0B1e16B2d338CF0391',
     6,
     'USDC',
     'USDC',
@@ -1087,12 +1102,26 @@ export const WSTETH: { [chainId: number]: Token } = {
     'wstETH',
     'Wrapped liquid staked Ether 2.0',
   ),
+  [ChainId.MINATO]: new Token(
+    ChainId.MINATO,
+    '0x5717D6A621aA104b0b4cAd32BFe6AD3b659f269E',
+    18,
+    'wstETH',
+    'Wrapped liquid staked Ether 2.0',
+  ),
 };
 
 export const ASTR: { [chainId: number]: Token } = {
   [ChainId.ASTARZKEVM]: new Token(
     ChainId.ASTARZKEVM,
     '0xdf41220C7e322bFEF933D85D01821ad277f90172',
+    18,
+    'ASTR',
+    'Astar',
+  ),
+  [ChainId.MINATO]: new Token(
+    ChainId.MINATO,
+    '0x26e6f7c7047252DdE3dcBF26AA492e6a264Db655',
     18,
     'ASTR',
     'Astar',
@@ -1533,6 +1562,12 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
     toV3Token(USDT[ChainId.LAYERX]),
     toV3Token(ETHER[ChainId.LAYERX]),
   ],
+  [ChainId.MINATO]: [
+    WMATIC_EXTENDED[ChainId.MINATO],
+    toV3Token(USDC[ChainId.MINATO]),
+    toV3Token(ASTR[ChainId.MINATO]),
+    toV3Token(WSTETH[ChainId.MINATO]),
+  ],
 };
 
 export const SUGGESTED_BASES: {
@@ -1593,11 +1628,16 @@ export const SUGGESTED_BASES: {
     ASTR[ChainId.ASTARZKEVM],
   ],
   [ChainId.LAYERX]: [
-    ETHER[ChainId.LAYERX],
     WETH[ChainId.LAYERX],
     WBTC[ChainId.LAYERX],
     USDC[ChainId.LAYERX],
     USDT[ChainId.LAYERX],
+  ],
+  [ChainId.MINATO]: [
+    WETH[ChainId.MINATO],
+    USDC[ChainId.MINATO],
+    ASTR[ChainId.MINATO],
+    WSTETH[ChainId.MINATO],
   ],
 };
 
@@ -1693,6 +1733,12 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
     toV3Token(USDT[ChainId.LAYERX]),
     toV3Token(ETHER[ChainId.LAYERX]),
   ],
+  [ChainId.MINATO]: [
+    WMATIC_EXTENDED[ChainId.MINATO],
+    toV3Token(USDC[ChainId.MINATO]),
+    toV3Token(ASTR[ChainId.MINATO]),
+    toV3Token(WSTETH[ChainId.MINATO]),
+  ],
 };
 
 export const V2_PINNED_PAIRS: {
@@ -1778,12 +1824,13 @@ export const wrappedTokenAddresses: {
   [ChainId.ZKTESTNET]: WETH[ChainId.ZKTESTNET].address,
   [ChainId.MUMBAI]: WETH[ChainId.MUMBAI].address,
   [ChainId.DOEGCHAIN_TESTNET]: WETH[ChainId.DOEGCHAIN_TESTNET].address,
+  [ChainId.MINATO]: WETH[ChainId.MINATO].address,
 };
 
 export const nativeTokenSymbols: {
   readonly [chainId in ChainId]: string | undefined;
 } = {
-  [ChainId.ETHEREUM]: 'ETHER',
+  [ChainId.ETHEREUM]: 'ETH',
   [ChainId.MATIC]: 'MATIC',
   [ChainId.ZKEVM]: 'ETH',
   [ChainId.MANTA]: 'ETH',
@@ -1799,4 +1846,5 @@ export const nativeTokenSymbols: {
   [ChainId.ZKTESTNET]: 'ETH',
   [ChainId.MUMBAI]: 'MATIC',
   [ChainId.DOEGCHAIN_TESTNET]: 'DOGE',
+  [ChainId.MINATO]: 'ETH',
 };
