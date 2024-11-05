@@ -1,0 +1,100 @@
+{
+  "v3": true,
+  "v2": false,
+  "rpc": "https://rpc.minato.soneium.org/",
+  "blockExplorer": "https://soneium-minato.blockscout.com/",
+  "chainId": 1946,
+  "isMainnet": false,
+  "visible": true,
+  "networkName": "Minato",
+  "nativeCurrencyImage": "/soneium.jpg",
+  "nativeCurrency": {
+    "name": "Ether",
+    "symbol": "ETH",
+    "decimals": 18
+  },
+  "swap": {
+    "available": true,
+    "bestTrade": false,
+    "proMode": false,
+    "limitOrder": false,
+    "liquidityHub": false,
+    "twapOrder": false,
+    "crossChain": false
+  },
+  "pools": {
+    "available": true
+  },
+  "farm": {
+    "quickswap": false,
+    "merkl": false,
+    "available": false
+  },
+  "lair": {
+    "available": false,
+    "oldLair": false,
+    "newLair": false,
+    "syrup": false
+  },
+  "convert": {
+    "available": false
+  },
+  "predictions": {
+    "available": false
+  },
+  "analytics": {
+    "liquidityHub": false,
+    "available": true
+  },
+  "lending": {
+    "available": false
+  },
+  "migrate": {
+    "available": false
+  },
+  "gamingHub": {
+    "available": false
+  },
+  "leaderboard": {
+    "available": false
+  },
+  "safe": {
+    "available": false
+  },
+  "perps": {
+    "available": false
+  },
+  "hydra": {
+    "available": false
+  },
+  "perpsV2": {
+    "available": false
+  },
+  "bos": {
+    "available": false
+  },
+  "gamma": {
+    "available": false
+  },
+  "unipilot": {
+    "available": false
+  },
+  "defiedge": {
+    "available": false
+  },
+  "bonds": {
+    "available": false
+  },
+  "steer": {
+    "available": false
+  },
+  "dappos": {
+    "available": false
+  },
+  "ichi": {
+    "available": false
+  },
+  "lpLock": {
+    "available": false
+  }
+}

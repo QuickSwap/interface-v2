@@ -11,6 +11,7 @@ import x1 from './x1.json';
 import IMX from './imx.json';
 import astarZkevm from './astarzkevm.json';
 import layerX from './layerx.json';
+import minato from './minato.json';
 import orderlyFeeTiers from './orderlyFeeTiers.json';
 import { ChainId } from '@uniswap/sdk';
 
@@ -27,6 +28,7 @@ const configs: any = {
   [ChainId.IMX]: IMX,
   [ChainId.ASTARZKEVM]: astarZkevm,
   [ChainId.LAYERX]: layerX,
+  [ChainId.MINATO]: minato,
 };
 
 export const getConfig = (network: ChainId | undefined) => {
