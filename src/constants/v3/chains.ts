@@ -137,4 +137,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'OKB',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.MINATO]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://soneium-minato.blockscout.com',
+    infoLink: 'https://rpc.minato.soneium.org',
+    label: 'minato',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Ether',
+    nativeCurrencyDecimals: 18,
+  },
 };
