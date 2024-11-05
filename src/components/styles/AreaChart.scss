@@ -3,15 +3,15 @@
 
 .areaChartContainer {
   display: flex;
-  overflow-x: auto;
   overflow-y: hidden;
+  overflow-x: hidden;
 
   @include media('screen', '<phone') {
-    flex-direction: row-reverse;
+    overflow-x: auto;
   }
 
   @include media('screen', '<tablet') {
-    flex-direction: row-reverse;
+    overflow-x: auto;
   }
 }
 .chartContainer {
@@ -23,8 +23,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 8px;
-  margin-bottom: 20px;
+  margin-right: 8px;
+  margin-bottom: 32px;
   & p {
     font-size: 10px;
     font-weight: 500;

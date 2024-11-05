@@ -143,20 +143,6 @@ const AreaChart: React.FC<AreaChartProps> = ({
   return (
     <Box width={1}>
       <Box mt={2.5} width={width} className='areaChartContainer'>
-        <Box className='chartContainer'>
-          <Chart
-            options={options}
-            series={series}
-            type='area'
-            width='100%'
-            height={height}
-          />
-          <Box className='categoryValues' mt={-5} gridGap={2}>
-            {categories.map((val, ind) => (
-              <p key={ind}>{val}</p>
-            ))}
-          </Box>
-        </Box>
         {yAxisValues && (
           <Box className='yAxis'>
             {yAxisValues.map((value, index) => (
@@ -170,6 +156,20 @@ const AreaChart: React.FC<AreaChartProps> = ({
             ))}
           </Box>
         )}
+        <Box className='chartContainer'>
+          <Chart
+            options={options}
+            series={series}
+            type='area'
+            width='100%'
+            height={height}
+          />
+          <Box className='categoryValues' mt={-4} gridGap={2}>
+            {categories.map((val, ind) => (
+              <p key={ind}>{val}</p>
+            ))}
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
