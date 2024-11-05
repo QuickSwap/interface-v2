@@ -142,7 +142,12 @@ const AreaChart: React.FC<AreaChartProps> = ({
 
   return (
     <Box width={1}>
-      <Box mt={2.5} width={width} className='areaChartContainer'>
+      <Box
+        mt={2.5}
+        width={width}
+        className='areaChartContainer'
+        paddingBottom={2}
+      >
         {yAxisValues && (
           <Box className='yAxis'>
             {yAxisValues.map((value, index) => (

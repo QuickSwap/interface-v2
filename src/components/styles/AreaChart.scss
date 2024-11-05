@@ -5,15 +5,9 @@
   display: flex;
   overflow-y: hidden;
   overflow-x: hidden;
-
-  @include media('screen', '<phone') {
-    overflow-x: auto;
-  }
-
-  @include media('screen', '<tablet') {
-    overflow-x: auto;
-  }
+  overflow-x: auto;
 }
+
 .chartContainer {
   flex: 1;
   margin-top: -20px;

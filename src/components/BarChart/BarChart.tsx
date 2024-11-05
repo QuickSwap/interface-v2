@@ -26,7 +26,7 @@ const BarChart: React.FC<BarChartProps> = ({
       : '100%';
   console.log('areaWidth', areaWidth);
   return (
-    <Box onMouseLeave={onMouseLeave} overflow='auto'>
+    <Box onMouseLeave={onMouseLeave} overflow='auto' paddingBottom={2}>
       <Box
         className='flex items-end justify-between'
         width={`calc(${areaWidth})`}
