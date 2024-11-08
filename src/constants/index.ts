@@ -363,18 +363,18 @@ export const DEFAULT_LIST_OF_LISTS: string[] = [
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
-  ChainId.ETHEREUM,
   ChainId.ZKEVM,
   ChainId.MANTA,
+  ChainId.LAYERX,
+  ChainId.DOGECHAIN,
+  ChainId.ETHEREUM,
   ChainId.IMX,
   ChainId.ASTARZKEVM,
-  ChainId.DOGECHAIN,
-  ChainId.LAYERX,
   ChainId.ZKATANA,
-  ChainId.X1,
   ChainId.TIMX,
   ChainId.ZKTESTNET,
   ChainId.MUMBAI,
+  ChainId.X1,
   ChainId.DOEGCHAIN_TESTNET,
 ];
 

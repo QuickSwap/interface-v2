@@ -4,6 +4,7 @@ import { useTheme } from '@material-ui/core/styles';
 import HeroSection from './HeroSection';
 import TradingInfo from './TradingInfo';
 import { AvailableChainList } from 'components/AvailableChainList';
+import { PartnerList } from 'components/PartnerList';
 import { KeyboardArrowDown } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -14,11 +15,14 @@ const GlobalSection: React.FC = () => {
   const { t } = useTranslation();
   return (
     <>
-      <Box margin={mobileWindowSize ? '64px 0' : '100px 0 159px 0px'}>
+      <Box margin={mobileWindowSize ? '64px 0' : '100px 0 120px 0px'}>
         <HeroSection />
       </Box>
       <Box style={{ marginBottom: '127px' }}>
         <AvailableChainList />
+      </Box>
+      <Box style={{ marginBottom: '127px' }}>
+        <PartnerList />
       </Box>
       <Box
         className='quick_statistics'
