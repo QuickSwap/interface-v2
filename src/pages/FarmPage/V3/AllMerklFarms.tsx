@@ -162,7 +162,10 @@ const AllMerklFarms: React.FC<Props> = ({
 
   const v3Farms = farms
     .map((item: any) => {
-      const apr = item.meanAPR;
+      // const apr = item.meanAPR;
+      const apr = Math.max(
+        ...item.alm.map((item_farm) => item_farm.poolAPR + item_farm.almAPR),
+      );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
       // const rewardItems: any[] = (item?.distributionData ?? []).filter(
       //   (reward: any) => reward.isLive && !reward.isMock,
