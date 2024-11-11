@@ -259,11 +259,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       id: 'dragons-page-link',
     });
   }
-  menuItems.push({
-    link: '/bridge',
-    text: t('Bridge'),
-    id: 'bridge-page-link',
-  });
+
+  if (isSupportedNetwork)
+    menuItems.push({
+      link: '/bridge',
+      text: t('Bridge'),
+      id: 'bridge-page-link',
+    });
+
   if (showGamingHub) {
     menuItems.push({
       link: '/gamehub',

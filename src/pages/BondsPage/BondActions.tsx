@@ -33,7 +33,11 @@ const BondActions: React.FC<BondActionsProps> = ({
   const getBillActionButton = () => {
     switch (true) {
       case !account:
-        return <Button onClick={connectWallet}>{t('connectWallet')}</Button>;
+        return (
+          <Button className='bondConnectWalletBtn' onClick={connectWallet}>
+            {t('connectWallet')}
+          </Button>
+        );
       case purchasePath === PurchasePath.LpPurchase:
         return (
           <LPPath
