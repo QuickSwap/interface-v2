@@ -346,6 +346,7 @@ export function SupplyLiquidityV3() {
     },
     [redirectWithCurrencySingleToken, selectVault],
   );
+
   return (
     <Box>
       {openSettingsModal && (

@@ -24,12 +24,14 @@ export function computePoolAddress({
   tokenB,
   fee,
   initCodeHashManualOverride,
+  isAlgebraIntegral,
 }: {
   poolDeployer: string;
   tokenA: Token;
   tokenB: Token;
   fee?: FeeAmount;
   initCodeHashManualOverride?: string;
+  isAlgebraIntegral?: boolean;
 }): string {
   const [token0, token1] = tokenA.sortsBefore(tokenB)
     ? [tokenA, tokenB]
@@ -52,7 +54,9 @@ export function computePoolAddress({
             ),
       ],
     ),
-    initCodeHashManualOverride ?? fee
+    isAlgebraIntegral
+      ? config['algebraIntegralPoolInitCodeHash']
+      : initCodeHashManualOverride ?? fee
       ? UNI_POOL_INIT_CODE_HASH
       : poolInitCodeHash
       ? poolInitCodeHash

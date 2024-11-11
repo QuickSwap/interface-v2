@@ -366,6 +366,7 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_B],
     feeAmount,
     !!feeAmount,
+    liquidityRangeType === GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL,
   );
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 

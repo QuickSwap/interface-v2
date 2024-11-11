@@ -32,6 +32,7 @@ import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
+  ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from 'constants/v3/addresses';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import CurrencyInputPanel from 'components/v3/CurrencyInputPanel';
@@ -50,6 +51,7 @@ import { unwrappedToken } from 'utils/unwrappedToken';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
 import { TransactionType } from 'models/enums';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
+import { GlobalConst } from 'constants/index';
 
 interface IncreaseLiquidityV3Props {
   positionDetails: PositionPool;
@@ -110,6 +112,7 @@ export default function IncreaseLiquidityV3({
     depositBDisabled,
     ticksAtLimit,
     feeTier,
+    liquidityRangeType,
   } = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,
@@ -120,9 +123,13 @@ export default function IncreaseLiquidityV3({
   const positionManagerAddress = useMemo(() => {
     if (positionDetails.isUni) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    } else if (
+      liquidityRangeType === GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+    ) {
+      return ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
-  }, [chainId, positionDetails]);
+  }, [chainId, positionDetails, liquidityRangeType]);
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(noLiquidity);
 
