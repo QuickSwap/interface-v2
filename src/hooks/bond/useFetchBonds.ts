@@ -63,7 +63,9 @@ export const useFetchBonds = () => {
     return bonds
       .map((bond) => bond.lpToken)
       .filter(
-        (token) => token?.liquidityDex?.[chainId] !== LiquidityDex.External,
+        (token) =>
+          token?.liquidityDex?.[chainId] !== LiquidityDex.External &&
+          token.lpToken,
       )
       .reduce((acc: BondToken[], token) => {
         const itemIsExisting = !!acc.find((item) => {
@@ -89,6 +91,9 @@ export const useFetchBonds = () => {
     if (!bonds) return [];
     return bonds
       .map((bond) => bond.earnToken)
+      .concat(
+        bonds.map((bond) => bond.lpToken).filter((token) => !token.lpToken),
+      )
       .filter(
         (token) => token.liquidityDex?.[chainId] !== LiquidityDex.External,
       )
@@ -116,6 +121,9 @@ export const useFetchBonds = () => {
     if (!bonds) return [];
     return bonds
       .map((bond) => bond.earnToken)
+      .concat(
+        bonds.map((bond) => bond.lpToken).filter((token) => !token.lpToken),
+      )
       .filter(
         (token) => token.liquidityDex?.[chainId] === LiquidityDex.External,
       )
@@ -141,7 +149,9 @@ export const useFetchBonds = () => {
     return bonds
       .map((bond) => bond.lpToken)
       .filter(
-        (token) => token?.liquidityDex?.[chainId] === LiquidityDex.External,
+        (token) =>
+          token?.liquidityDex?.[chainId] === LiquidityDex.External &&
+          token.lpToken,
       )
       .reduce((acc: BondToken[], token) => {
         const itemIsExisting = !!acc.find((item) => {
@@ -393,7 +403,7 @@ export const useFetchBonds = () => {
           address &&
           item.address.toLowerCase() === address.toLowerCase(),
       );
-      const lpPrice = lpPrices.find((item) => {
+      const lpPrice = lpPrices.concat(bondTokenPrices).find((item) => {
         const lpTokenAddress = item.token.address[chainId];
         const bondLPTokenAddress = bond.lpToken.address[chainId];
         return (
@@ -402,15 +412,17 @@ export const useFetchBonds = () => {
           lpTokenAddress.toLowerCase() === bondLPTokenAddress.toLowerCase()
         );
       });
-      const dexScreenerLpPrice = (dexScreenerLPPrices ?? []).find((item) => {
-        const lpTokenAddress = item.token.address[chainId];
-        const bondLPTokenAddress = bond.lpToken.address[chainId];
-        return (
-          lpTokenAddress &&
-          bondLPTokenAddress &&
-          lpTokenAddress.toLowerCase() === bondLPTokenAddress.toLowerCase()
-        );
-      })?.price;
+      const dexScreenerLpPrice = (dexScreenerLPPrices ?? [])
+        .concat(dexScreenerPrices ?? [])
+        .find((item) => {
+          const lpTokenAddress = item.token.address[chainId];
+          const bondLPTokenAddress = bond.lpToken.address[chainId];
+          return (
+            lpTokenAddress &&
+            bondLPTokenAddress &&
+            lpTokenAddress.toLowerCase() === bondLPTokenAddress.toLowerCase()
+          );
+        })?.price;
       const lpPriceNumber =
         lpPrice && lpPrice.price
           ? Number(formatUnits(lpPrice.price))

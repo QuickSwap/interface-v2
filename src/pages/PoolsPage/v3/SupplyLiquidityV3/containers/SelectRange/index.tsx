@@ -856,29 +856,6 @@ export function SelectRange({
                 </Box>
               </Grid>
             )}
-            {defiedgeStrategyExists && (
-              <Grid item xs={4}>
-                <Box
-                  className={`pool-select-vault-panel${
-                    liquidityRangeType ===
-                    GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
-                      ? ' pool-select-vault-selected'
-                      : ''
-                  }`}
-                  onClick={() => {
-                    onChangeLiquidityRangeType(
-                      GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
-                    );
-                  }}
-                >
-                  <p>Defiedge</p>
-                  <small className='text-success'>
-                    {formatNumber(defiedgeStrategiesForPair[0]?.apr)}%
-                  </small>
-                  <span>{t('apr')}</span>
-                </Box>
-              </Grid>
-            )}
             {steerVaultExists && (
               <Grid item xs={4}>
                 <Box

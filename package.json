@@ -18,7 +18,7 @@
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "@uniswap/liquidity-staker": "^1.0.2",
-    "@uniswap/sdk": "npm:quickswap-sdk@3.0.32",
+    "@uniswap/sdk": "npm:quickswap-sdk@3.0.33",
     "@uniswap/sdk-core": "^3.2.2",
     "@uniswap/token-lists": "npm:quickswap-token-lists@^1.0.2",
     "@uniswap/v2-core": "1.0.0",
@@ -85,7 +85,7 @@
   ],
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@0xsquid/widget": "2.0.0-beta.19",
+    "@0xsquid/widget": "3.0.10",
     "@ape.swap/apeswap-lists": "1.20.5",
     "@arcxmoney/analytics": "^2.0.2",
     "@hypelab/sdk-react": "^1.0.1",
@@ -97,8 +97,9 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.5",
-    "@orbs-network/twap-ui": "^0.10.23",
-    "@orbs-network/twap-ui-quickswap": "^0.10.23",
+    "@orbs-network/liquidity-hub-sdk": "^1.0.44",
+    "@orbs-network/swap-ui": "^0.0.14",
+    "@orbs-network/twap-sdk": "^2.0.33",
     "@orderly.network/hooks": "^1.4.3",
     "@orderly.network/react": "^1.4.3",
     "@orderly.network/types": "^1.4.3",
@@ -122,6 +123,7 @@
     "react-tradingview-embed": "^3.0.6",
     "react-virtuoso": "^4.1.0",
     "sass": "^1.77.1",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "web3": "^1.7.1"
   }
 }

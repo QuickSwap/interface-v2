@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Box, useMediaQuery, useTheme } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { useMerklFarms } from 'hooks/v3/useV3Farms';
@@ -8,7 +8,6 @@ import CustomSelector from 'components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
 import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useHistory } from 'react-router-dom';
 import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import {
@@ -148,24 +147,24 @@ const MyRewardFarms: React.FC<Props> = ({
       const rewardItems: any[] = (item?.distributionData ?? []).filter(
         (reward: any) => reward.isLive && !reward.isMock,
       );
-      const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
-        const usdPrice =
-          rewardUSDPrices?.find(
-            (priceItem) =>
-              item.rewardToken &&
-              priceItem.address.toLowerCase() ===
-                item.rewardToken.toLowerCase(),
-          )?.price ?? 0;
-        const rewardDuration =
-          (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
-        return (
-          total +
-          (rewardDuration > 0
-            ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
-            : 0)
-        );
-      }, 0);
-      return { ...item, apr, title, dailyRewardUSD };
+      // const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
+      //   const usdPrice =
+      //     rewardUSDPrices?.find(
+      //       (priceItem) =>
+      //         item.rewardToken &&
+      //         priceItem.address.toLowerCase() ===
+      //           item.rewardToken.toLowerCase(),
+      //     )?.price ?? 0;
+      //   const rewardDuration =
+      //     (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+      //   return (
+      //     total +
+      //     (rewardDuration > 0
+      //       ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
+      //       : 0)
+      //   );
+      // }, 0);
+      return { ...item, apr, title };
     })
     .filter((farm) => {
       const searchCondition = (farm?.title ?? '')
@@ -235,11 +234,11 @@ const MyRewardFarms: React.FC<Props> = ({
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
-          ? sortMultiplier
-          : -1 * sortMultiplier;
-      }
+      // if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+      //   return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+      //     ? sortMultiplier
+      //     : -1 * sortMultiplier;
+      // }
       return 1;
     });
 
@@ -294,31 +293,12 @@ const MyRewardFarms: React.FC<Props> = ({
                 item.address.toLowerCase() === alm.almAddress.toLowerCase(),
             )?.title ?? '';
         }
-        const farmType = alm.label.split(' ')[0];
-        const poolRewards = pool?.rewardsPerToken;
-        const rewardTokenAddresses = poolRewards
-          ? Object.keys(poolRewards)
-          : [];
-        const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
-        const rewards = rewardData
-          .map((item, ind) => {
-            return { ...item, address: rewardTokenAddresses[ind] };
-          })
-          .filter((item) => {
-            const accumulatedRewards = item.breakdownOfAccumulated;
-            return (
-              accumulatedRewards &&
-              Object.keys(accumulatedRewards).find((item) =>
-                item.includes(farmType),
-              )
-            );
-          });
+
         return {
           ...alm,
           token0: pool?.token0,
           token1: pool?.token1,
           title,
-          rewards,
           poolFee:
             (pool?.ammName ?? '').toLowerCase() === 'quickswapuni'
               ? pool?.poolFee
@@ -370,16 +350,13 @@ const MyRewardFarms: React.FC<Props> = ({
   const [staked, setStaked] = useState(false);
 
   const filteredSelectedFarms = useMemo(() => {
-    const farmsFilteredWithRewards = selectedFarms.filter((item: any) =>
-      staked ? item.rewards.length > 0 : true,
-    );
     if (farmType.link === 'all') {
-      return farmsFilteredWithRewards;
+      return selectedFarms;
     }
-    return farmsFilteredWithRewards.filter(
+    return selectedFarms.filter(
       (item: any) => item.title && item.title === farmType.link,
     );
-  }, [farmType.link, selectedFarms, staked]);
+  }, [farmType.link, selectedFarms]);
 
   return (
     <>

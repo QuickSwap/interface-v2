@@ -141,34 +141,41 @@ const AreaChart: React.FC<AreaChartProps> = ({
   ];
 
   return (
-    <Box display='flex' mt={2.5} width={width}>
-      <Box className='chartContainer'>
-        <Chart
-          options={options}
-          series={series}
-          type='area'
-          width='100%'
-          height={height}
-        />
-        <Box className='categoryValues' mt={-5}>
-          {categories.map((val, ind) => (
-            <p key={ind}>{val}</p>
-          ))}
+    <Box width={1}>
+      <Box
+        mt={2.5}
+        width={width}
+        className='areaChartContainer'
+        paddingBottom={2}
+      >
+        {yAxisValues && (
+          <Box className='yAxis'>
+            {yAxisValues.map((value, index) => (
+              <p key={index}>
+                {// this is to show small numbers less than 0.0001
+
+                `${yAxisTicker === '$' ? yAxisTicker : ''}${
+                  value > 0.0001 ? formatCompact(value) : formatNumber(value)
+                }${yAxisTicker === '%' ? yAxisTicker : ''}`}
+              </p>
+            ))}
+          </Box>
+        )}
+        <Box className='chartContainer'>
+          <Chart
+            options={options}
+            series={series}
+            type='area'
+            width='100%'
+            height={height}
+          />
+          <Box className='categoryValues' mt={-4} gridGap={2}>
+            {categories.map((val, ind) => (
+              <p key={ind}>{val}</p>
+            ))}
+          </Box>
         </Box>
       </Box>
-      {yAxisValues && (
-        <Box className='yAxis'>
-          {yAxisValues.map((value, index) => (
-            <p key={index}>
-              {// this is to show small numbers less than 0.0001
-
-              `${yAxisTicker === '$' ? yAxisTicker : ''}${
-                value > 0.0001 ? formatCompact(value) : formatNumber(value)
-              }${yAxisTicker === '%' ? yAxisTicker : ''}`}
-            </p>
-          ))}
-        </Box>
-      )}
     </Box>
   );
 };

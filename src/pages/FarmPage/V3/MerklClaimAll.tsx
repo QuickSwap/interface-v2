@@ -1,64 +1,34 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Button, useMediaQuery, useTheme } from '@material-ui/core';
 import ClaimAllBg from 'assets/images/claimAllBg.png';
 import { useTranslation } from 'react-i18next';
-import { useGetMerklFarms } from 'hooks/v3/useV3Farms';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
-import { formatNumber, getTokenFromAddress } from 'utils';
+import { formatNumber } from 'utils';
 import { useClaimMerklRewards } from 'hooks/useClaimMerklRewards';
 import { Skeleton } from '@material-ui/lab';
 import { CurrencyLogo, CustomTooltip } from 'components';
-import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { useGetMerklRewards } from 'hooks/v3/useV3Farms';
 
 export const MerklClaimAll: React.FC = () => {
   const { t } = useTranslation();
-  const { chainId } = useActiveWeb3React();
-  const { isLoading: loadingFarms, data: merklFarms } = useGetMerklFarms();
-  const tokenMap = useSelectedTokenList();
+  const { chainId, account } = useActiveWeb3React();
+
+  const { isLoading: loadingFarms, data: merklRewards } = useGetMerklRewards(
+    chainId,
+    account,
+  );
+
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
-
-  const rewards = useMemo(() => {
-    if (!merklFarms) return [];
-    return merklFarms.reduce((memo: any[], farm: any) => {
-      const farmRewards = Object.keys(farm.rewardsPerToken).map((address) => {
-        const rewardData = farm.rewardsPerToken[address];
-        const token = getTokenFromAddress(address, chainId, tokenMap, []);
-        return { ...rewardData, address, token };
-      });
-      farmRewards.forEach((reward) => {
-        if (reward.unclaimed > 0) {
-          const existingItemIndex = memo.findIndex(
-            (item) =>
-              item.address.toLowerCase() === reward.address.toLowerCase(),
-          );
-          if (existingItemIndex > -1) {
-            const existingItem = memo[existingItemIndex];
-            memo = [
-              ...memo.slice(0, existingItemIndex),
-              {
-                ...existingItem,
-                unclaimed:
-                  (existingItem?.unclaimed ?? 0) + (reward?.unclaimed ?? 0),
-              },
-              ...memo.slice(existingItemIndex + 1),
-            ];
-          } else {
-            memo.push(reward);
-          }
-        }
-      });
-      return memo;
-    }, []);
-  }, [chainId, merklFarms, tokenMap]);
+  const tokens = merklRewards ? merklRewards.map((item) => item.address) : [];
 
   const {
     loading: loadingRewardTokenPrices,
     prices: rewardTokenPrices,
-  } = useUSDCPricesFromAddresses(rewards.map((reward: any) => reward.address));
+  } = useUSDCPricesFromAddresses(tokens as string[]);
 
-  const rewardsUSD = rewards.reduce((total: number, reward: any) => {
+  const rewardsUSD = merklRewards?.reduce((total: number, reward: any) => {
     const rewardTokenPrice =
       rewardTokenPrices?.find(
         (item) => item.address.toLowerCase() === reward.address.toLowerCase(),
@@ -75,12 +45,12 @@ export const MerklClaimAll: React.FC = () => {
         <p>{t('myrewards')}</p>
         {loadingRewardTokenPrices || loadingFarms ? (
           <Skeleton variant='rect' width={100} height={27} />
-        ) : rewards.length > 0 ? (
+        ) : merklRewards && merklRewards.length > 0 ? (
           <CustomTooltip
             placement='bottom-start'
             title={
               <Box className='flex flex-col' gridGap={8}>
-                {rewards.map((reward) => (
+                {merklRewards.map((reward) => (
                   <Box
                     className='flex justify-between'
                     width={200}

@@ -10,6 +10,7 @@ import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
 import dayjs from 'dayjs';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface Props {
   farm: any;
@@ -24,7 +25,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const currentTime = dayjs().unix();
 
-  const rewards = (farm.distributionData ?? [])
+  const rewards = (farm.distributions ?? [])
     .filter(
       (item: any) =>
         item.isLive &&
@@ -34,12 +35,24 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
     )
     .map((item: any) => {
       const rewardDuration =
-        (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+        Number(item?.endTimestamp ?? 0) - Number(item?.startTimestamp ?? 0);
       const dailyAmount =
         rewardDuration > 0
-          ? ((item?.amount ?? 0) / rewardDuration) * 3600 * 24
+          ? (Number(
+              formatUnits(
+                item?.amount ?? '0',
+                Number(farm.decimalsRewardToken),
+              ),
+            ) /
+              rewardDuration) *
+            3600 *
+            24
           : 0;
-      return { ...item, dailyAmount };
+      return {
+        ...item,
+        dailyAmount,
+        symbolRewardToken: farm.symbolRewardToken,
+      };
     })
     .reduce((memo: any[], item: any) => {
       const existingItemIndex = memo.findIndex(
@@ -83,6 +96,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   };
 
   const tokenMap = useSelectedTokenList();
+
   const token0 = getTokenFromAddress(farm.token0, chainId, tokenMap, []);
   const token1 = getTokenFromAddress(farm.token1, chainId, tokenMap, []);
 

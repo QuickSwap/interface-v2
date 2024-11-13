@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { GlobalConst, GlobalData } from 'constants/index';
 import { DoubleCurrencyLogo, SortColumns, ToggleSwitch } from 'components';
-import { useMerklFarms } from 'hooks/v3/useV3Farms';
+import { useGetMerklRewards, useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
 import MerklFarmCard from './MerklFarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
@@ -37,7 +37,7 @@ const AllMerklFarms: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const { chainId } = useActiveWeb3React();
+  const { chainId, account } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const history = useHistory();
 
@@ -141,6 +141,7 @@ const AllMerklFarms: React.FC<Props> = ({
   }, [sortValue]);
 
   const { loading, farms } = useMerklFarms();
+
   const rewardAddresses = farms.reduce((memo: string[], item: any) => {
     const distributionData: any[] = (item?.distributionData ?? []).filter(
       (reward: any) => reward.isLive && !reward.isMock,
@@ -161,33 +162,32 @@ const AllMerklFarms: React.FC<Props> = ({
 
   const v3Farms = farms
     .map((item: any) => {
-      const apr = item.alm.reduce(
-        (value: number, farm: any) =>
-          Math.max(value, farm.almAPR + farm.poolAPR),
-        0,
+      // const apr = item.meanAPR;
+      const apr = Math.max(
+        ...item.alm.map((item_farm) => item_farm.poolAPR + item_farm.almAPR),
       );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
-      const rewardItems: any[] = (item?.distributionData ?? []).filter(
-        (reward: any) => reward.isLive && !reward.isMock,
-      );
-      const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
-        const usdPrice =
-          rewardUSDPrices?.find(
-            (priceItem) =>
-              item.rewardToken &&
-              priceItem.address.toLowerCase() ===
-                item.rewardToken.toLowerCase(),
-          )?.price ?? 0;
-        const rewardDuration =
-          (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
-        return (
-          total +
-          (rewardDuration > 0
-            ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
-            : 0)
-        );
-      }, 0);
-      return { ...item, apr, title, dailyRewardUSD };
+      // const rewardItems: any[] = (item?.distributionData ?? []).filter(
+      //   (reward: any) => reward.isLive && !reward.isMock,
+      // );
+      // const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
+      //   const usdPrice =
+      //     rewardUSDPrices?.find(
+      //       (priceItem) =>
+      //         item.rewardToken &&
+      //         priceItem.address.toLowerCase() ===
+      //           item.rewardToken.toLowerCase(),
+      //     )?.price ?? 0;
+      //   const rewardDuration =
+      //     (item?.endTimestamp ?? 0) - (item?.startTimestamp ?? 0);
+      //   return (
+      //     total +
+      //     (rewardDuration > 0
+      //       ? ((usdPrice * (item?.amount ?? 0)) / rewardDuration) * 3600 * 24
+      //       : 0)
+      //   );
+      // }, 0);
+      return { ...item, apr, title };
     })
     .filter((farm) => {
       const searchCondition = (farm?.title ?? '')
@@ -257,11 +257,11 @@ const AllMerklFarms: React.FC<Props> = ({
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
-      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
-          ? sortMultiplier
-          : -1 * sortMultiplier;
-      }
+      // if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+      //   return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+      //     ? sortMultiplier
+      //     : -1 * sortMultiplier;
+      // }
       return 1;
     });
 
@@ -300,29 +300,11 @@ const AllMerklFarms: React.FC<Props> = ({
               item.address.toLowerCase() === alm.almAddress.toLowerCase(),
           )?.title ?? '';
       }
-      const farmType = alm.label.split(' ')[0];
-      const poolRewards = selectedPool?.rewardsPerToken;
-      const rewardTokenAddresses = poolRewards ? Object.keys(poolRewards) : [];
-      const rewardData: any[] = poolRewards ? Object.values(poolRewards) : [];
-      const rewards = rewardData
-        .map((item, ind) => {
-          return { ...item, address: rewardTokenAddresses[ind] };
-        })
-        .filter((item) => {
-          const accumulatedRewards = item.breakdownOfAccumulated;
-          return (
-            accumulatedRewards &&
-            Object.keys(accumulatedRewards).find((item) =>
-              item.includes(farmType),
-            )
-          );
-        });
       return {
         ...alm,
         token0: selectedPool?.token0,
         token1: selectedPool?.token1,
         title,
-        rewards,
         poolFee:
           (selectedPool?.ammName ?? '').toLowerCase() === 'quickswapuni'
             ? selectedPool?.poolFee

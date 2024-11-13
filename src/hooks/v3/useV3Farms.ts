@@ -315,38 +315,64 @@ export const useGetMerklFarms = () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
     const amms = merklAMMs[chainId] ?? ['quickswapuni'];
-    const ammStr = amms.map((amm) => `AMMs[]=${amm}&`).join('');
+    // const res = await fetch(`${merklAPIURL}/v3/merkl?chainIds=${chainId}`);
     const res = await fetch(
-      `${merklAPIURL}?${ammStr}chainIds[]=${chainId}${
-        account ? `&user=${account}` : ''
-      }`,
+      `${merklAPIURL}/v3/campaigns?chainIds=${chainId}&live=true`,
     );
     const data = await res.json();
     const farmData =
-      data && data[chainId.toString()]
-        ? data[chainId.toString()]?.pools
-        : undefined;
+      data && data[chainId.toString()] ? data[chainId.toString()] : undefined;
     if (!farmData) return [];
     const currentTime = dayjs().unix();
+    const farmList: any[] = [];
+    Object.values(farmData).map((mainParameter: any) => {
+      const distributions = Object.values(mainParameter)
+        .filter(
+          (item: any) =>
+            item.isLive &&
+            !item.isMock &&
+            (item?.endTimestamp ?? 0) >= currentTime &&
+            (item?.startTimestamp ?? 0) <= currentTime,
+        )
+        .filter(
+          (item: any) =>
+            !(blackListMerklFarms[chainId] ?? []).find(
+              (address) =>
+                item?.mainParameter &&
+                item.mainParameter.toLowerCase() ===
+                  address.toLocaleLowerCase(),
+            ) && amms.includes(item.ammName.toLocaleLowerCase()),
+        ) as any[];
+      if (distributions.length < 1) {
+        return;
+      }
 
-    return Object.values(farmData)
-      .filter(
-        (item: any) =>
-          (item?.distributionData ?? []).filter(
-            (item: any) =>
-              item.isLive &&
-              !item.isMock &&
-              (item?.endTimestamp ?? 0) >= currentTime &&
-              (item?.startTimestamp ?? 0) <= currentTime,
-          ).length > 0,
-      )
-      .filter(
-        (item: any) =>
-          !(blackListMerklFarms[chainId] ?? []).find(
-            (address) =>
-              item?.pool && item.pool.toLowerCase() === address.toLowerCase(),
-          ) && amms.includes(item.ammName.toLowerCase()),
-      ) as any[];
+      const farm = {
+        pool: distributions[0]['mainParameter'],
+        token0: distributions[0]['campaignParameters']['token0'],
+        token1: distributions[0]['campaignParameters']['token1'],
+        poolFee:
+          (distributions?.[0]?.ammName ?? '').toLowerCase() === 'quickswapuni'
+            ? distributions[0]['campaignParameters']['poolFee']
+            : undefined,
+        symbolToken0: distributions[0]['symbolToken0'],
+        symbolToken1: distributions[0]['symbolToken1'],
+        distributions,
+        forwarders: distributions[0]['forwarders'],
+        tvl: distributions[0].tvl,
+        meanAPR: distributions.reduce(
+          (value, distribution) => Math.max(value, distribution.apr),
+          0,
+        ),
+        ammName: distributions[0].ammName,
+        symbolRewardToken:
+          distributions[0]['campaignParameters']['symbolRewardToken'],
+        decimalsRewardToken:
+          distributions[0]['campaignParameters']['decimalsRewardToken'],
+      };
+      farmList.push(farm);
+    });
+    return farmList;
   };
   const lastTx = useLastTransactionHash();
   const { isLoading, data, refetch } = useQuery({
@@ -375,7 +401,7 @@ export const useMerklFarms = () => {
       (vault) =>
         !!merklFarms.find(
           (item) =>
-            !!Object.values(item.alm).find(
+            !!item.forwarders.find(
               (alm: any) =>
                 alm.label.includes('Ichi') &&
                 vault.address.toLowerCase() === alm.almAddress.toLowerCase(),
@@ -406,12 +432,13 @@ export const useMerklFarms = () => {
 
   const defiEdgeIdsFiltered = useMemo(() => {
     if (!merklFarms) return [];
+
     return getAllDefiedgeStrategies(chainId)
       .filter(
         (vault) =>
           !!merklFarms.find(
             (item) =>
-              !!Object.values(item.alm).find(
+              !!item.forwarders.find(
                 (alm: any) =>
                   alm.label.includes('DefiEdge') &&
                   vault.id.toLowerCase() === alm.almAddress.toLowerCase(),
@@ -432,7 +459,7 @@ export const useMerklFarms = () => {
   const farms = useMemo(() => {
     if (!merklFarms) return [];
     return merklFarms.map((item: any) => {
-      const filteredALMs = Object.values(item.alm).filter((alm: any) => {
+      const filteredALMs = Object.values(item.forwarders).filter((alm: any) => {
         if (alm.label.includes('Gamma')) {
           return getAllGammaPairs(chainId).find(
             (item) =>
@@ -555,6 +582,40 @@ export const useMerklFarms = () => {
       loadingICHI,
     farms,
   };
+};
+
+export const useGetMerklRewards = (
+  chainId: ChainId,
+  account: string | undefined,
+) => {
+  const tokenMap = useSelectedTokenList();
+  const fetchUserRewardsMerklFarms = async () => {
+    if (!account) {
+      return [];
+    }
+    const res = await fetch(
+      `${process.env.REACT_APP_MERKL_API_URL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
+    );
+    const retData = await res.json();
+    const data: any[] = [];
+    for (const [key, value] of Object.entries<any>(retData)) {
+      const token = getTokenFromAddress(key, chainId, tokenMap, []);
+      data.push({
+        address: key,
+        reasons: value.reasons,
+        decimals: value.decimals,
+        unclaimed: Number(formatUnits(value.unclaimed, value.decimals)),
+        symbol: value.symbol,
+        token,
+      });
+    }
+    return data;
+  };
+  return useQuery({
+    queryKey: ['fetchUserRewardsMerklFarms', chainId, account],
+    queryFn: fetchUserRewardsMerklFarms,
+    refetchInterval: 60000,
+  });
 };
 
 export const useGammaFarmsFiltered = (

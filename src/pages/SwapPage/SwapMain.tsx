@@ -21,12 +21,13 @@ import { useIsV2 } from 'state/application/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import '../styles/swap-main.scss';
 
+const SwapTwap = lazy(() => import('components/Swap/orbs/Twap/Twap'));
+
 const SwapV3Page = lazy(() => import('./V3/Swap'));
 const Swap = lazy(() =>
   import('components').then((module) => ({ default: module.Swap })),
 );
 const SwapCrossChain = lazy(() => import('./SwapCrossChain'));
-const TWAPBase = lazy(() => import('./LimitAndTWAP/LimitAndTWAP'));
 
 const SWAP_BEST_TRADE = 0;
 const SWAP_NORMAL = 1;
@@ -397,10 +398,9 @@ const SwapMain: React.FC = () => {
         {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
           <SwapCrossChain />
         )}
-        {showLimitOrder && Number(swapType) === SWAP_LIMIT && (
-          <TWAPBase limit={true} />
-        )}
-        {swapType === SWAP_TWAP.toString() && <TWAPBase limit={false} />}
+        {showLimitOrder &&
+          (Number(swapType) === SWAP_LIMIT ||
+            Number(swapType) === SWAP_TWAP) && <SwapTwap />}
       </Box>
     </>
   );

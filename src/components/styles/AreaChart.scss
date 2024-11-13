@@ -1,4 +1,12 @@
 @use 'styles/variables' as *;
+@use "styles/breakpoints" as *;
+
+.areaChartContainer {
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  overflow-x: auto;
+}
 
 .chartContainer {
   flex: 1;
@@ -9,8 +17,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 8px;
-  margin-bottom: 20px;
+  margin-right: 8px;
+  margin-bottom: 32px;
   & p {
     font-size: 10px;
     font-weight: 500;

@@ -188,6 +188,28 @@ const SelectFeeTier: React.FC<SelectFeeTierProps> = ({ mintInfo }) => {
         description: t('bestForExoticPair'),
       },
     ],
+    [ChainId.MINATO]: [
+      {
+        id: 'uni-0.01',
+        text: '0.01%',
+        description: t('availableForStablePair'),
+      },
+      {
+        id: 'uni-0.05',
+        text: '0.05%',
+        description: t('highlyLiquidPair'),
+      },
+      {
+        id: 'uni-0.3',
+        text: '0.3%',
+        description: t('bestForMostPair'),
+      },
+      {
+        id: 'uni-1',
+        text: '1%',
+        description: t('bestForExoticPair'),
+      },
+    ],
   };
 
   const feeTierQuery = parsedQuery?.feeTier;

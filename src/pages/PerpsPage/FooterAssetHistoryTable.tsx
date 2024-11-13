@@ -30,6 +30,9 @@ export const FooterAssetHistoryTable: React.FC = () => {
 
   const { isLoading, data } = usePrivateQuery('/v1/asset/history');
   const assetHistory = (data ?? []) as AssetHistory[];
+  const filteredAssetHistory = assetHistory.filter(
+    (item) => Number(item.chain_id) === chainId,
+  );
 
   useEffect(() => {
     setPageIndex(0);
@@ -84,8 +87,8 @@ export const FooterAssetHistoryTable: React.FC = () => {
   return (
     <div>
       {isMobile ? (
-        assetHistory.length > 0 ? (
-          assetHistory
+        filteredAssetHistory.length > 0 ? (
+          filteredAssetHistory
             .slice(countPerPage * pageIndex, countPerPage * (pageIndex + 1))
             .map((history) => (
               <Box key={history.id} padding='12px'>
@@ -123,8 +126,8 @@ export const FooterAssetHistoryTable: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {assetHistory.length > 0 ? (
-                assetHistory
+              {filteredAssetHistory.length > 0 ? (
+                filteredAssetHistory
                   .slice(
                     countPerPage * pageIndex,
                     countPerPage * (pageIndex + 1),
@@ -159,13 +162,13 @@ export const FooterAssetHistoryTable: React.FC = () => {
           </table>
         </div>
       )}
-      {assetHistory.length > 5 && (
+      {filteredAssetHistory.length > 5 && (
         <FooterPagination
           countPerPage={countPerPage}
           setCountPerPage={setCountPerPage}
           pageIndex={pageIndex}
           setPageIndex={setPageIndex}
-          dataCount={assetHistory.length}
+          dataCount={filteredAssetHistory.length}
         />
       )}
     </div>

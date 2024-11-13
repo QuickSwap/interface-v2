@@ -6,7 +6,7 @@ import DragonsSyrup from './DragonsSyrup';
 import QuickBurnChart from './QuickBurnChart';
 import 'pages/styles/dragon.scss';
 import { useTranslation } from 'react-i18next';
-import { HypeLabAds, CurrencyLogo } from 'components';
+import { HypeLabAds, CurrencyLogo, Eggs } from 'components';
 import { getConfig } from 'config/index';
 import { useActiveWeb3React } from 'hooks';
 import { useNewLairInfo } from 'state/stake/hooks';
@@ -16,10 +16,9 @@ import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
 import BurnImage from 'assets/images/fire.png';
-import { useLairDQUICKAPY } from 'utils';
+// import { useLairDQUICKAPY } from 'utils';
 import { formatAmount } from 'utils/numbers';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
-import { fetchQuickBurnAmount, fetchQuickBurnApy } from 'utils/api';
 
 const DragonPage: React.FC = () => {
   const { breakpoints } = useTheme();
@@ -30,7 +29,7 @@ const DragonPage: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
   const lairInfoToUse = useNewLairInfo();
-  const APY = useLairDQUICKAPY(true, lairInfoToUse);
+  const APY = 0; //useLairDQUICKAPY(true, lairInfoToUse);
   const quickToken = DLQUICK[chainIdToUse];
   const dQuickToken = DLDQUICK[chainIdToUse];
   const { price: quickPrice } = useUSDCPriceFromAddress(quickToken?.address);
@@ -49,11 +48,19 @@ const DragonPage: React.FC = () => {
         Number(lairInfoToUse?.totalQuickBalance.toExact()) * quickPrice,
       )
     : 0;
+  const totalSupplyQuick = lairInfoToUse
+    ? Number(lairInfoToUse.quickTotalSupply.toExact())
+    : 0;
+
   const history = useHistory();
 
   const [quickBurnAmount, setQuickBurnAmount] = useState('0');
   const [quickBurnUSD, setQuickBurnUSD] = useState('0');
   const [quickBurnApy, setQuickBurnApy] = useState('0');
+
+  if (!showLair) {
+    location.href = '/';
+  }
 
   useEffect(() => {
     if (!showLair) {
@@ -63,29 +70,60 @@ const DragonPage: React.FC = () => {
   }, [showLair]);
 
   useEffect(() => {
-    const fetchQuickBurn = async () => {
-      const amount = await fetchQuickBurnAmount();
-      const formattedAmount = formatAmount(amount);
-      const usdPrice = formatAmount(amount * quickPrice);
-      setQuickBurnAmount(formattedAmount);
-      setQuickBurnUSD(usdPrice);
+    const fetchQuickBurnData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/quick-burn/3?chainId=${chainId}`,
+        );
+        if (!res.ok) {
+          return;
+        }
+
+        const res1 = await fetch(
+          `${process.env.REACT_APP_LEADERBOARD_APP_URL}/utils/new-circulating-supply`,
+        );
+        if (!res1.ok) {
+          return;
+        }
+        const resData1 = await res1.json();
+        const circulateSupply = Number(resData1.supplyData);
+
+        const resData = await res.json();
+        const burnAmount = Number(resData.data.globals.totalBurned);
+        const formattedBurnAmount = formatAmount(burnAmount);
+        const burnUsd = formatAmount(burnAmount * quickPrice);
+        setQuickBurnAmount(formattedBurnAmount);
+        setQuickBurnUSD(burnUsd);
+
+        const monthBurnAmount = resData.data.chartData.reduce(
+          (sum, value) => sum + Number(value.amount),
+          0,
+        );
+
+        const apy =
+          circulateSupply > 0
+            ? Number(
+                Number((monthBurnAmount * 12) / circulateSupply).toFixed(3),
+              ).toString()
+            : '0';
+        setQuickBurnApy(apy);
+      } catch {
+        setQuickBurnApy('0');
+      }
     };
 
-    const fetchQuickBurnAPY = async () => {
-      const apy = await fetchQuickBurnApy();
-      setQuickBurnApy(apy);
-    };
+    fetchQuickBurnData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickPrice, totalSupplyQuick]);
 
-    fetchQuickBurn();
-    fetchQuickBurnAPY();
-  }, [quickPrice]);
+  const [dragonEggHatched, setDragonEggHatched] = useState(false);
 
   return showLair ? (
     <Box width='100%' mb={3}>
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>
-      <Grid container className={`dragonHeader ${isMobile ? 'mobile' : ''}`}>
+      <Grid container className={`dragonHeader`}>
         <Grid item xs={12}>
           <Box className='dragonWrapper-title'>
             <h5>{t('dragonLair')}</h5>
@@ -120,7 +158,7 @@ const DragonPage: React.FC = () => {
               <Box>
                 <small>{t('stakingApy')}</small>
                 <Box display='flex' alignItems='center'>
-                  <h5 className='text-success'>{APY ? APY : '-'}%</h5>
+                  <h5 className='text-success'>{APY}%</h5>
                   <img src={APRHover} width={18} />
                 </Box>
               </Box>
@@ -183,6 +221,15 @@ const DragonPage: React.FC = () => {
             </Box>
           )}
         </Grid>
+        <Box
+          sx={{
+            width: '200px',
+            position: 'absolute',
+            right: 0,
+          }}
+        >
+          <Eggs type={1}></Eggs>
+        </Box>
       </Grid>
       <Grid container spacing={4} style={{ marginTop: '24px' }}>
         <Grid item xs={12} sm={12} md={7}>
