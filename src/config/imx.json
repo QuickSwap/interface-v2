@@ -9,7 +9,7 @@
   "chainId": 13371,
   "isMainnet": true,
   "visible": true,
-  "nativeCurrencyImage": "/tIMX_zkevm.jpg",
+  "nativeCurrencyImage": "/immutable/image.png",
   "nativeCurrency": {
     "name": "IMX",
     "symbol": "IMX",
