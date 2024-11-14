@@ -14,7 +14,7 @@ const HypeLabAds: React.FC = () => {
       {isActive && (
         <BannerEmbed
           publisherId='quickswap' // required (get from Spindl team)
-          placementId='quickswap_web_iframe' // required (get from Spindl team)
+          placementId='swap_page' // required (get from Spindl team)
           style={{
             maxWidth: '728px',
             width: '100%',
