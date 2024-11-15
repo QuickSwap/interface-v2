@@ -42,14 +42,15 @@
   left: 0px;
   opacity: 0.3;
   cursor: pointer;
+  background-image: url('../../assets/images/DragonBgNew.png');
 }
 
-.dragonHeader:hover:before{
+.dragonHeader:hover:before {
   opacity: 1;
   animation: fadeOut 1s linear;
 }
 
-@keyframes fadeIn{
+@keyframes fadeIn {
   0% {
     opacity: 0;
   }
@@ -58,7 +59,7 @@
   }
 }
 
-@keyframes fadeOut{
+@keyframes fadeOut {
   100% {
     opacity: 1;
   }
