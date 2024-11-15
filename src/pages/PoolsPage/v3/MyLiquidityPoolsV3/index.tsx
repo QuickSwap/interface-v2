@@ -4,7 +4,7 @@ import { Box } from '@material-ui/core';
 import { useActiveWeb3React, useV2LiquidityPools } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { getConfig } from 'config/index';
-import { GlobalConst } from 'constants/index';
+import { GlobalConst, DRAGON_EGGS_SHOW } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { Eggs } from 'components';
 
@@ -242,7 +242,7 @@ export default function MyLiquidityPoolsV3() {
             top: '-80px',
           }}
         >
-          <Eggs type={3}></Eggs>
+          {DRAGON_EGGS_SHOW && <Eggs type={3}></Eggs>}
         </Box>
 
         {allV2PairsWithLiquidity.length > 0 && isMigrateAvailable && (

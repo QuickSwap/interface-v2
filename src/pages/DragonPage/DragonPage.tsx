@@ -13,6 +13,7 @@ import { useNewLairInfo } from 'state/stake/hooks';
 import { ChainId } from '@uniswap/sdk';
 import { useHistory } from 'react-router-dom';
 import { DLDQUICK, DLQUICK } from 'constants/v3/addresses';
+import { DRAGON_EGGS_SHOW } from 'constants/index';
 import DragonsInfo from 'pages/DragonPage/DragonsInfo';
 import APRHover from 'assets/images/aprHover.png';
 import BurnImage from 'assets/images/fire.png';
@@ -228,7 +229,7 @@ const DragonPage: React.FC = () => {
             right: 0,
           }}
         >
-          <Eggs type={1}></Eggs>
+          {DRAGON_EGGS_SHOW && <Eggs type={1}></Eggs>}
         </Box>
       </Grid>
       <Grid container spacing={4} style={{ marginTop: '24px' }}>
