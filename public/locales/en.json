@@ -979,6 +979,7 @@
   "subscribeDesc": "Subscribe to the monthly newsletter to receive the latest updates, developments, and news from the DragonFi and Polygon ecosystems.",
   "totalVolume": "Total Volume All Time",
   "availableOn": "Available on",
+  "partners": "Partners",
   "quickStatistics": "Quick Statistics",
   "quickStatisticsDescription": "Experience the very best of Polygon DeFi - deep liquidity, high volume, and much more",
   "stopLimit": "Stop Limit",
@@ -1034,5 +1035,6 @@
   "created": "Created",
   "create": "Create",
   "networkFeeHelper": "Network fees are paid for transaction",
-  "dragonEggAlert": "Screenshot this and DM  <alink>@QuickswapDEX on X (Twitter)</alink>  for a chance to win prizes! First come, first serve."
+  "dragonEggAlert": "Screenshot this and DM  <alink>@QuickswapDEX on X (Twitter)</alink>  for a chance to win prizes! First come, first serve.",
+  "cancelOrder": "Cancel Order"
 }

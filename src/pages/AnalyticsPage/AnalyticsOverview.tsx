@@ -19,6 +19,7 @@ import {
   useAnalyticsTopTokens,
 } from 'hooks/useFetchAnalyticsData';
 import { LiquidityHubAnalytics } from 'components';
+import { DRAGON_EGGS_SHOW } from 'constants/index';
 
 dayjs.extend(utc);
 
@@ -92,7 +93,7 @@ const AnalyticsOverview: React.FC = () => {
               right: 0,
             }}
           >
-            <Eggs type={4}></Eggs>
+            {DRAGON_EGGS_SHOW && <Eggs type={4}></Eggs>}
           </Box>
         </Box>
       </Box>

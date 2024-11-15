@@ -66,6 +66,8 @@ export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
 
+export const DRAGON_EGGS_SHOW = false;
+
 export const merklAMMs: { [chainId in ChainId]?: string[] } = {
   [ChainId.MATIC]: ['quickswapalgebra'],
   [ChainId.ZKEVM]: ['quickswapalgebra', 'quickswapuni'],
@@ -364,18 +366,18 @@ export const DEFAULT_LIST_OF_LISTS: string[] = [
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
-  ChainId.ETHEREUM,
   ChainId.ZKEVM,
   ChainId.MANTA,
+  ChainId.LAYERX,
+  ChainId.DOGECHAIN,
+  ChainId.ETHEREUM,
   ChainId.IMX,
   ChainId.ASTARZKEVM,
-  ChainId.DOGECHAIN,
-  ChainId.LAYERX,
   ChainId.ZKATANA,
-  ChainId.X1,
   ChainId.TIMX,
   ChainId.ZKTESTNET,
   ChainId.MUMBAI,
+  ChainId.X1,
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.MINATO,
 ];

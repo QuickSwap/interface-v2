@@ -9,7 +9,7 @@
   "chainId": 1101,
   "isMainnet": true,
   "visible": true,
-  "nativeCurrencyImage": "/zkevm.png",
+  "nativeCurrencyImage": "/polygon-zkevm/image.png",
   "nativeCurrency": {
     "name": "Ether",
     "symbol": "ETH",

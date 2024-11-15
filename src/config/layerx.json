@@ -9,7 +9,7 @@
   "chainId": 196,
   "isMainnet": true,
   "visible": true,
-  "nativeCurrencyImage": "/OKB.png",
+  "nativeCurrencyImage": "/xlayer/image.png",
   "nativeCurrency": {
     "name": "OKB",
     "symbol": "OKB",
