@@ -319,9 +319,9 @@ export function PresetRanges({
         : [];
     }
 
-    if (isAlgebraIntegral) {
-      return [];
-    }
+    // if (isAlgebraIntegral) {
+    //   return [];
+    // }
 
     if (isStablecoinPair)
       return [
@@ -563,11 +563,7 @@ export function PresetRanges({
           </>
         )}
       </Box>
-      {!isGamma &&
-        !isUnipilot &&
-        !isDefiedge &&
-        !isSteer &&
-        !isAlgebraIntegral && (
+      {!isGamma && !isUnipilot && !isDefiedge && !isSteer && (
           <>
             <Box className='flex justify-between'>
               {_risk && !mintInfo.invalidRange && !isStablecoinPair && (

@@ -237,7 +237,9 @@ export function SelectRange({
         onLeftRangeInput(
           preset
             ? liquidityRangeType !==
-              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+              liquidityRangeType !==
+                GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
               ? String(Number(priceObj.toSignificant()) * preset.min)
               : priceObj
                   .quote(
@@ -260,7 +262,9 @@ export function SelectRange({
         onRightRangeInput(
           preset
             ? liquidityRangeType !==
-              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+              liquidityRangeType !==
+                GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
               ? String(Number(priceObj.toSignificant()) * preset.max)
               : priceObj
                   .quote(
@@ -711,7 +715,9 @@ export function SelectRange({
             </small>
           </Box>
         )}
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+      {(liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+        liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL) && (
         <>
           {mintInfo.price && (
             <Box textAlign='center'>
