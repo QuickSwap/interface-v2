@@ -436,7 +436,7 @@ export function SupplyLiquidityV3() {
               quoteCurrency &&
               (liquidityRangeType ===
                 GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
-              liquidityRangeType ===
+                liquidityRangeType ===
                   GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL) && (
                 <Box mb={2}>
                   <InitialPrice

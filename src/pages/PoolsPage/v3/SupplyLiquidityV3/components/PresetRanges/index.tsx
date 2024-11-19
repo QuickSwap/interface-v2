@@ -564,62 +564,62 @@ export function PresetRanges({
         )}
       </Box>
       {!isGamma && !isUnipilot && !isDefiedge && !isSteer && (
-          <>
-            <Box className='flex justify-between'>
-              {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
-                <Box className='preset-range-info'>
-                  <Box px='12px' className='flex items-center justify-between'>
-                    <span>{t('risk')}:</span>
-                    <Box className='flex items-center'>
-                      {[1, 2, 3, 4, 5].map((_, i) => (
-                        <div key={i} className='preset-range-circle'>
-                          <Box
-                            key={i}
-                            left={`calc(-100% + ${_risk[i]}%)`}
-                            className='preset-range-circle-active bg-error'
-                          />
-                        </div>
-                      ))}
-                    </Box>
-                  </Box>
-                  <Box
-                    mt={1}
-                    px='12px'
-                    className='flex items-center justify-between'
-                  >
-                    <span>{t('profit')}:</span>
-                    <Box className='flex items-center'>
-                      {[1, 2, 3, 4, 5].map((_, i) => (
-                        <div key={i} className='preset-range-circle'>
-                          <Box
-                            key={i}
-                            left={`calc(-100% + ${_risk[i]}%)`}
-                            className='preset-range-circle-active bg-success'
-                          />
-                        </div>
-                      ))}
-                    </Box>
+        <>
+          <Box className='flex justify-between'>
+            {_risk && !mintInfo.invalidRange && !isStablecoinPair && (
+              <Box className='preset-range-info'>
+                <Box px='12px' className='flex items-center justify-between'>
+                  <span>{t('risk')}:</span>
+                  <Box className='flex items-center'>
+                    {[1, 2, 3, 4, 5].map((_, i) => (
+                      <div key={i} className='preset-range-circle'>
+                        <Box
+                          key={i}
+                          left={`calc(-100% + ${_risk[i]}%)`}
+                          className='preset-range-circle-active bg-error'
+                        />
+                      </div>
+                    ))}
                   </Box>
                 </Box>
-              )}
-              {baseCurrency && quoteCurrency && (
-                <Box className='preset-range-info'>
-                  <Box padding='10px 12px'>
-                    <PoolStats
-                      fee={feeString}
-                      apr={aprString}
-                      loading={
-                        mintInfo.poolState === PoolState.LOADING ||
-                        mintInfo.poolState === PoolState.INVALID
-                      }
-                      noLiquidity={mintInfo.noLiquidity}
-                    ></PoolStats>
+                <Box
+                  mt={1}
+                  px='12px'
+                  className='flex items-center justify-between'
+                >
+                  <span>{t('profit')}:</span>
+                  <Box className='flex items-center'>
+                    {[1, 2, 3, 4, 5].map((_, i) => (
+                      <div key={i} className='preset-range-circle'>
+                        <Box
+                          key={i}
+                          left={`calc(-100% + ${_risk[i]}%)`}
+                          className='preset-range-circle-active bg-success'
+                        />
+                      </div>
+                    ))}
                   </Box>
                 </Box>
-              )}
-            </Box>
-          </>
-        )}
+              </Box>
+            )}
+            {baseCurrency && quoteCurrency && (
+              <Box className='preset-range-info'>
+                <Box padding='10px 12px'>
+                  <PoolStats
+                    fee={feeString}
+                    apr={aprString}
+                    loading={
+                      mintInfo.poolState === PoolState.LOADING ||
+                      mintInfo.poolState === PoolState.INVALID
+                    }
+                    noLiquidity={mintInfo.noLiquidity}
+                  ></PoolStats>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </>
+      )}
     </Box>
   );
 }
