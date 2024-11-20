@@ -5,7 +5,7 @@ import { BannerEmbed } from '@spindl-xyz/embed-react';
 import { useActiveWeb3React } from 'hooks';
 
 const HypeLabAds: React.FC = () => {
-  const { isActive } = useActiveWeb3React();
+  const { isActive, account } = useActiveWeb3React();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('xs'));
 
@@ -20,6 +20,7 @@ const HypeLabAds: React.FC = () => {
             width: '100%',
             height: '90px',
           }} // recommended to add desired width/height
+          address={account}
         />
       )}
       {!isActive && isMobile && <Banner placement='4177d327af' />}
