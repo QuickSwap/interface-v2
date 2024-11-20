@@ -85,16 +85,6 @@ const AnalyticsOverview: React.FC = () => {
           ) : (
             <></>
           )}
-          <Box
-            sx={{
-              position: 'absolute',
-              width: '200px',
-              top: 0,
-              right: 0,
-            }}
-          >
-            {DRAGON_EGGS_SHOW && <Eggs type={4}></Eggs>}
-          </Box>
         </Box>
       </Box>
       <Box mt={4}>
