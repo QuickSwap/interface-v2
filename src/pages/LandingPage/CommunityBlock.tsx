@@ -49,11 +49,11 @@ const CommunityBlock: React.FC = ({}) => {
       icon: <Announcement />,
       title: 'Announcements',
     },
-    {
-      link: 'https://t.me/+OQ-H4hjc-BU5ZmRl',
-      icon: <DiscordIcon />,
-      title: 'Discord',
-    },
+    // {
+    //   link: 'https://t.me/+OQ-H4hjc-BU5ZmRl',
+    //   icon: <DiscordIcon />,
+    //   title: 'Discord',
+    // },
     {
       link: 'https://blog.quickswap.exchange/',
       icon: <BlogIcon />,
