@@ -99,11 +99,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       icon: <Announcement style={{ width: '30px', height: '30px' }} />,
       title: 'Announcements',
     },
-    {
-      link: 'https://t.me/+OQ-H4hjc-BU5ZmRl',
-      icon: <DiscordIcon style={{ width: '30px', height: '30px' }} />,
-      title: 'Discord',
-    },
+    // {
+    //   link: 'https://t.me/+OQ-H4hjc-BU5ZmRl',
+    //   icon: <DiscordIcon style={{ width: '30px', height: '30px' }} />,
+    //   title: 'Discord',
+    // },
     {
       link: 'https://blog.quickswap.exchange/',
       icon: <BlogIcon style={{ width: '30px', height: '30px' }} />,
