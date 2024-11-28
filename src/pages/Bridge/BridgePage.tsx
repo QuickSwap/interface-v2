@@ -24,6 +24,8 @@ import Dogechain from 'assets/images/bridge/dog_coin.webp';
 import finance from 'assets/images/bridge/finance.svg';
 import layer from 'assets/images/bridge/layer.svg';
 import squid from 'assets/images/bridge/squid.webp';
+import retr from 'assets/images/bridge/retr.webp';
+import rubic from 'assets/images/bridge/rubic.webp';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { useActiveWeb3React } from 'hooks';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
@@ -122,6 +124,18 @@ const BridgePage: React.FC = ({}) => {
       chains: [eth, polygon],
       isSmallImage: true,
       externalLink: 'https://app.squidrouter.com/',
+    },
+    {
+      image: retr,
+      chains: [eth, polygon, image525, Image505, Image511],
+      isSmallImage: true,
+      externalLink: 'https://app.retrobridge.io/?utm_source=Quickswap',
+    },
+    {
+      image: rubic,
+      chains: [eth, polygon, image525, Image505, Image511],
+      isSmallImage: true,
+      externalLink: 'https://app.rubic.exchange/',
     },
   ];
 
