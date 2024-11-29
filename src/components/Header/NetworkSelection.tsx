@@ -48,7 +48,11 @@ export const NetworkSelection: React.FC = () => {
         </small>
         {openNetworkSelection ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
       </Box>
-      {openNetworkSelection && <NetworkSelectionDropdown />}
+      {openNetworkSelection && (
+        <NetworkSelectionDropdown
+          setOpenNetworkSelection={setOpenNetworkSelection}
+        />
+      )}
     </div>
   );
 };
