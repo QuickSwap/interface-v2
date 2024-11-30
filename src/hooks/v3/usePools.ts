@@ -1,6 +1,7 @@
 import {
   POOL_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
+  ALGEBRA_INTEGRAL_POOL_DEPLOYER_ADDRESS,
 } from 'constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { useMemo } from 'react';
@@ -32,6 +33,7 @@ export function usePools(
     FeeAmount | undefined,
   ][],
   isUni?: boolean,
+  isAlgebraIntegral?: boolean,
 ): [PoolState, Pool | null][] {
   const { chainId } = useActiveWeb3React();
 
@@ -57,6 +59,8 @@ export function usePools(
       const poolDeployerAddress =
         chainId && value && value[2]
           ? UNI_V3_FACTORY_ADDRESS[chainId]
+          : isAlgebraIntegral
+          ? ALGEBRA_INTEGRAL_POOL_DEPLOYER_ADDRESS[chainId]
           : POOL_DEPLOYER_ADDRESS[chainId];
       if (!poolDeployerAddress || !value) return undefined;
 
@@ -67,7 +71,7 @@ export function usePools(
         fee: value[2],
       });
     });
-  }, [chainId, transformed]);
+  }, [chainId, transformed, isAlgebraIntegral]);
 
   const globalState0s = useMultipleContractSingleData(
     poolAddresses,
@@ -173,6 +177,7 @@ export function usePool(
   currencyB: Currency | undefined,
   feeAmount?: FeeAmount,
   isUni?: boolean,
+  isAlgebraIntegral?: boolean,
 ): [PoolState, Pool | null] {
   const poolKeys: [
     Currency | undefined,
@@ -184,7 +189,7 @@ export function usePool(
     feeAmount,
   ]);
 
-  return usePools(poolKeys, isUni)[0];
+  return usePools(poolKeys, isUni, isAlgebraIntegral)[0];
 }
 
 export function useTokensSymbols(token0: string, token1: string) {

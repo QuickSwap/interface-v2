@@ -99,10 +99,14 @@
   "ichi": {
     "available": false
   },
+  "algebraIntegral": {
+    "available": true
+  },
   "lpLock": {
     "available": false
   },
   "maxChunks": 20,
   "blocksPerFetch": 25,
-  "poolInitCodeHash": "0xbce37a54eab2fcd71913a0d40723e04238970e7fc1159bfd58ad5b79531697e7"
+  "poolInitCodeHash": "0xbce37a54eab2fcd71913a0d40723e04238970e7fc1159bfd58ad5b79531697e7",
+  "algebraIntegralPoolInitCodeHash": "0x4b9e4a8044ce5695e06fce9421a63b6f5c3db8a561eebb30ea4c775469e36eaf"
 }
