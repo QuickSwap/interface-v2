@@ -23,6 +23,8 @@ interface SwapModalHeaderProps {
   showAcceptChanges: boolean;
   onAcceptChanges: () => void;
   onConfirm: () => void;
+  swapButtonText?: string;
+  swapButtonDisabled?: boolean;
 }
 
 const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
@@ -34,6 +36,8 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
   showAcceptChanges,
   onAcceptChanges,
   onConfirm,
+  swapButtonDisabled,
+  swapButtonText,
 }) => {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
@@ -151,8 +155,12 @@ const SwapModalHeader: React.FC<SwapModalHeaderProps> = ({
         ) : (
           <></>
         )}
-        <Button onClick={onConfirm} className='swapButton'>
-          {t('confirmSwap')}
+        <Button
+          disabled={swapButtonDisabled}
+          onClick={onConfirm}
+          className='swapButton'
+        >
+          {swapButtonText || t('confirmSwap')}
         </Button>
       </Box>
     </Box>

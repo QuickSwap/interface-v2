@@ -1018,6 +1018,7 @@
   "minimumReceivedTooltip": "This is the minimum number of tokens that may be received. NOTE: This minimum only refers to executed trades. Some trades may not be executed if the limit price is higher than the available market prices and your order may only be partially filled.",
   "orbs": "Orbs",
   "approveToken": "Approve {{ symbol }} spending",
+  "approveTokenPending": "Approving {{ symbol }} spending",
   "tradeSizeWarning": "Trade size must be at least ${{ usd }}",
   "minExpiryWarning": "Min. expiry is {{ value }} minutes",
   "maxExpiryWarning": "Max. expiry is 30 days",
@@ -1036,5 +1037,6 @@
   "create": "Create",
   "networkFeeHelper": "Network fees are paid for transaction",
   "dragonEggAlert": "Screenshot this and DM  <alink>@QuickswapDEX on X (Twitter)</alink>  for a chance to win prizes! First come, first serve.",
-  "cancelOrder": "Cancel Order"
+  "cancelOrder": "Cancel Order",
+  "seekingBetterPrice": "Seeking better price"
 }

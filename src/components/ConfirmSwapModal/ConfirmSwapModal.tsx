@@ -45,6 +45,8 @@ interface ConfirmSwapModalProps {
   onConfirm: () => void;
   swapErrorMessage: string | undefined;
   onDismiss: () => void;
+  swapButtonText?: string;
+  swapButtonDisabled?: boolean;
 }
 
 const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
@@ -62,6 +64,8 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
   attemptingTxn,
   txHash,
   txPending,
+  swapButtonDisabled,
+  swapButtonText,
 }) => {
   const { t } = useTranslation();
   const showAcceptChanges = useMemo(
@@ -86,6 +90,8 @@ const ConfirmSwapModal: React.FC<ConfirmSwapModalProps> = ({
         onConfirm={onConfirm}
         showAcceptChanges={showAcceptChanges}
         onAcceptChanges={onAcceptChanges}
+        swapButtonText={swapButtonText}
+        swapButtonDisabled={swapButtonDisabled}
       />
     ) : null;
   }, [

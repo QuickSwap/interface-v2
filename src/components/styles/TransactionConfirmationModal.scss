@@ -4,6 +4,13 @@
   max-width: 400px;
 }
 
+.txModalWrapperNoTransition {
+  max-width: 400px;
+  .customModalBackdrop {
+    transition: unset;
+  }
+}
+
 .txModalHeader {
   display: flex;
   align-items: center;
