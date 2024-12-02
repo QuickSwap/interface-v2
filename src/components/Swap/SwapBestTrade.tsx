@@ -14,6 +14,8 @@ import ReactGA from 'react-ga';
 import { ArrowDown } from 'react-feather';
 import { Box, Button, CircularProgress, Typography } from '@material-ui/core';
 import { AML_SCORE_THRESHOLD } from 'config/index';
+import SpinnerImage from 'assets/images/spinner.svg';
+
 import {
   useDefaultsFromURLSearch,
   useDerivedSwapInfo,
@@ -26,12 +28,13 @@ import {
   useAmlScore,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   CurrencyInput,
   ConfirmSwapModal,
   AddressInput,
   Eggs,
+  CustomModal,
 } from 'components';
 import {
   useActiveWeb3React,
@@ -94,8 +97,8 @@ import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
 import {
   useIsLhPureAggregationMode,
-  useIsLiquidityHubTrade,
   useLiquidityHubQuote,
+  useGetBetterPrice,
 } from './orbs/LiquidityHub/hooks';
 import { LiquidityHubSwapConfirmation } from './orbs/LiquidityHub/LiquidityHubSwapConfirmation';
 import { PoweredByOrbs } from '@orbs-network/swap-ui';
@@ -103,6 +106,7 @@ import {
   LiquidityHubSwapDetails,
   SwapPrice,
 } from './orbs/LiquidityHub/Components';
+import { styled } from '@material-ui/styles';
 
 const SwapBestTrade: React.FC<{
   currencyBgClass?: string;
@@ -444,22 +448,25 @@ const SwapBestTrade: React.FC<{
     return optimalRateData.error;
   }, [optimalRateData]);
 
-  const liquidityHubQuoteQuery = useLiquidityHubQuote({
+  const {
+    data: liquidityHubQuote,
+    isLoading: liquidityHubQuoteLoading,
+    error: liquidityHubQuoteError,
+    refetch: fetchLiquidityHubQuote,
+    getLatestQuote,
+  } = useLiquidityHubQuote({
     allowedSlippage,
     inAmount: parsedAmount?.raw.toString(),
     inCurrency: currencies[Field.INPUT],
     outCurrency: currencies[Field.OUTPUT],
     dexOutAmount: optimalRate?.destAmount,
-    disabled: liquidityHubDisabled,
-    wrapType,
-    swappingLiquidityHub,
+    disabled: swappingLiquidityHub
+      ? true
+      : isLhPureAggregationMode
+      ? false
+      : !showLiquidityHubConfirm,
   });
 
-  const {
-    data: liquidityHubQuote,
-    isLoading: liquidityHubQuoteLoading,
-    error: liquidityHubQuoteError,
-  } = liquidityHubQuoteQuery;
   const isLiquidityHubOnly = isLhPureAggregationMode && !liquidityHubQuoteError;
 
   const tradeSrcAmount = isLiquidityHubOnly
@@ -577,7 +584,7 @@ const SwapBestTrade: React.FC<{
     maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput),
   );
 
-  const [_approval, approveCallback] = useApproveCallbackFromBestTrade(
+  const [approval, approveCallback] = useApproveCallbackFromBestTrade(
     pct,
     inputCurrencyV3,
     optimalRate,
@@ -585,23 +592,10 @@ const SwapBestTrade: React.FC<{
     atMaxAmountInput,
   );
 
-  const approval = isLiquidityHubOnly ? ApprovalState.APPROVED : _approval;
-
   const [
     nativeConvertApproval,
     nativeConvertApproveCallback,
   ] = useApproveCallback(parsedAmount, NATIVE_CONVERTER[chainId]);
-
-  const isLiquidityHubTrade = useIsLiquidityHubTrade(
-    swapType,
-    liquidityHubDisabled,
-    allowedSlippage,
-    liquidityHubQuote,
-    optimalRate,
-    showWrap,
-    isLiquidityHubOnly,
-    liquidityHubQuoteLoading,
-  );
 
   const showApproveFlow =
     !swapInputError &&
@@ -794,12 +788,7 @@ const SwapBestTrade: React.FC<{
       } else if (noRoute && userHasSpecifiedInputOutput) {
         return true;
       } else if (showApproveFlow) {
-        return (
-          !isValid ||
-          approval !== ApprovalState.APPROVED ||
-          (maxImpactReached && !isExpertMode) ||
-          isSwapError
-        );
+        return !isValid || (maxImpactReached && !isExpertMode) || isSwapError;
       } else {
         return isSwapError;
       }
@@ -1041,14 +1030,44 @@ const SwapBestTrade: React.FC<{
     history,
     handleParaswap,
   ]);
+  const { seekingBetterPrice, getBetterPrice } = useGetBetterPrice(
+    fetchLiquidityHubQuote,
+  );
 
-  const onSubmitSwap = useCallback(() => {
-    if (isLiquidityHubTrade) {
+  const onPureAggregationSubmit = useCallback(() => {
+    if (isLiquidityHubOnly) {
       setShowLiquidityHubConfirm(true);
     } else {
       onParaswap();
     }
-  }, [onParaswap, isLiquidityHubTrade]);
+  }, [onParaswap, isLiquidityHubOnly]);
+
+  const onSubmitSwap = useCallback(async () => {
+    if (isLhPureAggregationMode) {
+      onPureAggregationSubmit();
+      return;
+    }
+
+    const betterPriceFound = await getBetterPrice({
+      dexOutAmount: optimalRate?.destAmount,
+      allowedSlippage,
+      skip: liquidityHubDisabled,
+    });
+
+    if (betterPriceFound) {
+      setShowLiquidityHubConfirm(true);
+    } else {
+      onParaswap();
+    }
+  }, [
+    onParaswap,
+    optimalRate,
+    allowedSlippage,
+    liquidityHubDisabled,
+    getBetterPrice,
+    isLhPureAggregationMode,
+    onPureAggregationSubmit,
+  ]);
 
   const paraRate = optimalRate
     ? (Number(optimalRate.destAmount) * 10 ** optimalRate.srcDecimals) /
@@ -1212,18 +1231,49 @@ const SwapBestTrade: React.FC<{
   }, [optimalRateNotExisting]);
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
-  const onLiquidityHubSwapFailed = useCallback(
-    () => setLiquidityHubDisabled(true),
-    [],
-  );
-  const onLiquidityHubSwapSuccess = useCallback(() => {
-    handleTypeInput('');
-    dispatch(updateUserBalance());
-  }, [dispatch, handleTypeInput]);
+  const onLiquidityHubSwapFailed = useCallback(() => {
+    if (!isLhPureAggregationMode) {
+      setLiquidityHubDisabled(true);
+    }
+  }, [isLhPureAggregationMode]);
 
   const handleLiquidityHubConfirmDismiss = useCallback(() => {
     setShowLiquidityHubConfirm(false);
   }, []);
+
+  const onApprove = useCallback(async () => {
+    if (showNativeConvert) {
+      setNativeConvertApproving(true);
+      try {
+        await nativeConvertApproveCallback();
+        setNativeConvertApproving(false);
+      } catch (err) {
+        setNativeConvertApproving(false);
+      }
+    } else {
+      setApproving(true);
+      try {
+        await approveCallback();
+        setApproving(false);
+      } catch (err) {
+        setApproving(false);
+      }
+    }
+  }, [approveCallback, nativeConvertApproveCallback, showNativeConvert]);
+
+  const approveButtonDisabled = showNativeConvert
+    ? nativeConvertApproving ||
+      nativeConvertApproval !== ApprovalState.NOT_APPROVED ||
+      nativeApprovalSubmitted
+    : approving || approval !== ApprovalState.NOT_APPROVED || bonusRouteLoading;
+
+  const onConfirmTx = useCallback(() => {
+    if (showApproveFlow) {
+      onApprove();
+    } else {
+      handleParaswap();
+    }
+  }, [handleParaswap, onApprove, showApproveFlow]);
 
   return (
     <Box>
@@ -1234,14 +1284,14 @@ const SwapBestTrade: React.FC<{
         onDismiss={handleDismissTokenWarning}
       />
       <LiquidityHubSwapConfirmation
+        inAmount={parsedAmount?.raw.toString()}
         inCurrency={inputCurrency}
         outCurrency={outputCurrency}
         isOpen={showLiquidityHubConfirm}
         onDismiss={handleLiquidityHubConfirmDismiss}
-        quote={liquidityHubQuoteQuery.data}
-        refetchLatestQuote={liquidityHubQuoteQuery.ensureQueryData}
+        quote={liquidityHubQuote}
+        getLatestQuote={getLatestQuote}
         onSwapFailed={onLiquidityHubSwapFailed}
-        onSwapSuccess={onLiquidityHubSwapSuccess}
         optimalRate={optimalRate}
         allowedSlippage={allowedSlippage}
         onLiquidityHubSwapInProgress={setSwappingLiquidityHub}
@@ -1259,9 +1309,17 @@ const SwapBestTrade: React.FC<{
           txHash={txHash}
           recipient={recipient}
           allowedSlippage={allowedSlippage}
-          onConfirm={handleParaswap}
+          onConfirm={onConfirmTx}
           swapErrorMessage={swapErrorMessage}
           onDismiss={handleConfirmDismiss}
+          swapButtonText={
+            showApproveFlow
+              ? t(approving ? 'approveTokenPending' : 'approveToken', {
+                  symbol: inputCurrency?.symbol,
+                })
+              : undefined
+          }
+          swapButtonDisabled={showApproveFlow ? approveButtonDisabled : false}
         />
       )}
       <CurrencyInput
@@ -1311,6 +1369,7 @@ const SwapBestTrade: React.FC<{
           <img src={arrowDown} alt='arrow down' width='12px' height='12px' />
         </Box>
       </Box>
+      <SeekingBetterPriceModal isOpen={seekingBetterPrice} />
       <CurrencyInput
         title={`${t('Receive')}:`}
         id='swap-currency-output'
@@ -1353,68 +1412,16 @@ const SwapBestTrade: React.FC<{
         </Box>
       )}
       <Box className='swapButtonWrapper'>
-        {showApproveFlow && (
-          <Box width='48%'>
-            <Button
-              fullWidth
-              disabled={
-                showNativeConvert
-                  ? nativeConvertApproving ||
-                    nativeConvertApproval !== ApprovalState.NOT_APPROVED ||
-                    nativeApprovalSubmitted
-                  : approving ||
-                    approval !== ApprovalState.NOT_APPROVED ||
-                    bonusRouteLoading ||
-                    approvalSubmitted
-              }
-              onClick={async () => {
-                if (isLiquidityHubTrade) {
-                  setShowLiquidityHubConfirm(true);
-                  return;
-                }
-                // prevent liquidity hub winning after user starts the approval
-                setLiquidityHubDisabled(true);
-                if (showNativeConvert) {
-                  setNativeConvertApproving(true);
-                  try {
-                    await nativeConvertApproveCallback();
-                    setNativeConvertApproving(false);
-                  } catch (err) {
-                    setNativeConvertApproving(false);
-                  }
-                } else {
-                  setApproving(true);
-                  try {
-                    await approveCallback();
-                    setApproving(false);
-                  } catch (err) {
-                    setLiquidityHubDisabled(false);
-                    setApproving(false);
-                  }
-                }
-              }}
-            >
-              {approvalSubmitted && approval !== ApprovalState.APPROVED ? (
-                <Box className='content'>
-                  {t('approving')} <CircularProgress size={16} />
-                </Box>
-              ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-                t('approved')
-              ) : (
-                `${t('approve')} ${currencies[Field.INPUT]?.symbol}`
-              )}
-            </Button>
-          </Box>
-        )}
-        <Box width={showApproveFlow ? '48%' : '100%'}>
+        <Box width={'100%'}>
           <Button
             fullWidth
             disabled={
-              (isAmlScoreLoading ||
+              seekingBetterPrice ||
+              ((isAmlScoreLoading ||
                 (showNativeConvert
                   ? false
                   : bonusRouteLoading || optimalRateError) ||
-                swapButtonDisabled) as boolean
+                swapButtonDisabled) as boolean)
             }
             onClick={
               account && isSupportedNetwork ? onSubmitSwap : connectWallet
@@ -1522,3 +1529,31 @@ const SwapBestTrade: React.FC<{
 };
 
 export default SwapBestTrade;
+
+const SeekingBetterPriceModal = ({ isOpen }: { isOpen: boolean }) => {
+  const { t } = useTranslation();
+  return (
+    <StyledSeekingBetterPriceModal open={isOpen} modalWrapper='txModalWrapper'>
+      <Box padding={4}>
+        <Box className='txModalHeader'>
+          <h5>{t('seekingBetterPrice')}</h5>
+        </Box>
+        <Box className={`txModalContent`}>
+          <Box className='flex justify-center spinner'>
+            <img
+              src={SpinnerImage}
+              alt='Spinner'
+              style={{ width: 50, height: 50 }}
+            />
+          </Box>
+        </Box>
+      </Box>
+    </StyledSeekingBetterPriceModal>
+  );
+};
+
+const StyledSeekingBetterPriceModal = styled(CustomModal)({
+  '& .customModalBackdrop': {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
+});

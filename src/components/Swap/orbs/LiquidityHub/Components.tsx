@@ -250,27 +250,6 @@ const Slippage = () => {
   );
 };
 
-const NetworkFee = ({ quote }: { quote: Quote }) => {
-  const { currencies } = useDerivedSwapInfo();
-  const outCurrency = currencies.OUTPUT;
-  const fee = useParseRawAmount(outCurrency, quote?.gasAmountOut)?.toExact();
-  const usd =
-    Number(useUSDCPrice(outCurrency)?.toSignificant() ?? 0) * Number(fee || 0);
-
-  const { t } = useTranslation();
-  return (
-    <Box className='summaryRow subtext-color'>
-      <Box>
-        <InfomationHelper text={t('networkFeeHelper')} />
-        <small>{t('Network fee')}</small>
-      </Box>
-      <Box>
-        {usd ? <small>${usd.toLocaleString('us')} </small> : <small>-</small>}
-      </Box>
-    </Box>
-  );
-};
-
 const MinReceived = ({ quote }: { quote: Quote }) => {
   const { currencies } = useDerivedSwapInfo();
   const outCurrency = currencies[Field.OUTPUT];
