@@ -3,15 +3,10 @@ import {
   CurrencyAmount as CurrencyAmountV3,
   Currency as CurrencyV3,
 } from '@uniswap/sdk-core';
-import { Quote, QUOTE_ERRORS } from '@orbs-network/liquidity-hub-sdk';
-import { OptimalRate } from '@paraswap/sdk';
-import BN from 'bignumber.js';
+import { QUOTE_ERRORS } from '@orbs-network/liquidity-hub-sdk';
 import { BigNumber } from 'ethers';
 
-export const getAmountMinusSlippage = (
-  allowedSlippage: number,
-  outAmount?: string,
-) => {
+export const subtractSlippage = (allowedSlippage = 0, outAmount?: string) => {
   if (!outAmount) return undefined;
 
   return BigNumber.from(outAmount)

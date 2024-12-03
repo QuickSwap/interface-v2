@@ -7,16 +7,16 @@ import SwapVerticalCircleIcon from '@material-ui/icons/SwapVerticalCircle';
 import { useGetLogoCallback } from '../hooks';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { Currency, Token, WETH } from '@uniswap/sdk';
+import { Currency, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import {
   fromRawAmount,
-  getAmountMinusSlippage,
+  subtractSlippage,
   isRejectedError,
   isTimeoutError,
   promiseWithTimeout,
 } from '../utils';
-import { OptimalRate, TransactionParams } from '@paraswap/sdk';
+import { OptimalRate } from '@paraswap/sdk';
 import { useParaswap } from 'hooks/useParaswap';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useIsNativeCurrencyCallback, useApproval } from '../hooks';
@@ -39,21 +39,23 @@ import React, { useState } from 'react';
 import { createContext } from 'react';
 import { useLiquidityHubSDK } from './hooks';
 import useWrapCallback from 'hooks/useWrapCallback';
-import { getSigner } from 'utils';
-import { BigNumber } from 'ethers';
+import { useSwapActionHandlers } from 'state/swap/hooks';
+import { Field } from 'state/swap/actions';
+import { useAppDispatch } from 'state';
+import { updateUserBalance } from 'state/balance/actions';
 
 export interface LiquidityHubConfirmationProps {
   inCurrency?: Currency;
   outCurrency?: Currency;
   isOpen: boolean;
   onDismiss: () => void;
-  refetchLatestQuote: () => Promise<Quote>;
+  getLatestQuote: () => Quote | undefined;
   quote?: Quote | null;
   onSwapFailed: () => void;
-  onSwapSuccess: () => void;
   optimalRate?: OptimalRate;
   allowedSlippage?: number;
   onLiquidityHubSwapInProgress: (value: boolean) => void;
+  inAmount?: string;
 }
 export interface LiquidityHubConfirmationState {
   acceptedQuote?: Quote | null;
@@ -120,13 +122,9 @@ const ContextProvider = ({ children, ...props }: ContextProps) => {
 const useLiquidityHubConfirmationContext = () => React.useContext(Context);
 
 const useLiquidityHubApproval = () => {
-  const { inCurrency, quote } = useLiquidityHubConfirmationContext();
-  const inAmount = fromRawAmount(inCurrency, quote?.inAmount);
-  return useApproval(
-    permit2Address,
-    inCurrency,
-    inAmount?.numerator.toString(),
-  );
+  const { inCurrency, inAmount } = useLiquidityHubConfirmationContext();
+
+  return useApproval(permit2Address, inCurrency, inAmount);
 };
 
 const useAmounts = () => {
@@ -136,7 +134,7 @@ const useAmounts = () => {
     outCurrency,
   } = useLiquidityHubConfirmationContext();
   const inAmount = fromRawAmount(inCurrency, quote?.inAmount);
-  const outAmount = fromRawAmount(outCurrency, quote?.outAmount);
+  const outAmount = fromRawAmount(outCurrency, quote?.referencePrice);
   const inUsd =
     Number(useUSDCPrice(inCurrency)?.toSignificant() ?? 0) *
     Number(inAmount?.toExact() || 0);
@@ -267,6 +265,7 @@ function Content() {
     onDismiss,
   } = useLiquidityHubConfirmationContext();
   const { inAmount, outAmount } = useAmounts();
+  useLiquidityHubApproval();
 
   return (
     <ConfirmationModal
@@ -323,99 +322,98 @@ const useWrapFlowCallback = () => {
     inAmount?.toExact(),
   );
 
-  return useCallback(async () => {
-    try {
+  return useMutation({
+    mutationFn: async () => {
       liquidityHub.analytics.onWrapRequest();
-      await wrap?.();
-      liquidityHub.analytics.onWrapSuccess();
-    } catch (error) {
+      return wrap?.();
+    },
+    onError: (error: any) => {
       liquidityHub.analytics.onWrapFailure(error);
       throw error;
-    }
-  }, [wrap, liquidityHub]);
+    },
+    onSuccess: () => {
+      liquidityHub.analytics.onWrapSuccess();
+    },
+  });
 };
 
 const useApproveCallback = () => {
   const { approve } = useLiquidityHubApproval();
   const liquidityHub = useLiquidityHubSDK();
 
-  return useCallback(async () => {
-    try {
+  return useMutation({
+    mutationFn: async () => {
       liquidityHub.analytics.onApprovalRequest();
-      await approve();
-      liquidityHub.analytics.onApprovalSuccess();
-    } catch (error) {
-      liquidityHub.analytics.onApprovalFailed(error);
+      return approve();
+    },
+    onError: (error: any) => {
+      liquidityHub.analytics.onApprovalFailed(error.message);
       throw error;
-    }
-  }, [approve, liquidityHub]);
+    },
+    onSuccess: () => {
+      liquidityHub.analytics.onApprovalSuccess();
+    },
+  });
 };
 
 const useSwapCallback = () => {
   const liquidityHub = useLiquidityHubSDK();
-  return useCallback(
-    async ({
+  const { mutateAsync: getParaswapTxParams } = useParaswapTxParamsCallback();
+
+  return useMutation({
+    mutationFn: async ({
       acceptedQuote,
       signature,
-      paraswapTxParams,
     }: {
       acceptedQuote: Quote;
       signature: string;
-      paraswapTxParams?: TransactionParams;
     }) => {
+      const txParams = await getParaswapTxParams();
+
       const txHash = await liquidityHub.swap(acceptedQuote, signature, {
-        data: paraswapTxParams?.data || '',
-        to: paraswapTxParams?.to,
+        data: txParams?.data || '',
+        to: txParams?.to,
       });
       return txHash;
     },
-    [liquidityHub],
-  );
+  });
 };
 
 // submit swap hook
 const useLiquidityHubSwapCallback = () => {
   const { chainId, account, library } = useActiveWeb3React();
   const {
-    onSwapSuccess,
     onSwapFailed,
     onSignature,
     onAcceptQuote,
-    optimalRate,
-    allowedSlippage,
     inCurrency,
     outCurrency,
-    refetchLatestQuote,
+    getLatestQuote,
     onLiquidityHubSwapInProgress,
   } = useLiquidityHubConfirmationContext();
-  const signCallback = useSignEIP712Callback();
-  const getParaswapTxParams = useParaswapTxParamsCallback();
+  const { mutateAsync: signCallback } = useSignEIP712Callback();
   const getSteps = useGetStepsCallback();
-  const swapCallback = useSwapCallback();
-  const wrapCallback = useWrapFlowCallback();
-  const approvalCallback = useApproveCallback();
+  const { mutateAsync: swapCallback } = useSwapCallback();
+  const { mutateAsync: wrapCallback } = useWrapFlowCallback();
+  const { mutateAsync: approvalCallback } = useApproveCallback();
   const onTradeSuccess = useOnTradeSuccessCallback();
+  const { onUserInput } = useSwapActionHandlers();
+  const dispatch = useAppDispatch();
 
-  return useMutation(
-    async (updateStore: (value: Partial<ConfirmationState>) => void) => {
+  return useMutation({
+    mutationFn: async (
+      updateStore: (value: Partial<ConfirmationState>) => void,
+    ) => {
       let shouldUnwrap = false;
 
       try {
         const inToken = wrappedCurrency(inCurrency, chainId);
         const outToken = wrappedCurrency(outCurrency, chainId);
         onLiquidityHubSwapInProgress(true);
-        if (!account) {
-          throw new Error('Account is not defined');
+        if (!account || !library || !inToken || !outToken) {
+          throw new Error('useLiquidityHubSwapCallback missing atgs');
         }
-        if (!library) {
-          throw new Error('Library is not defined');
-        }
-        if (!inToken) {
-          throw new Error('In token is not defined');
-        }
-        if (!outToken) {
-          throw new Error('Out token is not defined');
-        }
+
         const steps = getSteps();
         updateStore({
           swapStatus: SwapStatus.LOADING,
@@ -431,10 +429,13 @@ const useLiquidityHubSwapCallback = () => {
         if (steps.includes(Steps.APPROVE)) {
           updateStore({ currentStep: Steps.APPROVE });
           await approvalCallback();
-          // refetch approval
         }
 
-        const acceptedQuote = await refetchLatestQuote();
+        const acceptedQuote = getLatestQuote();
+
+        if (!acceptedQuote) {
+          throw new Error('Failed to fetch quote');
+        }
         onAcceptQuote(acceptedQuote);
         updateStore({ currentStep: Steps.SWAP });
         const signature = await promiseWithTimeout(
@@ -442,27 +443,16 @@ const useLiquidityHubSwapCallback = () => {
           SIGNATURE_TIMEOUT,
         );
         onSignature(signature);
-        let paraswapTxParams: TransactionParams | undefined;
-        if (optimalRate && allowedSlippage) {
-          try {
-            paraswapTxParams = await getParaswapTxParams({
-              inToken,
-              optimalRate,
-              allowedSlippage,
-              chainId,
-              account,
-            });
-          } catch (error) {}
-        }
+
         const txHash = await swapCallback({
           acceptedQuote,
           signature,
-          paraswapTxParams,
         });
 
         const transaction = await library.getTransaction(txHash);
         const receipt = await transaction.wait();
-        onSwapSuccess();
+        onUserInput(Field.INPUT, '');
+        dispatch(updateUserBalance());
         updateStore({ swapStatus: SwapStatus.SUCCESS });
         onTradeSuccess(acceptedQuote);
         return receipt;
@@ -484,7 +474,7 @@ const useLiquidityHubSwapCallback = () => {
         onLiquidityHubSwapInProgress(false);
       }
     },
-  );
+  });
 };
 
 const useOnTradeSuccessCallback = () => {
@@ -495,85 +485,88 @@ const useOnTradeSuccessCallback = () => {
   const outTokenUsdPrice = useUSDCPriceFromAddress(outToken?.address).price;
 
   return useCallback(
-    async (acceptedQuote: Quote) => {
+    (acceptedQuote: Quote) => {
       try {
-        if (!outToken) return;
-        const tradeUsdValue = BigNumber.from(acceptedQuote.outAmount)
-          .div(10 ** outToken.decimals)
-          .mul(outTokenUsdPrice)
-          .toString();
+        if (!outCurrency) return;
+        const amount =
+          fromRawAmount(outCurrency, acceptedQuote.outAmount)?.toExact() || '0';
+        const tradeUsdValue = Number(amount) * outTokenUsdPrice;
+
         liquidityHubSDK.analytics.onTradeSuccess(
           acceptedQuote.outAmount,
-          tradeUsdValue,
+          tradeUsdValue.toString(),
           'liquidity-hub',
         );
       } catch (error) {}
     },
-    [liquidityHubSDK, outTokenUsdPrice, outToken],
+    [liquidityHubSDK, outTokenUsdPrice, outToken, outCurrency],
   );
 };
 
 const useParaswapTxParamsCallback = () => {
   const paraswap = useParaswap();
+  const { account, chainId } = useActiveWeb3React();
+  const {
+    allowedSlippage,
+    optimalRate,
+    inCurrency,
+  } = useLiquidityHubConfirmationContext();
 
-  return useCallback(
-    (args: {
-      inToken: Token;
-      optimalRate?: OptimalRate;
-      allowedSlippage?: number;
-      account: string;
-      chainId: number;
-    }) => {
-      if (!args.optimalRate) {
-        throw new Error('Optimal rate is not defined');
+  return useMutation({
+    mutationFn: async () => {
+      const inToken = wrappedCurrency(inCurrency, chainId);
+      if (!optimalRate || !allowedSlippage || !inToken || !account) {
+        throw new Error('useParaswapTxParamsCallback missing args');
       }
-      return paraswap.buildTx({
-        srcToken: args.inToken?.address,
-        destToken: args.optimalRate.destToken,
-        srcAmount: args.optimalRate.srcAmount,
-        destAmount:
-          getAmountMinusSlippage(
-            args.allowedSlippage ?? 0,
-            args.optimalRate.destAmount,
-          ) || '',
-        priceRoute: args.optimalRate,
-        userAddress: args.account,
-        receiver: args.account,
-        partner: 'quickswapv3',
-      });
+      try {
+        const result = await paraswap.buildTx(
+          {
+            srcToken: inToken.address,
+            destToken: optimalRate.destToken,
+            srcAmount: optimalRate.srcAmount,
+            destAmount: optimalRate.destAmount,
+            priceRoute: optimalRate,
+            userAddress: account,
+            receiver: account,
+            partner: 'quickswapv3',
+          },
+          {
+            ignoreChecks: true,
+          },
+        );
+
+        return result;
+      } catch (error) {
+        console.log('paraswapTxParams', error);
+      }
     },
-    [paraswap],
-  );
+  });
 };
 
 const useSignEIP712Callback = () => {
   const { library, account } = useActiveWeb3React();
   const liquidityHub = useLiquidityHubSDK();
 
-  return useCallback(
-    async (permitData: any) => {
+  return useMutation({
+    mutationFn: async (permitData: any) => {
       liquidityHub.analytics.onSignatureRequest();
       if (!library || !account) {
         throw new Error('No library or account');
       }
-      try {
-        const signature = await signEIP712(
-          account,
-          library.provider,
-          permitData,
-        );
-        if (!signature) {
-          throw new Error('No signature');
-        }
-        liquidityHub.analytics.onSignatureSuccess(signature);
-        return signature;
-      } catch (error) {
-        liquidityHub.analytics.onSignatureFailed((error as Error).message);
-        throw error;
+      const signature = await signEIP712(account, library.provider, permitData);
+      if (!signature) {
+        throw new Error('No signature');
       }
+      return signature;
     },
-    [account, library, liquidityHub],
-  );
+    onError: (error: any) => {
+      liquidityHub.analytics.onSignatureFailed(error.message);
+      throw error;
+    },
+    onSuccess: (signature) => {
+      liquidityHub.analytics.onSignatureSuccess(signature);
+    },
+  });
 };
 
 async function signEIP712(signer: string, provider: any, permitData: any) {

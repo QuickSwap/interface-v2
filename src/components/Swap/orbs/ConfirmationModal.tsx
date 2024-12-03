@@ -25,6 +25,7 @@ import useWrapCallback, { WrapType } from 'hooks/useWrapCallback';
 import { Steps } from './consts';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
+import { styled } from '@material-ui/styles';
 
 interface SharedProps {
   inCurrency?: Currency;
@@ -196,7 +197,7 @@ const Content = ({
       modalWrapper='orbsModalWrapper'
     >
       <img src={ModalBg} alt='Modal Back' className='txModalBG' />
-      <SwapFlow
+      <StyledSwapFlow
         inAmount={!inAmount ? '' : formatNumber(inAmount).toString()}
         outAmount={!outAmount ? '' : formatNumber(outAmount).toString()}
         inToken={inToken}
@@ -209,6 +210,15 @@ const Content = ({
     </CustomModal>
   );
 };
+
+const StyledSwapFlow = styled(SwapFlow)({
+  '& .orbs_MainTokenLogo': {
+    background: 'white',
+  },
+  '& .orbs_TradePreviewToken img': {
+    background: 'white',
+  },
+});
 
 function ConfirmationContainer({
   title,
@@ -304,11 +314,11 @@ export const Error = () => {
           </Button>
         </Box>
       ) : (
-        <>
+        <Box className='orbsErrorContentButtons'>
           <Button className='txSubmitButton' onClick={onDismiss}>
             {t('close')}
           </Button>
-        </>
+        </Box>
       )}
     </ConfirmationContainer>
   );
@@ -364,7 +374,7 @@ export const Main = ({
   }, [_onSubmit, updateStore]);
 
   return (
-    <ConfirmationContainer title={!swapStatus ? 'confirmTx' : ''}>
+    <ConfirmationContainer title={!swapStatus ? t('confirmTx') : ''}>
       <SwapFlow.Main
         inUsd={inUsd && `$${inUsd}`}
         outUsd={outUsd && `$${outUsd}`}
