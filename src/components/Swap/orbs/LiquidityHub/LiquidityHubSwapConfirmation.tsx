@@ -390,6 +390,7 @@ const useLiquidityHubSwapCallback = () => {
     outCurrency,
     getLatestQuote,
     onLiquidityHubSwapInProgress,
+    quote,
   } = useLiquidityHubConfirmationContext();
   const { mutateAsync: signCallback } = useSignEIP712Callback();
   const getSteps = useGetStepsCallback();
@@ -431,17 +432,15 @@ const useLiquidityHubSwapCallback = () => {
           await approvalCallback();
         }
 
-        const acceptedQuote = getLatestQuote();
+        const acceptedQuote = getLatestQuote() || quote;
 
         if (!acceptedQuote) {
-          throw new Error('Failed to fetch quote');
+          throw new Error('missing  quote');
         }
+
         onAcceptQuote(acceptedQuote);
         updateStore({ currentStep: Steps.SWAP });
-        const signature = await promiseWithTimeout(
-          signCallback(acceptedQuote.permitData),
-          SIGNATURE_TIMEOUT,
-        );
+        const signature = await signCallback(acceptedQuote.permitData);
         onSignature(signature);
 
         const txHash = await swapCallback({
