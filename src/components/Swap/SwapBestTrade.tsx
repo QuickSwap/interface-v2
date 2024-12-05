@@ -1051,7 +1051,10 @@ const SwapBestTrade: React.FC<{
     const betterPriceFound = await getBetterPrice({
       dexOutAmount: optimalRate?.destAmount,
       allowedSlippage,
-      skip: liquidityHubDisabled,
+      skip:
+        liquidityHubDisabled ||
+        wrapType === WrapType.WRAP ||
+        wrapType === WrapType.UNWRAP,
     });
 
     if (betterPriceFound) {
@@ -1067,6 +1070,7 @@ const SwapBestTrade: React.FC<{
     getBetterPrice,
     isLhPureAggregationMode,
     onPureAggregationSubmit,
+    wrapType,
   ]);
 
   const paraRate = optimalRate
