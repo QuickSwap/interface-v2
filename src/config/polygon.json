@@ -8,7 +8,7 @@
   "isMainnet": true,
   "visible": true,
   "networkName": "Polygon",
-  "nativeCurrencyImage": "/polygon/image.png",
+  "nativeCurrencyImage": "/polygon/polygon_new.webp",
   "nativeCurrency": {
     "name": "Matic Token",
     "symbol": "MATIC",
