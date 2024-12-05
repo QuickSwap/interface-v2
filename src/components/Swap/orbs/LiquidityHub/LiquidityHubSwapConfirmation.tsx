@@ -124,7 +124,11 @@ const useLiquidityHubConfirmationContext = () => React.useContext(Context);
 const useLiquidityHubApproval = () => {
   const { inCurrency, inAmount } = useLiquidityHubConfirmationContext();
 
-  return useApproval(permit2Address, inCurrency, inAmount);
+  return useApproval(
+    permit2Address,
+    inCurrency,
+    fromRawAmount(inCurrency, inAmount)?.toExact(),
+  );
 };
 
 const useAmounts = () => {
