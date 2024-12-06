@@ -51,7 +51,7 @@ const BridgeBlockItem: React.FC<BridgeBlockItemProps> = ({
               alt='item'
               width={16}
               height={16}
-              style={{ marginLeft: '-2px' }}
+              style={{ marginLeft: '-2px', borderRadius: '8px' }}
             />
           );
         })}

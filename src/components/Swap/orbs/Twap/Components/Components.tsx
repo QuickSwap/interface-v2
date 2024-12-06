@@ -156,7 +156,7 @@ export const LimitInputPanel = () => {
           </button>
         </Box>
         <CardInput>
-          <Box style={{ display: 'flex', gap: '20px', width: '100%' }}>
+          <Box style={{ display: 'flex', width: '100%' }}>
             <LimitPriceInput />
             <CurrencySelect
               id='twap-limit-currency-select'

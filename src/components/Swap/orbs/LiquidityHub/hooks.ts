@@ -1,6 +1,6 @@
 import { ChainId, Currency } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { getConfig } from 'config';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import {
@@ -134,37 +134,36 @@ export const useGetBetterPrice = (
 ) => {
   const [seekingBetterPrice, setSeekingBestPrice] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: async ({
-      dexOutAmount = '',
-      allowedSlippage = 0,
+  const getBetterPrice = useCallback(
+    async ({
       skip,
+      allowedSlippage = 0,
+      dexOutAmount = '',
     }: {
-      dexOutAmount?: string;
+      skip: boolean;
       allowedSlippage?: number;
-      skip?: boolean;
+      dexOutAmount?: string;
     }) => {
-      if (skip) return false;
-      setSeekingBestPrice(true);
-      const quote = await promiseWithTimeout(fetchLiquidityHubQuote(), 5_000);
-      const dexMinAmountOut =
-        subtractSlippage(allowedSlippage, dexOutAmount) || 0;
-      return BN(quote?.userMinOutAmountWithGas || 0).gt(dexMinAmountOut);
+      try {
+        if (skip) return false;
+        setSeekingBestPrice(true);
+        const quote = await promiseWithTimeout(fetchLiquidityHubQuote(), 5_000);
+        const dexMinAmountOut =
+          subtractSlippage(allowedSlippage, dexOutAmount) || 0;
+        return BN(quote?.userMinOutAmountWithGas || 0).gt(dexMinAmountOut);
+      } catch (error) {
+        console.error('useSeekingBetterPrice', error);
+      } finally {
+        setTimeout(() => {
+          setSeekingBestPrice(false);
+        }, 50);
+      }
     },
-    onError: (error) => {
-      console.error('useSeekingBetterPrice', error);
-    },
-    onSettled: () => {
-      setTimeout(() => {
-        setSeekingBestPrice(false);
-      }, 50);
-    },
-  });
+    [fetchLiquidityHubQuote],
+  );
 
   return {
     seekingBetterPrice,
-    quote: mutation.data,
-    error: mutation.error,
-    getBetterPrice: mutation.mutateAsync,
+    getBetterPrice,
   };
 };
