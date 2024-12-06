@@ -16,7 +16,7 @@ const AvailableChain: React.FC<AvailableChainProps> = ({
       <img
         src={nativeCurrencyImage}
         alt='network Image'
-        className='networkIcon'
+        className='availableChainIcon'
       />
       <Typography>{networkName}</Typography>
     </Box>
