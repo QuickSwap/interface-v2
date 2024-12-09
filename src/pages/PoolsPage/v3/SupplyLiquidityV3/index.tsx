@@ -346,6 +346,7 @@ export function SupplyLiquidityV3() {
     },
     [redirectWithCurrencySingleToken, selectVault],
   );
+
   return (
     <Box>
       {openSettingsModal && (
@@ -433,8 +434,10 @@ export function SupplyLiquidityV3() {
             {mintInfo.noLiquidity &&
               baseCurrency &&
               quoteCurrency &&
-              liquidityRangeType ===
-                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+              (liquidityRangeType ===
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+                liquidityRangeType ===
+                  GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL) && (
                 <Box mb={2}>
                   <InitialPrice
                     currencyA={baseCurrency ?? undefined}

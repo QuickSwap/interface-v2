@@ -60,6 +60,7 @@ interface IPresetRanges {
   isDefiedge?: boolean;
   isSteer?: boolean;
   steerPairs?: SteerVault[];
+  isAlgebraIntegral?: boolean;
 }
 
 enum PresetProfits {
@@ -86,6 +87,7 @@ export function PresetRanges({
   isDefiedge = false,
   defiedgeStrategies,
   isSteer = false,
+  isAlgebraIntegral = false,
   steerPairs,
 }: IPresetRanges) {
   const { chainId } = useActiveWeb3React();
@@ -317,6 +319,10 @@ export function PresetRanges({
         : [];
     }
 
+    // if (isAlgebraIntegral) {
+    //   return [];
+    // }
+
     if (isStablecoinPair)
       return [
         {
@@ -377,6 +383,7 @@ export function PresetRanges({
     isDefiedge,
     isSteer,
     isStablecoinPair,
+    isAlgebraIntegral,
     t,
     gammaPair,
     gammaValues,
