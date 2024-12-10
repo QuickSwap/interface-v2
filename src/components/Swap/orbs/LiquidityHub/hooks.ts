@@ -147,7 +147,7 @@ export const useGetBetterPrice = (
       try {
         if (skip) return false;
         setSeekingBestPrice(true);
-        const quote = await promiseWithTimeout(fetchLiquidityHubQuote(), 5_000);
+        const quote = await promiseWithTimeout(fetchLiquidityHubQuote(), 8_000);
         const dexMinAmountOut =
           subtractSlippage(allowedSlippage, dexOutAmount) || 0;
         return BN(quote?.userMinOutAmountWithGas || 0).gt(dexMinAmountOut);
