@@ -52,7 +52,7 @@ export const isRejectedError = (error: any) => {
 
 export const isTimeoutError = (error: any) => {
   const message = error.message?.toLowerCase();
-  return message?.includes('timeout');
+  return message === 'timeout';
 };
 
 export const makeElipsisAddress = (address?: string, padding = 6): string => {

@@ -1038,5 +1038,7 @@
   "networkFeeHelper": "Network fees are paid for transaction",
   "dragonEggAlert": "Screenshot this and DM  <alink>@QuickswapDEX on X (Twitter)</alink>  for a chance to win prizes! First come, first serve.",
   "cancelOrder": "Cancel Order",
-  "seekingBetterPrice": "Seeking better price"
+  "seekingBetterPrice": "Seeking better price",
+  "wrapError": "Your {{ native }} has been wrapped to {{ wrapped }}",
+  "txFailed": "Transaction failed"
 }

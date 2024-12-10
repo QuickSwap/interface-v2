@@ -9,13 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { Currency, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import {
-  fromRawAmount,
-  subtractSlippage,
-  isRejectedError,
-  isTimeoutError,
-  promiseWithTimeout,
-} from '../utils';
+import { fromRawAmount, isRejectedError, isTimeoutError } from '../utils';
 import { OptimalRate } from '@paraswap/sdk';
 import { useParaswap } from 'hooks/useParaswap';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -156,6 +150,7 @@ const useAmounts = () => {
 
 const useParseSteps = () => {
   const { inCurrency, signature } = useLiquidityHubConfirmationContext();
+  const { chainId } = useActiveWeb3React();
   const getLogo = useGetLogoCallback();
 
   return useCallback(
@@ -171,7 +166,9 @@ const useParseSteps = () => {
         }
         if (step === Steps.APPROVE) {
           return {
-            title: `Approve ${inCurrency?.symbol} spending`,
+            title: `Approve ${
+              wrappedCurrency(inCurrency, chainId)?.symbol
+            } spending`,
             icon: <CheckCircleIcon />,
             id: Steps.APPROVE,
           };
@@ -185,7 +182,7 @@ const useParseSteps = () => {
         };
       });
     },
-    [inCurrency, signature, getLogo],
+    [inCurrency, signature, getLogo, chainId],
   );
 };
 
@@ -403,7 +400,7 @@ const useLiquidityHubSwapCallback = () => {
   const { mutateAsync: approvalCallback } = useApproveCallback();
   const onTradeSuccess = useOnTradeSuccessCallback();
   const { onUserInput } = useSwapActionHandlers();
-  const dispatch = useAppDispatch();
+  const liquidityHubSdk = useLiquidityHubSDK();
 
   return useMutation({
     mutationFn: async (
@@ -452,13 +449,15 @@ const useLiquidityHubSwapCallback = () => {
           signature,
         });
 
-        const transaction = await library.getTransaction(txHash);
-        const receipt = await transaction.wait();
+        const details = await liquidityHubSdk.getTransactionDetails(
+          txHash,
+          acceptedQuote,
+        );
+        console.log('lh swap success', details);
+
         onUserInput(Field.INPUT, '');
-        dispatch(updateUserBalance());
         updateStore({ swapStatus: SwapStatus.SUCCESS });
         onTradeSuccess(acceptedQuote);
-        return receipt;
       } catch (error) {
         const isRejectedOrTimeout =
           isRejectedError(error) || isTimeoutError(error);
@@ -502,29 +501,24 @@ const useOnTradeSuccessCallback = () => {
         );
       } catch (error) {}
     },
-    [liquidityHubSDK, outTokenUsdPrice, outToken, outCurrency],
+    [liquidityHubSDK, outTokenUsdPrice, outCurrency],
   );
 };
 
 const useParaswapTxParamsCallback = () => {
   const paraswap = useParaswap();
-  const { account, chainId } = useActiveWeb3React();
-  const {
-    allowedSlippage,
-    optimalRate,
-    inCurrency,
-  } = useLiquidityHubConfirmationContext();
+  const { account } = useActiveWeb3React();
+  const { allowedSlippage, optimalRate } = useLiquidityHubConfirmationContext();
 
   return useMutation({
     mutationFn: async () => {
-      const inToken = wrappedCurrency(inCurrency, chainId);
-      if (!optimalRate || !allowedSlippage || !inToken || !account) {
+      if (!optimalRate || !allowedSlippage || !account) {
         throw new Error('useParaswapTxParamsCallback missing args');
       }
       try {
         const result = await paraswap.buildTx(
           {
-            srcToken: inToken.address,
+            srcToken: optimalRate.srcToken,
             destToken: optimalRate.destToken,
             srcAmount: optimalRate.srcAmount,
             destAmount: optimalRate.destAmount,
