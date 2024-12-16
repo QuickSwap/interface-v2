@@ -35,18 +35,16 @@ import { useLiquidityHubSDK } from './hooks';
 import useWrapCallback from 'hooks/useWrapCallback';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
-import { useAppDispatch } from 'state';
-import { updateUserBalance } from 'state/balance/actions';
 
 export interface LiquidityHubConfirmationProps {
   inCurrency?: Currency;
   outCurrency?: Currency;
   isOpen: boolean;
   onDismiss: () => void;
-  getLatestQuote: () => Quote | undefined;
+  fetchLiquidityHubQuote: () => Promise<Quote | undefined>;
   quote?: Quote | null;
   onSwapFailed: () => void;
-  optimalRate?: OptimalRate;
+  getOptimalRate: () => OptimalRate | undefined;
   allowedSlippage?: number;
   onLiquidityHubSwapInProgress: (value: boolean) => void;
   inAmount?: string;
@@ -363,15 +361,15 @@ const useSwapCallback = () => {
 
   return useMutation({
     mutationFn: async ({
-      acceptedQuote,
+      quote,
       signature,
     }: {
-      acceptedQuote: Quote;
+      quote: Quote;
       signature: string;
     }) => {
       const txParams = await getParaswapTxParams();
 
-      const txHash = await liquidityHub.swap(acceptedQuote, signature, {
+      const txHash = await liquidityHub.swap(quote, signature, {
         data: txParams?.data || '',
         to: txParams?.to,
       });
@@ -389,9 +387,8 @@ const useLiquidityHubSwapCallback = () => {
     onAcceptQuote,
     inCurrency,
     outCurrency,
-    getLatestQuote,
+    fetchLiquidityHubQuote,
     onLiquidityHubSwapInProgress,
-    quote,
   } = useLiquidityHubConfirmationContext();
   const { mutateAsync: signCallback } = useSignEIP712Callback();
   const getSteps = useGetStepsCallback();
@@ -433,31 +430,34 @@ const useLiquidityHubSwapCallback = () => {
           await approvalCallback();
         }
 
-        const acceptedQuote = getLatestQuote() || quote;
+        const latestQuote = await fetchLiquidityHubQuote();
 
-        if (!acceptedQuote) {
+        if (!latestQuote) {
           throw new Error('missing  quote');
         }
 
-        onAcceptQuote(acceptedQuote);
+        onAcceptQuote(latestQuote);
         updateStore({ currentStep: Steps.SWAP });
-        const signature = await signCallback(acceptedQuote.permitData);
+        const signature = await signCallback(latestQuote.permitData);
         onSignature(signature);
 
         const txHash = await swapCallback({
-          acceptedQuote,
+          quote: latestQuote,
           signature,
         });
 
         const details = await liquidityHubSdk.getTransactionDetails(
           txHash,
-          acceptedQuote,
+          latestQuote,
         );
-        console.log('lh swap success', details);
+
+        if (!details) {
+          throw new Error('missing transaction details');
+        }
 
         onUserInput(Field.INPUT, '');
         updateStore({ swapStatus: SwapStatus.SUCCESS });
-        onTradeSuccess(acceptedQuote);
+        onTradeSuccess(latestQuote);
       } catch (error) {
         const isRejectedOrTimeout =
           isRejectedError(error) || isTimeoutError(error);
@@ -508,10 +508,14 @@ const useOnTradeSuccessCallback = () => {
 const useParaswapTxParamsCallback = () => {
   const paraswap = useParaswap();
   const { account } = useActiveWeb3React();
-  const { allowedSlippage, optimalRate } = useLiquidityHubConfirmationContext();
+  const {
+    allowedSlippage,
+    getOptimalRate,
+  } = useLiquidityHubConfirmationContext();
 
   return useMutation({
     mutationFn: async () => {
+      const optimalRate = getOptimalRate();
       if (!optimalRate || !allowedSlippage || !account) {
         throw new Error('useParaswapTxParamsCallback missing args');
       }

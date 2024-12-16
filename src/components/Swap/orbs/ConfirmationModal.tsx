@@ -248,7 +248,7 @@ function ConfirmationContainer({
 
 export const Error = () => {
   const {
-    onDismiss,
+    onDismiss: _onDismiss,
     inAmount,
     state: { shouldUnwrap },
   } = useConfirmationContext();
@@ -256,22 +256,31 @@ export const Error = () => {
   const { chainId } = useActiveWeb3React();
   const nativeSymbol = ETHER[chainId].symbol;
   const wSymbol = WETH[chainId].symbol;
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { execute, wrapType } = useWrapCallback(
+  const { execute, inputError } = useWrapCallback(
     WETH[chainId],
     ETHER[chainId],
     inAmount,
   );
+
   const [success, setSuccess] = useState(false);
-  const isLoading = wrapType === WrapType.UNWRAPPING;
   const unwrap = useCallback(async () => {
     try {
+      setIsLoading(true);
       await execute?.();
       setSuccess(true);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }, [execute]);
+
+  const onDismiss = useCallback(() => {
+    _onDismiss();
+    setSuccess(false);
+  }, [_onDismiss]);
 
   if (success) {
     return (
@@ -314,7 +323,7 @@ export const Error = () => {
           </p>
         )}
       </Box>
-      {shouldUnwrap ? (
+      {!inputError && shouldUnwrap ? (
         <Box className='orbsErrorContentButtons'>
           <Button className='txSubmitButton' onClick={unwrap}>
             {t('unwrap')}
@@ -331,24 +340,6 @@ export const Error = () => {
         </Box>
       )}
     </ConfirmationContainer>
-  );
-};
-
-const SwapButton = ({
-  text,
-  onSubmit,
-}: {
-  text?: string;
-  onSubmit: () => void;
-}) => {
-  return (
-    <Box className='swapButtonWrapper'>
-      <Box width='100%'>
-        <Button fullWidth onClick={onSubmit}>
-          {text}
-        </Button>
-      </Box>
-    </Box>
   );
 };
 

@@ -69,8 +69,8 @@ export const useLiquidityHubQuote = ({
       : wrappedCurrency(outCurrency, chainId)?.address;
   }, [outCurrency, isNativeCurrency, chainId]);
 
-  const queryKey = useMemo(
-    () => [
+  const query = useQuery<Quote>({
+    queryKey: [
       'useLiquidityHubQuote',
       fromToken,
       toToken,
@@ -78,11 +78,6 @@ export const useLiquidityHubQuote = ({
       allowedSlippage,
       chainId,
     ],
-    [fromToken, toToken, inAmount, allowedSlippage, chainId],
-  );
-
-  const query = useQuery<Quote>({
-    queryKey,
     queryFn: async ({ signal }) => {
       if (!fromToken || !toToken || !inAmount || !chainId || !allowedSlippage) {
         throw new Error('useLiquidityHubQuote Missing required parameters');
@@ -118,15 +113,14 @@ export const useLiquidityHubQuote = ({
       isSupported,
   });
 
-  const queryClient = useQueryClient();
+  const refetch = useCallback(async () => {
+    return (await query.refetch()).data;
+  }, [query.refetch]);
 
-  return useMemo(() => {
-    return {
-      ...query,
-      getLatestQuote: () => queryClient.getQueryData<Quote>(queryKey),
-      refetch: async () => (await query.refetch()).data,
-    };
-  }, [query, queryClient, queryKey]);
+  return {
+    ...query,
+    refetch,
+  };
 };
 
 export const useGetBetterPrice = (
