@@ -186,7 +186,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
       menuItems.push(hydraItem);
     }
   }
-  if (showPerps) {
+  if (showPerps && process.env.NODE_ENV !== 'production') {
     if (showHydra || showPerpsV2) {
       perpsTab.items?.push(perpsItem);
     } else {

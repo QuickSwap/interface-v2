@@ -70,7 +70,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       },
     });
   }
-  if (showPerps) {
+  if (showPerps && process.env.NODE_ENV !== 'production') {
     perpMenuItems.push({
       id: 'perps-v1-page-link',
       link: process.env.REACT_APP_PERPS_URL || '#',

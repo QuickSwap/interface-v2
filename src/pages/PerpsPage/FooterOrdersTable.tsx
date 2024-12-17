@@ -60,7 +60,7 @@ const FooterOrdersTable: React.FC<{
 
   const [o, { cancelOrder, cancelAlgoOrder, isLoading }] = useOrderStream({
     symbol: token,
-    status: orderStatus
+    status: orderStatus,
   });
 
   const orders = o as Order[] | null;
