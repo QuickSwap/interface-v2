@@ -98,7 +98,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/styles": "^4.11.5",
-    "@orbs-network/liquidity-hub-sdk": "^1.0.45",
+    "@orbs-network/liquidity-hub-sdk": "^1.0.47",
     "@orbs-network/swap-ui": "^0.0.14",
     "@orbs-network/twap-sdk": "^2.0.33",
     "@orderly.network/hooks": "^1.4.3",

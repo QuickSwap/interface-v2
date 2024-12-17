@@ -51,7 +51,6 @@ export type ConfirmationState = {
   txHash?: string;
   steps?: Steps[];
   error?: string;
-  stapStatus?: SwapStatus;
 };
 
 interface ConfirmationModalProps extends SharedProps {
@@ -117,14 +116,14 @@ const ConfirmationProvider = (props: ContextProps) => {
   );
 
   const onDismiss = useCallback(() => {
+    if (store.swapStatus) {
+      dispatch(updateUserBalance());
+    }
     setTimeout(() => {
       resetStore();
     }, 5_00);
     props.onDismiss();
-    if (store.stapStatus === SwapStatus.SUCCESS) {
-      dispatch(updateUserBalance());
-    }
-  }, [props, resetStore, store.stapStatus, dispatch]);
+  }, [props, resetStore, store.swapStatus, dispatch]);
 
   return (
     <Context.Provider
@@ -249,29 +248,39 @@ function ConfirmationContainer({
 
 export const Error = () => {
   const {
-    onDismiss,
+    onDismiss: _onDismiss,
     inAmount,
-    state: { shouldUnwrap, error },
+    state: { shouldUnwrap },
   } = useConfirmationContext();
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const nativeSymbol = ETHER[chainId].symbol;
+  const wSymbol = WETH[chainId].symbol;
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { execute, wrapType } = useWrapCallback(
+  const { execute, inputError } = useWrapCallback(
     WETH[chainId],
     ETHER[chainId],
     inAmount,
   );
+
   const [success, setSuccess] = useState(false);
-  const isLoading = wrapType === WrapType.UNWRAPPING;
   const unwrap = useCallback(async () => {
     try {
+      setIsLoading(true);
       await execute?.();
       setSuccess(true);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }, [execute]);
+
+  const onDismiss = useCallback(() => {
+    _onDismiss();
+    setSuccess(false);
+  }, [_onDismiss]);
 
   if (success) {
     return (
@@ -300,11 +309,21 @@ export const Error = () => {
 
   return (
     <ConfirmationContainer className='orbsErrorContent' title={t('txFailed')}>
-      <Box>
+      <Box
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <img src={TransactionFailed} alt='Transaction Failed' />
-        {error && <p className='orbsErrorContentText'>Transaction Failed</p>}
+        {shouldUnwrap && (
+          <p className='orbsErrorContentText'>
+            {t('wrapError', { native: nativeSymbol, wrapped: wSymbol })}
+          </p>
+        )}
       </Box>
-      {shouldUnwrap ? (
+      {!inputError && shouldUnwrap ? (
         <Box className='orbsErrorContentButtons'>
           <Button className='txSubmitButton' onClick={unwrap}>
             {t('unwrap')}
@@ -321,24 +340,6 @@ export const Error = () => {
         </Box>
       )}
     </ConfirmationContainer>
-  );
-};
-
-const SwapButton = ({
-  text,
-  onSubmit,
-}: {
-  text?: string;
-  onSubmit: () => void;
-}) => {
-  return (
-    <Box className='swapButtonWrapper'>
-      <Box width='100%'>
-        <Button fullWidth onClick={onSubmit}>
-          {text}
-        </Button>
-      </Box>
-    </Box>
   );
 };
 

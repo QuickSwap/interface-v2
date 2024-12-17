@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
       title: t('Products'),
       items: [
         { title: t('swap'), link: '/swap' },
-        { title: t('Perps - zkEVM V1'), link: process.env.REACT_APP_PERPS_URL },
+        { title: t('Hydra'), link: process.env.REACT_APP_HYDRA_URL },
         { title: 'Perps - PoS', link: '/falkor', isNew: true },
         { title: t('pool'), link: '/pools' },
         { title: t('farm'), link: '/farm' },

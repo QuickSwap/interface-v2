@@ -9,13 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { Currency, WETH } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
-import {
-  fromRawAmount,
-  subtractSlippage,
-  isRejectedError,
-  isTimeoutError,
-  promiseWithTimeout,
-} from '../utils';
+import { fromRawAmount, isRejectedError, isTimeoutError } from '../utils';
 import { OptimalRate } from '@paraswap/sdk';
 import { useParaswap } from 'hooks/useParaswap';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
@@ -41,18 +35,16 @@ import { useLiquidityHubSDK } from './hooks';
 import useWrapCallback from 'hooks/useWrapCallback';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { Field } from 'state/swap/actions';
-import { useAppDispatch } from 'state';
-import { updateUserBalance } from 'state/balance/actions';
 
 export interface LiquidityHubConfirmationProps {
   inCurrency?: Currency;
   outCurrency?: Currency;
   isOpen: boolean;
   onDismiss: () => void;
-  getLatestQuote: () => Quote | undefined;
+  fetchLiquidityHubQuote: () => Promise<Quote | undefined>;
   quote?: Quote | null;
   onSwapFailed: () => void;
-  optimalRate?: OptimalRate;
+  getOptimalRate: () => OptimalRate | undefined;
   allowedSlippage?: number;
   onLiquidityHubSwapInProgress: (value: boolean) => void;
   inAmount?: string;
@@ -156,6 +148,7 @@ const useAmounts = () => {
 
 const useParseSteps = () => {
   const { inCurrency, signature } = useLiquidityHubConfirmationContext();
+  const { chainId } = useActiveWeb3React();
   const getLogo = useGetLogoCallback();
 
   return useCallback(
@@ -171,7 +164,9 @@ const useParseSteps = () => {
         }
         if (step === Steps.APPROVE) {
           return {
-            title: `Approve ${inCurrency?.symbol} spending`,
+            title: `Approve ${
+              wrappedCurrency(inCurrency, chainId)?.symbol
+            } spending`,
             icon: <CheckCircleIcon />,
             id: Steps.APPROVE,
           };
@@ -185,7 +180,7 @@ const useParseSteps = () => {
         };
       });
     },
-    [inCurrency, signature, getLogo],
+    [inCurrency, signature, getLogo, chainId],
   );
 };
 
@@ -366,15 +361,15 @@ const useSwapCallback = () => {
 
   return useMutation({
     mutationFn: async ({
-      acceptedQuote,
+      quote,
       signature,
     }: {
-      acceptedQuote: Quote;
+      quote: Quote;
       signature: string;
     }) => {
       const txParams = await getParaswapTxParams();
 
-      const txHash = await liquidityHub.swap(acceptedQuote, signature, {
+      const txHash = await liquidityHub.swap(quote, signature, {
         data: txParams?.data || '',
         to: txParams?.to,
       });
@@ -392,9 +387,8 @@ const useLiquidityHubSwapCallback = () => {
     onAcceptQuote,
     inCurrency,
     outCurrency,
-    getLatestQuote,
+    fetchLiquidityHubQuote,
     onLiquidityHubSwapInProgress,
-    quote,
   } = useLiquidityHubConfirmationContext();
   const { mutateAsync: signCallback } = useSignEIP712Callback();
   const getSteps = useGetStepsCallback();
@@ -403,7 +397,7 @@ const useLiquidityHubSwapCallback = () => {
   const { mutateAsync: approvalCallback } = useApproveCallback();
   const onTradeSuccess = useOnTradeSuccessCallback();
   const { onUserInput } = useSwapActionHandlers();
-  const dispatch = useAppDispatch();
+  const liquidityHubSdk = useLiquidityHubSDK();
 
   return useMutation({
     mutationFn: async (
@@ -436,29 +430,34 @@ const useLiquidityHubSwapCallback = () => {
           await approvalCallback();
         }
 
-        const acceptedQuote = getLatestQuote() || quote;
+        const latestQuote = await fetchLiquidityHubQuote();
 
-        if (!acceptedQuote) {
+        if (!latestQuote) {
           throw new Error('missing  quote');
         }
 
-        onAcceptQuote(acceptedQuote);
+        onAcceptQuote(latestQuote);
         updateStore({ currentStep: Steps.SWAP });
-        const signature = await signCallback(acceptedQuote.permitData);
+        const signature = await signCallback(latestQuote.permitData);
         onSignature(signature);
 
         const txHash = await swapCallback({
-          acceptedQuote,
+          quote: latestQuote,
           signature,
         });
 
-        const transaction = await library.getTransaction(txHash);
-        const receipt = await transaction.wait();
+        const details = await liquidityHubSdk.getTransactionDetails(
+          txHash,
+          latestQuote,
+        );
+
+        if (!details) {
+          throw new Error('missing transaction details');
+        }
+
         onUserInput(Field.INPUT, '');
-        dispatch(updateUserBalance());
         updateStore({ swapStatus: SwapStatus.SUCCESS });
-        onTradeSuccess(acceptedQuote);
-        return receipt;
+        onTradeSuccess(latestQuote);
       } catch (error) {
         const isRejectedOrTimeout =
           isRejectedError(error) || isTimeoutError(error);
@@ -502,29 +501,28 @@ const useOnTradeSuccessCallback = () => {
         );
       } catch (error) {}
     },
-    [liquidityHubSDK, outTokenUsdPrice, outToken, outCurrency],
+    [liquidityHubSDK, outTokenUsdPrice, outCurrency],
   );
 };
 
 const useParaswapTxParamsCallback = () => {
   const paraswap = useParaswap();
-  const { account, chainId } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const {
     allowedSlippage,
-    optimalRate,
-    inCurrency,
+    getOptimalRate,
   } = useLiquidityHubConfirmationContext();
 
   return useMutation({
     mutationFn: async () => {
-      const inToken = wrappedCurrency(inCurrency, chainId);
-      if (!optimalRate || !allowedSlippage || !inToken || !account) {
+      const optimalRate = getOptimalRate();
+      if (!optimalRate || !allowedSlippage || !account) {
         throw new Error('useParaswapTxParamsCallback missing args');
       }
       try {
         const result = await paraswap.buildTx(
           {
-            srcToken: inToken.address,
+            srcToken: optimalRate.srcToken,
             destToken: optimalRate.destToken,
             srcAmount: optimalRate.srcAmount,
             destAmount: optimalRate.destAmount,

@@ -453,7 +453,6 @@ const SwapBestTrade: React.FC<{
     isLoading: liquidityHubQuoteLoading,
     error: liquidityHubQuoteError,
     refetch: fetchLiquidityHubQuote,
-    getLatestQuote,
   } = useLiquidityHubQuote({
     allowedSlippage,
     inAmount: parsedAmount?.raw.toString(),
@@ -1279,6 +1278,8 @@ const SwapBestTrade: React.FC<{
     }
   }, [handleParaswap, onApprove, showApproveFlow]);
 
+  const getLatestOptimalRate = useCallback(() => optimalRate, [optimalRate]);
+
   return (
     <Box>
       <TokenWarningModal
@@ -1294,9 +1295,9 @@ const SwapBestTrade: React.FC<{
         isOpen={showLiquidityHubConfirm}
         onDismiss={handleLiquidityHubConfirmDismiss}
         quote={liquidityHubQuote}
-        getLatestQuote={getLatestQuote}
+        fetchLiquidityHubQuote={fetchLiquidityHubQuote}
         onSwapFailed={onLiquidityHubSwapFailed}
-        optimalRate={optimalRate}
+        getOptimalRate={getLatestOptimalRate}
         allowedSlippage={allowedSlippage}
         onLiquidityHubSwapInProgress={setSwappingLiquidityHub}
       />
