@@ -30,7 +30,7 @@ export function useFarmingHandlers() {
   const { updateV3Stake } = useV3StakeData();
 
   //exit from basic farming and claim than
-  const claimRewardsHandler = useCallback(
+  const exitFarmingsHandler = useCallback(
     async (
       token: any,
       {
@@ -43,10 +43,6 @@ export function useFarmingHandlers() {
         eternalBonusRewardToken,
         eternalStartTime,
         eternalEndTime,
-        eternalBonusEarned,
-        eternalEarned,
-        limitBonusEarned,
-        limitEarned,
         isDetached,
       }: any,
       farmingType: any,
@@ -56,18 +52,11 @@ export function useFarmingHandlers() {
       updateV3Stake({
         selectedTokenId: token,
         selectedFarmingType: farmingType,
-        txType: 'claimRewards',
+        txType: 'exitFarmings',
         txConfirmed: false,
         txHash: '',
         txError: '',
       });
-
-      const MaxUint128 = toHex(
-        JSBI.subtract(
-          JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(128)),
-          JSBI.BigInt(1),
-        ),
-      );
 
       const farmingCenterContract = new Contract(
         FARMING_CENTER[chainId],
@@ -94,28 +83,6 @@ export function useFarmingHandlers() {
               false,
             ]),
           ];
-
-          if (Boolean(+eternalEarned)) {
-            callDatas.push(
-              farmingCenterInterface.encodeFunctionData('claimReward', [
-                eternalRewardToken.address,
-                account,
-                0,
-                MaxUint128,
-              ]),
-            );
-          }
-
-          if (Boolean(+eternalBonusEarned)) {
-            callDatas.push(
-              farmingCenterInterface.encodeFunctionData('claimReward', [
-                eternalBonusRewardToken.address,
-                account,
-                0,
-                MaxUint128,
-              ]),
-            );
-          }
 
           if (isDetached) {
             const estimatedGas = await farmingCenterContract.estimateGas.multicall(
@@ -168,28 +135,6 @@ export function useFarmingHandlers() {
               true,
             ]),
           ];
-
-          if (Boolean(+limitEarned)) {
-            callDatas.push(
-              farmingCenterInterface.encodeFunctionData('claimReward', [
-                limitRewardToken.address,
-                account,
-                MaxUint128,
-                0,
-              ]),
-            );
-          }
-
-          if (Boolean(+limitBonusEarned)) {
-            callDatas.push(
-              farmingCenterInterface.encodeFunctionData('claimReward', [
-                limitBonusRewardToken.address,
-                account,
-                MaxUint128,
-                0,
-              ]),
-            );
-          }
 
           const estimatedGas = await farmingCenterContract.estimateGas.multicall(
             callDatas,
@@ -663,7 +608,7 @@ export function useFarmingHandlers() {
     approveHandler,
     farmHandler,
     withdrawHandler,
-    claimRewardsHandler,
+    exitFarmingsHandler,
     eternalCollectRewardHandler,
     eternalOnlyCollectRewardHandler,
   };
