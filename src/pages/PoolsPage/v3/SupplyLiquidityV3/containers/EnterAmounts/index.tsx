@@ -14,6 +14,7 @@ import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
+  ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from 'constants/v3/addresses';
 import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
 import { tryParseAmount } from 'state/swap/v3/hooks';
@@ -128,13 +129,17 @@ export function EnterAmounts({
     isWithNative && currencyB && currencyB.isNative
       ? currencyB.wrapped
       : currencyB;
-
   const positionManagerAddress = useMemo(() => {
     if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    } else if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+    ) {
+      return ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
-  }, [chainId, mintInfo.feeTier]);
+  }, [chainId, mintInfo.feeTier, mintInfo.liquidityRangeType]);
 
   const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
@@ -153,6 +158,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.STEER_RANGE
         ? steerPeripheryContract?.address
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+        ? ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
         : positionManagerAddress
       : undefined,
   );
@@ -172,6 +180,9 @@ export function EnterAmounts({
         : mintInfo.liquidityRangeType ===
           GlobalConst.v3LiquidityRangeType.STEER_RANGE
         ? steerPeripheryContract?.address
+        : mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+        ? ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId]
         : positionManagerAddress
       : undefined,
   );

@@ -39,6 +39,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
 import { useUnipilotFarmData } from 'hooks/v3/useUnipilotFarms';
 import { useGammaData } from 'hooks/v3/useGammaData';
+import { getConfig } from 'config/index';
 
 interface IRangeSelector {
   currencyA: Currency | null | undefined;
@@ -65,6 +66,8 @@ export function SelectRange({
   );
   const { chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const config = getConfig(chainId);
+  const algebraIntegralAvailable = config?.['algebraIntegral']?.['available'];
 
   const dispatch = useAppDispatch();
   const activePreset = useActivePreset();
@@ -234,7 +237,9 @@ export function SelectRange({
         onLeftRangeInput(
           preset
             ? liquidityRangeType !==
-              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+              liquidityRangeType !==
+                GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
               ? String(Number(priceObj.toSignificant()) * preset.min)
               : priceObj
                   .quote(
@@ -257,7 +262,9 @@ export function SelectRange({
         onRightRangeInput(
           preset
             ? liquidityRangeType !==
-              GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE &&
+              liquidityRangeType !==
+                GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
               ? String(Number(priceObj.toSignificant()) * preset.max)
               : priceObj
                   .quote(
@@ -415,6 +422,7 @@ export function SelectRange({
   const steerVaultExists = steerVaultsForPair.length > 0;
 
   const [isAutomatic, setIsAutoMatic] = useState(false);
+  const [isAlgebraIntegral, setIsAlgebraIntegral] = useState(false);
 
   const selectVaultEnabled =
     (gammaPairExists && unipilotVaultExists) ||
@@ -429,6 +437,8 @@ export function SelectRange({
     unipilotVaultExists ||
     defiedgeStrategyExists ||
     steerVaultExists;
+
+  const algebraIntegralEnabled = automaticEnabled || algebraIntegralAvailable;
 
   const enabledVaults = useMemo(() => {
     const vaults: string[] = [];
@@ -485,6 +495,10 @@ export function SelectRange({
           );
         }
       }
+    } else if (isAlgebraIntegral) {
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL,
+      );
     } else {
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
     }
@@ -492,6 +506,7 @@ export function SelectRange({
     defiedgeStrategyExists,
     gammaPairExists,
     isAutomatic,
+    isAlgebraIntegral,
     onChangeLiquidityRangeType,
     selectVaultEnabled,
     steerVaultExists,
@@ -553,20 +568,34 @@ export function SelectRange({
   return (
     <Box>
       <small className='weight-600'>{t('selectRange')}</small>
-      {automaticEnabled && (
+      {algebraIntegralEnabled && (
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
-            <Button
-              className={isAutomatic ? 'active' : ''}
-              onClick={() => {
-                setIsAutoMatic(true);
-              }}
-            >
-              <img
-                src={isAutomatic ? AutomaticImageDark : AutomaticImage}
-                alt='automatic range'
-              />
-            </Button>
+            {automaticEnabled && (
+              <Button
+                className={isAutomatic ? 'active' : ''}
+                onClick={() => {
+                  setIsAutoMatic(true);
+                  setIsAlgebraIntegral(false);
+                }}
+              >
+                <img
+                  src={isAutomatic ? AutomaticImageDark : AutomaticImage}
+                  alt='automatic range'
+                />
+              </Button>
+            )}
+            {algebraIntegralAvailable && (
+              <Button
+                className={isAlgebraIntegral ? 'active' : ''}
+                onClick={() => {
+                  setIsAlgebraIntegral(true);
+                  setIsAutoMatic(false);
+                }}
+              >
+                Algebra Integral
+              </Button>
+            )}
             <Button
               className={
                 liquidityRangeType ===
@@ -576,6 +605,7 @@ export function SelectRange({
               }
               onClick={() => {
                 setIsAutoMatic(false);
+                setIsAlgebraIntegral(false);
                 onChangeLiquidityRangeType(
                   GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
                 );
@@ -616,7 +646,6 @@ export function SelectRange({
           )}
         </Box>
       )}
-
       {!!liquidityRangeType && (
         <Box my={1}>
           <PresetRanges
@@ -649,6 +678,10 @@ export function SelectRange({
               GlobalConst.v3LiquidityRangeType.STEER_RANGE
             }
             steerPairs={steerVaultsForPair}
+            isAlgebraIntegral={
+              liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+            }
           />
         </Box>
       )}
@@ -682,7 +715,9 @@ export function SelectRange({
             </small>
           </Box>
         )}
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+      {(liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE ||
+        liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL) && (
         <>
           {mintInfo.price && (
             <Box textAlign='center'>
@@ -778,7 +813,6 @@ export function SelectRange({
           )}
         </>
       )}
-
       <Box className='pool-range-chart-wrapper'>
         <LiquidityChartRangeInput
           currencyA={currencyA ?? undefined}

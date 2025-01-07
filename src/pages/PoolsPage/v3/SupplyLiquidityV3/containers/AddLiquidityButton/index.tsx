@@ -40,6 +40,7 @@ import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
+  ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
 } from 'constants/v3/addresses';
 import {
   calculateGasMargin,
@@ -106,9 +107,14 @@ export function AddLiquidityButton({
   const positionManagerAddress = useMemo(() => {
     if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
+    } else if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+    ) {
+      return ALGEBRA_INTEGRAL_NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
     }
     return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
-  }, [chainId, mintInfo.feeTier]);
+  }, [chainId, mintInfo.feeTier, mintInfo.liquidityRangeType]);
   const wethContract = useWETHContract();
 
   const deadline = useTransactionDeadline();
@@ -720,6 +726,138 @@ export function AddLiquidityButton({
         setAttemptingTxn(false);
         setTxPending(false);
         setAddLiquidityErrorMessage(t('errorInTx'));
+      }
+    } else if (
+      mintInfo.liquidityRangeType ===
+      GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+    ) {
+      if (mintInfo.position && account && deadline) {
+        if (!positionManager) return;
+        const useNative = baseCurrency.isNative
+          ? baseCurrency
+          : quoteCurrency.isNative
+          ? quoteCurrency
+          : undefined;
+
+        let callParams;
+        if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
+          callParams = UniV3NonFunPosMan.addCallParameters(mintInfo.position, {
+            slippageTolerance: allowedSlippagePercent,
+            recipient: account,
+            deadline: deadline.toString(),
+            useNative,
+            createPool: mintInfo.noLiquidity,
+          });
+        } else if (
+          mintInfo.liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.ALGEBRA_INTEGRAL
+        ) {
+          callParams = NonFunPosMan.addCallParameters(mintInfo.position, {
+            slippageTolerance: allowedSlippagePercent,
+            recipient: account,
+            deadline: deadline.toString(),
+            useNative,
+            createPool: mintInfo.noLiquidity,
+          });
+        } else {
+          callParams = NonFunPosMan.addCallParameters(mintInfo.position, {
+            slippageTolerance: allowedSlippagePercent,
+            recipient: account,
+            deadline: deadline.toString(),
+            useNative,
+            createPool: mintInfo.noLiquidity,
+          });
+        }
+        const { calldata, value } = callParams;
+
+        const txn: { to: string; data: string; value: string } = {
+          to: positionManagerAddress,
+          data: calldata,
+          value,
+        };
+
+        setRejected && setRejected(false);
+
+        setAttemptingTxn(true);
+
+        library
+          .getSigner()
+          .estimateGas(txn)
+          .then((estimate) => {
+            const newTxn = {
+              ...txn,
+              gasLimit: calculateGasMarginV3(chainId, estimate),
+            };
+
+            return library
+              .getSigner()
+              .sendTransaction(newTxn)
+              .then(async (response: TransactionResponse) => {
+                setAttemptingTxn(false);
+                setTxPending(true);
+                const summary = mintInfo.noLiquidity
+                  ? t('createPoolandaddLiquidity', {
+                      symbolA: baseCurrency?.symbol,
+                      symbolB: quoteCurrency?.symbol,
+                    })
+                  : t('addLiquidityWithTokens', {
+                      symbolA: baseCurrency?.symbol,
+                      symbolB: quoteCurrency?.symbol,
+                    });
+                addTransaction(response, {
+                  summary,
+                  type: TransactionType.ADDED_LIQUIDITY,
+                  tokens: [
+                    ((baseCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                    ((quoteCurrency as unknown) as any)?.address ??
+                      wrappedCurrency(Token.ETHER[chainId], chainId),
+                  ],
+                });
+
+                dispatch(setAddLiquidityTxHash({ txHash: response.hash }));
+
+                try {
+                  const receipt = await response.wait();
+                  finalizedTransaction(receipt, {
+                    summary,
+                  });
+                  setTxPending(false);
+                  handleAddLiquidity();
+                } catch (error) {
+                  console.error('Failed to send transaction', error);
+                  setTxPending(false);
+                  setAddLiquidityErrorMessage(
+                    error?.code === 'ACTION_REJECTED'
+                      ? t('txRejected')
+                      : t('errorInTx'),
+                  );
+                }
+              })
+              .catch((err) => {
+                console.error('Failed to send transaction', err);
+                setAttemptingTxn(false);
+                setAddLiquidityErrorMessage(
+                  err?.code === 'ACTION_REJECTED'
+                    ? t('txRejected')
+                    : t('errorInTx'),
+                );
+              });
+          })
+          .catch((error) => {
+            console.error('Failed to send transaction', error);
+            // we only care if the error is something _other_ than the user rejected the tx
+            setRejected && setRejected(true);
+            setAttemptingTxn(false);
+            setAddLiquidityErrorMessage(
+              error?.code === 'ACTION_REJECTED'
+                ? t('txRejected')
+                : t('errorInTx'),
+            );
+            if (error?.code !== 'ACTION_REJECTED') {
+              console.error(error);
+            }
+          });
       }
     } else {
       if (mintInfo.position && account && deadline) {
