@@ -140,6 +140,7 @@ const SwapDetails = () => {
     chunks,
     fillDelay,
     destTokenMinAmount,
+    destTokenAmount,
   } = derivedSwapValues;
   const { currencies, isMarketOrder } = useTwapContext();
 
@@ -164,6 +165,10 @@ const SwapDetails = () => {
           currency={currencies.OUTPUT}
         />
         <OrderDetails.Recipient />
+        <OrderDetails.Fee
+          amount={destTokenAmount}
+          currency={currencies.OUTPUT}
+        />
       </OrderDetails>
     </>
   );

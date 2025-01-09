@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { CSSProperties, ReactNode, useMemo } from 'react';
 import { Box } from '@material-ui/core';
 import { Currency } from '@uniswap/sdk';
 import QuestionHelper from 'components/QuestionHelper';
@@ -8,6 +8,8 @@ import { formatDateFromTimeStamp, formatNumber, getEtherscanLink } from 'utils';
 import { formatCurrencyAmount } from 'utils/v3/formatCurrencyAmount';
 import { fromRawAmount, makeElipsisAddress } from '../../utils';
 import { useFillDelayAsText } from '../hooks';
+import BN from 'bignumber.js';
+import { tryParseAmount } from 'state/swap/hooks';
 
 const ELIPSIS_PADDING = 5;
 
@@ -143,6 +145,32 @@ const Deadline = ({ deadline }: { deadline?: number }) => {
   );
 };
 
+const FEE = 0.25;
+const Fee = ({
+  amount,
+  currency,
+}: {
+  amount?: string;
+  currency?: Currency;
+}) => {
+  const { t } = useTranslation();
+  const result = useMemo(() => {
+    const amountUI = fromRawAmount(currency, amount);
+    if (!amountUI) return '0';
+    return BN(amountUI.toFixed())
+      .times(FEE)
+      .div(100)
+      .toString();
+  }, [amount, currency]);
+
+  return (
+    <TwapOrderDetailsRow
+      label={`${t('fee')} (${FEE}%)`}
+      value={`${formatNumber(result, 4)} ${currency?.symbol}`}
+    />
+  );
+};
+
 const Price = ({
   price,
   isMarketOrder,
@@ -184,13 +212,15 @@ export const TwapOrderDetailsRow = ({
   label,
   value,
   tooltip,
+  style = {},
 }: {
   label: string;
   value?: ReactNode;
   tooltip?: string;
+  style?: CSSProperties;
 }) => {
   return (
-    <Box className='TwapOrderDetailsRow'>
+    <Box className='TwapOrderDetailsRow' style={style}>
       <Box className='TwapOrderDetailsRowLeft'>
         <p className='TwapOrderDetailsRowLabel'>{label}</p>
         {tooltip && <QuestionHelper text={tooltip} size={16} />}
@@ -209,5 +239,6 @@ OrderDetails.Chunks = Chunks;
 OrderDetails.Recipient = Recipient;
 OrderDetails.FillDelay = FillDelay;
 OrderDetails.DetailsRow = TwapOrderDetailsRow;
+OrderDetails.Fee = Fee;
 
 export { OrderDetails };
