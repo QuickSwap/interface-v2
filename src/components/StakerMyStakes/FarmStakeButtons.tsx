@@ -85,7 +85,12 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
                 !txError
               }
               onClick={() => {
-                claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
+                claimRewardsHandler(
+                  el.id,
+                  { ...el },
+                  FarmingType.ETERNAL,
+                  true,
+                );
               }}
             >
               <small>

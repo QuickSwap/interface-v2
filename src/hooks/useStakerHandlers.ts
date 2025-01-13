@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { toHex } from 'lib/src/utils/calldata';
 import { useV3StakeData } from 'state/farms/hooks';
 import { calculateGasMargin } from 'utils';
+import { ZERO_ADDRESS } from 'constants/v3/misc';
 
 export function useFarmingHandlers() {
   const { chainId, account, provider } = useActiveWeb3React();
@@ -50,6 +51,7 @@ export function useFarmingHandlers() {
         isDetached,
       }: any,
       farmingType: any,
+      onlyUndeposit = false,
     ) => {
       if (!account || !provider || !chainId) return;
 
@@ -95,7 +97,7 @@ export function useFarmingHandlers() {
             ]),
           ];
 
-          if (Boolean(+eternalEarned)) {
+          if (Boolean(+eternalEarned) && onlyUndeposit) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 eternalRewardToken.address,
@@ -106,7 +108,7 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+eternalBonusEarned)) {
+          if (Boolean(+eternalBonusEarned) && onlyUndeposit) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 eternalBonusRewardToken.address,
@@ -158,8 +160,8 @@ export function useFarmingHandlers() {
           callDatas = [
             farmingCenterInterface.encodeFunctionData('exitFarming', [
               [
-                limitRewardToken.address,
-                limitBonusRewardToken.address,
+                onlyUndeposit ? ZERO_ADDRESS : limitRewardToken.address,
+                onlyUndeposit ? ZERO_ADDRESS : limitBonusRewardToken.address,
                 pool.id,
                 +limitStartTime,
                 +limitEndTime,
@@ -169,7 +171,7 @@ export function useFarmingHandlers() {
             ]),
           ];
 
-          if (Boolean(+limitEarned)) {
+          if (Boolean(+limitEarned) && onlyUndeposit) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 limitRewardToken.address,
@@ -180,7 +182,7 @@ export function useFarmingHandlers() {
             );
           }
 
-          if (Boolean(+limitBonusEarned)) {
+          if (Boolean(+limitBonusEarned) && onlyUndeposit) {
             callDatas.push(
               farmingCenterInterface.encodeFunctionData('claimReward', [
                 limitBonusRewardToken.address,
