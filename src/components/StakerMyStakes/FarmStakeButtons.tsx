@@ -20,7 +20,7 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
   const { txType, selectedTokenId, txConfirmed, txError, selectedFarmingType } =
     v3Stake ?? {};
 
-  const { eternalCollectRewardHandler, withdrawHandler, exitFarmingsHandler } =
+  const { eternalCollectRewardHandler, withdrawHandler, claimRewardsHandler } =
     useFarmingHandlers() || {};
 
   return (
@@ -80,18 +80,18 @@ export default function FarmStakeButtons({ el }: FarmCardDetailProps) {
               disabled={
                 selectedTokenId === el.id &&
                 selectedFarmingType === FarmingType.ETERNAL &&
-                txType === 'exitFarmings' &&
+                txType === 'claimRewards' &&
                 !txConfirmed &&
                 !txError
               }
               onClick={() => {
-                exitFarmingsHandler(el.id, { ...el }, FarmingType.ETERNAL);
+                claimRewardsHandler(el.id, { ...el }, FarmingType.ETERNAL);
               }}
             >
               <small>
                 {selectedTokenId === el.id &&
                 selectedFarmingType === FarmingType.ETERNAL &&
-                txType === 'exitFarmings' &&
+                txType === 'claimRewards' &&
                 !txConfirmed &&
                 !txError
                   ? t('undepositing')
