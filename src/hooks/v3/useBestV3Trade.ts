@@ -57,7 +57,7 @@ export function useBestV3TradeExactIn(
 
   const algebraQuoteExactInInputs = useMemo(() => {
     return algebraRoutes.map((route) => [
-      encodeRouteToPath(route, false),
+      encodeRouteToPath(route, false, false, chainId === ChainId.SONEIUM),
       amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
     ]);
   }, [amountIn, algebraRoutes]);
@@ -201,7 +201,7 @@ export function useBestV3TradeExactOut(
 
   const algebraQuoteExactOutInputs = useMemo(() => {
     return algebraRoutes.map((route) => [
-      encodeRouteToPath(route, true),
+      encodeRouteToPath(route, true, false, chainId === ChainId.SONEIUM),
       amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
     ]);
   }, [amountOut, algebraRoutes]);

@@ -50,6 +50,7 @@ import {
   NATIVE_CONVERTER,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
+import AlgebraIntegralQuoterABI from 'constants/abis/v3/algebra-integral-quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
@@ -343,6 +344,11 @@ export function useRouterContract(): Contract | null {
 export function useV3Quoter() {
   return useContract(QUOTER_ADDRESSES, NewQuoterABI);
 }
+
+export function useAlgebraIntegralQuoter() {
+  return useContract(QUOTER_ADDRESSES, AlgebraIntegralQuoterABI);
+}
+
 export function useUniV3Quoter() {
   return useContract(UNIV3_QUOTER_ADDRESSES, UniV3QuoterABI);
 }

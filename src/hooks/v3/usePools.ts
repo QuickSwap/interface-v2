@@ -160,7 +160,11 @@ export function usePools(
           new Pool(
             token0,
             token1,
-            isUni ? fee : globalState.fee,
+            isUni
+              ? fee
+              : chainId !== ChainId.SONEIUM
+              ? globalState.fee
+              : globalState.lastFee,
             poolPrice,
             liquidity[0],
             globalState.tick,

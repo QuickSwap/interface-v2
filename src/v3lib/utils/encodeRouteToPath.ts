@@ -2,7 +2,7 @@ import { pack } from '@ethersproject/solidity';
 import { Currency, Token } from '@uniswap/sdk-core';
 import { Pool } from '../entities/pool';
 import { Route } from '../entities/route';
-import { FeeAmount } from './v3constants';
+import { ADDRESS_ZERO, FeeAmount } from './v3constants';
 
 /**
  * Converts a route to a hex encoded path
@@ -13,6 +13,7 @@ export function encodeRouteToPath(
   route: Route<Currency, Currency>,
   exactOutput: boolean,
   isUni?: boolean,
+  isAlgebraIntegral?: boolean,
 ): string {
   const firstInputToken: Token = route.input.wrapped;
 
@@ -34,9 +35,13 @@ export function encodeRouteToPath(
           inputToken: outputToken,
           types: isUni
             ? ['address', 'uint24', 'address']
+            : isAlgebraIntegral
+            ? ['address', 'address', 'address']
             : ['address', 'address'],
           path: isUni
             ? [inputToken.address, pool.fee as FeeAmount, outputToken.address]
+            : isAlgebraIntegral
+            ? [inputToken.address, ADDRESS_ZERO, outputToken.address]
             : [inputToken.address, outputToken.address],
         };
       } else {
@@ -44,9 +49,13 @@ export function encodeRouteToPath(
           inputToken: outputToken,
           types: isUni
             ? [...types, 'uint24', 'address']
+            : isAlgebraIntegral
+            ? [...types, 'address', 'address']
             : [...types, 'address'],
           path: isUni
             ? [...path, pool.fee as FeeAmount, outputToken.address]
+            : isAlgebraIntegral
+            ? [...path, ADDRESS_ZERO, outputToken.address]
             : [...path, outputToken.address],
         };
       }

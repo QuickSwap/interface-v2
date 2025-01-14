@@ -12,6 +12,7 @@ import { Trade } from './trade';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { MethodParameters, toHex } from './utils/calldata';
 import abi from 'constants/abis/v3/swap-router.json';
+import abiV2 from 'constants/abis/v3/swap-v2-router.json';
 import uniV3ABI from 'constants/abis/uni-v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
 import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
@@ -68,6 +69,8 @@ export interface SwapOptions {
   fee?: FeeOptions;
 
   isUni?: boolean;
+
+  isAlgebraIntegral?: boolean;
 }
 
 /**
@@ -75,6 +78,7 @@ export interface SwapOptions {
  */
 export abstract class SwapRouter extends SelfPermit {
   public static INTERFACE: Interface = new Interface(abi);
+  public static INTERFACEV2: Interface = new Interface(abiV2); // algebra-router
   public static UNIV3INTERFACE: Interface = new Interface(uniV3ABI);
 
   /**
@@ -181,20 +185,38 @@ export abstract class SwapRouter extends SelfPermit {
 
         if (singleHop) {
           if (trade.tradeType === TradeType.EXACT_INPUT) {
-            const exactInputSingleParams = {
-              tokenIn: route.tokenPath[0].address,
-              tokenOut: route.tokenPath[1].address,
-              fee: route.pools[0].fee,
-              recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
-              deadline,
-              amountIn,
-              amountOutMinimum: amountOut,
-              sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0),
-            };
+            const exactInputSingleParams = options.isAlgebraIntegral
+              ? {
+                  tokenIn: route.tokenPath[0].address,
+                  tokenOut: route.tokenPath[1].address,
+                  deployer: ADDRESS_ZERO,
+                  recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                  deadline,
+                  amountIn,
+                  amountOutMinimum: amountOut,
+                  limitSqrtPrice: toHex(options.sqrtPriceLimitX96 ?? 0),
+                }
+              : {
+                  tokenIn: route.tokenPath[0].address,
+                  tokenOut: route.tokenPath[1].address,
+                  fee: route.pools[0].fee,
+                  recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                  deadline,
+                  amountIn,
+                  amountOutMinimum: amountOut,
+                  sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0),
+                };
             calldatas.push(
               options.isUni
                 ? SwapRouter.UNIV3INTERFACE.encodeFunctionData(
                     'exactInputSingle',
+                    [exactInputSingleParams],
+                  )
+                : options.isAlgebraIntegral
+                ? SwapRouter.INTERFACEV2.encodeFunctionData(
+                    options.feeOnTransfer && !inputIsNative
+                      ? 'exactInputSingleSupportingFeeOnTransferTokens'
+                      : 'exactInputSingle',
                     [exactInputSingleParams],
                   )
                 : SwapRouter.INTERFACE.encodeFunctionData(
@@ -205,20 +227,36 @@ export abstract class SwapRouter extends SelfPermit {
                   ),
             );
           } else {
-            const exactOutputSingleParams = {
-              tokenIn: route.tokenPath[0].address,
-              tokenOut: route.tokenPath[1].address,
-              fee: route.pools[0].fee,
-              recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
-              deadline,
-              amountOut,
-              amountInMaximum: amountIn,
-              sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0),
-            };
+            const exactOutputSingleParams = options.isAlgebraIntegral
+              ? {
+                  tokenIn: route.tokenPath[0].address,
+                  tokenOut: route.tokenPath[1].address,
+                  deployer: ADDRESS_ZERO,
+                  recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                  deadline,
+                  amountOut,
+                  amountInMaximum: amountIn,
+                  limitSqrtPrice: toHex(options.sqrtPriceLimitX96 ?? 0),
+                }
+              : {
+                  tokenIn: route.tokenPath[0].address,
+                  tokenOut: route.tokenPath[1].address,
+                  fee: route.pools[0].fee,
+                  recipient: routerMustCustody ? ADDRESS_ZERO : recipient,
+                  deadline,
+                  amountOut,
+                  amountInMaximum: amountIn,
+                  sqrtPriceLimitX96: toHex(options.sqrtPriceLimitX96 ?? 0),
+                };
 
             calldatas.push(
               options.isUni
                 ? SwapRouter.UNIV3INTERFACE.encodeFunctionData(
+                    'exactOutputSingle',
+                    [exactOutputSingleParams],
+                  )
+                : options.isAlgebraIntegral
+                ? SwapRouter.INTERFACEV2.encodeFunctionData(
                     'exactOutputSingle',
                     [exactOutputSingleParams],
                   )
