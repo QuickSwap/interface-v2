@@ -36,6 +36,7 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.ASTARZKEVM]: [WETH[ChainId.ASTARZKEVM]],
   [ChainId.LAYERX]: [WETH[ChainId.LAYERX]],
   [ChainId.MINATO]: [WETH[ChainId.MINATO]],
+  [ChainId.SONEIUM]: [WETH[ChainId.SONEIUM]],
 };
 
 export const toV2Token = (t: {
@@ -94,6 +95,7 @@ export const MULTICALL_NETWORKS: { [chainId in ChainId]?: string } = {
   [ChainId.LAYERX]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
   [ChainId.ETHEREUM]: '0xcA11bde05977b3631167028862bE2a173976CA11',
   [ChainId.MINATO]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
+  [ChainId.SONEIUM]: '0x69465675e2125414f26ED3139218abBDDe3C4daa',
 };
 
 export const defaultBondDexFactories: {
@@ -149,6 +151,7 @@ export const POOL_DEPLOYER_ADDRESS: AddressMap = {
   [ChainId.ZKTESTNET]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.ZKEVM]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   [ChainId.LAYERX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
+  [ChainId.SONEIUM]: '0x7B446Bfb3763Ed0892f08893Eb06Dda79aB28CB9', //algebra-integral
 };
 
 export const QUOTER_ADDRESSES: AddressMap = {
@@ -188,6 +191,7 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
   [ChainId.ZKTESTNET]: '0xE86Ba90bf805cEa452c8FA6E37b4ae2D17D32599',
   [ChainId.ZKEVM]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
   [ChainId.LAYERX]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
+  [ChainId.SONEIUM]: '0x0629B3c6E1cCfF2e31e3A9Bd67ec96b23BE6f1e9', //algebra-integral
 };
 
 export const UNI_V3_FACTORY_ADDRESS: AddressMap = {
@@ -251,6 +255,7 @@ export const MULTICALL_ADDRESS: AddressMap = {
   [ChainId.ASTARZKEVM]: '0x81D880BfaB1f7f08816D9bd4571E2f5953532287',
   [ChainId.LAYERX]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
   [ChainId.MINATO]: '0xc7efb32470dEE601959B15f1f923e017C6A918cA',
+  [ChainId.SONEIUM]: '0x2E4C17aEE528084e6dB16882d24fc1Dd0Ef20D97',
 };
 
 export const V3_MIGRATOR_ADDRESSES: AddressMap = {
@@ -471,6 +476,7 @@ export const WMATIC_EXTENDED: { [chainId: number]: TokenV3 } = {
   [ChainId.ASTARZKEVM]: toV3Token(WETH[ChainId.ASTARZKEVM]),
   [ChainId.LAYERX]: toV3Token(WETH[ChainId.LAYERX]),
   [ChainId.MINATO]: toV3Token(WETH[ChainId.MINATO]),
+  [ChainId.SONEIUM]: toV3Token(WETH[ChainId.SONEIUM]),
 };
 
 export const USDC: { [chainId: number]: Token } = {
@@ -1825,6 +1831,7 @@ export const wrappedTokenAddresses: {
   [ChainId.MUMBAI]: WETH[ChainId.MUMBAI].address,
   [ChainId.DOEGCHAIN_TESTNET]: WETH[ChainId.DOEGCHAIN_TESTNET].address,
   [ChainId.MINATO]: WETH[ChainId.MINATO].address,
+  [ChainId.SONEIUM]: WETH[ChainId.SONEIUM].address,
 };
 
 export const nativeTokenSymbols: {
@@ -1847,4 +1854,5 @@ export const nativeTokenSymbols: {
   [ChainId.MUMBAI]: 'MATIC',
   [ChainId.DOEGCHAIN_TESTNET]: 'DOGE',
   [ChainId.MINATO]: 'ETH',
+  [ChainId.SONEIUM]: 'ETH',
 };

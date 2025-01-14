@@ -8,7 +8,6 @@ import {
   UNI_POOL_INIT_CODE_HASH,
 } from './v3constants';
 import { getConfig } from '../../config/index';
-import { ChainId } from '@uniswap/sdk';
 
 /**
  * Computes a pool address

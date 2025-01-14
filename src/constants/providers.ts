@@ -23,6 +23,8 @@ export const rpcMap = {
   [ChainId.LAYERX]: 'https://rpc.xlayer.tech',
   [ChainId.ETHEREUM]: 'https://eth.llamarpc.com',
   [ChainId.MINATO]: 'https://rpc.minato.soneium.org',
+  [ChainId.SONEIUM]:
+    'https://soneium.rpc.scs.startale.com/?apikey=Gm30NrXojQPJ7Dd4XalGZX5hqcPiKNfg',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
@@ -92,4 +94,5 @@ export const RPC_PROVIDERS: {
   [ChainId.ASTARZKEVM]: new AppJsonRpcProvider(ChainId.ASTARZKEVM),
   [ChainId.LAYERX]: new AppJsonRpcProvider(ChainId.LAYERX),
   [ChainId.MINATO]: new AppJsonRpcProvider(ChainId.MINATO),
+  [ChainId.SONEIUM]: new AppJsonRpcProvider(ChainId.SONEIUM),
 };

@@ -74,6 +74,7 @@ const EMPTY_LIST: TokenAddressMap = {
   [ChainId.ASTARZKEVM]: {},
   [ChainId.LAYERX]: {},
   [ChainId.MINATO]: {},
+  [ChainId.SONEIUM]: {},
 };
 
 const listCache: WeakMap<TokenList, TokenAddressMap> | null =

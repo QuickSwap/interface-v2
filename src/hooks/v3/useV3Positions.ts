@@ -10,6 +10,7 @@ import { useActiveWeb3React } from 'hooks';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV3NFTPositionManagerV2Contract,
   useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
@@ -53,7 +54,9 @@ export function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
   isUni?: boolean,
 ): UseV3PositionsResults {
+  const { chainId } = useActiveWeb3React();
   const positionManager = useV3NFTPositionManagerContract();
+  const positionV2Manager = useV3NFTPositionManagerV2Contract();
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
   const inputs = useMemo(
@@ -63,7 +66,11 @@ export function useV3PositionsFromTokenIds(
   );
 
   const results = useSingleContractMultipleData(
-    isUni ? uniV3PositionManager : positionManager,
+    isUni
+      ? uniV3PositionManager
+      : chainId !== ChainId.SONEIUM
+      ? positionManager
+      : positionV2Manager,
     'positions',
     inputs,
   );
@@ -98,7 +105,6 @@ export function useV3PositionsFromTokenIds(
     }
     return undefined;
   }, [loading, error, tokenIds, results, isUni]);
-
   return { loading, positions };
 }
 

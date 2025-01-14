@@ -92,6 +92,7 @@ const EMPTY_LIST: SyrupInfoAddressMap = {
   [ChainId.ASTARZKEVM]: {},
   [ChainId.LAYERX]: {},
   [ChainId.MINATO]: {},
+  [ChainId.SONEIUM]: {},
 };
 
 const syrupCache: WeakMap<SyrupListInfo, SyrupInfoAddressMap> | null =
