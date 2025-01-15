@@ -1,6 +1,7 @@
 import { Box, ButtonBase, Grid, Typography } from '@material-ui/core';
 import { HypeLabAds, Note } from 'components';
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { BridgeBlockItem } from 'components/Bridge';
 import eth from 'assets/images/bridge/eth.svg';
 import jumper from 'assets/images/bridge/jumper.svg';
@@ -28,17 +29,25 @@ import retr from 'assets/images/bridge/retr.webp';
 import rubic from 'assets/images/bridge/rubic.webp';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { useActiveWeb3React } from 'hooks';
-import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config';
+import { ChainId } from '@uniswap/sdk';
 
 const BridgePage: React.FC = ({}) => {
   const { chainId } = useActiveWeb3React();
+  const history = useHistory();
   console.log('🚀 ~ currentChainId:', chainId);
 
-  const supportedChains = SUPPORTED_CHAINIDS.filter((chain: any) => {
-    const config = getConfig(chain);
-    return config && config.visible;
-  });
+  // const supportedChains = SUPPORTED_CHAINIDS.filter((chain: any) => {
+  //   const config = getConfig(chain);
+  //   return config && config.visible;
+  // });
+
+  useEffect(() => {
+    if (chainId === ChainId.SONEIUM) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId]);
 
   const currentChain = useMemo(() => {
     return getConfig(chainId);

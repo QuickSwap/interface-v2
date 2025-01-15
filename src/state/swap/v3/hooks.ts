@@ -185,6 +185,7 @@ export function useDerivedSwapInfo(): {
     isExactIn ? parsedAmount : undefined,
     outputCurrency ?? undefined,
   );
+
   const bestV3TradeExactOut = useBestV3TradeExactOut(
     inputCurrency ?? undefined,
     !isExactIn ? parsedAmount : undefined,

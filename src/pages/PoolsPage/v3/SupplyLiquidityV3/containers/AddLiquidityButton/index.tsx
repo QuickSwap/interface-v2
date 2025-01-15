@@ -8,6 +8,7 @@ import {
   useUNIV3NFTPositionManagerContract,
   useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
+  useV3NFTPositionManagerV2Contract,
   useWETHContract,
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -18,6 +19,7 @@ import {
   useAmlScore,
 } from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
+import { NonfungiblePositionV2Manager as NonFunPosV2Man } from 'v3lib/nonfungiblePositionV2Manager';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
 import { useAppDispatch } from 'state/hooks';
@@ -98,11 +100,14 @@ export function AddLiquidityButton({
   const preset = useActivePreset();
 
   const algebraPositionManager = useV3NFTPositionManagerContract();
+  const algebraPositionV2Manager = useV3NFTPositionManagerV2Contract(); //algebra-integral
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
   const positionManager =
     mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')
       ? uniV3PositionManager
-      : algebraPositionManager;
+      : chainId !== ChainId.SONEIUM
+      ? algebraPositionManager
+      : algebraPositionV2Manager;
   const positionManagerAddress = useMemo(() => {
     if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
@@ -740,13 +745,22 @@ export function AddLiquidityButton({
             createPool: mintInfo.noLiquidity,
           });
         } else {
-          callParams = NonFunPosMan.addCallParameters(mintInfo.position, {
-            slippageTolerance: allowedSlippagePercent,
-            recipient: account,
-            deadline: deadline.toString(),
-            useNative,
-            createPool: mintInfo.noLiquidity,
-          });
+          callParams =
+            chainId !== ChainId.SONEIUM
+              ? NonFunPosMan.addCallParameters(mintInfo.position, {
+                  slippageTolerance: allowedSlippagePercent,
+                  recipient: account,
+                  deadline: deadline.toString(),
+                  useNative,
+                  createPool: mintInfo.noLiquidity,
+                })
+              : NonFunPosV2Man.addCallParameters(mintInfo.position, {
+                  slippageTolerance: allowedSlippagePercent,
+                  recipient: account,
+                  deadline: deadline.toString(),
+                  useNative,
+                  createPool: mintInfo.noLiquidity,
+                });
         }
         const { calldata, value } = callParams;
 

@@ -146,4 +146,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.SONEIUM]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://soneium.blockscout.com',
+    infoLink: 'https://algebra.finance',
+    label: 'soneium',
+    nativeCurrencySymbol: 'ETH',
+    nativeCurrencyName: 'Ether',
+    nativeCurrencyDecimals: 18,
+  },
 };
