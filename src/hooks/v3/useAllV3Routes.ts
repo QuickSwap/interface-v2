@@ -81,9 +81,9 @@ export function useAllV3Routes(
     isUni,
   );
 
-  console.log('-------currencyIn:', currencyIn)
-  console.log('-------currencyOut:', currencyOut)
-  console.log('-------pools:', pools)
+  console.log('-------currencyIn:', currencyIn);
+  console.log('-------currencyOut:', currencyOut);
+  console.log('-------pools:', pools);
 
   const [singleHopOnly] = useUserSingleHopOnly();
 
