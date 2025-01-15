@@ -1,7 +1,7 @@
 {
   "v3": true,
   "v2": false,
-  "rpc": " https://soneium.rpc.scs.startale.com?apikey=Gm30NrXojQPJ7Dd4XalGZX5hqcPiKNfg",
+  "rpc": "https://soneium.rpc.scs.startale.com?apikey=Gm30NrXojQPJ7Dd4XalGZX5hqcPiKNfg",
   "blockExplorer": "https://soneium.blockscout.com/",
   "chainId": 1868,
   "isMainnet": true,

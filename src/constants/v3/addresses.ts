@@ -1160,8 +1160,8 @@ export const ASTR: { [chainId: number]: Token } = {
     '0x2CAE934a1e84F693fbb78CA5ED3B0A6893259441',
     18,
     'ASTR',
-    'Astar Token'
-  )
+    'Astar Token',
+  ),
 };
 
 export const ANKRMATIC: { [chainId: number]: Token } = {
@@ -1686,7 +1686,7 @@ export const SUGGESTED_BASES: {
     USDC[ChainId.SONEIUM],
     USDT[ChainId.SONEIUM],
     ASTR[ChainId.SONEIUM],
-  ]
+  ],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
