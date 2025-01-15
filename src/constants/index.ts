@@ -120,6 +120,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ASTARZKEVM]: 'astar_zkevm',
   [ChainId.LAYERX]: 'layerX',
   [ChainId.ETHEREUM]: 'ethereum',
+  [ChainId.SONEIUM]: 'soneium',
 };
 
 export enum ZapType {
@@ -219,6 +220,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.ASTARZKEVM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
   [ChainId.MINATO]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.SONEIUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -380,6 +382,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.X1,
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.MINATO,
+  ChainId.SONEIUM,
 ];
 
 export interface GammaPair {

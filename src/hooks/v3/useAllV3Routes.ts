@@ -105,7 +105,6 @@ export function useAllV3Routes(
       currencyIn,
       singleHopOnly ? 1 : maxHops,
     );
-
     return { loading: false, routes };
   }, [chainId, currencyIn, currencyOut, pools, poolsLoading, singleHopOnly]);
 }

@@ -8,14 +8,17 @@ import { useActiveWeb3React } from 'hooks';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { Interface } from '@ethersproject/abi';
 import abi from 'constants/abis/v3/pool.json';
+import abiV2 from 'constants/abis/v3/pool-v2.json';
 import uniV3ABI from 'constants/abis/v3/univ3Pool.json';
 import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
 import { useToken } from './Tokens';
 import { Pool } from 'v3lib/entities/pool';
 import { usePreviousNonErroredArray } from 'hooks/usePrevious';
 import { FeeAmount } from 'v3lib/utils';
+import { ChainId } from '@uniswap/sdk';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
+const POOLV2_STATE_INTERFACE = new Interface(abiV2); // algebra-integral
 const UNIV3POOL_STATE_INTERFACE = new Interface(uniV3ABI);
 
 export enum PoolState {
@@ -71,7 +74,11 @@ export function usePools(
 
   const globalState0s = useMultipleContractSingleData(
     poolAddresses,
-    isUni ? UNIV3POOL_STATE_INTERFACE : POOL_STATE_INTERFACE,
+    isUni
+      ? UNIV3POOL_STATE_INTERFACE
+      : chainId !== ChainId.SONEIUM
+      ? POOL_STATE_INTERFACE
+      : POOLV2_STATE_INTERFACE,
     isUni ? 'slot0' : 'globalState',
   );
 
@@ -153,7 +160,11 @@ export function usePools(
           new Pool(
             token0,
             token1,
-            isUni ? fee : globalState.fee,
+            isUni
+              ? fee
+              : chainId !== ChainId.SONEIUM
+              ? globalState.fee
+              : globalState.lastFee,
             poolPrice,
             liquidity[0],
             globalState.tick,
@@ -165,7 +176,7 @@ export function usePools(
         return [PoolState.NOT_EXISTS, null];
       }
     });
-  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni]);
+  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni, chainId]);
 }
 
 export function usePool(

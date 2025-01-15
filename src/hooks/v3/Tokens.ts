@@ -107,7 +107,6 @@ function parseStringOrBytes32(
 export function useToken(tokenAddress?: string): Token | undefined | null {
   const { chainId } = useActiveWeb3React();
   const tokens = useAllTokens();
-
   const address = isAddress(tokenAddress);
 
   const tokenContract = useTokenContract(address ? address : undefined, false);

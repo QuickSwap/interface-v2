@@ -16,6 +16,7 @@ import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { getTradeVersion } from 'utils/v3/getTradeVersion';
 import { useTransactionAdder } from 'state/transactions/hooks';
 import { TransactionType } from 'models/enums';
+import { ChainId } from '@uniswap/sdk';
 
 enum SwapCallbackState {
   INVALID,
@@ -68,6 +69,7 @@ function useSwapCallArguments(
       return [];
 
     const isUni = trade.swaps[0]?.route?.pools[0]?.isUni;
+    const isAlgebraIntegral = chainId === ChainId.SONEIUM;
     const swapRouterAddress = chainId
       ? isUni
         ? UNI_SWAP_ROUTER[chainId]
@@ -82,6 +84,7 @@ function useSwapCallArguments(
     swapMethods.push(
       SwapRouter.swapCallParameters(trade, {
         isUni,
+        isAlgebraIntegral,
         feeOnTransfer: false,
         recipient,
         slippageTolerance: allowedSlippage,
@@ -112,6 +115,7 @@ function useSwapCallArguments(
     if (trade.tradeType === TradeType.EXACT_INPUT) {
       swapMethods.push(
         SwapRouter.swapCallParameters(trade, {
+          isAlgebraIntegral,
           feeOnTransfer: true,
           recipient,
           slippageTolerance: allowedSlippage,
