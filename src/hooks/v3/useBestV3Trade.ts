@@ -47,8 +47,6 @@ export function useBestV3TradeExactIn(
     routes: algebraRoutes,
     loading: algebraRoutesLoading,
   } = useAllV3Routes(amountIn?.currency, currencyOut);
-  console.log('---------algebraRoutesLoading:', algebraRoutesLoading);
-  console.log('---------algebraRoutes:', algebraRoutes);
 
   const { routes: uniRoutes, loading: uniRoutesLoading } = useAllV3Routes(
     amountIn?.currency,
@@ -62,7 +60,7 @@ export function useBestV3TradeExactIn(
       encodeRouteToPath(route, false, false, chainId === ChainId.SONEIUM),
       amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
     ]);
-  }, [amountIn, algebraRoutes]);
+  }, [amountIn, algebraRoutes, chainId]);
 
   const uniQuoteExactInInputs = useMemo(() => {
     return uniRoutes.map((route) => [
@@ -206,7 +204,7 @@ export function useBestV3TradeExactOut(
       encodeRouteToPath(route, true, false, chainId === ChainId.SONEIUM),
       amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
     ]);
-  }, [amountOut, algebraRoutes]);
+  }, [amountOut, algebraRoutes, chainId]);
 
   const uniQuoteExactOutInputs = useMemo(() => {
     return uniRoutes.map((route) => [

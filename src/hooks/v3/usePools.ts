@@ -82,9 +82,6 @@ export function usePools(
     isUni ? 'slot0' : 'globalState',
   );
 
-  console.log('----------chainId:', chainId);
-  console.log('----------globalStates0s:', globalState0s);
-
   // TODO: This is a bug, if all of the pool addresses error out, and the last call to use pools was from a different hook
   // You will get the results which don't match the pool keys
   const prevGlobalState0s = usePreviousNonErroredArray(globalState0s);
@@ -179,7 +176,7 @@ export function usePools(
         return [PoolState.NOT_EXISTS, null];
       }
     });
-  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni]);
+  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni, chainId]);
 }
 
 export function usePool(
