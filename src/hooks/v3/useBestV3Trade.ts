@@ -47,6 +47,8 @@ export function useBestV3TradeExactIn(
     routes: algebraRoutes,
     loading: algebraRoutesLoading,
   } = useAllV3Routes(amountIn?.currency, currencyOut);
+  console.log('---------algebraRoutesLoading:', algebraRoutesLoading);
+  console.log('---------algebraRoutes:', algebraRoutes);
 
   const { routes: uniRoutes, loading: uniRoutesLoading } = useAllV3Routes(
     amountIn?.currency,
