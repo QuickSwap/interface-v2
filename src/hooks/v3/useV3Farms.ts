@@ -342,7 +342,13 @@ export const useGetMerklFarms = () => {
                 item.mainParameter.toLowerCase() ===
                   address.toLocaleLowerCase(),
             ) && amms.includes(item.ammName.toLocaleLowerCase()),
-        ) as any[];
+        )
+        .map((item: any) => {
+          return {
+            ...item,
+            symbolRewardToken: item['campaignParameters']['symbolRewardToken'],
+          };
+        }) as any[];
       if (distributions.length < 1) {
         return;
       }
