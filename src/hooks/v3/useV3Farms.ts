@@ -487,16 +487,14 @@ export const useMerklFarms = () => {
         }
         return false;
       });
+      const almTVL =
+        (item.tvl ?? 0) -
+        filteredALMs.reduce((total: number, alm: any) => total + alm.almTVL, 0);
       const alms = filteredALMs
         .concat([
           {
             almAddress: item.pool,
-            almTVL:
-              (item.tvl ?? 0) -
-              filteredALMs.reduce(
-                (total: number, alm: any) => total + alm.almTVL,
-                0,
-              ),
+            almTVL: almTVL < 0 ? 0 : almTVL,
             almAPR: item?.meanAPR ?? 0,
             label: item?.ammName,
           },
