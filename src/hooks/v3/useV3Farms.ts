@@ -487,14 +487,28 @@ export const useMerklFarms = () => {
         }
         return false;
       });
-      const almTVL =
+      let almTVL =
         (item.tvl ?? 0) -
         filteredALMs.reduce((total: number, alm: any) => total + alm.almTVL, 0);
+
+      // if almTVL is less than 0, it means some tokens are not invested.
+      // In this case, it should be recalculated by positions.
+      if (almTVL < 0) {
+        almTVL =
+          (item.tvl ?? 0) -
+          filteredALMs.reduce((total: number, alm: any) => {
+            const investedBalance = alm.positions.reduce(
+              (acc, p) => (acc += p.tvl),
+              0,
+            );
+            return (total += investedBalance);
+          }, 0);
+      }
       const alms = filteredALMs
         .concat([
           {
             almAddress: item.pool,
-            almTVL: almTVL < 0 ? 0 : almTVL,
+            almTVL: almTVL,
             almAPR: item?.meanAPR ?? 0,
             label: item?.ammName,
           },
