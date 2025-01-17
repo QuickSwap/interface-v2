@@ -342,7 +342,13 @@ export const useGetMerklFarms = () => {
                 item.mainParameter.toLowerCase() ===
                   address.toLocaleLowerCase(),
             ) && amms.includes(item.ammName.toLocaleLowerCase()),
-        ) as any[];
+        )
+        .map((item: any) => {
+          return {
+            ...item,
+            symbolRewardToken: item['campaignParameters']['symbolRewardToken'],
+          };
+        }) as any[];
       if (distributions.length < 1) {
         return;
       }
@@ -481,16 +487,28 @@ export const useMerklFarms = () => {
         }
         return false;
       });
+      let almTVL =
+        (item.tvl ?? 0) -
+        filteredALMs.reduce((total: number, alm: any) => total + alm.almTVL, 0);
+
+      // if almTVL is less than 0, it means some tokens are not invested.
+      // In this case, it should be recalculated by positions.
+      if (almTVL < 0) {
+        almTVL =
+          (item.tvl ?? 0) -
+          filteredALMs.reduce((total: number, alm: any) => {
+            const investedBalance = alm.positions.reduce(
+              (acc, p) => (acc += p.tvl),
+              0,
+            );
+            return (total += investedBalance);
+          }, 0);
+      }
       const alms = filteredALMs
         .concat([
           {
             almAddress: item.pool,
-            almTVL:
-              (item.tvl ?? 0) -
-              filteredALMs.reduce(
-                (total: number, alm: any) => total + alm.almTVL,
-                0,
-              ),
+            almTVL: almTVL,
             almAPR: item?.meanAPR ?? 0,
             label: item?.ammName,
           },
