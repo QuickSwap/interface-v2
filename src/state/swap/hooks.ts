@@ -34,12 +34,12 @@ import {
 import { SwapState } from './reducer';
 import {
   useSlippageManuallySet,
+  useUserSlippageAuto,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { computeSlippageAdjustedAmounts } from 'utils/prices';
 import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
 import { formatAdvancedPercent } from 'utils/numbers';
 
@@ -262,18 +262,18 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
   ] = useUserSlippageTolerance();
   const [slippageManuallySet] = useSlippageManuallySet();
+  const [userSlippageAuto, setUserSlippageAuto] = useUserSlippageAuto();
 
   const autoSlippageAmount = useAutoSlippageTolerance(
     v2Trade ? v2Trade : undefined,
   );
-  const autoSlippage =
-    allowedSlippage === SLIPPAGE_AUTO
-      ? Math.ceil(
-          Number(
-            parseFloat(formatAdvancedPercent(autoSlippageAmount)).toFixed(2),
-          ) * 100,
-        )
-      : allowedSlippage;
+  const autoSlippage = userSlippageAuto
+    ? Math.ceil(
+        Number(
+          parseFloat(formatAdvancedPercent(autoSlippageAmount)).toFixed(2),
+        ) * 100,
+      )
+    : allowedSlippage;
 
   const slippageAdjustedAmounts =
     v2Trade &&
@@ -310,7 +310,8 @@ export function useDerivedSwapInfo(): {
       ) {
         setUserSlippageTolerance(10);
       } else {
-        setUserSlippageTolerance(SLIPPAGE_AUTO);
+        setUserSlippageTolerance(0);
+        setUserSlippageAuto(true);
       }
     }
   }, [
@@ -320,6 +321,7 @@ export function useDerivedSwapInfo(): {
     chainIdToUse,
     slippageManuallySet,
     swapSlippage,
+    setUserSlippageAuto,
   ]);
 
   return {
