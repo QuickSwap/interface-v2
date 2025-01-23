@@ -16,6 +16,7 @@
     "decimals": 18
   },
   "bridge": {
+    "available": true,
     "bridgeCoverImg": "/bridge/astar.webp",
     "supportedChains": ["/bridge/eth.svg", "/bridge/astar.webp"]
   },

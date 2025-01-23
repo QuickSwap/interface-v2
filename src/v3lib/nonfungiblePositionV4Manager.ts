@@ -12,7 +12,7 @@ import invariant from 'tiny-invariant';
 import { Position } from './entities/position';
 import { MethodParameters, toHex } from './utils/calldata';
 import { Interface } from '@ethersproject/abi';
-import nonFunPosMan from '../constants/abis/v3/nft-pos-man-v2.json';
+import nonFunPosMan from '../constants/abis/v4/nft-pos-man.json';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { Pool } from './entities';
 import { ONE, ZERO } from './utils/v3internalConstants';
@@ -154,7 +154,7 @@ export interface RemoveLiquidityOptions {
   collectOptions: Omit<CollectOptions, 'tokenId'>;
 }
 
-export abstract class NonfungiblePositionV2Manager extends SelfPermit {
+export abstract class NonfungiblePositionV4Manager extends SelfPermit {
   public static INTERFACE: Interface = new Interface(nonFunPosMan);
 
   /**
@@ -202,7 +202,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
     // permits if necessary
     if (options.token0Permit) {
       calldatas.push(
-        NonfungiblePositionV2Manager.encodePermit(
+        NonfungiblePositionV4Manager.encodePermit(
           position.pool.token0,
           options.token0Permit,
         ),
@@ -210,7 +210,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
     }
     if (options.token1Permit) {
       calldatas.push(
-        NonfungiblePositionV2Manager.encodePermit(
+        NonfungiblePositionV4Manager.encodePermit(
           position.pool.token1,
           options.token1Permit,
         ),
@@ -222,7 +222,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
       const recipient: string = validateAndParseAddress(options.recipient);
 
       calldatas.push(
-        NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData('mint', [
+        NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData('mint', [
           {
             token0: position.pool.token0.address,
             token1: position.pool.token1.address,
@@ -241,7 +241,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
     } else {
       // increase
       calldatas.push(
-        NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+        NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
           'increaseLiquidity',
           [
             {
@@ -274,7 +274,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
       // we only need to refund if we're actually sending ETH
       if (JSBI.greaterThan(wrappedValue, ZERO)) {
         calldatas.push(
-          NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+          NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
             'refundNativeToken',
           ),
         );
@@ -287,7 +287,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
       calldata:
         calldatas.length === 1
           ? calldatas[0]
-          : NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+          : NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
               'multicall',
               [calldatas],
             ),
@@ -298,7 +298,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
   public static collectCallParameters(
     options: CollectOptions,
   ): MethodParameters {
-    const calldatas: string[] = NonfungiblePositionV2Manager.encodeCollect(
+    const calldatas: string[] = NonfungiblePositionV4Manager.encodeCollect(
       options,
     );
 
@@ -306,7 +306,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
       calldata:
         calldatas.length === 1
           ? calldatas[0]
-          : NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+          : NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
               'multicall',
               [calldatas],
             ),
@@ -350,7 +350,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
 
     if (options.permit) {
       calldatas.push(
-        NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData('permit', [
+        NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData('permit', [
           validateAndParseAddress(options.permit.spender),
           tokenId,
           toHex(options.permit.deadline),
@@ -363,7 +363,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
 
     // remove liquidity
     calldatas.push(
-      NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+      NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
         'decreaseLiquidity',
         [
           {
@@ -383,7 +383,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
       ...rest
     } = options.collectOptions;
     calldatas.push(
-      ...NonfungiblePositionV2Manager.encodeCollect({
+      ...NonfungiblePositionV4Manager.encodeCollect({
         tokenId: options.tokenId,
         // add the underlying value to the expected currency already owed
         expectedCurrencyOwed0: expectedCurrencyOwed0
@@ -409,7 +409,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
     if (options.liquidityPercentage.equalTo(ONE)) {
       if (options.burnToken) {
         calldatas.push(
-          NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData('burn', [
+          NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData('burn', [
             tokenId,
           ]),
         );
@@ -419,7 +419,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
     }
 
     return {
-      calldata: NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+      calldata: NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
         'multicall',
         [calldatas],
       ),
@@ -428,7 +428,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
   }
 
   private static encodeCreate(pool: Pool): string {
-    return NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+    return NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
       'createAndInitializePoolIfNecessary',
       [
         pool.token0.address,
@@ -455,7 +455,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
 
     // collect
     calldatas.push(
-      NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData('collect', [
+      NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData('collect', [
         {
           tokenId,
           recipient: involvesETH ? ADDRESS_ZERO : recipient,
@@ -494,7 +494,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
 
       if (ethAmount) {
         calldatas.push(
-          NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+          NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
             'unwrapWNativeToken',
             [toHex(ethAmount), recipient],
           ),
@@ -502,7 +502,7 @@ export abstract class NonfungiblePositionV2Manager extends SelfPermit {
       }
       if (token && tokenAmount) {
         calldatas.push(
-          NonfungiblePositionV2Manager.INTERFACE.encodeFunctionData(
+          NonfungiblePositionV4Manager.INTERFACE.encodeFunctionData(
             'sweepToken',
             [token.address, toHex(tokenAmount), recipient],
           ),

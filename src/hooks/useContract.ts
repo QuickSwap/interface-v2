@@ -31,7 +31,9 @@ import {
   GAMMA_MASTERCHEF_ADDRESSES,
   MULTICALL_ADDRESS,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES,
   QUOTER_ADDRESSES,
+  QUOTER_V4_ADDRESSES,
   V3_MIGRATOR_ADDRESSES,
   MULTICALL_NETWORKS,
   V2_ROUTER_ADDRESS,
@@ -50,11 +52,11 @@ import {
   NATIVE_CONVERTER,
 } from 'constants/v3/addresses';
 import NewQuoterABI from 'constants/abis/v3/quoter.json';
-import AlgebraIntegralQuoterABI from 'constants/abis/v3/algebra-integral-quoter.json';
+import QuoterV4ABI from 'constants/abis/v4/quoter.json';
 import UniV3QuoterABI from 'constants/abis/uni-v3/quoter.json';
 import MULTICALL2_ABI from 'constants/abis/v3/multicall.json';
 import NFTPosMan from 'constants/abis/v3/nft-pos-man.json';
-import NFTPosManV2 from 'constants/abis/v3/nft-pos-man-v2.json';
+import NFTPosManV4 from 'constants/abis/v4/nft-pos-man.json';
 import GammaUniProxy1 from 'constants/abis/gamma-uniproxy1.json';
 import GammaMasterChef from 'constants/abis/gamma-masterchef.json';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
@@ -345,8 +347,8 @@ export function useV3Quoter() {
   return useContract(QUOTER_ADDRESSES, NewQuoterABI);
 }
 
-export function useAlgebraIntegralQuoter() {
-  return useContract(QUOTER_ADDRESSES, AlgebraIntegralQuoterABI);
+export function useV4Quoter() {
+  return useContract(QUOTER_V4_ADDRESSES, QuoterV4ABI);
 }
 
 export function useUniV3Quoter() {
@@ -363,12 +365,12 @@ export function useV3NFTPositionManagerContract(
   );
 }
 
-export function useV3NFTPositionManagerV2Contract(
+export function useV4NFTPositionManagerContract(
   withSignerIfPossible?: boolean,
 ) {
   return useContract(
-    NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-    NFTPosManV2,
+    NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES,
+    NFTPosManV4,
     withSignerIfPossible,
   );
 }

@@ -1,5 +1,6 @@
 {
-  "v3": true,
+  "v4": true,
+  "v3": false,
   "v2": false,
   "rpc": "https://rpc.soneium.org/",
   "blockExplorer": "https://soneium.blockscout.com/",
@@ -12,6 +13,9 @@
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "available": false
   },
   "swap": {
     "available": true,

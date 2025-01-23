@@ -16,6 +16,7 @@
     "decimals": 18
   },
   "bridge": {
+    "available": true,
     "bridgeCoverImg": "/bridge/manta_cover_img.svg",
     "supportedChains": ["/bridge/eth.svg", "/bridge/mata.webp"]
   },

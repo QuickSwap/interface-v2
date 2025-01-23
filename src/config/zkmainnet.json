@@ -16,6 +16,7 @@
     "decimals": 18
   },
   "bridge": {
+    "available": true,
     "bridgeCoverImg": "/bridge/polygon_cover_img.webp",
     "supportedChains": [
       "/bridge/eth.svg",

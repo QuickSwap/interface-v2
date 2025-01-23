@@ -2716,6 +2716,7 @@ export const GlobalData = {
       DAI[ChainId.LAYERX],
     ],
     [ChainId.ETHEREUM]: [],
+    [ChainId.SONEIUM]: [USDC[ChainId.SONEIUM], USDT[ChainId.SONEIUM]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2824,6 +2825,7 @@ export const GlobalData = {
     ],
     [ChainId.LAYERX]: [],
     [ChainId.ETHEREUM]: [],
+    [ChainId.SONEIUM]: [],
   },
   quickBurns: {
     CHART_DURATIONS: [

@@ -16,6 +16,7 @@
     "decimals": 18
   },
   "bridge": {
+    "available": true,
     "bridgeCoverImg": "/bridge/dogchain_cover_img.webp",
     "supportedChains": ["/bridge/dog_coin.webp"],
     "isBigCoverImg": true

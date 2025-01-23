@@ -67,6 +67,7 @@ import { getConfig } from 'config/index';
 import { IFeeTier } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containers/SelectFeeTier';
 import { useSteerVaults } from 'hooks/v3/useSteerData';
 import { useQuery } from '@tanstack/react-query';
+import { useIsV4 } from 'state/application/hooks';
 
 export interface IDerivedMintInfo {
   pool?: Pool | null;
@@ -240,7 +241,7 @@ export function useV3DerivedMintInfo(
   feeTier: IFeeTier | undefined;
 } {
   const { chainId, account } = useActiveWeb3React();
-
+  const { isV4 } = useIsV4();
   const {
     independentField,
     typedValue,
@@ -366,6 +367,7 @@ export function useV3DerivedMintInfo(
     currencies[Field.CURRENCY_B],
     feeAmount,
     !!feeAmount,
+    isV4,
   );
   const noLiquidity = poolState === PoolState.NOT_EXISTS;
 
@@ -432,11 +434,12 @@ export function useV3DerivedMintInfo(
         currentTick,
         [],
         !!feeAmount,
+        isV4,
       );
     } else {
       return undefined;
     }
-  }, [feeAmount, invalidPrice, price, tokenA, tokenB]);
+  }, [feeAmount, invalidPrice, price, tokenA, tokenB, isV4]);
 
   // if pool exists use it, if not use the mock pool
   const poolForPosition: Pool | undefined = pool ?? mockPool;

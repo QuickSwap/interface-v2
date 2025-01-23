@@ -13,7 +13,7 @@ export function encodeRouteToPath(
   route: Route<Currency, Currency>,
   exactOutput: boolean,
   isUni?: boolean,
-  isAlgebraIntegral?: boolean,
+  isV4?: boolean,
 ): string {
   const firstInputToken: Token = route.input.wrapped;
 
@@ -35,12 +35,12 @@ export function encodeRouteToPath(
           inputToken: outputToken,
           types: isUni
             ? ['address', 'uint24', 'address']
-            : isAlgebraIntegral
+            : isV4
             ? ['address', 'address', 'address']
             : ['address', 'address'],
           path: isUni
             ? [inputToken.address, pool.fee as FeeAmount, outputToken.address]
-            : isAlgebraIntegral
+            : isV4
             ? [inputToken.address, ADDRESS_ZERO, outputToken.address]
             : [inputToken.address, outputToken.address],
         };
@@ -49,12 +49,12 @@ export function encodeRouteToPath(
           inputToken: outputToken,
           types: isUni
             ? [...types, 'uint24', 'address']
-            : isAlgebraIntegral
+            : isV4
             ? [...types, 'address', 'address']
             : [...types, 'address'],
           path: isUni
             ? [...path, pool.fee as FeeAmount, outputToken.address]
-            : isAlgebraIntegral
+            : isV4
             ? [...path, ADDRESS_ZERO, outputToken.address]
             : [...path, outputToken.address],
         };

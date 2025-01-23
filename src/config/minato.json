@@ -13,6 +13,9 @@
     "symbol": "ETH",
     "decimals": 18
   },
+  "bridge": {
+    "available": true
+  },
   "swap": {
     "available": true,
     "bestTrade": false,
