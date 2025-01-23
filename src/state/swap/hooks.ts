@@ -42,6 +42,7 @@ import { GlobalData, RouterTypes, SmartRouter } from 'constants/index';
 import useFindBestRoute from 'hooks/useFindBestRoute';
 import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
 import { formatAdvancedPercent } from 'utils/numbers';
+import { SLIPPAGE_DEFAULT } from 'state/user/reducer';
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap);
@@ -310,7 +311,7 @@ export function useDerivedSwapInfo(): {
       ) {
         setUserSlippageTolerance(10);
       } else {
-        setUserSlippageTolerance(0);
+        setUserSlippageTolerance(SLIPPAGE_DEFAULT);
         setUserSlippageAuto(true);
       }
     }
