@@ -144,7 +144,7 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       image: across,
-      chains: [eth, soneium],
+      chains: [eth, polygon, soneium],
       externalLink: 'https://app.across.to/bridge',
     },
   ];
