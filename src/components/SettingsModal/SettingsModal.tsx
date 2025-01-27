@@ -15,13 +15,14 @@ import {
   useUserSlippageTolerance,
   useBonusRouterManager,
   useSlippageManuallySet,
+  useUserSlippageAuto,
   useUserSingleHopOnly,
   useIsInfiniteApproval,
 } from 'state/user/hooks';
 import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/SettingsModal.scss';
 import { useTranslation } from 'react-i18next';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { SLIPPAGE_DEFAULT } from 'state/user/reducer';
 import { isMobile } from 'react-device-detect';
 import { LiquidityHubSettings } from 'components/Swap/orbs/LiquidityHub/Components';
 
@@ -64,6 +65,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     slippageManuallySet,
     setSlippageManuallySet,
   ] = useSlippageManuallySet();
+
+  const [userSlippageAuto, setUserSlippageAuto] = useUserSlippageAuto();
+
   const [ttl, setTtl] = useUserTransactionTTL();
   const { onChangeRecipient } = useSwapActionHandlers();
   const [expertMode, toggleExpertMode] = useExpertModeManager();
@@ -84,10 +88,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     deadlineInput === '' || (ttl / 60).toString() === deadlineInput;
 
   const slippageError = useMemo(() => {
+    if (userSlippageAuto) {
+      return undefined;
+    }
     if (slippageInput !== '' && !slippageInputIsValid) {
       return SlippageError.InvalidInput;
-    } else if (userSlippageTolerance === SLIPPAGE_AUTO) {
-      return undefined;
     } else if (slippageInputIsValid && userSlippageTolerance < 50) {
       return SlippageError.RiskyLow;
     } else if (slippageInputIsValid && userSlippageTolerance > 500) {
@@ -95,7 +100,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     } else {
       return undefined;
     }
-  }, [slippageInput, userSlippageTolerance, slippageInputIsValid]);
+  }, [
+    slippageInput,
+    userSlippageTolerance,
+    slippageInputIsValid,
+    userSlippageAuto,
+  ]);
 
   const slippageAlert =
     !!slippageInput &&
@@ -112,7 +122,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
   const parseCustomSlippage = (value: string) => {
     setSlippageInput(value);
-
     try {
       const valueAsIntFromRoundedFloat = Number.parseInt(
         (Number.parseFloat(value) * 100).toString(),
@@ -122,6 +131,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         valueAsIntFromRoundedFloat < 5000
       ) {
         setUserslippageTolerance(valueAsIntFromRoundedFloat);
+        setUserSlippageAuto(false);
         if (userSlippageTolerance !== valueAsIntFromRoundedFloat) {
           setSlippageManuallySet(true);
         }
@@ -198,14 +208,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <Box className='flex items-center'>
             <Box
               className={`slippageButton${
-                userSlippageTolerance === SLIPPAGE_AUTO
+                userSlippageTolerance === SLIPPAGE_DEFAULT && userSlippageAuto
                   ? ' activeSlippageButton'
                   : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
-                setUserslippageTolerance(SLIPPAGE_AUTO);
-                if (userSlippageTolerance !== SLIPPAGE_AUTO) {
+                setUserslippageTolerance(SLIPPAGE_DEFAULT);
+                setUserSlippageAuto(true);
+                if (userSlippageTolerance !== SLIPPAGE_DEFAULT) {
                   setSlippageManuallySet(true);
                 }
               }}
@@ -219,6 +230,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(10);
+                setUserSlippageAuto(false);
                 if (userSlippageTolerance !== 10) {
                   setSlippageManuallySet(true);
                 }
@@ -228,11 +240,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </Box>
             <Box
               className={`slippageButton${
-                userSlippageTolerance === 50 ? ' activeSlippageButton' : ''
+                userSlippageTolerance === 50 && !userSlippageAuto
+                  ? ' activeSlippageButton'
+                  : ''
               }`}
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(50);
+                setUserSlippageAuto(false);
                 if (userSlippageTolerance !== 50) {
                   setSlippageManuallySet(true);
                 }
@@ -247,6 +262,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               onClick={() => {
                 setSlippageInput('');
                 setUserslippageTolerance(100);
+                setUserSlippageAuto(false);
                 if (userSlippageTolerance !== 100) {
                   setSlippageManuallySet(true);
                 }

@@ -35,6 +35,7 @@ import squid from 'assets/images/bridge/squid.webp';
 import retr from 'assets/images/bridge/retr.webp';
 import rubic from 'assets/images/bridge/rubic.webp';
 import across from 'assets/images/bridge/across.png';
+import soneium from 'assets/images/bridge/soneium.webp';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
@@ -49,13 +50,6 @@ const BridgePage: React.FC = ({}) => {
   //   const config = getConfig(chain);
   //   return config && config.visible;
   // });
-
-  useEffect(() => {
-    if (chainId === ChainId.SONEIUM) {
-      history.push('/');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainId]);
 
   const currentChain = useMemo(() => {
     return getConfig(chainId);
@@ -173,8 +167,8 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       image: across,
-      chains: [eth, polygon],
-      chainNames: ['eth', 'polygon'],
+      chains: [eth, polygon, soneium],
+      chainNames: ['eth', 'polygon', 'soneium'],
       isSmallImage: true,
       externalLink: 'https://app.across.to/bridge',
     },
@@ -231,7 +225,9 @@ const BridgePage: React.FC = ({}) => {
                 marginBottom: '16px',
               }}
             >
-              Chain Native Bridge
+              {currentChain?.bridge?.thirdParty
+                ? `${currentChain?.networkName} Official Third Party Bridge `
+                : 'Chain Native Bridge'}
             </Typography>
             <Box
               style={{
@@ -275,7 +271,9 @@ const BridgePage: React.FC = ({}) => {
                   marginBottom: '28px',
                 }}
               >
-                {`${currentChain?.networkName}'s Native Bridge`}
+                {currentChain?.bridge?.thirdParty
+                  ? `${currentChain?.networkName} Official Third Party Bridge`
+                  : `${currentChain?.networkName}'s Native Bridge`}
               </Typography>
               <Box className='flex items-center justify-center'>
                 {currentChain?.bridge?.supportedChains?.map(

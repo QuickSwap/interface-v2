@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Field } from 'state/swap/actions';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useUserSlippageAuto,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import {
   computeSlippageAdjustedAmounts,
   computeTradePriceBreakdown,
@@ -17,7 +20,6 @@ import {
 import { ReactComponent as EditIcon } from 'assets/images/EditIcon.svg';
 import { formatTokenAmount } from 'utils';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 
 interface TradeSummaryProps {
   trade: Trade;
@@ -124,15 +126,14 @@ export const AdvancedSwapDetails: React.FC<AdvancedSwapDetailsProps> = ({
 }) => {
   const [allowedSlippage] = useUserSlippageTolerance();
   const { autoSlippage } = useDerivedSwapInfo();
+  const [userSlippageAuto] = useUserSlippageAuto();
 
   return (
     <>
       {trade && (
         <TradeSummary
           trade={trade}
-          allowedSlippage={
-            allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage
-          }
+          allowedSlippage={userSlippageAuto ? autoSlippage : allowedSlippage}
         />
       )}
     </>

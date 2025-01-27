@@ -26,6 +26,7 @@ import {
   useExpertModeManager,
   useUserSlippageTolerance,
   useAmlScore,
+  useUserSlippageAuto,
 } from 'state/user/hooks';
 import { Field } from 'state/swap/actions';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -88,7 +89,6 @@ import useNativeConvertCallback, {
   ConvertType,
 } from 'hooks/useNativeConvertCallback';
 import { useApproveCallback } from 'hooks/useApproveCallback';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import arrowDown from 'assets/images/icons/arrow-down.png';
 import chart from 'assets/images/icons/chart.svg';
 import SignUp from './SignUp';
@@ -194,9 +194,10 @@ const SwapBestTrade: React.FC<{
     onSetSwapDelay,
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
+  const [userSlippageAuto] = useUserSlippageAuto();
+
   let [allowedSlippage] = useUserSlippageTolerance();
-  allowedSlippage =
-    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+  allowedSlippage = userSlippageAuto ? autoSlippage : allowedSlippage;
   const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 
   const pct = basisPointsToPercent(allowedSlippage);

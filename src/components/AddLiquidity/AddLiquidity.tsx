@@ -40,6 +40,7 @@ import {
   useIsExpertMode,
   useUserSlippageTolerance,
   useAmlScore,
+  useUserSlippageAuto,
 } from 'state/user/hooks';
 import {
   maxAmountSpend,
@@ -57,7 +58,6 @@ import { useDerivedSwapInfo } from 'state/swap/hooks';
 import { useParams } from 'react-router-dom';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
 import usePoolsRedirect from 'hooks/usePoolsRedirect';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { TransactionType } from 'models/enums';
 
 const AddLiquidity: React.FC<{
@@ -78,9 +78,9 @@ const AddLiquidity: React.FC<{
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txPending, setTxPending] = useState(false);
+  const [userSlippageAuto] = useUserSlippageAuto();
   let [allowedSlippage] = useUserSlippageTolerance();
-  allowedSlippage =
-    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+  allowedSlippage = userSlippageAuto ? autoSlippage : allowedSlippage;
 
   const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 

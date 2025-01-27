@@ -34,13 +34,14 @@ import { useCurrency } from 'hooks/v3/Tokens';
 import { useCurrencyBalances } from 'state/wallet/v3/hooks';
 import {
   useSlippageManuallySet,
+  useUserSlippageAuto,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
 import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { ChainId } from '@uniswap/sdk';
 import { GlobalData } from 'constants/index';
 import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { SLIPPAGE_DEFAULT } from 'state/user/reducer';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {
@@ -237,11 +238,12 @@ export function useDerivedSwapInfo(): {
     setUserSlippageTolerance,
   ] = useUserSlippageTolerance();
   const [slippageManuallySet] = useSlippageManuallySet();
+  const [userSlippageAuto, setUserSlippageAuto] = useUserSlippageAuto();
+
   const autoSlippage = useAutoSlippageTolerance(v3Trade.trade);
-  const allowedSlippage =
-    allowedSlippageNum === SLIPPAGE_AUTO
-      ? autoSlippage
-      : new Percent(JSBI.BigInt(allowedSlippageNum), JSBI.BigInt(10000));
+  const allowedSlippage = userSlippageAuto
+    ? autoSlippage
+    : new Percent(JSBI.BigInt(allowedSlippageNum), JSBI.BigInt(10000));
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [
@@ -272,7 +274,8 @@ export function useDerivedSwapInfo(): {
       ) {
         setUserSlippageTolerance(10);
       } else {
-        setUserSlippageTolerance(SLIPPAGE_AUTO);
+        setUserSlippageTolerance(SLIPPAGE_DEFAULT);
+        setUserSlippageAuto(true);
       }
     }
   }, [
@@ -282,6 +285,7 @@ export function useDerivedSwapInfo(): {
     chainIdToUse,
     slippageManuallySet,
     swapSlippage,
+    setUserSlippageAuto,
   ]);
 
   return {
