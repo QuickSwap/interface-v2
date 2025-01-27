@@ -28,6 +28,11 @@ export const updateUserSlippageTolerance = createAction<{
 export const updateSlippageManuallySet = createAction<{
   slippageManuallySet: boolean;
 }>('user/updateSlippageManuallySet');
+
+export const updateUserSlippageAuto = createAction<{
+  userSlippageAuto: boolean;
+}>('user/updateUserSlippageAuto');
+
 export const updateUserDeadline = createAction<{ userDeadline: number }>(
   'user/updateUserDeadline',
 );

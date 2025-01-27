@@ -46,6 +46,7 @@ import { SelectDepositType } from 'pages/PoolsPage/v3/SupplyLiquidityV3/containe
 import { useSingleTokenVault } from 'state/singleToken/hooks';
 import { SingleTokenSupplyLiquidity } from 'pages/PoolsPage/SingleToken/SupplyLiquidity';
 import { getConfig } from 'config/index';
+import { SLIPPAGE_DEFAULT } from 'state/user/reducer';
 
 const useStyles = makeStyles(() => ({
   formControl: {
@@ -352,7 +353,7 @@ export function SupplyLiquidityV3() {
         <SettingsModal
           open={openSettingsModal}
           onClose={() => setOpenSettingsModal(false)}
-          defaultSlippage={50}
+          defaultSlippage={SLIPPAGE_DEFAULT}
         />
       )}
       <Box className='flex justify-between items-center'>

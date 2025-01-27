@@ -1,6 +1,13 @@
-import { Box, ButtonBase, Grid, Typography } from '@material-ui/core';
+import {
+  Box,
+  ButtonBase,
+  Grid,
+  MenuItem,
+  Select,
+  Typography,
+} from '@material-ui/core';
 import { HypeLabAds, Note } from 'components';
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { BridgeBlockItem } from 'components/Bridge';
 import eth from 'assets/images/bridge/eth.svg';
@@ -16,17 +23,19 @@ import Celer from 'assets/images/bridge/Celer.webp';
 import Orbiter from 'assets/images/bridge/Orbiter.webp';
 import Nitro from 'assets/images/bridge/Nitro.webp';
 import Galaxy from 'assets/images/bridge/Galaxy.webp';
-import Image505 from 'assets/images/bridge/Image505.webp';
+import manta from 'assets/images/bridge/Image505.webp';
 import polygon from 'assets/images/bridge/polygon.svg';
-import image525 from 'assets/images/bridge/Image525.webp';
+import zkevm from 'assets/images/bridge/Image525.webp';
 import Image510 from 'assets/images/bridge/Image510.webp';
-import Image511 from 'assets/images/bridge/Image511.webp';
+import xlayer from 'assets/images/bridge/Image511.webp';
 import Dogechain from 'assets/images/bridge/dog_coin.webp';
 import finance from 'assets/images/bridge/finance.svg';
 import layer from 'assets/images/bridge/layer.svg';
 import squid from 'assets/images/bridge/squid.webp';
 import retr from 'assets/images/bridge/retr.webp';
 import rubic from 'assets/images/bridge/rubic.webp';
+import across from 'assets/images/bridge/across.png';
+import soneium from 'assets/images/bridge/soneium.webp';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { useActiveWeb3React } from 'hooks';
 import { getConfig } from 'config';
@@ -56,95 +65,152 @@ const BridgePage: React.FC = ({}) => {
   const bridgeData = [
     {
       image: jumper,
-      chains: [eth, polygon, image525],
+      chains: [eth, polygon, zkevm],
+      chainNames: ['eth', 'polygon', 'zkevm'],
       externalLink: 'https://jumper.exchange/exchange',
     },
     {
       image: Rhino,
-      chains: [eth, polygon, image525, Image505, Image511],
+      chains: [eth, polygon, zkevm, manta, xlayer, soneium],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'soneium'],
       externalLink: 'https://app.rhino.fi/bridge',
     },
     {
       image: layer,
-      chains: [eth, polygon, image525, Image505, Image510],
+      chains: [eth, polygon, zkevm, manta, Image510, soneium],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'soneium'], // Image510 is no xlayer
       externalLink: 'https://www.layerswap.io/app',
     },
     {
       image: Symbiosis,
-      chains: [eth, polygon, image525, Image505],
+      chains: [eth, polygon, zkevm, manta],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta'],
       externalLink: 'https://app.symbiosis.finance/bridge',
     },
     {
       image: Interport,
-      chains: [eth, polygon, image525, Image505],
+      chains: [eth, polygon, zkevm, manta],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta'],
       externalLink: 'https://app.interport.fi/bridge',
     },
     {
       image: Owlto,
-      chains: [eth, polygon, image525, Image505, Image511],
+      chains: [eth, polygon, zkevm, manta, xlayer],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer'],
       externalLink: 'https://owlto.finance/',
     },
     {
       image: Meson,
-      chains: [eth, polygon, image525, Image505],
+      chains: [eth, polygon, zkevm, manta],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta'],
       externalLink: 'https://meson.fi/',
     },
     {
       image: Orbiter,
-      chains: [eth, polygon, image525, Image505, Image511],
+      chains: [eth, polygon, zkevm, manta, xlayer],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer'],
       externalLink: 'https://www.orbiter.finance/',
     },
     {
       image: Nitro,
-      chains: [eth, polygon, image525, Image505, Image511, Dogechain],
+      chains: [eth, polygon, zkevm, manta, xlayer, Dogechain, soneium],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'doge', 'soneium'],
       externalLink: 'https://app.routernitro.com/swap',
     },
     {
       image: finance,
-      chains: [eth, polygon, image525],
+      chains: [eth, polygon, zkevm],
+      chainNames: ['eth', 'polygon', 'zkevm'],
       externalLink: 'https://app.xy.finance/',
     },
     {
       image: Celer,
-      chains: [eth, polygon, image525],
+      chains: [eth, polygon, zkevm],
+      chainNames: ['eth', 'polygon', 'zkevm'],
       externalLink: 'https://cbridge.celer.network/',
     },
     {
       image: rango,
-      chains: [eth, polygon, image525],
+      chains: [eth, polygon, zkevm],
+      chainNames: ['eth', 'polygon', 'zkevm'],
       externalLink: 'https://app.rango.exchange/swap/',
     },
     {
       image: Hop,
-      chains: [eth, polygon, image525],
+      chains: [eth, polygon, zkevm],
+      chainNames: ['eth', 'polygon', 'zkevm'],
       isSmallImage: true,
       externalLink: 'https://app.hop.exchange/',
     },
     {
       image: Galaxy,
-      chains: [eth, polygon, Image505],
+      chains: [eth, polygon, manta],
+      chainNames: ['eth', 'polygon', 'manta'],
       isSmallImage: true,
       externalLink: 'https://galaxy.exchange/swap',
     },
     {
       image: squid,
       chains: [eth, polygon],
+      chainNames: ['eth', 'polygon'],
       isSmallImage: true,
       externalLink: 'https://app.squidrouter.com/',
     },
     {
       image: retr,
-      chains: [eth, polygon, image525, Image505, Image511],
+      chains: [eth, polygon, zkevm, manta, xlayer],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer'],
       isSmallImage: true,
       externalLink: 'https://app.retrobridge.io/?utm_source=Quickswap',
     },
     {
       image: rubic,
-      chains: [eth, polygon, image525, Image505, Image511],
+      chains: [eth, polygon, zkevm, manta, xlayer],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer'],
       isSmallImage: true,
       externalLink: 'https://app.rubic.exchange/',
     },
+    {
+      image: across,
+      chains: [eth, polygon, soneium],
+      chainNames: ['eth', 'polygon', 'soneium'],
+      isSmallImage: true,
+      externalLink: 'https://app.across.to/bridge',
+    },
   ];
+
+  const networkItems = [
+    {
+      value: 'All',
+      label: 'All',
+    },
+    {
+      value: 'polygon',
+      label: 'Polygon',
+    },
+    {
+      value: 'eth',
+      label: 'Etherium',
+    },
+    {
+      value: 'zkevm',
+      label: 'Polygon Zkevm',
+    },
+    {
+      value: 'manta',
+      label: 'Manta',
+    },
+    {
+      value: 'xlayer',
+      label: 'X Layer',
+    },
+    {
+      value: 'soneium',
+      label: 'Soneium',
+    },
+  ];
+
+  const [selectedNetwork, setSelectedNetwork] = useState<string>('All');
 
   return (
     <Box width={'100%'} mb={2}>
@@ -168,7 +234,9 @@ const BridgePage: React.FC = ({}) => {
                 marginBottom: '16px',
               }}
             >
-              Chain Native Bridge
+              {currentChain?.bridge?.thirdParty
+                ? `${currentChain?.networkName} Official Third Party Bridge `
+                : 'Chain Native Bridge'}
             </Typography>
             <Box
               style={{
@@ -274,59 +342,68 @@ const BridgePage: React.FC = ({}) => {
               >
                 Select Bridge
               </Typography>
-              {/* <Select
-                  style={{
-                    backgroundColor: '#22314d',
-                    padding: '4px 8px',
-                    borderRadius: '10px',
-                    textDecoration: 'none',
-                  }}
-                  disableUnderline
-                  displayEmpty
-                  value={'all'}
-                  onChange={(e) => {
-                    console.log('🚀 ~ e:', e);
-                  }}
-                  IconComponent={() => <KeyboardArrowDownIcon />}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                >
-                  <MenuItem value='all'>All</MenuItem>
-                </Select> */}
+              <Select
+                style={{
+                  backgroundColor: '#282d3d',
+                  borderRadius: '10px',
+                  padding: '6px 16px',
+                  fontSize: '14px',
+                }}
+                disableUnderline
+                value={selectedNetwork}
+              >
+                {networkItems.map((item) => (
+                  <MenuItem
+                    key={item.value}
+                    value={item.value}
+                    onClick={() => {
+                      setSelectedNetwork(item.value);
+                    }}
+                  >
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
 
             <Grid container spacing={2}>
-              {bridgeData.map((item, index) => {
-                return (
-                  <Grid
-                    key={index}
-                    item
-                    xs={
-                      bridgeData.length % 2 === 1 &&
-                      index === bridgeData.length - 1
-                        ? 12
-                        : 6
-                    }
-                    className='flex justify-center'
-                  >
-                    <Box
-                      width={
+              {bridgeData
+                .filter((item) => {
+                  if (selectedNetwork === 'All') return true;
+                  return item.chainNames.includes(selectedNetwork);
+                })
+                .map((item, index) => {
+                  return (
+                    <Grid
+                      key={index}
+                      item
+                      xs={
                         bridgeData.length % 2 === 1 &&
                         index === bridgeData.length - 1
-                          ? 1 / 2
-                          : 1
+                          ? 12
+                          : 6
                       }
+                      className='flex justify-center'
                     >
-                      <BridgeBlockItem
-                        onClick={() => {
-                          window.open(item.externalLink, '_blank');
-                        }}
-                        image={item.image}
-                        chains={item.chains}
-                      />
-                    </Box>
-                  </Grid>
-                );
-              })}
+                      <Box
+                        width={
+                          bridgeData.length % 2 === 1 &&
+                          index === bridgeData.length - 1
+                            ? 1 / 2
+                            : 1
+                        }
+                      >
+                        <BridgeBlockItem
+                          onClick={() => {
+                            window.open(item.externalLink, '_blank');
+                          }}
+                          image={item.image}
+                          chains={item.chains}
+                        />
+                      </Box>
+                    </Grid>
+                  );
+                })}
             </Grid>
           </Box>
         </Grid>
