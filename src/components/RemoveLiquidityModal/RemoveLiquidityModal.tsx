@@ -22,7 +22,10 @@ import {
   useBurnActionHandlers,
 } from 'state/burn/hooks';
 import { Field } from 'state/burn/actions';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useUserSlippageAuto,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import {
   useTransactionAdder,
   useTransactionFinalizer,
@@ -46,7 +49,6 @@ import { ReactComponent as CloseIcon } from 'assets/images/CloseIcon.svg';
 import 'components/styles/RemoveLiquidityModal.scss';
 import { useTranslation } from 'react-i18next';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { TransactionType } from 'models/enums';
 
 interface RemoveLiquidityModalProps {
@@ -90,10 +92,10 @@ const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   const deadline = useTransactionDeadline();
   const { onUserInput: _onUserInput } = useBurnActionHandlers();
   const { autoSlippage } = useDerivedSwapInfo();
+  const [userSlippageAuto] = useUserSlippageAuto();
 
   let [allowedSlippage] = useUserSlippageTolerance();
-  allowedSlippage =
-    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+  allowedSlippage = userSlippageAuto ? autoSlippage : allowedSlippage;
 
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
