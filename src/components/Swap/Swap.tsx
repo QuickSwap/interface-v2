@@ -23,6 +23,7 @@ import {
   useExpertModeManager,
   useUserSlippageTolerance,
   useAmlScore,
+  useUserSlippageAuto,
 } from 'state/user/hooks';
 import { Field, SwapDelay } from 'state/swap/actions';
 import {
@@ -67,7 +68,6 @@ import { getConfig } from 'config/index';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { useUSDCPriceFromAddress } from 'utils/useUSDCPrice';
 import { V2_ROUTER_ADDRESS } from 'constants/v3/addresses';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { useWalletInfo } from '@web3modal/ethers5/react';
 import { useAppDispatch } from 'state';
 import { updateUserBalance } from 'state/balance/actions';
@@ -152,9 +152,10 @@ const Swap: React.FC<{
     onChangeRecipient,
   } = useSwapActionHandlers();
   const { address: recipientAddress } = useENSAddress(recipient);
+  const [userSlippageAuto] = useUserSlippageAuto();
+
   let [allowedSlippage] = useUserSlippageTolerance();
-  allowedSlippage =
-    allowedSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage;
+  allowedSlippage = userSlippageAuto ? autoSlippage : allowedSlippage;
   const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 
   const [approving, setApproving] = useState(false);
