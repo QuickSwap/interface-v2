@@ -59,12 +59,12 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       image: Rhino,
-      chains: [eth, polygon, image525, Image505, Image511],
+      chains: [eth, polygon, image525, Image505, Image511, soneium],
       externalLink: 'https://app.rhino.fi/bridge',
     },
     {
       image: layer,
-      chains: [eth, polygon, image525, Image505, Image510],
+      chains: [eth, polygon, image525, Image505, Image510, soneium],
       externalLink: 'https://www.layerswap.io/app',
     },
     {
@@ -94,7 +94,7 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       image: Nitro,
-      chains: [eth, polygon, image525, Image505, Image511, Dogechain],
+      chains: [eth, polygon, image525, Image505, Image511, Dogechain, soneium],
       externalLink: 'https://app.routernitro.com/swap',
     },
     {
