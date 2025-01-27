@@ -260,7 +260,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     });
   }
 
-  if (chainId !== ChainId.SONEIUM && isSupportedNetwork)
+  if (isSupportedNetwork)
     menuItems.push({
       link: '/bridge',
       text: t('Bridge'),
