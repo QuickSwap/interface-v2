@@ -66,14 +66,14 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       image: Rhino,
-      chains: [eth, polygon, zkevm, manta, xlayer],
-      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer'],
+      chains: [eth, polygon, zkevm, manta, xlayer, soneium],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'soneium'],
       externalLink: 'https://app.rhino.fi/bridge',
     },
     {
       image: layer,
-      chains: [eth, polygon, zkevm, manta, Image510],
-      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer'], // Image510 is no xlayer
+      chains: [eth, polygon, zkevm, manta, Image510, soneium],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'soneium'], // Image510 is no xlayer
       externalLink: 'https://www.layerswap.io/app',
     },
     {
@@ -108,8 +108,8 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       image: Nitro,
-      chains: [eth, polygon, zkevm, manta, xlayer, Dogechain],
-      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'doge'],
+      chains: [eth, polygon, zkevm, manta, xlayer, Dogechain, soneium],
+      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'doge', 'soneium'],
       externalLink: 'https://app.routernitro.com/swap',
     },
     {
@@ -198,6 +198,10 @@ const BridgePage: React.FC = ({}) => {
     {
       value: 'xlayer',
       label: 'X Layer',
+    },
+    {
+      value: 'soneium',
+      label: 'Soneium',
     },
   ];
 
