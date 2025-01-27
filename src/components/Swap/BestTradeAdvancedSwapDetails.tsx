@@ -2,7 +2,10 @@ import { Currency, Fraction, Percent } from '@uniswap/sdk';
 import React, { useState } from 'react';
 import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useUserSlippageAuto,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import { computePriceImpact } from 'utils/prices';
 import {
   QuestionHelper,
@@ -15,7 +18,6 @@ import { basisPointsToPercent } from 'utils';
 import { OptimalRate, SwapSide } from '@paraswap/sdk';
 import { ONE } from 'v3lib/utils';
 import { useAutoSlippageToleranceBestTrade } from 'hooks/useAutoSlippageTolerance';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { InfomationHelper } from 'components/QuestionHelper';
 import { ReactComponent as SettingsIcon } from 'assets/images/icons/cog-fill.svg';
 
@@ -40,13 +42,15 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
   const isExactIn = optimalRate.side === SwapSide.SELL;
   const currency = isExactIn ? outputCurrency : inputCurrency;
   const autoSlippage = useAutoSlippageToleranceBestTrade(optimalRate);
+  const [userSlippageAuto] = useUserSlippageAuto();
+
   const tradeAmount = isExactIn
     ? new Fraction(ONE)
-        .add(userSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage)
+        .add(userSlippageAuto ? autoSlippage : allowedSlippage)
         .invert()
         .multiply(optimalRate.destAmount).quotient
     : new Fraction(ONE)
-        .add(userSlippage === SLIPPAGE_AUTO ? autoSlippage : allowedSlippage)
+        .add(userSlippageAuto ? autoSlippage : allowedSlippage)
         .multiply(optimalRate.srcAmount).quotient;
 
   return (
@@ -77,7 +81,7 @@ export const BestTradeSummary: React.FC<TradeSummaryProps> = ({
           className='swapSlippage'
         >
           <small>
-            {userSlippage === SLIPPAGE_AUTO
+            {userSlippageAuto
               ? Number(autoSlippage.toSignificant())
               : Number(allowedSlippage.toSignificant())}
             %

@@ -1,8 +1,10 @@
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUserSlippageTolerance } from 'state/user/hooks';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import {
+  useUserSlippageAuto,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 
 export const SlippageWrapper: React.FC = () => {
   const { t } = useTranslation();
@@ -14,6 +16,7 @@ export const SlippageWrapper: React.FC = () => {
     allowedSlippage,
     setUserSlippageTolerance,
   ] = useUserSlippageTolerance();
+  const [userSlippageAuto] = useUserSlippageAuto();
 
   useEffect(() => {
     if (swapSlippage) {
@@ -24,8 +27,7 @@ export const SlippageWrapper: React.FC = () => {
 
   return (
     <small className='subtext-color'>
-      {allowedSlippage === SLIPPAGE_AUTO ? 'Auto' : allowedSlippage / 100 + '%'}{' '}
-      {t('slippage')}
+      {userSlippageAuto ? 'Auto' : allowedSlippage / 100 + '%'} {t('slippage')}
     </small>
   );
 };

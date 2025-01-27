@@ -23,6 +23,7 @@ import {
   updateUserZapSlippage,
   updateIsInfiniteApproval,
   updateUserAmlScore,
+  updateUserSlippageAuto,
 } from './actions';
 import {
   V2_BASES_TO_TRACK_LIQUIDITY_FOR,
@@ -162,6 +163,28 @@ export function useSlippageManuallySet(): [
   );
 
   return [slippageManuallySet, setSlippageManuallySet];
+}
+
+export function useUserSlippageAuto(): [
+  boolean,
+  (userSlippageAuto: boolean) => void,
+] {
+  const dispatch = useDispatch<AppDispatch>();
+  const userSlippageAuto = useSelector<
+    AppState,
+    AppState['user']['userSlippageAuto']
+  >((state) => {
+    return state.user.userSlippageAuto;
+  });
+
+  const setUserSlippageAuto = useCallback(
+    (userSlippageAuto: boolean) => {
+      dispatch(updateUserSlippageAuto({ userSlippageAuto }));
+    },
+    [dispatch],
+  );
+
+  return [userSlippageAuto, setUserSlippageAuto];
 }
 
 export function useUserTransactionTTL(): [number, (slippage: number) => void] {

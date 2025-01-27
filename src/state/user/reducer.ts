@@ -17,6 +17,7 @@ import {
   updateUserSingleHopOnly,
   updateUserBonusRouter,
   updateSlippageManuallySet,
+  updateUserSlippageAuto,
   updateUserLiquidityHub,
   updateUserZapSlippage,
   updateIsInfiniteApproval,
@@ -25,7 +26,7 @@ import {
 
 const currentTimestamp = () => new Date().getTime();
 export const INITIAL_ZAP_SLIPPAGE = 100;
-export const SLIPPAGE_AUTO = 0;
+export const SLIPPAGE_DEFAULT = 50;
 
 export interface UserState {
   // the timestamp of the last updateVersion action
@@ -39,6 +40,7 @@ export interface UserState {
 
   // user defined slippage tolerance in bips, used in all txns
   userSlippageTolerance: number;
+  userSlippageAuto: boolean;
   slippageManuallySet: boolean;
   userLiquidityHubDisabled: boolean;
 
@@ -78,6 +80,7 @@ export const initialState: UserState = {
   userExpertMode: false,
   userBonusRouterDisabled: false,
   userSlippageTolerance: GlobalConst.utils.INITIAL_ALLOWED_SLIPPAGE,
+  userSlippageAuto: false,
   slippageManuallySet: false,
   userLiquidityHubDisabled: false,
   userDeadline: GlobalConst.utils.DEFAULT_DEADLINE_FROM_NOW,
@@ -178,6 +181,10 @@ export default createReducer(initialState, (builder) =>
     .addCase(updateUserBonusRouter, (state, action) => {
       state.userBonusRouterDisabled = action.payload.userBonusRouterDisabled;
     })
+    .addCase(updateUserSlippageAuto, (state, action) => {
+      state.userSlippageAuto = action.payload.userSlippageAuto;
+    })
+
     .addCase(updateSlippageManuallySet, (state, action) => {
       state.slippageManuallySet = action.payload.slippageManuallySet;
     })

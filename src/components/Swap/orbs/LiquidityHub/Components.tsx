@@ -3,10 +3,12 @@ import { Box, Divider } from '@material-ui/core';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as PriceExchangeIcon } from 'assets/images/PriceExchangeIcon.svg';
-import { useUserSlippageTolerance } from 'state/user/hooks';
+import {
+  useUserSlippageAuto,
+  useUserSlippageTolerance,
+} from 'state/user/hooks';
 import { FormattedPriceImpact } from 'components/ConfirmSwapModal';
 import SettingsModal from 'components/SettingsModal';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
 import { Quote } from '@orbs-network/liquidity-hub-sdk';
 import { useDerivedSwapInfo } from 'state/swap/hooks';
 import useUSDCPrice from 'utils/useUSDCPrice';
@@ -231,6 +233,7 @@ const Slippage = () => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const [userSlippage] = useUserSlippageTolerance();
+  const [userSlippageAuto] = useUserSlippageAuto();
 
   return (
     <>
@@ -240,7 +243,7 @@ const Slippage = () => {
           <small>{t('slippage')}</small>
         </Box>
         <Box onClick={() => setOpen(true)} className='swapSlippage'>
-          <small>{userSlippage === SLIPPAGE_AUTO ? 0.5 : userSlippage}%</small>
+          <small>{userSlippageAuto ? 0.5 : userSlippage}%</small>
           <SettingsIcon />
         </Box>
       </Box>
