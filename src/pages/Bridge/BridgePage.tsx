@@ -109,7 +109,15 @@ const BridgePage: React.FC = ({}) => {
     {
       image: Nitro,
       chains: [eth, polygon, zkevm, manta, xlayer, Dogechain, soneium],
-      chainNames: ['eth', 'polygon', 'zkevm', 'manta', 'xlayer', 'doge', 'soneium'],
+      chainNames: [
+        'eth',
+        'polygon',
+        'zkevm',
+        'manta',
+        'xlayer',
+        'doge',
+        'soneium',
+      ],
       externalLink: 'https://app.routernitro.com/swap',
     },
     {
