@@ -39,6 +39,7 @@ export function useDerivedV3BurnInfo(
     token1 ?? undefined,
     position?.fee,
     position?.isUni,
+    position?.isV4,
   );
 
   const positionSDK = useMemo(

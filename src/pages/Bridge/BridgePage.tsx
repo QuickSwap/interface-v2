@@ -44,18 +44,23 @@ import { ChainId } from '@uniswap/sdk';
 const BridgePage: React.FC = ({}) => {
   const { chainId } = useActiveWeb3React();
   const history = useHistory();
-  console.log('🚀 ~ currentChainId:', chainId);
 
-  // const supportedChains = SUPPORTED_CHAINIDS.filter((chain: any) => {
-  //   const config = getConfig(chain);
-  //   return config && config.visible;
-  // });
-
-  const currentChain = useMemo(() => {
+  const config = useMemo(() => {
     return getConfig(chainId);
   }, [chainId]);
 
-  console.log('🚀 ~ currentChain ~ currentChain:', currentChain);
+  const showBridge = config['bridge']['available'];
+
+  if (!showBridge) {
+    location.href = '/';
+  }
+
+  useEffect(() => {
+    if (!showBridge) {
+      history.push('/');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showBridge]);
 
   const bridgeData = [
     {
@@ -256,12 +261,12 @@ const BridgePage: React.FC = ({}) => {
               >
                 <img
                   src={
-                    currentChain?.bridge?.bridgeCoverImg ??
-                    currentChain?.nativeCurrencyImage
+                    config?.bridge?.bridgeCoverImg ??
+                    config?.nativeCurrencyImage
                   }
                   alt='image'
                   style={{
-                    width: currentChain?.bridge?.isBigCoverImg ? '50%' : 'auto',
+                    width: config?.bridge?.isBigCoverImg ? '50%' : 'auto',
                   }}
                 />
                 {/* <Typography style={{ fontSize: '24px', color: '#fff' }}>
@@ -275,12 +280,10 @@ const BridgePage: React.FC = ({}) => {
                   marginBottom: '28px',
                 }}
               >
-                {currentChain?.bridge?.thirdParty
-                  ? `${currentChain?.networkName} Official Third Party Bridge`
-                  : `${currentChain?.networkName}'s Native Bridge`}
+                {`${config?.networkName}'s Native Bridge`}
               </Typography>
               <Box className='flex items-center justify-center'>
-                {currentChain?.bridge?.supportedChains?.map(
+                {config?.bridge?.supportedChains?.map(
                   (item: string, index: number) => {
                     return (
                       <img
@@ -307,8 +310,8 @@ const BridgePage: React.FC = ({}) => {
                   gap: '2px',
                 }}
                 onClick={() => {
-                  if (!currentChain?.bridgeUrl) return;
-                  window.open(currentChain?.bridgeUrl, '_blank');
+                  if (!config?.bridgeUrl) return;
+                  window.open(config?.bridgeUrl, '_blank');
                 }}
               >
                 Bridge now

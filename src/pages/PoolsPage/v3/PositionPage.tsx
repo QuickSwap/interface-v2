@@ -16,6 +16,7 @@ import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useTranslation } from 'react-i18next';
 import useParsedQueryString from 'hooks/useParsedQueryString';
+import { useIsV4 } from 'state/application/hooks';
 
 export default function PositionPage() {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export default function PositionPage() {
   const params: any = useParams();
   const tokenIdFromUrl = params?.tokenId;
   const { account, chainId } = useActiveWeb3React();
+  const { isV4 } = useIsV4();
 
   const parsedTokenId = tokenIdFromUrl
     ? BigNumber.from(tokenIdFromUrl)
@@ -33,7 +35,12 @@ export default function PositionPage() {
     isUni,
   );
 
-  const { loading: positionLoading, positions } = useV3Positions(account);
+  const { loading: positionLoading, positions } = useV3Positions(
+    account,
+    false,
+    false,
+    isV4,
+  );
   const ownsNFT =
     positions &&
     !!positions.find((item) => item.tokenId.toString() === tokenIdFromUrl);

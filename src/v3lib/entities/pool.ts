@@ -2,6 +2,7 @@ import { ChainId } from '@uniswap/sdk';
 import { BigintIsh, CurrencyAmount, Price, Token } from '@uniswap/sdk-core';
 import {
   POOL_DEPLOYER_ADDRESS,
+  POOL_V4_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
 } from 'constants/v3/addresses';
 import JSBI from 'jsbi';
@@ -49,6 +50,7 @@ export class Pool {
   public readonly tickCurrent: number;
   public readonly tickDataProvider: TickDataProvider;
   public readonly isUni: boolean | undefined;
+  public readonly isV4: boolean | undefined;
 
   /**
    * Construct a pool
@@ -71,6 +73,7 @@ export class Pool {
       | TickDataProvider
       | (Tick | TickConstructorArgs)[] = NO_TICK_DATA_PROVIDER_DEFAULT,
     isUni: boolean | undefined,
+    isV4?: boolean,
   ) {
     invariant(!fee || (Number.isInteger(fee) && fee < 1_000_000), 'FEE');
 
@@ -90,6 +93,7 @@ export class Pool {
       : [tokenB, tokenA];
     this.fee = fee;
     this.isUni = isUni;
+    this.isV4 = isV4;
     this.sqrtRatioX96 = JSBI.BigInt(sqrtRatioX96);
     this.liquidity = JSBI.BigInt(liquidity);
     this.tickCurrent = tickCurrent;
@@ -150,11 +154,14 @@ export class Pool {
     tokenA: Token,
     tokenB: Token,
     fee?: FeeAmount,
+    isV4?: boolean,
     initCodeHashManualOverride?: string,
   ): string {
     return computePoolAddress({
       poolDeployer: fee
         ? UNI_V3_FACTORY_ADDRESS[tokenA.chainId]
+        : isV4
+        ? POOL_V4_DEPLOYER_ADDRESS[tokenA.chainId]
         : POOL_DEPLOYER_ADDRESS[tokenA.chainId],
       fee,
       tokenA,
@@ -217,6 +224,7 @@ export class Pool {
         tickCurrent,
         this.tickDataProvider,
         this.isUni,
+        this.isV4,
       ),
     ];
   }
@@ -261,6 +269,7 @@ export class Pool {
         tickCurrent,
         this.tickDataProvider,
         this.isUni,
+        this.isV4,
       ),
     ];
   }

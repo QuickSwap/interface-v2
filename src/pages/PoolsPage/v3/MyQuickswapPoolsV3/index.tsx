@@ -7,6 +7,7 @@ import PositionList from './components/PositionList';
 import { PositionPool } from 'models/interfaces';
 import { useTranslation } from 'react-i18next';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { useIsV4 } from 'state/application/hooks';
 
 const MyQuickswapPoolsV3: React.FC<{
   hideFarmingPositions: boolean;
@@ -14,10 +15,12 @@ const MyQuickswapPoolsV3: React.FC<{
 }> = ({ hideFarmingPositions, userHideClosedPositions }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
+  const { isV4 } = useIsV4();
   const { positions, loading: positionsLoading } = useV3Positions(
     account,
     userHideClosedPositions,
     hideFarmingPositions,
+    isV4,
   );
 
   const [openPositions, closedPositions] = positions?.reduce<

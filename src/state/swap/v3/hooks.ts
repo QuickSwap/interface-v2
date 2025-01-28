@@ -41,7 +41,8 @@ import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { ChainId } from '@uniswap/sdk';
 import { GlobalData } from 'constants/index';
 import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
-import { SLIPPAGE_DEFAULT } from 'state/user/reducer';
+import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { useIsV4 } from 'state/application/hooks';
 
 export function useSwapState(): AppState['swapV3'] {
   return useAppSelector((state) => {
@@ -156,6 +157,7 @@ export function useDerivedSwapInfo(): {
 } {
   const { account, chainId } = useActiveWeb3React();
   const chainIdToUse = chainId ?? ChainId.MATIC;
+  const { isV4 } = useIsV4();
 
   const {
     independentField,
@@ -185,11 +187,13 @@ export function useDerivedSwapInfo(): {
   const bestV3TradeExactIn = useBestV3TradeExactIn(
     isExactIn ? parsedAmount : undefined,
     outputCurrency ?? undefined,
+    isV4,
   );
 
   const bestV3TradeExactOut = useBestV3TradeExactOut(
     inputCurrency ?? undefined,
     !isExactIn ? parsedAmount : undefined,
+    isV4,
   );
 
   // const v2Trade = isExactIn ? bestV2TradeExactIn : bestV2TradeExactOut

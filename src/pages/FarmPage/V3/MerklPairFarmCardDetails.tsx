@@ -106,6 +106,7 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     isQuickswap ? v3FarmToken1 : undefined,
     selectedQSPosition?.fee,
     selectedQSPosition?.isUni,
+    selectedQSPosition?.isV4,
   );
 
   const qsPosition = useMemo(() => {

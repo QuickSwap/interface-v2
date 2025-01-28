@@ -151,7 +151,12 @@ export const POOL_DEPLOYER_ADDRESS: AddressMap = {
   [ChainId.ZKTESTNET]: '0x6c28AeF8977c9B773996d0e8376d2EE379446F2f',
   [ChainId.ZKEVM]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
   [ChainId.LAYERX]: '0x56c2162254b0E4417288786eE402c2B41d4e181e',
-  [ChainId.SONEIUM]: '0x7B446Bfb3763Ed0892f08893Eb06Dda79aB28CB9', //algebra-integral
+};
+
+//Pool Deloyer for algebra-integral
+export const POOL_V4_DEPLOYER_ADDRESS: AddressMap = {
+  [ChainId.LAYERX]: '0x9815e9311a13E5b0DC93E6255b8B45Cd8b6c9773',
+  [ChainId.SONEIUM]: '0x7B446Bfb3763Ed0892f08893Eb06Dda79aB28CB9',
 };
 
 export const QUOTER_ADDRESSES: AddressMap = {
@@ -160,7 +165,12 @@ export const QUOTER_ADDRESSES: AddressMap = {
   [ChainId.ZKTESTNET]: '0x930388c769Da7B4616493d47B5D093D8ec26C969',
   [ChainId.ZKEVM]: '0x55BeE1bD3Eb9986f6d2d963278de09eE92a3eF1D',
   [ChainId.LAYERX]: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-  [ChainId.SONEIUM]: '0x4c5663252bBAB0a3B303a711823aD70a0ec9aE31', //algebra-integral Quoter
+};
+
+// Quoter for algebra-integral
+export const QUOTER_V4_ADDRESSES: AddressMap = {
+  [ChainId.LAYERX]: '0x7a40CBb30B0aDe60e95634D8A62464a073f6Bcec',
+  [ChainId.SONEIUM]: '0x4c5663252bBAB0a3B303a711823aD70a0ec9aE31',
 };
 
 export const UNIV3_QUOTER_ADDRESSES: AddressMap = {
@@ -180,7 +190,12 @@ export const SWAP_ROUTER_ADDRESSES: AddressMap = {
   [ChainId.ZKTESTNET]: '0x481FcFa00Ee6b2384FF0B3c3b5b29aD911c1AAA7',
   [ChainId.ZKEVM]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
   [ChainId.LAYERX]: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
-  [ChainId.SONEIUM]: '0xeba58c20629ddab41e21a3E4E2422E583ebD9719', //algebra-integral
+};
+
+//Swap Router for algebra-integral
+export const SWAP_ROUTER_V4_ADDRESSES: AddressMap = {
+  [ChainId.LAYERX]: '0x8e3CF621BDbfB1c0A5EC425dcCddA86E07F557C4',
+  [ChainId.SONEIUM]: '0xeba58c20629ddab41e21a3E4E2422E583ebD9719',
 };
 
 export const SWAP_ROUTER_ADDRESS: AddressMap = {
@@ -193,7 +208,12 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESSES: AddressMap = {
   [ChainId.ZKTESTNET]: '0xE86Ba90bf805cEa452c8FA6E37b4ae2D17D32599',
   [ChainId.ZKEVM]: '0xd8E1E7009802c914b0d39B31Fc1759A865b727B1',
   [ChainId.LAYERX]: '0xF6Ad3CcF71Abb3E12beCf6b3D2a74C963859ADCd',
-  [ChainId.SONEIUM]: '0x0629B3c6E1cCfF2e31e3A9Bd67ec96b23BE6f1e9', //algebra-integral
+};
+
+//algebra-integral
+export const NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES: AddressMap = {
+  [ChainId.LAYERX]: '0x60cdF877e536F6384D8D5aA20c266A8Ad5AE0a4c',
+  [ChainId.SONEIUM]: '0x0629B3c6E1cCfF2e31e3A9Bd67ec96b23BE6f1e9',
 };
 
 export const UNI_V3_FACTORY_ADDRESS: AddressMap = {

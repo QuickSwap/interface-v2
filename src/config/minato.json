@@ -1,4 +1,5 @@
 {
+  "v4": false,
   "v3": true,
   "v2": false,
   "rpc": "https://rpc.minato.soneium.org/",
@@ -12,6 +13,9 @@
     "name": "Ether",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "available": true
   },
   "swap": {
     "available": true,

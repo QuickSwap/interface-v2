@@ -15,6 +15,7 @@ import {
   removeBookmarkPair,
   updateTokenDetails,
   updateIsV2,
+  updateIsV4,
   updateIsLpLock,
   updateOpenNetworkSelection,
 } from './actions';
@@ -210,6 +211,21 @@ export function useIsV2(): {
     [dispatch],
   );
   return { isV2, updateIsV2: _updateIsV2 };
+}
+
+export function useIsV4(): {
+  isV4: boolean | undefined;
+  updateIsV4: (isV4: boolean) => void;
+} {
+  const isV4 = useSelector((state: AppState) => state.application.isV4);
+  const dispatch = useDispatch();
+  const _updateIsV4 = useCallback(
+    (isV4: boolean) => {
+      dispatch(updateIsV4(isV4));
+    },
+    [dispatch],
+  );
+  return { isV4, updateIsV4: _updateIsV4 };
 }
 
 export function useIsLpLock(): {

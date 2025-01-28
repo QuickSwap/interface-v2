@@ -120,6 +120,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ASTARZKEVM]: 'astar_zkevm',
   [ChainId.LAYERX]: 'layerX',
   [ChainId.ETHEREUM]: 'ethereum',
+  [ChainId.MINATO]: 'minato',
   [ChainId.SONEIUM]: 'soneium',
 };
 
@@ -275,6 +276,8 @@ export const GlobalConst = {
       process.env.REACT_APP_COINGECKO_DOGE_URL + '',
     COINGECKO_KAVA_TOKEN_LIST_URL:
       process.env.REACT_APP_COINGECKO_KAVA_URL + '',
+    COINGECKO_SONEIUM_TOKEN_LIST_URL:
+      process.env.REACT_APP_COINGECKO_SONEIUM_URL + '',
     DEFAULT_LP_FARMS_LIST_URL:
       process.env.REACT_APP_STAKING_LIST_DEFAULT_URL + '',
     DEFAULT_CNT_FARMS_LIST_URL:
@@ -364,6 +367,7 @@ export const DEFAULT_LIST_OF_LISTS: string[] = [
   GlobalConst.utils.COINGECKO_IMMUTABLE_TOKEN_LIST_URL,
   GlobalConst.utils.COINGECKO_DOGE_TOKEN_LIST_URL,
   GlobalConst.utils.COINGECKO_KAVA_TOKEN_LIST_URL,
+  GlobalConst.utils.COINGECKO_SONEIUM_TOKEN_LIST_URL,
 ];
 
 export const SUPPORTED_CHAINIDS = [
@@ -2623,6 +2627,8 @@ export const GlobalValue = {
       [ChainId.ASTARZKEVM]: [],
       [ChainId.LAYERX]: [],
       [ChainId.ETHEREUM]: [],
+      [ChainId.MINATO]: [],
+      [ChainId.SONEIUM]: [],
     },
   },
   marketSDK: {
@@ -2716,6 +2722,8 @@ export const GlobalData = {
       DAI[ChainId.LAYERX],
     ],
     [ChainId.ETHEREUM]: [],
+    [ChainId.MINATO]: [USDC[ChainId.SONEIUM]],
+    [ChainId.SONEIUM]: [USDC[ChainId.SONEIUM], USDT[ChainId.SONEIUM]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2824,6 +2832,8 @@ export const GlobalData = {
     ],
     [ChainId.LAYERX]: [],
     [ChainId.ETHEREUM]: [],
+    [ChainId.MINATO]: [],
+    [ChainId.SONEIUM]: [],
   },
   quickBurns: {
     CHART_DURATIONS: [

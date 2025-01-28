@@ -1,5 +1,6 @@
 {
-  "v3": true,
+  "v4": true,
+  "v3": false,
   "v2": false,
   "rpc": "https://rpc.soneium.org/",
   "blockExplorer": "https://soneium.blockscout.com/",
@@ -13,12 +14,8 @@
     "symbol": "ETH",
     "decimals": 18
   },
-  "bridgeUrl": "https://superbridge.app/soneium",
   "bridge": {
-    "bridgeCoverImg": "/bridge/soneium_cover_img.webp",
-    "thirdParty": true,
-    "supportedChains": ["/bridge/eth.svg", "/bridge/soneium.webp"],
-    "isBigCoverImg": true
+    "available": false
   },
   "swap": {
     "available": true,

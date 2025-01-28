@@ -4,6 +4,7 @@ import { Currency, CurrencyAmount, Percent } from '@uniswap/sdk-core';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
@@ -24,6 +25,7 @@ import {
 } from 'state/mint/v3/hooks';
 import { useDerivedPositionInfo } from 'hooks/v3/useDerivedPositionInfo';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
+import { NonfungiblePositionV4Manager as NonFunPosV4Man } from 'v3lib/nonfungiblePositionV4Manager';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import './index.scss';
 import ReactGA from 'react-ga';
@@ -31,6 +33,7 @@ import { WrappedCurrency } from 'models/types';
 import { ApprovalState, useApproveCallback } from 'hooks/useV3ApproveCallback';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
@@ -82,10 +85,14 @@ export default function IncreaseLiquidityV3({
       : currencyB;
 
   const algebrapositionManager = useV3NFTPositionManagerContract();
+  const algebrapositionV4Manager = useV4NFTPositionManagerContract();
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
   const positionManager = positionDetails.isUni
     ? uniPositionManager
+    : positionDetails.isV4
+    ? algebrapositionV4Manager
     : algebrapositionManager;
+
   const tokenId = positionDetails.tokenId.toString();
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
@@ -121,7 +128,9 @@ export default function IncreaseLiquidityV3({
     if (positionDetails.isUni) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
     }
-    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+    return positionDetails.isV4
+      ? NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES[chainId]
+      : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
   }, [chainId, positionDetails]);
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(noLiquidity);
@@ -215,6 +224,8 @@ export default function IncreaseLiquidityV3({
 
       const PositionManager = positionDetails.isUni
         ? UniV3NonFunPosMan
+        : positionDetails.isV4
+        ? NonFunPosV4Man
         : NonFunPosMan;
       const { calldata, value } = tokenId
         ? PositionManager.addCallParameters(position, {

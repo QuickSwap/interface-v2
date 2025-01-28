@@ -11,6 +11,7 @@ import { useActiveWeb3React } from 'hooks';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 import {
   useIsTransactionPending,
@@ -27,9 +28,11 @@ import ReactGA from 'react-ga';
 import {
   FARMING_CENTER,
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
 import { NonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
+import { NonfungiblePositionV4Manager } from 'v3lib/nonfungiblePositionV4Manager';
 import { Position } from 'v3lib/entities';
 import { calculateGasMarginV3 } from 'utils';
 import { getRatio } from 'utils/v3/getRatio';
@@ -84,6 +87,7 @@ export default function PositionListItemDetails({
     onFarming: _onFarming,
     fee: _fee,
     isUni: _isUni,
+    isV4: _isV4,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -112,6 +116,7 @@ export default function PositionListItemDetails({
     token1 ?? undefined,
     _fee,
     _isUni,
+    _isV4,
   );
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];
   const [_poolState, _pool] = useMemo(() => {
@@ -218,9 +223,12 @@ export default function PositionListItemDetails({
 
   const addTransaction = useTransactionAdder();
   const algebrapositionManager = useV3NFTPositionManagerContract();
+  const algebrapositionV4Manager = useV4NFTPositionManagerContract();
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
   const positionManager = pool?.isUni
     ? uniPositionManager
+    : pool?.isV4
+    ? algebrapositionV4Manager
     : algebrapositionManager;
   const collect = useCallback(() => {
     if (
@@ -240,6 +248,8 @@ export default function PositionListItemDetails({
       ? FARMING_CENTER[chainId]
       : pool?.isUni
       ? UNI_NFT_POSITION_MANAGER_ADDRESS[chainId]
+      : pool?.isV4
+      ? NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES[chainId]
       : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
 
     let collectData;
@@ -251,12 +261,21 @@ export default function PositionListItemDetails({
         recipient: account,
       });
     } else {
-      collectData = NonfungiblePositionManager.collectCallParameters({
-        tokenId: tokenId.toString(),
-        expectedCurrencyOwed0: feeValue0,
-        expectedCurrencyOwed1: feeValue1,
-        recipient: account,
-      });
+      if (pool?.isV4) {
+        collectData = NonfungiblePositionV4Manager.collectCallParameters({
+          tokenId: tokenId.toString(),
+          expectedCurrencyOwed0: feeValue0,
+          expectedCurrencyOwed1: feeValue1,
+          recipient: account,
+        });
+      } else {
+        collectData = NonfungiblePositionManager.collectCallParameters({
+          tokenId: tokenId.toString(),
+          expectedCurrencyOwed0: feeValue0,
+          expectedCurrencyOwed1: feeValue1,
+          recipient: account,
+        });
+      }
     }
 
     const txn = {
@@ -318,6 +337,7 @@ export default function PositionListItemDetails({
     library,
     _onFarming,
     pool?.isUni,
+    pool?.isV4,
     addTransaction,
     t,
   ]);

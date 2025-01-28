@@ -8,6 +8,7 @@ import { unwrappedToken } from 'utils/unwrappedToken';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 
 const MAX_UINT128 = BigNumber.from(2)
@@ -23,9 +24,13 @@ export function useV3PositionFees(
   | [CurrencyAmount<Currency>, CurrencyAmount<Currency>]
   | [undefined, undefined] {
   const algebrapositionManager = useV3NFTPositionManagerContract(false);
+  const algebrapositionV4Manager = useV4NFTPositionManagerContract(false);
+
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
   const positionManager = pool?.isUni
     ? uniPositionManager
+    : pool?.isV4
+    ? algebrapositionV4Manager
     : algebrapositionManager;
   const owner: string | undefined = useSingleCallResult(
     tokenId ? positionManager : null,

@@ -1,5 +1,6 @@
 import {
   POOL_DEPLOYER_ADDRESS,
+  POOL_V4_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
 } from 'constants/v3/addresses';
 import { Currency, Token } from '@uniswap/sdk-core';
@@ -8,7 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useMultipleContractSingleData } from 'state/multicall/v3/hooks';
 import { Interface } from '@ethersproject/abi';
 import abi from 'constants/abis/v3/pool.json';
-import abiV2 from 'constants/abis/v3/pool-v2.json';
+import abiV4 from 'constants/abis/v4/pool.json';
 import uniV3ABI from 'constants/abis/v3/univ3Pool.json';
 import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
 import { useToken } from './Tokens';
@@ -18,7 +19,7 @@ import { FeeAmount } from 'v3lib/utils';
 import { ChainId } from '@uniswap/sdk';
 
 const POOL_STATE_INTERFACE = new Interface(abi);
-const POOLV2_STATE_INTERFACE = new Interface(abiV2); // algebra-integral
+const POOL_V4_STATE_INTERFACE = new Interface(abiV4);
 const UNIV3POOL_STATE_INTERFACE = new Interface(uniV3ABI);
 
 export enum PoolState {
@@ -35,6 +36,7 @@ export function usePools(
     FeeAmount | undefined,
   ][],
   isUni?: boolean,
+  isV4?: boolean,
 ): [PoolState, Pool | null][] {
   const { chainId } = useActiveWeb3React();
 
@@ -60,6 +62,8 @@ export function usePools(
       const poolDeployerAddress =
         chainId && value && value[2]
           ? UNI_V3_FACTORY_ADDRESS[chainId]
+          : isV4
+          ? POOL_V4_DEPLOYER_ADDRESS[chainId]
           : POOL_DEPLOYER_ADDRESS[chainId];
       if (!poolDeployerAddress || !value) return undefined;
 
@@ -70,15 +74,15 @@ export function usePools(
         fee: value[2],
       });
     });
-  }, [chainId, transformed]);
+  }, [chainId, transformed, isV4]);
 
   const globalState0s = useMultipleContractSingleData(
     poolAddresses,
     isUni
       ? UNIV3POOL_STATE_INTERFACE
-      : chainId !== ChainId.SONEIUM
-      ? POOL_STATE_INTERFACE
-      : POOLV2_STATE_INTERFACE,
+      : isV4
+      ? POOL_V4_STATE_INTERFACE
+      : POOL_STATE_INTERFACE,
     isUni ? 'slot0' : 'globalState',
   );
 
@@ -101,7 +105,11 @@ export function usePools(
 
   const liquidities = useMultipleContractSingleData(
     poolAddresses,
-    isUni ? UNIV3POOL_STATE_INTERFACE : POOL_STATE_INTERFACE,
+    isUni
+      ? UNIV3POOL_STATE_INTERFACE
+      : isV4
+      ? POOL_V4_STATE_INTERFACE
+      : POOL_STATE_INTERFACE,
     'liquidity',
   );
   const prevLiquidities = usePreviousNonErroredArray(liquidities);
@@ -160,23 +168,20 @@ export function usePools(
           new Pool(
             token0,
             token1,
-            isUni
-              ? fee
-              : chainId !== ChainId.SONEIUM
-              ? globalState.fee
-              : globalState.lastFee,
+            isUni ? fee : isV4 ? globalState.lastFee : globalState.fee,
             poolPrice,
             liquidity[0],
             globalState.tick,
             undefined,
             isUni,
+            isV4,
           ),
         ];
       } catch (error) {
         return [PoolState.NOT_EXISTS, null];
       }
     });
-  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni, chainId]);
+  }, [poolKeys, transformed, _globalState0s, _liquidities, isUni, isV4]);
 }
 
 export function usePool(
@@ -184,6 +189,7 @@ export function usePool(
   currencyB: Currency | undefined,
   feeAmount?: FeeAmount,
   isUni?: boolean,
+  isV4?: boolean,
 ): [PoolState, Pool | null] {
   const poolKeys: [
     Currency | undefined,
@@ -195,7 +201,7 @@ export function usePool(
     feeAmount,
   ]);
 
-  return usePools(poolKeys, isUni)[0];
+  return usePools(poolKeys, isUni, isV4)[0];
 }
 
 export function useTokensSymbols(token0: string, token1: string) {

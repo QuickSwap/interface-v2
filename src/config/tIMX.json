@@ -1,4 +1,5 @@
 {
+  "v4": false,
   "v3": true,
   "v2": false,
   "rpc": "https://rpc.testnet.immutable.com",
@@ -13,6 +14,9 @@
     "name": "test IMX",
     "symbol": "tIMX",
     "decimals": 18
+  },
+  "bridge": {
+    "available": true
   },
   "swap": {
     "available": true,

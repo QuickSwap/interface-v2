@@ -4,13 +4,13 @@ import {
   useSingleCallResult,
   useSingleContractMultipleData,
 } from 'state/multicall/v3/hooks';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useActiveWeb3React } from 'hooks';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
-  useV3NFTPositionManagerV2Contract,
+  useV4NFTPositionManagerContract,
   useDefiEdgeMiniChefContracts,
 } from 'hooks/useContract';
 import { usePositionsOnFarmer } from 'hooks/useIncentiveSubgraph';
@@ -42,7 +42,6 @@ import {
 } from 'hooks/useICHIData';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { toV3Token } from 'constants/v3/addresses';
-import { useLastTransactionHash } from 'state/transactions/hooks';
 
 interface UseV3PositionsResults {
   loading: boolean;
@@ -53,10 +52,10 @@ interface UseV3PositionsResults {
 export function useV3PositionsFromTokenIds(
   tokenIds: BigNumber[] | undefined,
   isUni?: boolean,
+  isV4?: boolean,
 ): UseV3PositionsResults {
-  const { chainId } = useActiveWeb3React();
   const positionManager = useV3NFTPositionManagerContract();
-  const positionV2Manager = useV3NFTPositionManagerV2Contract();
+  const positionV4Manager = useV4NFTPositionManagerContract();
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
   const inputs = useMemo(
@@ -66,11 +65,7 @@ export function useV3PositionsFromTokenIds(
   );
 
   const results = useSingleContractMultipleData(
-    isUni
-      ? uniV3PositionManager
-      : chainId !== ChainId.SONEIUM
-      ? positionManager
-      : positionV2Manager,
+    isUni ? uniV3PositionManager : isV4 ? positionV4Manager : positionManager,
     'positions',
     inputs,
   );
@@ -100,11 +95,12 @@ export function useV3PositionsFromTokenIds(
           tokensOwed0: result?.tokensOwed0,
           tokensOwed1: result?.tokensOwed1,
           isUni,
+          isV4,
         };
       });
     }
     return undefined;
-  }, [loading, error, tokenIds, results, isUni]);
+  }, [loading, error, tokenIds, results, isUni, isV4]);
   return { loading, positions };
 }
 
@@ -116,10 +112,12 @@ interface UseV3PositionResults {
 export function useV3PositionFromTokenId(
   tokenId: BigNumber | undefined,
   isUni?: boolean,
+  isV4?: boolean,
 ): UseV3PositionResults {
   const position = useV3PositionsFromTokenIds(
     tokenId ? [tokenId] : undefined,
     isUni,
+    isV4,
   );
   return {
     loading: position.loading,
@@ -131,8 +129,11 @@ export function useV3Positions(
   account: string | null | undefined,
   hideClosePosition?: boolean,
   hideFarmingPosition?: boolean,
+  isV4?: boolean,
 ): UseV3PositionsResults {
-  const positionManager = useV3NFTPositionManagerContract();
+  const positionV2Manager = useV3NFTPositionManagerContract();
+  const positionV4Manager = useV4NFTPositionManagerContract();
+  const positionManager = isV4 ? positionV4Manager : positionV2Manager;
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
   const algebraBalanceResult = useSingleCallResult(
@@ -184,7 +185,11 @@ export function useV3Positions(
   const {
     positions: algebraPositions,
     loading: algebraPositionsLoading,
-  } = useV3PositionsFromTokenIds(algebraIDsLoading ? [] : algebraTokenIds);
+  } = useV3PositionsFromTokenIds(
+    algebraIDsLoading ? [] : algebraTokenIds,
+    false,
+    isV4,
+  );
 
   const {
     positions: uniV3Positions,
@@ -225,7 +230,7 @@ export function useV3Positions(
 
   const combinedPositions = [
     ...(algebraPositions ?? [])
-      .concat(uniV3Positions ?? [])
+      .concat(isV4 ? [] : uniV3Positions ?? [])
       .filter((position: any) =>
         hideClosePosition ? position.liquidity.gt('0') : true,
       ),
@@ -241,7 +246,7 @@ export function useV3Positions(
 
   const count =
     (algebraPositions ?? [])
-      .concat(uniV3Positions ?? [])
+      .concat(isV4 ? [] : uniV3Positions ?? [])
       .filter((position: any) =>
         hideClosePosition ? position.liquidity.gt('0') : true,
       ).length +

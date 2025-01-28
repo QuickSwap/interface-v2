@@ -24,10 +24,12 @@ import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
 import MyDefiedgePoolsV3 from '../MyDefiedgePoolsV3';
 import MySteerPoolsV3 from '../MySteerPoolsV3';
 import MyICHIPools from '../MyICHIPools';
+import { useIsV4 } from 'state/application/hooks';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
+  const { isV4 } = useIsV4();
   const history = useHistory();
 
   const { pairs: allV2PairsWithLiquidity } = useV2LiquidityPools(
@@ -62,6 +64,7 @@ export default function MyLiquidityPoolsV3() {
     account,
     userHideQuickClosedPositions,
     hideQuickFarmingPositions,
+    isV4,
   );
   const {
     loading: gammaPoolsLoading,
