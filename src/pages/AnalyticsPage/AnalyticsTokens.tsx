@@ -6,6 +6,7 @@ import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
+import { GlobalData } from 'constants/index';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
@@ -14,12 +15,34 @@ const AnalyticsTokens: React.FC = () => {
   const { bookmarkTokens } = useBookmarkTokens();
   const { chainId } = useActiveWeb3React();
   const version = useAnalyticsVersion();
-
+  const excludedInTrending = [
+    'ETH',
+    'WBTC',
+    'POL',
+    'USDT',
+    'USDC',
+    'USDC.E',
+    'MATIC',
+    'WETH',
+  ];
   const {
     isLoading: topTokensLoading,
     data: topTokens,
   } = useAnalyticsTopTokens(version, chainId);
 
+  const checkIfStable = (token) => {
+    let result = true;
+    Object.entries(GlobalData.stableCoins).forEach(([key, values]) => {
+      values.forEach((value) => {
+        result =
+          token.symbol !== value.symbol &&
+          excludedInTrending.findIndex(
+            (item) => item.toLowerCase() === token.symbol.toLowerCase(),
+          ) === -1;
+      });
+    });
+    return result;
+  };
   const favoriteTokens = useMemo(() => {
     if (topTokens) {
       return topTokens.filter(
@@ -29,6 +52,19 @@ const AnalyticsTokens: React.FC = () => {
       return [];
     }
   }, [topTokens, bookmarkTokens]);
+
+  const trendingTokens = useMemo(() => {
+    if (topTokens) {
+      const trendingTokens = [...topTokens].sort(
+        (a, b) => b.oneDayVolumeUSD - a.oneDayVolumeUSD,
+      );
+      return trendingTokens
+        .filter((token: any) => {
+          return checkIfStable(token);
+        })
+        .slice(0, 10);
+    }
+  }, [topTokens]);
 
   return (
     <Box width='100%' mb={3}>
@@ -56,14 +92,22 @@ const AnalyticsTokens: React.FC = () => {
           }`}
           onClick={() => setTokensFilter(2)}
         >
-          <p className='weight-600'>{t('newListing')}</p>
+          <p className='weight-600'>{t('trending')}</p>
         </Box>
       </Box>
       <Box className='panel'>
         {topTokensLoading ? (
           <Skeleton variant='rect' width='100%' height={150} />
         ) : topTokens ? (
-          <TokensTable data={tokensFilter === 0 ? topTokens : favoriteTokens} />
+          <TokensTable
+            data={
+              tokensFilter === 0
+                ? topTokens
+                : tokensFilter === 1
+                ? favoriteTokens
+                : trendingTokens
+            }
+          />
         ) : (
           <></>
         )}
