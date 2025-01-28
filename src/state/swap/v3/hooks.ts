@@ -41,7 +41,7 @@ import { WrappedTokenInfo } from 'state/lists/v3/wrappedTokenInfo';
 import { ChainId } from '@uniswap/sdk';
 import { GlobalData } from 'constants/index';
 import { useAutoSlippageTolerance } from 'hooks/useAutoSlippageTolerance';
-import { SLIPPAGE_AUTO } from 'state/user/reducer';
+import { SLIPPAGE_DEFAULT } from 'state/user/reducer';
 import { useIsV4 } from 'state/application/hooks';
 
 export function useSwapState(): AppState['swapV3'] {
