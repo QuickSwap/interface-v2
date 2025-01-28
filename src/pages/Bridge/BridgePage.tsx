@@ -242,8 +242,8 @@ const BridgePage: React.FC = ({}) => {
                 marginBottom: '16px',
               }}
             >
-              {currentChain?.bridge?.thirdParty
-                ? `${currentChain?.networkName} Official Third Party Bridge `
+              {config?.bridge?.thirdParty
+                ? `${config?.networkName} Official Third Party Bridge `
                 : 'Chain Native Bridge'}
             </Typography>
             <Box
