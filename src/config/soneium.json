@@ -14,8 +14,13 @@
     "symbol": "ETH",
     "decimals": 18
   },
+  "bridgeUrl": "https://superbridge.app/soneium",
   "bridge": {
-    "available": false
+    "available": true,
+    "bridgeCoverImg": "/bridge/soneium_cover_img.webp",
+    "thirdParty": true,
+    "supportedChains": ["/bridge/eth.svg", "/bridge/soneium.webp"],
+    "isBigCoverImg": true
   },
   "swap": {
     "available": true,
