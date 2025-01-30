@@ -140,16 +140,9 @@ export default createReducer(initialState, (builder) =>
       state.bookmarkedTokens = tokens;
     })
     .addCase(removeBookmarkToken, (state, { payload }) => {
-      const tokenIndex = state.bookmarkedTokens.indexOf(payload);
-      const tokens = state.bookmarkedTokens
-        .slice(0, tokenIndex - 1)
-        .concat(
-          state.bookmarkedTokens.slice(
-            tokenIndex + 1,
-            state.bookmarkedTokens.length - 1,
-          ),
-        );
-      state.bookmarkedTokens = tokens;
+      state.bookmarkedTokens = state.bookmarkedTokens.filter(
+        (item) => item !== payload,
+      );
     })
     .addCase(updateBookmarkTokens, (state, { payload }) => {
       state.bookmarkedTokens = payload;
