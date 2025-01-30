@@ -7,6 +7,7 @@ import { FeeAmount, TICK_SPACINGS } from 'v3lib/utils/v3constants';
 import { Pool } from 'v3lib/entities/pool';
 import { tickToPrice } from 'v3lib/utils/priceTickConversions';
 import { useQuery } from '@tanstack/react-query';
+import { useIsV4 } from 'state/application/hooks';
 
 const PRICE_FIXED_DIGITS = 8;
 
@@ -33,10 +34,11 @@ export function useAllV3Ticks(
   currencyA: Currency | undefined,
   currencyB: Currency | undefined,
   feeAmount: FeeAmount | undefined,
+  isV4: boolean | undefined,
 ) {
   const poolAddress =
     currencyA && currencyB
-      ? Pool.getAddress(currencyA?.wrapped, currencyB?.wrapped, feeAmount)
+      ? Pool.getAddress(currencyA?.wrapped, currencyB?.wrapped, feeAmount, isV4)
       : undefined;
 
   //TODO(judo): determine if pagination is necessary for this query
@@ -79,7 +81,8 @@ export function usePoolActiveLiquidity(
   activeTick: number | undefined;
   data: TickProcessed[] | undefined;
 } {
-  const pool = usePool(currencyA, currencyB, feeAmount, !!feeAmount);
+  const { isV4 } = useIsV4();
+  const pool = usePool(currencyA, currencyB, feeAmount, !!feeAmount, isV4);
 
   // Find nearest valid tick for pool in case tick is not initialized.
   const activeTick = useMemo(
@@ -91,6 +94,7 @@ export function usePoolActiveLiquidity(
     currencyA,
     currencyB,
     feeAmount,
+    isV4,
   );
 
   return useMemo(() => {
