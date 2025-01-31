@@ -10,6 +10,7 @@ import { fetchPoolsAPR } from 'utils/api';
 import { computePoolAddress } from 'v3lib/utils/computePoolAddress';
 import {
   POOL_DEPLOYER_ADDRESS,
+  POOL_V4_DEPLOYER_ADDRESS,
   UNI_V3_FACTORY_ADDRESS,
 } from 'constants/v3/addresses';
 import GammaPairABI from 'constants/abis/gamma-hypervisor.json';
@@ -23,6 +24,7 @@ import { GlobalConst, unipilotVaultTypes } from 'constants/index';
 import { TickMath } from 'v3lib/utils';
 import { SteerVault } from 'hooks/v3/useSteerData';
 import { calculatePositionWidth, percentageToMultiplier } from 'utils';
+import { useIsV4 } from 'state/application/hooks';
 
 export interface IPresetArgs {
   type: Presets;
@@ -92,6 +94,7 @@ export function PresetRanges({
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity);
   const { t } = useTranslation();
   const [aprs, setAprs] = useState<undefined | { [key: string]: number }>();
+  const { isV4 } = useIsV4();
 
   useEffect(() => {
     if (!chainId) return;
@@ -452,6 +455,8 @@ export function PresetRanges({
       poolDeployer:
         mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')
           ? UNI_V3_FACTORY_ADDRESS[chainId]
+          : isV4
+          ? POOL_V4_DEPLOYER_ADDRESS[chainId]
           : POOL_DEPLOYER_ADDRESS[chainId],
       tokenA: baseCurrency.wrapped,
       tokenB: quoteCurrency.wrapped,
