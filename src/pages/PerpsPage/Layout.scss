@@ -374,7 +374,6 @@
     background-color: transparent;
   }
   & span {
-    color: $primary;
     font-size: 12px;
   }
 }
@@ -425,11 +424,7 @@
       & button {
         height: 24px;
         &.MuiButton-outlined {
-          // background-color: transparent;
           border: 1px solid $primary;
-          & span {
-            color: $primary;
-          }
         }
         & span {
           font-size: 12px;
