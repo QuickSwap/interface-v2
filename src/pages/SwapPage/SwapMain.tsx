@@ -20,6 +20,7 @@ import { useHistory } from 'react-router-dom';
 import { useIsV2, useIsV4 } from 'state/application/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import '../styles/swap-main.scss';
+import AlgebraLogo from 'assets/images/algebra-logo.png';
 
 const SwapTwap = lazy(() => import('components/Swap/orbs/Twap/Twap'));
 
@@ -49,7 +50,7 @@ const SwapMain: React.FC = () => {
   const { chainId } = useActiveWeb3React();
 
   const { updateIsV2 } = useIsV2();
-  const { updateIsV4 } = useIsV4();
+  const { isV4, updateIsV4 } = useIsV4();
   const { redirectWithProMode } = useSwapRedirects();
 
   const { t } = useTranslation();
@@ -153,6 +154,7 @@ const SwapMain: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log('swapType', swapType);
     if (
       !swapType ||
       (Number(swapType) === SWAP_BEST_TRADE && !showBestTrade) ||
@@ -268,10 +270,27 @@ const SwapMain: React.FC = () => {
         />
       )}
       {/* Header */}
-      <Box display={'flex'} mb={2}>
+      <Box className='flex justify-between' mb={2}>
         <Box my={'auto'}>
           <Typography variant='h6'>{t('swap')}</Typography>
         </Box>
+        {(Number(swapType) === SWAP_V3 || Number(swapType) === SWAP_V4) && (
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              justifyContent: 'end',
+            }}
+          >
+            <p style={{ fontSize: '12px' }}>Powered by</p>
+            <img
+              src={AlgebraLogo}
+              alt='poweredby'
+              style={{ width: '26%', marginBottom: '2px' }}
+            />
+          </Box>
+        )}
       </Box>
       <Box
         sx={{
