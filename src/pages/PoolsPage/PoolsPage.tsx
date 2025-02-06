@@ -20,6 +20,7 @@ import { HypeLabAds } from 'components';
 import LockLiquidity from './lpLock/LockLiquidity';
 import { useParams } from 'react-router-dom';
 import { SingleTokenSupplyLiquidity } from './SingleToken/SupplyLiquidity';
+import AlgebraLogo from 'assets/images/algebra-logo.png';
 
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
@@ -77,7 +78,7 @@ const PoolsPage: React.FC = () => {
   }, [showPools]);
 
   return (
-    <Box width='100%' mb={3}>
+    <Box mb={3} p={3}>
       {isMobile ? (
         <>
           <Box mt={2} className='pageHeading'>
@@ -91,6 +92,19 @@ const PoolsPage: React.FC = () => {
                 <HelpIcon />
               </Box>
             )}
+          </Box>
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              justifyContent: 'end',
+            }}
+          >
+            <p>
+              <span>{t('poweredBy')}</span>
+            </p>
+            <img src={AlgebraLogo} alt='poweredby' style={{ width: '72px' }} />
           </Box>
           {showVersion && (
             <Box my={2}>
@@ -107,6 +121,18 @@ const PoolsPage: React.FC = () => {
                 <VersionToggle />
               </Box>
             )}
+          </Box>
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <p>
+              <span>{t('poweredBy')}</span>
+            </p>
+            <img src={AlgebraLogo} alt='poweredby' style={{ width: '72px' }} />
           </Box>
         </Box>
       )}

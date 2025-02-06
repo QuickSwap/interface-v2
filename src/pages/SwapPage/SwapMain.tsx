@@ -283,12 +283,10 @@ const SwapMain: React.FC = () => {
               justifyContent: 'end',
             }}
           >
-            <p style={{ fontSize: '12px' }}>Powered by</p>
-            <img
-              src={AlgebraLogo}
-              alt='poweredby'
-              style={{ width: '26%', marginBottom: '2px' }}
-            />
+            <p>
+              <span>{t('poweredBy')}</span>
+            </p>
+            <img src={AlgebraLogo} alt='poweredby' style={{ width: '72px' }} />
           </Box>
         )}
       </Box>
