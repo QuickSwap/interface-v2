@@ -17,4 +17,5 @@ export interface PositionPool {
   onFarming?: boolean;
   oldFarming?: boolean;
   isUni?: boolean;
+  isV4?: boolean;
 }

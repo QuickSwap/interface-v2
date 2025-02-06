@@ -17,9 +17,10 @@ import useSwapRedirects from 'hooks/useSwapRedirect';
 import React, { lazy, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { useIsV2 } from 'state/application/hooks';
+import { useIsV2, useIsV4 } from 'state/application/hooks';
 import { useUserSlippageTolerance } from 'state/user/hooks';
 import '../styles/swap-main.scss';
+import AlgebraLogo from 'assets/images/algebra-logo.png';
 
 const SwapTwap = lazy(() => import('components/Swap/orbs/Twap/Twap'));
 
@@ -35,6 +36,7 @@ const SWAP_V3 = 2;
 const SWAP_LIMIT = 3;
 const SWAP_TWAP = 4;
 const SWAP_CROSS_CHAIN = 5;
+const SWAP_V4 = 6;
 
 const SwapMain: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -48,12 +50,14 @@ const SwapMain: React.FC = () => {
   const { chainId } = useActiveWeb3React();
 
   const { updateIsV2 } = useIsV2();
+  const { isV4, updateIsV4 } = useIsV4();
   const { redirectWithProMode } = useSwapRedirects();
 
   const { t } = useTranslation();
   const config = getConfig(chainId);
   const v2 = config['v2'];
   const v3 = config['v3'];
+  const v4 = config['v4'];
   const showBestTrade = config['swap']['bestTrade'];
   const showLimitOrder = config['swap']['limitOrder'];
   const showTwapOrder = config['swap']['twapOrder'];
@@ -79,6 +83,9 @@ const SwapMain: React.FC = () => {
     if (v3) {
       tabs.push({ name: 'marketV3', key: SWAP_V3 });
     }
+    if (v4) {
+      tabs.push({ name: 'marketV4', key: SWAP_V4 });
+    }
     if (showCrossChain) {
       tabs.push({
         name: 'crossChain',
@@ -87,7 +94,7 @@ const SwapMain: React.FC = () => {
       });
     }
     return tabs;
-  }, [showBestTrade, v2, v3, showCrossChain]);
+  }, [showBestTrade, v2, v3, v4, showCrossChain]);
 
   const dropDownMenuText = useMemo(() => {
     if (!swapType) return;
@@ -147,17 +154,20 @@ const SwapMain: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log('swapType', swapType);
     if (
       !swapType ||
       (Number(swapType) === SWAP_BEST_TRADE && !showBestTrade) ||
       (Number(swapType) === SWAP_NORMAL && !v2) ||
       (Number(swapType) === SWAP_V3 && !v3) ||
+      (Number(swapType) === SWAP_V4 && !v4) ||
       (Number(swapType) === SWAP_LIMIT && !showLimitOrder) ||
       (Number(swapType) === SWAP_TWAP && !showTwapOrder)
     ) {
       const availableSwapTypes = [
         SWAP_BEST_TRADE,
         SWAP_V3,
+        SWAP_V4,
         SWAP_NORMAL,
         SWAP_LIMIT,
         SWAP_TWAP,
@@ -168,6 +178,8 @@ const SwapMain: React.FC = () => {
           ? v2
           : sType === SWAP_V3
           ? v3
+          : sType === SWAP_V4
+          ? v4
           : sType === SWAP_LIMIT
           ? showLimitOrder
           : showTwapOrder,
@@ -177,10 +189,14 @@ const SwapMain: React.FC = () => {
         const aSwapType = availableSwapTypes[0];
         if (aSwapType === SWAP_V3) {
           updateIsV2(false);
+          updateIsV4(false);
+        } else if (aSwapType === SWAP_V4) {
+          updateIsV2(false);
+          updateIsV4(true);
         } else {
           updateIsV2(true);
+          updateIsV4(false);
         }
-        console.log(availableSwapTypes);
 
         redirectWithSwapType(availableSwapTypes[0]);
       } else {
@@ -188,14 +204,19 @@ const SwapMain: React.FC = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swapType, v2, v3, showBestTrade, showLimitOrder, showTwapOrder]);
+  }, [swapType, v2, v3, v4, showBestTrade, showLimitOrder, showTwapOrder]);
 
   useEffect(() => {
     if (swapType) {
       if (Number(swapType) === SWAP_V3) {
         updateIsV2(false);
+        updateIsV4(false);
+      } else if (Number(swapType) === SWAP_V4) {
+        updateIsV2(false);
+        updateIsV4(true);
       } else {
         updateIsV2(true);
+        updateIsV4(false);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -203,7 +224,7 @@ const SwapMain: React.FC = () => {
 
   const swapTabs = useMemo(() => {
     const tabs: any[] = [];
-    if (v2 || v3 || showBestTrade) {
+    if (v2 || v3 || v4 || showBestTrade) {
       tabs.push({ id: 'market', text: 'Market' });
     }
     if (showLimitOrder) {
@@ -216,14 +237,23 @@ const SwapMain: React.FC = () => {
       tabs.push({ id: SWAP_TWAP.toString(), text: 'TWAP' });
     }
     return tabs;
-  }, [v2, v3, showBestTrade, showCrossChain, showLimitOrder, showTwapOrder]);
+  }, [
+    v2,
+    v3,
+    v4,
+    showBestTrade,
+    showCrossChain,
+    showLimitOrder,
+    showTwapOrder,
+  ]);
 
   const isActiveSwapTab = (tabId: string) => {
     if (tabId === 'market') {
       return (
         Number(swapType) === SWAP_BEST_TRADE ||
         Number(swapType) === SWAP_NORMAL ||
-        Number(swapType) === SWAP_V3
+        Number(swapType) === SWAP_V3 ||
+        Number(swapType) === SWAP_V4
       );
     } else {
       return Number(tabId) === Number(swapType);
@@ -240,10 +270,27 @@ const SwapMain: React.FC = () => {
         />
       )}
       {/* Header */}
-      <Box display={'flex'} mb={2}>
+      <Box className='flex justify-between' mb={2}>
         <Box my={'auto'}>
           <Typography variant='h6'>{t('swap')}</Typography>
         </Box>
+        {(Number(swapType) === SWAP_V3 || Number(swapType) === SWAP_V4) && (
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              justifyContent: 'end',
+            }}
+          >
+            <p style={{ fontSize: '12px' }}>Powered by</p>
+            <img
+              src={AlgebraLogo}
+              alt='poweredby'
+              style={{ width: '26%', marginBottom: '2px' }}
+            />
+          </Box>
+        )}
       </Box>
       <Box
         sx={{
@@ -395,6 +442,7 @@ const SwapMain: React.FC = () => {
         )}
         {v2 && Number(swapType) === SWAP_NORMAL && <Swap />}
         {v3 && Number(swapType) === SWAP_V3 && <SwapV3Page />}
+        {v4 && Number(swapType) === SWAP_V4 && <SwapV3Page />}
         {showCrossChain && Number(swapType) === SWAP_CROSS_CHAIN && (
           <SwapCrossChain />
         )}

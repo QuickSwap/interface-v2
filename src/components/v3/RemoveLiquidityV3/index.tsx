@@ -34,6 +34,7 @@ import usePrevious from 'hooks/usePrevious';
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler';
 import { WMATIC_EXTENDED } from 'constants/v3/addresses';
 import { NonfungiblePositionManager as AlgebraNonfungiblePositionManager } from 'v3lib/nonfungiblePositionManager';
+import { NonfungiblePositionV4Manager as AlgebraNonfungiblePositionV4Manager } from 'v3lib/nonfungiblePositionV4Manager';
 import { UniV3NonfungiblePositionManager } from 'v3lib/uniV3NonfungiblePositionManager';
 import { WrappedCurrency } from 'models/types';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
@@ -145,6 +146,8 @@ export default function RemoveLiquidityV3({
 
     const NonfungiblePositionManager = position.isUni
       ? UniV3NonfungiblePositionManager
+      : position.isV4
+      ? AlgebraNonfungiblePositionV4Manager
       : AlgebraNonfungiblePositionManager;
     const { calldata, value } = NonfungiblePositionManager.removeCallParameters(
       positionSDK,
@@ -234,6 +237,7 @@ export default function RemoveLiquidityV3({
     liquidityPercentage,
     library,
     position.isUni,
+    position.isV4,
     tokenId,
     allowedSlippagePercent,
     t,

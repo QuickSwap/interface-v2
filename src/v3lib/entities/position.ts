@@ -331,6 +331,7 @@ export class Position {
       TickMath.getTickAtSqrtRatio(sqrtRatioX96Lower),
       undefined,
       this.pool.isUni,
+      this.pool.isV4,
     );
     const poolUpper = new Pool(
       this.pool.token0,
@@ -341,6 +342,7 @@ export class Position {
       TickMath.getTickAtSqrtRatio(sqrtRatioX96Upper),
       undefined,
       this.pool.isUni,
+      this.pool.isV4,
     );
 
     // because the router is imprecise, we need to calculate the position that will be created (assuming no slippage)
@@ -395,6 +397,7 @@ export class Position {
       TickMath.getTickAtSqrtRatio(sqrtRatioX96Lower),
       undefined,
       this.pool.isUni,
+      this.pool.isV4,
     );
     const poolUpper = new Pool(
       this.pool.token0,
@@ -405,6 +408,7 @@ export class Position {
       TickMath.getTickAtSqrtRatio(sqrtRatioX96Upper),
       undefined,
       this.pool.isUni,
+      this.pool.isV4,
     );
 
     // we want the smaller amounts...

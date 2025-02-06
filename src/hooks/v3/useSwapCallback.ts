@@ -9,7 +9,11 @@ import { Version } from './useToggledVersion';
 // import abi from '../abis/swap-router.json'
 import { calculateGasMargin, isAddress, isZero, shortenAddress } from 'utils';
 import useENS from 'hooks/useENS';
-import { SWAP_ROUTER_ADDRESSES, UNI_SWAP_ROUTER } from 'constants/v3/addresses';
+import {
+  SWAP_ROUTER_ADDRESSES,
+  SWAP_ROUTER_V4_ADDRESSES,
+  UNI_SWAP_ROUTER,
+} from 'constants/v3/addresses';
 import { useActiveWeb3React } from 'hooks';
 import { SwapRouter } from 'lib/src/swapRouter';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -69,10 +73,12 @@ function useSwapCallArguments(
       return [];
 
     const isUni = trade.swaps[0]?.route?.pools[0]?.isUni;
-    const isAlgebraIntegral = chainId === ChainId.SONEIUM;
+    const isV4 = trade.swaps[0]?.route?.pools[0]?.isV4;
     const swapRouterAddress = chainId
       ? isUni
         ? UNI_SWAP_ROUTER[chainId]
+        : isV4
+        ? SWAP_ROUTER_V4_ADDRESSES[chainId]
         : SWAP_ROUTER_ADDRESSES[chainId]
       : undefined;
 
@@ -84,7 +90,7 @@ function useSwapCallArguments(
     swapMethods.push(
       SwapRouter.swapCallParameters(trade, {
         isUni,
-        isAlgebraIntegral,
+        isV4,
         feeOnTransfer: false,
         recipient,
         slippageTolerance: allowedSlippage,
@@ -115,7 +121,7 @@ function useSwapCallArguments(
     if (trade.tradeType === TradeType.EXACT_INPUT) {
       swapMethods.push(
         SwapRouter.swapCallParameters(trade, {
-          isAlgebraIntegral,
+          isV4,
           feeOnTransfer: true,
           recipient,
           slippageTolerance: allowedSlippage,

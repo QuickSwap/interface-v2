@@ -37,6 +37,7 @@ export default function useUSDCPrice(
   const stablecoin = amountOut?.currency;
 
   const v3USDCTrade = useBestV3TradeExactOut(currency, amountOut);
+  const v4USDCTrade = useBestV3TradeExactOut(currency, amountOut, true);
 
   return useMemo(() => {
     if (!currency || !stablecoin) {
@@ -53,8 +54,13 @@ export default function useUSDCPrice(
       return new Price(currency, stablecoin, denominator, numerator);
     }
 
+    if (v4USDCTrade.trade) {
+      const { numerator, denominator } = v4USDCTrade.trade.route.midPrice;
+      return new Price(currency, stablecoin, denominator, numerator);
+    }
+
     return undefined;
-  }, [currency, stablecoin, v3USDCTrade.trade]);
+  }, [currency, stablecoin, v3USDCTrade.trade, v4USDCTrade.trade]);
 }
 
 export function useUSDCValue(

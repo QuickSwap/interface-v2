@@ -19,6 +19,7 @@ export function useDerivedPositionInfo(
     currency1 ?? undefined,
     positionDetails?.fee,
     positionDetails?.isUni,
+    positionDetails?.isV4,
   );
 
   let _position: Position | undefined = undefined;

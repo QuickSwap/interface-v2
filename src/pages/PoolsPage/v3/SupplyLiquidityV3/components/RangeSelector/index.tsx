@@ -21,6 +21,7 @@ import { USDC } from 'constants/v3/addresses';
 import { ChainId } from '@uniswap/sdk';
 import { useActiveWeb3React } from 'hooks';
 import { useTranslation } from 'react-i18next';
+import { useIsV4 } from 'state/application/hooks';
 
 interface IRangeSelector {
   priceLower: Price<Token, Token> | undefined;
@@ -165,6 +166,7 @@ function RangePart({
   const [localUSDValue, setLocalUSDValue] = useState('');
   const [localTokenValue, setLocalTokenValue] = useState('');
   const { chainId } = useActiveWeb3React();
+  const { isV4 } = useIsV4();
 
   const dispatch = useAppDispatch();
 
@@ -185,6 +187,7 @@ function RangePart({
   const tokenValue = useBestV3TradeExactIn(
     tryParseAmount('1', USDC_TOKEN),
     tokenB,
+    isV4,
   );
   const usdPriceA = useUSDCPrice(tokenA ?? undefined);
   const usdPriceB = useUSDCPrice(tokenB ?? undefined);

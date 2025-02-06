@@ -15,6 +15,7 @@ export function useV3SwapPools(
   currencyIn?: Currency,
   currencyOut?: Currency,
   isUni?: boolean,
+  isV4?: boolean,
 ): {
   pools: Pool[];
   loading: boolean;
@@ -64,6 +65,7 @@ export function useV3SwapPools(
       ? allCurrencyCombinationsWithAllFees
       : allCurrencyCombinationsWithoutFees,
     isUni,
+    isV4,
   );
 
   return useMemo(() => {

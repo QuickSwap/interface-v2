@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useAllV3Routes } from './useAllV3Routes';
 import { useSingleContractMultipleData } from 'state/multicall/v3/hooks';
 import { useActiveWeb3React } from 'hooks';
-import { useUniV3Quoter, useV3Quoter } from 'hooks/useContract';
+import { useUniV3Quoter, useV3Quoter, useV4Quoter } from 'hooks/useContract';
 import { Route } from 'v3lib/entities/route';
 import { Trade } from 'lib/src/trade';
 import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
@@ -35,32 +35,35 @@ const DEFAULT_GAS_QUOTE = 2_000_000;
 export function useBestV3TradeExactIn(
   amountIn?: CurrencyAmount<Currency>,
   currencyOut?: Currency,
+  isV4?: boolean,
 ): {
   state: V3TradeState;
   trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null;
 } {
   const { chainId } = useActiveWeb3React();
-  const quoter = useV3Quoter();
+  const quoterV3 = useV3Quoter();
+  const quoterV4 = useV4Quoter();
   const uniQuoter = useUniV3Quoter();
 
+  const quoter = isV4 ? quoterV4 : quoterV3;
   const {
     routes: algebraRoutes,
     loading: algebraRoutesLoading,
-  } = useAllV3Routes(amountIn?.currency, currencyOut);
+  } = useAllV3Routes(amountIn?.currency, currencyOut, false, isV4);
 
   const { routes: uniRoutes, loading: uniRoutesLoading } = useAllV3Routes(
     amountIn?.currency,
     currencyOut,
     true,
   );
-  const routes = algebraRoutes.concat(uniRoutes);
+  const routes = isV4 ? algebraRoutes : algebraRoutes.concat(uniRoutes);
 
   const algebraQuoteExactInInputs = useMemo(() => {
     return algebraRoutes.map((route) => [
-      encodeRouteToPath(route, false, false, chainId === ChainId.SONEIUM),
+      encodeRouteToPath(route, false, false, isV4),
       amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
     ]);
-  }, [amountIn, algebraRoutes, chainId]);
+  }, [amountIn, algebraRoutes, isV4]);
 
   const uniQuoteExactInInputs = useMemo(() => {
     return uniRoutes.map((route) => [
@@ -93,7 +96,9 @@ export function useBestV3TradeExactIn(
     },
   );
 
-  const quotesResults = algebraQuotesResults.concat(uniQuotesResults);
+  const quotesResults = isV4
+    ? algebraQuotesResults
+    : algebraQuotesResults.concat(uniQuotesResults);
 
   const trade = useMemo(() => {
     if (!amountIn || !currencyOut) {
@@ -177,18 +182,21 @@ export function useBestV3TradeExactIn(
 export function useBestV3TradeExactOut(
   currencyIn?: Currency,
   amountOut?: CurrencyAmount<Currency>,
+  isV4?: boolean,
 ): {
   state: V3TradeState;
   trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null;
 } {
   const { chainId } = useActiveWeb3React();
-  const quoter = useV3Quoter();
+  const quoterV3 = useV3Quoter();
+  const quoterV4 = useV4Quoter();
+  const quoter = isV4 ? quoterV4 : quoterV3;
   const univ3Quoter = useUniV3Quoter();
 
   const {
     routes: algebraRoutes,
     loading: algebraRoutesLoading,
-  } = useAllV3Routes(currencyIn, amountOut?.currency);
+  } = useAllV3Routes(currencyIn, amountOut?.currency, false, isV4);
 
   const { routes: uniRoutes, loading: uniRoutesLoading } = useAllV3Routes(
     currencyIn,
@@ -197,14 +205,14 @@ export function useBestV3TradeExactOut(
   );
 
   const routesLoading = algebraRoutesLoading || uniRoutesLoading;
-  const routes = algebraRoutes.concat(uniRoutes);
+  const routes = isV4 ? algebraRoutes : algebraRoutes.concat(uniRoutes);
 
   const algebraQuoteExactOutInputs = useMemo(() => {
     return algebraRoutes.map((route) => [
-      encodeRouteToPath(route, true, false, chainId === ChainId.SONEIUM),
+      encodeRouteToPath(route, true, false, isV4),
       amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
     ]);
-  }, [amountOut, algebraRoutes, chainId]);
+  }, [amountOut, algebraRoutes, isV4]);
 
   const uniQuoteExactOutInputs = useMemo(() => {
     return uniRoutes.map((route) => [
@@ -235,7 +243,9 @@ export function useBestV3TradeExactOut(
     },
   );
 
-  const quotesResults = algebraQuotesResults.concat(uniQuotesResults);
+  const quotesResults = isV4
+    ? algebraQuotesResults
+    : algebraQuotesResults.concat(uniQuotesResults);
 
   const trade = useMemo(() => {
     if (

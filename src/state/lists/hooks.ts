@@ -14,6 +14,7 @@ const {
   COINGECKO_IMMUTABLE_TOKEN_LIST_URL,
   COINGECKO_DOGE_TOKEN_LIST_URL,
   COINGECKO_KAVA_TOKEN_LIST_URL,
+  COINGECKO_SONEIUM_TOKEN_LIST_URL,
 } = GlobalConst.utils;
 
 type TagDetails = Tags[keyof Tags];
@@ -166,6 +167,9 @@ export function useInactiveTokenList(chainId: number): TokenAddressMap {
       break;
     case ChainId.KAVA:
       inactiveUrl = COINGECKO_KAVA_TOKEN_LIST_URL;
+      break;
+    case ChainId.SONEIUM:
+      inactiveUrl = COINGECKO_SONEIUM_TOKEN_LIST_URL;
       break;
     default:
       break;

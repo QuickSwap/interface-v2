@@ -8,7 +8,7 @@ import {
   useUNIV3NFTPositionManagerContract,
   useUniPilotVaultContract,
   useV3NFTPositionManagerContract,
-  useV3NFTPositionManagerV2Contract,
+  useV4NFTPositionManagerContract,
   useWETHContract,
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
@@ -19,7 +19,7 @@ import {
   useAmlScore,
 } from 'state/user/hooks';
 import { NonfungiblePositionManager as NonFunPosMan } from 'v3lib/nonfungiblePositionManager';
-import { NonfungiblePositionV2Manager as NonFunPosV2Man } from 'v3lib/nonfungiblePositionV2Manager';
+import { NonfungiblePositionV4Manager as NonFunPosV4Man } from 'v3lib/nonfungiblePositionV4Manager';
 import { UniV3NonfungiblePositionManager as UniV3NonFunPosMan } from 'v3lib/uniV3NonfungiblePositionManager';
 import { Percent, Currency } from '@uniswap/sdk-core';
 import { useAppDispatch } from 'state/hooks';
@@ -41,6 +41,7 @@ import { ChainId, ETHER, JSBI, Token, WETH } from '@uniswap/sdk';
 import { CurrencyAmount } from '@uniswap/sdk-core';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
 import {
@@ -69,6 +70,7 @@ import { Presets } from 'state/mint/v3/reducer';
 import { TransactionType } from 'models/enums';
 import { wrappedCurrency } from 'utils/wrappedCurrency';
 import { ETHER as ETHER_CURRENCY } from 'constants/v3/addresses';
+import { useIsV4 } from 'state/application/hooks';
 
 interface IAddLiquidityButton {
   baseCurrency: Currency | undefined;
@@ -90,6 +92,7 @@ export function AddLiquidityButton({
   const history = useHistory();
   const { t } = useTranslation();
   const { chainId, library, account } = useActiveWeb3React();
+  const { isV4 } = useIsV4();
   const [showConfirm, setShowConfirm] = useState(false);
   const [attemptingTxn, setAttemptingTxn] = useState(false);
   const [txPending, setTxPending] = useState(false);
@@ -99,21 +102,26 @@ export function AddLiquidityButton({
   const [manuallyInverted, setManuallyInverted] = useState(false);
   const preset = useActivePreset();
 
-  const algebraPositionManager = useV3NFTPositionManagerContract();
-  const algebraPositionV2Manager = useV3NFTPositionManagerV2Contract(); //algebra-integral
+  const _algebraPositionManager = useV3NFTPositionManagerContract();
+  const _algebraPositionV4Manager = useV4NFTPositionManagerContract(); //algebra-integral
+  const algebraPositionManager = isV4
+    ? _algebraPositionV4Manager
+    : _algebraPositionManager;
+
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
   const positionManager =
     mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')
       ? uniV3PositionManager
-      : chainId !== ChainId.SONEIUM
-      ? algebraPositionManager
-      : algebraPositionV2Manager;
+      : algebraPositionManager;
   const positionManagerAddress = useMemo(() => {
     if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
     }
-    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
-  }, [chainId, mintInfo.feeTier]);
+    return isV4
+      ? NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES[chainId]
+      : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+  }, [chainId, mintInfo.feeTier, isV4]);
+
   const wethContract = useWETHContract();
 
   const deadline = useTransactionDeadline();
@@ -745,22 +753,21 @@ export function AddLiquidityButton({
             createPool: mintInfo.noLiquidity,
           });
         } else {
-          callParams =
-            chainId !== ChainId.SONEIUM
-              ? NonFunPosMan.addCallParameters(mintInfo.position, {
-                  slippageTolerance: allowedSlippagePercent,
-                  recipient: account,
-                  deadline: deadline.toString(),
-                  useNative,
-                  createPool: mintInfo.noLiquidity,
-                })
-              : NonFunPosV2Man.addCallParameters(mintInfo.position, {
-                  slippageTolerance: allowedSlippagePercent,
-                  recipient: account,
-                  deadline: deadline.toString(),
-                  useNative,
-                  createPool: mintInfo.noLiquidity,
-                });
+          callParams = isV4
+            ? NonFunPosV4Man.addCallParameters(mintInfo.position, {
+                slippageTolerance: allowedSlippagePercent,
+                recipient: account,
+                deadline: deadline.toString(),
+                useNative,
+                createPool: mintInfo.noLiquidity,
+              })
+            : NonFunPosMan.addCallParameters(mintInfo.position, {
+                slippageTolerance: allowedSlippagePercent,
+                recipient: account,
+                deadline: deadline.toString(),
+                useNative,
+                createPool: mintInfo.noLiquidity,
+              });
         }
         const { calldata, value } = callParams;
 

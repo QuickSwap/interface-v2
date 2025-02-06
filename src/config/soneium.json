@@ -1,5 +1,6 @@
 {
-  "v3": true,
+  "v4": true,
+  "v3": false,
   "v2": false,
   "rpc": "https://rpc.soneium.org/",
   "blockExplorer": "https://soneium.blockscout.com/",
@@ -15,6 +16,7 @@
   },
   "bridgeUrl": "https://superbridge.app/soneium",
   "bridge": {
+    "available": true,
     "bridgeCoverImg": "/bridge/soneium_cover_img.webp",
     "thirdParty": true,
     "supportedChains": ["/bridge/eth.svg", "/bridge/soneium.webp"],

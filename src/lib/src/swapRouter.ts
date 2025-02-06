@@ -12,7 +12,7 @@ import { Trade } from './trade';
 import { PermitOptions, SelfPermit } from './selfPermit';
 import { MethodParameters, toHex } from './utils/calldata';
 import abi from 'constants/abis/v3/swap-router.json';
-import abiV2 from 'constants/abis/v3/swap-v2-router.json';
+import abiV4 from 'constants/abis/v4/swap-router.json';
 import uniV3ABI from 'constants/abis/uni-v3/swap-router.json';
 import { ADDRESS_ZERO } from 'v3lib/utils/v3constants';
 import { encodeRouteToPath } from 'v3lib/utils/encodeRouteToPath';
@@ -70,7 +70,7 @@ export interface SwapOptions {
 
   isUni?: boolean;
 
-  isAlgebraIntegral?: boolean;
+  isV4?: boolean;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface SwapOptions {
  */
 export abstract class SwapRouter extends SelfPermit {
   public static INTERFACE: Interface = new Interface(abi);
-  public static INTERFACEV2: Interface = new Interface(abiV2); // algebra-router
+  public static INTERFACEV4: Interface = new Interface(abiV4); // algebra-router
   public static UNIV3INTERFACE: Interface = new Interface(uniV3ABI);
 
   /**
@@ -185,7 +185,7 @@ export abstract class SwapRouter extends SelfPermit {
 
         if (singleHop) {
           if (trade.tradeType === TradeType.EXACT_INPUT) {
-            const exactInputSingleParams = options.isAlgebraIntegral
+            const exactInputSingleParams = options.isV4
               ? {
                   tokenIn: route.tokenPath[0].address,
                   tokenOut: route.tokenPath[1].address,
@@ -212,8 +212,8 @@ export abstract class SwapRouter extends SelfPermit {
                     'exactInputSingle',
                     [exactInputSingleParams],
                   )
-                : options.isAlgebraIntegral
-                ? SwapRouter.INTERFACEV2.encodeFunctionData(
+                : options.isV4
+                ? SwapRouter.INTERFACEV4.encodeFunctionData(
                     options.feeOnTransfer && !inputIsNative
                       ? 'exactInputSingleSupportingFeeOnTransferTokens'
                       : 'exactInputSingle',
@@ -227,7 +227,7 @@ export abstract class SwapRouter extends SelfPermit {
                   ),
             );
           } else {
-            const exactOutputSingleParams = options.isAlgebraIntegral
+            const exactOutputSingleParams = options.isV4
               ? {
                   tokenIn: route.tokenPath[0].address,
                   tokenOut: route.tokenPath[1].address,
@@ -255,8 +255,8 @@ export abstract class SwapRouter extends SelfPermit {
                     'exactOutputSingle',
                     [exactOutputSingleParams],
                   )
-                : options.isAlgebraIntegral
-                ? SwapRouter.INTERFACEV2.encodeFunctionData(
+                : options.isV4
+                ? SwapRouter.INTERFACEV4.encodeFunctionData(
                     'exactOutputSingle',
                     [exactOutputSingleParams],
                   )

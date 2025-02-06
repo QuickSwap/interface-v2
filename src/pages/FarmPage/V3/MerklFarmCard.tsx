@@ -51,6 +51,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
       return {
         ...item,
         dailyAmount,
+        symbolRewardToken: farm.symbolRewardToken,
       };
     })
     .reduce((memo: any[], item: any) => {

@@ -10,6 +10,7 @@ import { Trade as V3Trade } from 'lib/src/trade';
 import { useCallback, useMemo, useState } from 'react';
 import {
   SWAP_ROUTER_ADDRESSES,
+  SWAP_ROUTER_V4_ADDRESSES,
   UNI_SWAP_ROUTER,
   ZAP_ADDRESS,
 } from '../constants/v3/addresses';
@@ -167,9 +168,13 @@ export function useApproveCallbackFromTrade(
 ) {
   const { chainId } = useActiveWeb3React();
   const isUni = trade?.swaps[0]?.route?.pools[0]?.isUni;
+  const isV4 = trade?.swaps[0]?.route?.pools[0]?.isV4;
+
   const v3SwapRouterAddress = chainId
     ? isUni
       ? UNI_SWAP_ROUTER[chainId]
+      : isV4
+      ? SWAP_ROUTER_V4_ADDRESSES[chainId]
       : SWAP_ROUTER_ADDRESSES[chainId]
     : undefined;
   const amountToApprove = useMemo(

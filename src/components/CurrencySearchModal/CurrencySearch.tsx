@@ -291,10 +291,7 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
       <CommonBases
         chainId={chainIdToUse}
         onSelect={handleCurrencySelect}
-        currencies={favoriteCurrencies.map(
-          (item: WrappedTokenInfo) =>
-            new WrappedTokenInfo(item.tokenInfo, item?.tags || []),
-        )}
+        currencies={favoriteCurrencies}
         selectedCurrency={selectedCurrency}
         onRemoveFavorite={(c) => handleChangeFavorite(c, false)}
       />

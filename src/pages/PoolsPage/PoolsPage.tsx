@@ -11,7 +11,7 @@ import SupplyLiquidity from './SupplyLiquidity';
 import { useTranslation } from 'react-i18next';
 import 'pages/styles/pools.scss';
 import VersionToggle from 'components/Toggle/VersionToggle';
-import { useIsLpLock, useIsV2 } from 'state/application/hooks';
+import { useIsLpLock, useIsV2, useIsV4 } from 'state/application/hooks';
 import { SupplyLiquidityV3 } from './v3/SupplyLiquidityV3';
 import { getConfig } from '../../config/index';
 import { useActiveWeb3React } from 'hooks';
@@ -23,11 +23,13 @@ import { SingleTokenSupplyLiquidity } from './SingleToken/SupplyLiquidity';
 
 const YourLiquidityPools = lazy(() => import('./YourLiquidityPools'));
 const MyLiquidityPoolsV3 = lazy(() => import('./v3/MyLiquidityPoolsV3'));
+const MyLiquidityPoolsV4 = lazy(() => import('./v3/MyLiquidityPoolsV4'));
 const MyLiquidityLocks = lazy(() => import('./lpLock/MyLiquidityLocks'));
 
 const PoolsPage: React.FC = () => {
   const { t } = useTranslation();
   const { isV2, updateIsV2 } = useIsV2();
+  const { isV4, updateIsV4 } = useIsV4();
   const { isLpLock } = useIsLpLock();
   const { chainId } = useActiveWeb3React();
   const { breakpoints } = useTheme();
@@ -37,8 +39,14 @@ const PoolsPage: React.FC = () => {
   const config = getConfig(chainIdToUse);
   const v3 = config['v3'];
   const v2 = config['v2'];
+  const v4 = config['v4'];
   const ichiEnabled = config['ichi']['available'];
-  const showVersion = (v2 && v3) || (v2 && ichiEnabled) || (v3 && ichiEnabled);
+  const showVersion =
+    (v2 && v3) ||
+    (v2 && v4) ||
+    (v3 && v4) ||
+    (v2 && ichiEnabled) ||
+    (v3 && ichiEnabled);
   const params: any = useParams();
   const version = params?.version ?? 'v3';
 
@@ -49,6 +57,12 @@ const PoolsPage: React.FC = () => {
       updateIsV2(false);
     }
   }, [updateIsV2, v2]);
+
+  useEffect(() => {
+    if (!v3 && !v2 && v4) {
+      updateIsV4(true);
+    }
+  }, [updateIsV4, v2, v3, v4]);
 
   const showPools = config['pools']['available'];
 
@@ -128,7 +142,11 @@ const PoolsPage: React.FC = () => {
             {isLpLock ? (
               <MyLiquidityLocks />
             ) : !isV2 ? (
-              <MyLiquidityPoolsV3 />
+              isV4 ? (
+                <MyLiquidityPoolsV4 />
+              ) : (
+                <MyLiquidityPoolsV3 />
+              )
             ) : (
               <YourLiquidityPools />
             )}

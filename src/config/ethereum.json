@@ -1,4 +1,5 @@
 {
+  "v4": false,
   "v3": false,
   "v2": false,
   "rpc": "https://mainnet.infura.io/v3/",
@@ -12,6 +13,9 @@
     "name": "Ethereum",
     "symbol": "ETH",
     "decimals": 18
+  },
+  "bridge": {
+    "available": true
   },
   "swap": {
     "available": true,

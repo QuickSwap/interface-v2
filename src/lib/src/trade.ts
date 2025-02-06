@@ -148,6 +148,7 @@ export class Trade<
             pool.token0,
             pool.token1,
             pool.isUni ? pool.fee : undefined,
+            pool.isV4,
           ),
         );
       }

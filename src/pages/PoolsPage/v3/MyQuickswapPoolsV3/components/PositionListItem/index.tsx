@@ -124,6 +124,7 @@ export default function PositionListItem({
     onFarming: _onFarming,
     fee: _fee,
     isUni: _isUni,
+    isV4: _isV4,
   } = useMemo(() => {
     if (
       !positionDetails &&
@@ -147,6 +148,7 @@ export default function PositionListItem({
     currency1 ?? undefined,
     _fee,
     _isUni,
+    _isV4,
   );
 
   const [prevPoolState, prevPool] = usePrevious([poolState, pool]) || [];

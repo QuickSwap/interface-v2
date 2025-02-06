@@ -87,6 +87,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
   const showPool = config['pools']['available'];
   const showFarm = config['farm']['available'];
   const showLair = config['lair']['available'];
+  const showBridge = config['bridge']['available'];
   const showConvert = config['convert']['available'];
   const showAnalytics = config['analytics']['available'];
   const showLending = config['lending']['available'];
@@ -260,7 +261,7 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     });
   }
 
-  if (isSupportedNetwork)
+  if (showBridge && isSupportedNetwork)
     menuItems.push({
       link: '/bridge',
       text: t('Bridge'),

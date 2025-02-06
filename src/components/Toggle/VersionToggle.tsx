@@ -4,19 +4,21 @@ import { Box } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams } from 'react-router-dom';
 import './index.scss';
-import { useIsLpLock, useIsV2 } from 'state/application/hooks';
+import { useIsLpLock, useIsV2, useIsV4 } from 'state/application/hooks';
 import { NEW_QUICK_ADDRESS } from 'constants/v3/addresses';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { getConfig } from 'config/index';
 
 const VersionToggle: React.FC = () => {
   const { t } = useTranslation();
-  const { isV2, updateIsV2 } = useIsV2();
+  const { updateIsV2 } = useIsV2();
+  const { updateIsV4 } = useIsV4();
   const { isLpLock, updateIsLpLock } = useIsLpLock();
   const { chainId } = useActiveWeb3React();
   const config = getConfig(chainId);
   const v2Available = config['v2'];
   const v3Available = config['v3'];
+  const v4Available = config['v4'];
   const lHAnalyticsAvailable = config['analytics']['liquidityHub'];
   const singleTokenEnabled = config['ichi']['available'];
   const lpLockEnabled = config['lpLock']['available'];
@@ -35,6 +37,7 @@ const VersionToggle: React.FC = () => {
   useEffect(() => {
     updateIsV2(version === 'v2');
     updateIsLpLock(version === 'lpLocker');
+    updateIsV4(version === 'v4');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
@@ -90,6 +93,18 @@ const VersionToggle: React.FC = () => {
         </Box>
       )}
 
+      {v4Available && (
+        <Box
+          className={version === 'v4' ? 'version-toggle-active' : ''}
+          onClick={() => {
+            redirectWithVersion('v4');
+          }}
+        >
+          <small style={{ lineHeight: 5.85, fontSize: '13px' }}>
+            {t('V4')}
+          </small>
+        </Box>
+      )}
       {/* {isPoolPage && singleTokenEnabled && (
         <Box
           className={version === 'singleToken' ? 'version-toggle-active' : ''}
