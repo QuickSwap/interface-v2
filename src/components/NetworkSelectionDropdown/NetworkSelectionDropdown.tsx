@@ -9,6 +9,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useIsSupportedNetwork } from 'utils';
 import KavaImage from 'assets/images/KAVA.png';
 import FlareImage from 'assets/images/flare.webp';
+import ChainNewImage from 'assets/images/chainNew.png';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import ActiveDotImage from 'assets/images/chainActiveDot.png';
@@ -98,6 +99,15 @@ const NetworkSelectionDropdown: React.FC<{
                   className='networkIcon'
                 />
                 <small className='weight-600'>{config['networkName']}</small>
+                {config['isNew'] && (
+                  <img
+                    src={ChainNewImage}
+                    alt='chain new'
+                    width={48}
+                    height={16}
+                    style={{ marginLeft: 8 }}
+                  />
+                )}
               </Box>
               {isSupportedNetwork && chainId && chainId === chain && (
                 <img

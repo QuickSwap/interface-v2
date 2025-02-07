@@ -7,6 +7,7 @@
   "chainId": 1868,
   "isMainnet": true,
   "visible": true,
+  "isNew": true,
   "networkName": "Soneium",
   "nativeCurrencyImage": "/soneium.jpg",
   "nativeCurrency": {

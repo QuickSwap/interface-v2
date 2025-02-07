@@ -381,12 +381,12 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOGECHAIN,
   ChainId.ASTARZKEVM,
   ChainId.ZKATANA,
-  ChainId.TIMX,
-  ChainId.ZKTESTNET,
+  ChainId.MINATO,
   ChainId.MUMBAI,
   ChainId.X1,
+  ChainId.ZKTESTNET,
   ChainId.DOEGCHAIN_TESTNET,
-  ChainId.MINATO,
+  ChainId.TIMX,
 ];
 
 export interface GammaPair {
