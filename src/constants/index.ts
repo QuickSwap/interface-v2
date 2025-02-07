@@ -372,12 +372,13 @@ export const DEFAULT_LIST_OF_LISTS: string[] = [
 
 export const SUPPORTED_CHAINIDS = [
   ChainId.MATIC,
-  ChainId.ZKEVM,
   ChainId.MANTA,
-  ChainId.LAYERX,
-  ChainId.DOGECHAIN,
-  ChainId.ETHEREUM,
+  ChainId.SONEIUM,
   ChainId.IMX,
+  ChainId.ZKEVM,
+  ChainId.LAYERX,
+  ChainId.ETHEREUM,
+  ChainId.DOGECHAIN,
   ChainId.ASTARZKEVM,
   ChainId.ZKATANA,
   ChainId.TIMX,
@@ -386,7 +387,6 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.X1,
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.MINATO,
-  ChainId.SONEIUM,
 ];
 
 export interface GammaPair {
