@@ -18,6 +18,7 @@ import CurrencyLogo from 'components/CurrencyLogo';
 import {
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 import useTransactionDeadline from 'hooks/useTransactionDeadline';
 import { TransactionResponse } from '@ethersproject/providers';
@@ -120,11 +121,13 @@ export default function RemoveLiquidityV3({
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
   const algebrapositionManager = useV3NFTPositionManagerContract();
+  const algebrapositionV4Manager = useV4NFTPositionManagerContract();
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
   const positionManager = position.isUni
     ? uniPositionManager
+    : position.isV4
+    ? algebrapositionV4Manager
     : algebrapositionManager;
-
   const burn = useCallback(async () => {
     if (
       !positionManager ||
