@@ -13,6 +13,7 @@ import { useActiveWeb3React } from 'hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import {
   NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
+  NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES,
   UNI_NFT_POSITION_MANAGER_ADDRESS,
 } from 'constants/v3/addresses';
 import { halfAmountSpend, maxAmountSpend } from 'utils/v3/maxAmountSpend';
@@ -26,6 +27,7 @@ import { GlobalConst } from 'constants/index';
 import { useTranslation } from 'react-i18next';
 import { getGammaPairsForTokens } from 'utils';
 import { useSteerPeripheryContract } from 'hooks/useContract';
+import { useIsV4 } from 'state/application/hooks';
 
 interface IEnterAmounts {
   currencyA: Currency | undefined;
@@ -42,6 +44,7 @@ export function EnterAmounts({
 }: IEnterAmounts) {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const { isV4 } = useIsV4();
   const preset = useActivePreset();
 
   const { independentField, typedValue } = useV3MintState();
@@ -133,8 +136,10 @@ export function EnterAmounts({
     if (mintInfo.feeTier && mintInfo.feeTier.id.includes('uni')) {
       return UNI_NFT_POSITION_MANAGER_ADDRESS[chainId];
     }
-    return NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
-  }, [chainId, mintInfo.feeTier]);
+    return isV4
+      ? NONFUNGIBLE_POSITION_V4_MANAGER_ADDRESSES[chainId]
+      : NONFUNGIBLE_POSITION_MANAGER_ADDRESSES[chainId];
+  }, [chainId, mintInfo.feeTier, isV4]);
 
   const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
