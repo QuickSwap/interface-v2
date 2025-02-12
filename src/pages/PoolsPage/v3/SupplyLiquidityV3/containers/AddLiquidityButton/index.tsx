@@ -286,6 +286,7 @@ export function AddLiquidityButton({
     amountToWrap,
     wrappingETH,
   ]);
+  console.log('------isReady:', isReady)
 
   const onAddLiquidity = () => {
     if (expertMode) {
