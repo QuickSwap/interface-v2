@@ -1,8 +1,5 @@
 'use client';
 import React from 'react';
-// import Image from 'next/image';
-// import Button from 'components/common/Button';
-// import { useRouter } from 'next/navigation';
 import { Button, Box, Typography } from '@material-ui/core';
 import TrustswapLogo from 'assets/images/launchpad/trustswap_logo_white.png';
 
@@ -15,7 +12,7 @@ const HeroSection: React.FC<{
     setOpenModal(!openModal);
   };
   return (
-    <Box className='heroSection'>
+    <Box className='section launchHeroSection'>
       <Box
         style={{
           background: '#448aff29',
