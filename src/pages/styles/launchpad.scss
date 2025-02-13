@@ -41,12 +41,10 @@
   .cover_title {
     max-width: 40%;
     margin-bottom: 20px;
-
     @media screen and (max-width: '900px') {
       width: 100%;
       max-width: 100%;
       margin-bottom: 24px;
-      padding: 0 20px;
     }
   }
 
@@ -57,7 +55,6 @@
     @media screen and (max-width: '900px') {
       width: 100%;
       max-width: 100%;
-      padding: 0 40px;
       margin-bottom: 40px;
     }
   }
@@ -70,7 +67,6 @@
     @media screen and (max-width: '900px') {
       width: 100%;
       font-size: 32px;
-      text-align: center;
     }
   }
 
@@ -80,17 +76,11 @@
     font-stretch: normal;
     font-style: normal;
     line-height: 1.67;
-
-    @media screen and (max-width: '900px') {
-      width: 100%;
-      font-size: 14px;
-      text-align: center;
-    }
   }
 
   .title2 {
     color: #EBECF2;
-    font-size: 24px;
+    font-size: 2rem;
     font-weight: 600;
   }
 }
@@ -105,11 +95,23 @@
 }
 
 .stepsToJoin {
+  padding-top: 0;
   .step_list {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.25rem;
     margin-bottom: 1.5rem;
+
+    @media (max-width: 1280px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    }
+
+    @media (max-width: 767px) {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+
+    }
+
   }
 
   .step_item {
@@ -126,6 +128,7 @@
       color: white;
       margin-top: 1rem;
       margin-bottom: 0.5rem;
+      text-align: start;
     }
 
     .desc {

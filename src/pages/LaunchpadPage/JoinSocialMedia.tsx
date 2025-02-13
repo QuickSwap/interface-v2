@@ -7,7 +7,7 @@ import SocialMediaBg from 'assets/images/launchpad/social_media_bg.png';
 
 const JoinSocialMedia: React.FC = () => {
   return (
-    <Box className='section socialMediaSection'>
+    <Box className='socialMediaSection'>
       <Box className='cover_title'>
         <Typography className='title2'>Follow on Social Media</Typography>
         <Typography className='desc'>
