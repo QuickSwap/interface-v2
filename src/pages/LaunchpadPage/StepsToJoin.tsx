@@ -124,7 +124,51 @@ const StepsToJoin: React.FC<{
           return (
             <Box key={index}>
               <Box className='step_item'>
-                <Box className='step_item_icon'>{step.icon}</Box>
+                <Box className='step_item_icon_cover'>
+                  <Box className='step_item_icon'>{step.icon}</Box>
+                  <Box>
+                    <svg
+                      width='79'
+                      height='14'
+                      viewBox='0 0 79 14'
+                      fill='none'
+                      strokeWidth='1.5'
+                      stroke='currentColor'
+                      className='arrow_desktop'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <g>
+                        <path
+                          d='M1 7H78M78 7L72 1M78 7L72 13'
+                          stroke='#4d5d7994'
+                          strokeWidth='1.5'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </g>
+                    </svg>
+                    <svg
+                      width='48'
+                      height='14'
+                      viewBox='0 0 80 24'
+                      fill='none'
+                      strokeWidth='3.5'
+                      stroke='currentColor'
+                      className='arrow_mobile'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <g>
+                        <path
+                          d='M1 7H78M78 7L72 1M78 7L72 13'
+                          stroke='#4d5d7994'
+                          strokeWidth='3.5'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </g>
+                    </svg>
+                  </Box>
+                </Box>
                 <Box>
                   <Typography className='subTitle'>{step.title}</Typography>
                   <Typography className='desc'>{step.description}</Typography>
