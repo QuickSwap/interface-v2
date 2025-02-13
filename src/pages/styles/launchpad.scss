@@ -224,14 +224,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+
   @media (max-width: 1280px) {
     margin-bottom: 88px;
+  }
+
+  .cover-faq {
+    display: flex;
+    width: 100%;
+    margin-top: 1.5rem;
   }
 
   .cover-faq-list {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 0.25rem;
+    flex: 40%;
   }
 
   .faq {
@@ -269,6 +280,19 @@
   .faq-name {
     font-size: 1.5rem;
     line-height: 2.25rem;
+  }
+
+  .faq-arrow {
+    display: block;
+    color: #4d5d7994;
+    margin-left: auto;
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  .cover-faq-items {
+    flex: 60%;
   }
 }
 

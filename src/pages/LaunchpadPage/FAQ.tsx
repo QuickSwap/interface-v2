@@ -203,9 +203,32 @@ You should see a prompt from BlockPass saying, “If you have previously created
               <Box>
                 <Typography className='faq-name'>{faq.name}</Typography>
               </Box>
+              {tabActive === faq.id && (
+                <svg
+                  width='79'
+                  height='14'
+                  viewBox='0 0 79 14'
+                  fill='none'
+                  strokeWidth='1.5'
+                  stroke='currentColor'
+                  className='faq-arrow'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <g>
+                    <path
+                      d='M1 7H78M78 7L72 1M78 7L72 13'
+                      stroke='#4d5d7994'
+                      strokeWidth='1.5'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </g>
+                </svg>
+              )}
             </Box>
           ))}
         </Box>
+        <Box className='cover-faq-items'></Box>
       </Box>
     </Box>
   );
