@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import HeroSection from 'pages/LaunchpadPage/HeroSection';
 import StepsToJoin from 'pages/LaunchpadPage/StepsToJoin';
+import JoinSocialMedia from 'pages/LaunchpadPage/JoinSocialMedia';
+
 import 'pages/styles/launchpad.scss';
 
 const LaunchpadPage: React.FC = () => {
@@ -17,6 +19,7 @@ const LaunchpadPage: React.FC = () => {
         openModal={openModal}
         setOpenModal={setOpenModal}
       />
+      <JoinSocialMedia />
     </div>
   );
 };

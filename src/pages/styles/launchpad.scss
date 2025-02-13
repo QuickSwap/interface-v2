@@ -2,141 +2,194 @@
 @use "styles/breakpoints" as *;
 
 .section {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    flex-direction: column;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  flex-direction: column;
+  display: flex;
+  margin-bottom: 2rem;
+  padding-bottom: 4rem;
+
+  @media screen and (max-width: '900px') {
+    padding-top: 220px;
+    align-items: center;
+  }
+
+  & h3 {
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-top: 9px;
+  }
+
+  & h1 {
+    font-size: 55px;
+    font-weight: 700;
+  }
+
+  & h5 {
+    font-size: 15px;
+    color: $textSecondary;
+  }
+
+  &>button {
+    height: 56px;
+    width: 194px;
     display: flex;
-    margin-bottom: 2rem;
-    padding-bottom: 4rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cover_title {
+    max-width: 40%;
+    margin-bottom: 20px;
 
     @media screen and (max-width: '900px') {
-        padding-top: 220px;
-        align-items: center;
-      }
-      & h3 {
-        text-transform: uppercase;
-        margin-bottom: 20px;
-        padding-top: 9px;
-      }
-      & h1 {
-        font-size: 55px;
-        font-weight: 700;
-      }
-      & h5 {
-        font-size: 15px;
-        color: $textSecondary;
-      }
-      & > button {
-        height: 56px;
-        width: 194px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    
-      .cover_title {
-        max-width: 40%;
-        margin-bottom: 20px;
-        @media screen and (max-width: '900px') {
-          width: 100%;
-          max-width: 100%;
-          margin-bottom: 24px;
-          padding: 0 20px;
-        }
-      }
-      .cover_sub_title {
-        max-width: 40%;
-        margin-bottom: 20px;
-        @media screen and (max-width: '900px') {
-          width: 100%;
-          max-width: 100%;
-          padding: 0 40px;
-          margin-bottom: 40px;
-        }
-      }
-      .title {
-        font-size: 50px;
-        font-weight: 600;
-        line-height: 1.16;
-        @media screen and (max-width: '900px') {
-          width: 100%;
-          font-size: 32px;
-          text-align: center;
-        }
-      }
-      .subTitle {
-        font-size: 18px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.67;
-        @media screen and (max-width: '900px') {
-          width: 100%;
-          font-size: 14px;
-          text-align: center;
-        }
-      }
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 24px;
+      padding: 0 20px;
+    }
+  }
 
-      .title2 {
-        color: #EBECF2;
-        font-size: 24px;
-        font-weight: 600;
-      }
+  .cover_sub_title {
+    max-width: 40%;
+    margin-bottom: 20px;
+
+    @media screen and (max-width: '900px') {
+      width: 100%;
+      max-width: 100%;
+      padding: 0 40px;
+      margin-bottom: 40px;
+    }
+  }
+
+  .title {
+    font-size: 50px;
+    font-weight: 600;
+    line-height: 1.16;
+
+    @media screen and (max-width: '900px') {
+      width: 100%;
+      font-size: 32px;
+      text-align: center;
+    }
+  }
+
+  .subTitle {
+    font-size: 18px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.67;
+
+    @media screen and (max-width: '900px') {
+      width: 100%;
+      font-size: 14px;
+      text-align: center;
+    }
+  }
+
+  .title2 {
+    color: #EBECF2;
+    font-size: 24px;
+    font-weight: 600;
+  }
 }
 
 .launchHeroSection {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    position: relative;
-    text-align: left;
-    z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  text-align: left;
+  z-index: 2;
 }
 
 .stepsToJoin {
-    .step_list {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1.25rem;
-        margin-bottom: 1.5rem;
+  .step_list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .step_item {
+    border-radius: 16px;
+    height: 280px;
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    background-color: #9b9b9b0f;
+    padding: 1.5rem;
+
+    .subTitle {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
     }
 
-    .step_item {
-        border-radius: 16px;
-        height: 280px;
-        -webkit-backdrop-filter: blur(24px);
-        backdrop-filter: blur(24px);
-        background-color: #9b9b9b0f;
-        padding: 1.5rem;
-
-        .subTitle {
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .desc {
-            font-size: 1rem;
-            font-weight: 500;
-        }
+    .desc {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.5rem;
     }
+  }
 
-    .step_item_icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 3rem;
-        height: 3rem;
-        border-radius: 0.5rem;
-        background-color: #222735;
-        margin-bottom: 1rem;
-    }
+  .step_item_icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    background-color: #222735;
+    margin-bottom: 1rem;
+  }
 
-    .get_started_btn {
-        padding: 12px 16px;
-        border-radius: 0.75rem;
-        height: 48px;
+  .get_started_btn {
+    padding: 12px 16px;
+    border-radius: 0.75rem;
+    height: 48px;
+  }
+}
+
+.socialMediaSection {
+  background: #1C1E29;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  align-items: start;
+  position: relative;
+
+  .cover_title {
+    max-width: 734px;
+  }
+
+  .title2 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .cover_social_icons {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .social_icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .social_media_bg {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+
+    img {
+      height: 250px;
+      width: 250px;
     }
+  }
 }
