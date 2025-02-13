@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Button, Box, Typography } from '@material-ui/core';
+import CtaBg from 'assets/images/launchpad/cta_bg.png';
 
 const CTA: React.FC = () => {
   const handleOpenGoogleForm = () => {
@@ -25,6 +26,9 @@ const CTA: React.FC = () => {
         >
           Apply now
         </Button>
+      </Box>
+      <Box className='cta_bg'>
+        <img src={CtaBg} alt='cta-bg' />
       </Box>
     </Box>
   );

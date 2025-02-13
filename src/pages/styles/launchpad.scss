@@ -270,4 +270,19 @@
     font-weight: 600;
     border-radius: 0.5rem;
   }
+
+  .cta_bg {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    left: 0;
+    top: 0;
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      object-position: center;  
+    }
+  }
 }
