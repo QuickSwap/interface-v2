@@ -182,6 +182,8 @@
   padding: 2rem;
   align-items: start;
   position: relative;
+  margin-left: 1rem;
+  margin-right: 1rem;
 
   .cover_title {
     max-width: 734px;
@@ -190,6 +192,7 @@
   .title2 {
     font-size: 2rem;
     margin-bottom: 0.75rem;
+    font-weight: 600;
   }
 
   .desc {
@@ -218,5 +221,53 @@
       height: 250px;
       width: 250px;
     }
+  }
+}
+
+.faqSection {
+  margin-bottom: 120px;
+  @media (max-width: 1280px) {
+    margin-bottom: 88px;
+  }
+}
+
+.ctaSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1C1E29;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  position: relative;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 120px;
+
+  @media (max-width: 1280px) {
+    margin-bottom: 88px;
+  }
+
+  .title {
+    font-size: 1.75rem;
+    text-align: center;
+
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
+
+  }
+
+  .cover-btn {
+    margin-top: 50px;
+    @media (max-width: 768px) {
+      margin-top: 1.5rem;
+    }
+  }
+
+  .cta-btn {
+    width: 250px;
+    height: 44px;
+    font-weight: 600;
+    border-radius: 0.5rem;
   }
 }
