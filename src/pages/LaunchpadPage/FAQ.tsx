@@ -5,6 +5,7 @@ import StartIcon from 'assets/images/launchpad/faq/start-icon.svg';
 import FeesIcon from 'assets/images/launchpad/faq/fees-eligibility-icon.svg';
 import SecurityIcon from 'assets/images/launchpad/faq/security-icon.svg';
 import TroubleIcon from 'assets/images/launchpad/faq/troubleshooting-icon.svg';
+import { ChevronDown, ChevronUp } from 'react-feather';
 
 interface FAQItem {
   question: string;
@@ -24,14 +25,15 @@ const FAQItem: React.FC<FAQItem & { isOpen: boolean; toggle: () => void }> = ({
   isOpen,
   toggle,
 }) => (
-  <div>
-    <button
-      className='w-full text-left pl-3 pr-2 py-3 flex justify-between items-center border-t border-[#282D3D]'
-      onClick={toggle}
-    >
+  <Box>
+    <button className='faq-item-button' onClick={toggle}>
       <span className='text-base lg:text-lg leading-6 font-semibold'>
         {question}
       </span>
+      <ChevronDown
+        size='20'
+        className={`down-icon ${isOpen && 'rotate-180'}`}
+      />
       {/* <ChevronDownIcon
         className={clsx({
           ['min-w-5 h-5 p-[2px] lg:p-0 transition-transform duration-300']: true,
@@ -39,19 +41,19 @@ const FAQItem: React.FC<FAQItem & { isOpen: boolean; toggle: () => void }> = ({
         })}
       /> */}
     </button>
-    <div
-      className={`overflow-hidden transition-all duration-300 ease-in-out ${
-        isOpen ? 'opacity-100' : 'max-h-0 opacity-0'
+    <Box
+      className={`cover-faq-item ${
+        isOpen ? 'faq-item-open' : 'faq-item-close'
       }`}
     >
-      <div className='p-4'>
+      <Box style={{ padding: '16px' }}>
         <p
-          className='text-gray-300'
+          style={{ color: '#D1D5DB' }}
           dangerouslySetInnerHTML={{ __html: answer }}
         ></p>
-      </div>
-    </div>
-  </div>
+      </Box>
+    </Box>
+  </Box>
 );
 
 const FAQ: React.FC = () => {
@@ -187,48 +189,62 @@ You should see a prompt from BlockPass saying, “If you have previously created
         <Typography className='title2'>Frequently Asked Questions</Typography>
       </Box>
       <Box className='cover-faq'>
-        <Box className='cover-faq-list'>
-          {faqList.map((faq) => (
-            <Box
-              className={`faq ${faq.id === tabActive && 'faq-selected'}`}
-              key={faq.id}
-              onClick={() => handleSelectTab(faq.id)}
-            >
+        <Box className='flex-40'>
+          <Box className='cover-faq-list'>
+            {faqList.map((faq) => (
               <Box
-                className={`cover-img ${faq.id === tabActive &&
-                  'cover-img-selected'}`}
+                className={`faq ${faq.id === tabActive && 'faq-selected'}`}
+                key={faq.id}
+                onClick={() => handleSelectTab(faq.id)}
               >
-                <img src={faq.logo} alt={faq.id} />
-              </Box>
-              <Box>
-                <Typography className='faq-name'>{faq.name}</Typography>
-              </Box>
-              {tabActive === faq.id && (
-                <svg
-                  width='79'
-                  height='14'
-                  viewBox='0 0 79 14'
-                  fill='none'
-                  strokeWidth='1.5'
-                  stroke='currentColor'
-                  className='faq-arrow'
-                  xmlns='http://www.w3.org/2000/svg'
+                <Box
+                  className={`cover-img ${faq.id === tabActive &&
+                    'cover-img-selected'}`}
                 >
-                  <g>
-                    <path
-                      d='M1 7H78M78 7L72 1M78 7L72 13'
-                      stroke='#4d5d7994'
-                      strokeWidth='1.5'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </g>
-                </svg>
-              )}
-            </Box>
-          ))}
+                  <img src={faq.logo} alt={faq.id} />
+                </Box>
+                <Box>
+                  <Typography className='faq-name'>{faq.name}</Typography>
+                </Box>
+                {tabActive === faq.id && (
+                  <svg
+                    width='79'
+                    height='14'
+                    viewBox='0 0 79 14'
+                    fill='none'
+                    strokeWidth='1.5'
+                    stroke='currentColor'
+                    className='faq-arrow'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <g>
+                      <path
+                        d='M1 7H78M78 7L72 1M78 7L72 13'
+                        stroke='#4d5d7994'
+                        strokeWidth='1.5'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </g>
+                  </svg>
+                )}
+              </Box>
+            ))}
+          </Box>
         </Box>
-        <Box className='cover-faq-items'></Box>
+        <Box className='cover-faq-items'>
+          {faqList
+            .find((faq) => faq.id === tabActive)
+            ?.faq?.map((item, index) => (
+              <FAQItem
+                key={index}
+                question={item.question}
+                answer={item.answer}
+                isOpen={openItems.includes(index)}
+                toggle={() => toggleItem(index)}
+              />
+            ))}
+        </Box>
       </Box>
     </Box>
   );

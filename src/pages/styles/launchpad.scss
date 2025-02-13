@@ -238,11 +238,14 @@
     margin-top: 1.5rem;
   }
 
+  .flex-40 {
+    flex: 40%;
+  }
+
   .cover-faq-list {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 0.25rem;
-    flex: 40%;
   }
 
   .faq {
@@ -293,6 +296,44 @@
 
   .cover-faq-items {
     flex: 60%;
+  }
+
+  .faq-item-button {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 0.5rem 0.75rem 0.75rem;
+    border-top: 1px solid #282D3D;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    span {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+      font-weight: 600;
+    }
+  }
+
+  .cover-faq-item {
+    overflow: hidden;
+    transition: all 300ms ease-in-out;
+  }
+
+  .faq-item-open {
+    opacity: 100;
+  }
+
+  .faq-item-close{
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .down-icon {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .rotate-180 {
+    transform: rotate(180deg);
   }
 }
 
