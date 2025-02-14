@@ -232,6 +232,12 @@
     margin-bottom: 88px;
   }
 
+  @media (max-width: 1024px) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+
   .cover-faq {
     display: flex;
     width: 100%;
@@ -245,7 +251,7 @@
   .cover-faq-list {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 0.25rem;
+    gap: .75rem;
   }
 
   .faq {
@@ -289,13 +295,25 @@
     display: block;
     color: #4d5d7994;
     margin-left: auto;
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       display: none;
     }
   }
 
+  .cover-faq {
+    display: flex;
+    gap: 2.5rem;
+    @media (max-width: 1024px) {
+      display: none;
+    }
+  }
+
+
   .cover-faq-items {
     flex: 60%;
+    @media (max-width: 1024px) {
+      margin-top: 25px;
+    }
   }
 
   .faq-item-button {
@@ -311,6 +329,12 @@
       font-size: 1.125rem;
       line-height: 1.75rem;
       font-weight: 600;
+
+      @media (max-width: 1024px) {
+        font-size: 1rem;
+        line-height: 1.5rem;
+      }
+  
     }
   }
 
@@ -335,6 +359,14 @@
   .rotate-180 {
     transform: rotate(180deg);
   }
+
+  .cover-faq-mobile {
+    display: none;
+    @media (max-width: 1024px) {
+      display: block;
+    }
+  }
+
 }
 
 .ctaSection {

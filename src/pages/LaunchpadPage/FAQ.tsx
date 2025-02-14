@@ -168,16 +168,14 @@ You should see a prompt from BlockPass saying, “If you have previously created
   };
 
   const handleSelectTab = (tabId: string) => {
-    // const element = document.getElementById('mobile-faq-list');
-    // if (element && clickedTab) {
-    //   // Fix scrolling issue on mobile
-    //   const elementPosition =
-    //     element.getBoundingClientRect().top + window.scrollY;
-    //   const offsetPosition = elementPosition - 30;
-    //   window.scrollTo({ top: offsetPosition });
-    // }
-    console.log('11111', tabId);
-
+    const element = document.getElementById('mobile-faq-list');
+    if (element && clickedTab) {
+      // Fix scrolling issue on mobile
+      const elementPosition =
+        element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - 80;
+      window.scrollTo({ top: offsetPosition });
+    }
     setClickedTab(true);
     setOpenItems([]);
     setTabActive(tabId);
@@ -244,6 +242,64 @@ You should see a prompt from BlockPass saying, “If you have previously created
                 toggle={() => toggleItem(index)}
               />
             ))}
+        </Box>
+      </Box>
+      <Box id='mobile-faq-list' className='cover-faq-mobile'>
+        <Box className='cover-faq-list'>
+          {faqList.map((faq) => (
+            <Box key={faq.id}>
+              <Box
+                className={`faq ${faq.id === tabActive && 'faq-selected'}`}
+                key={faq.id}
+                onClick={() => handleSelectTab(faq.id)}
+              >
+                <Box
+                  className={`cover-img ${faq.id === tabActive &&
+                    'cover-img-selected'}`}
+                >
+                  <img src={faq.logo} alt={faq.id} />
+                </Box>
+                <Box>
+                  <Typography className='faq-name'>{faq.name}</Typography>
+                </Box>
+                {tabActive === faq.id && (
+                  <svg
+                    width='79'
+                    height='14'
+                    viewBox='0 0 79 14'
+                    fill='none'
+                    strokeWidth='1.5'
+                    stroke='currentColor'
+                    className='faq-arrow'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <g>
+                      <path
+                        d='M1 7H78M78 7L72 1M78 7L72 13'
+                        stroke='#4d5d7994'
+                        strokeWidth='1.5'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </g>
+                  </svg>
+                )}
+              </Box>
+              {tabActive === faq.id && (
+                <Box className='cover-faq-items'>
+                  {faq.faq.map((item, index) => (
+                    <FAQItem
+                      key={index}
+                      question={item.question}
+                      answer={item.answer}
+                      isOpen={openItems.includes(index)}
+                      toggle={() => toggleItem(index)}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
+          ))}
         </Box>
       </Box>
     </Box>
