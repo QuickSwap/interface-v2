@@ -4,6 +4,7 @@ import StepsToJoin from 'pages/LaunchpadPage/StepsToJoin';
 import JoinSocialMedia from 'pages/LaunchpadPage/JoinSocialMedia';
 import CTA from 'pages/LaunchpadPage/CTA';
 import FAQ from 'pages/LaunchpadPage/FAQ';
+import SignUpModal from 'pages/LaunchpadPage/SignUpModal';
 
 import 'pages/styles/launchpad.scss';
 
@@ -24,6 +25,7 @@ const LaunchpadPage: React.FC = () => {
       <JoinSocialMedia />
       <FAQ />
       <CTA />
+      <SignUpModal openModal={openModal} setOpenModal={setOpenModal} />
     </div>
   );
 };
