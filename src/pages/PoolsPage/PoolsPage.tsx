@@ -93,19 +93,25 @@ const PoolsPage: React.FC = () => {
               </Box>
             )}
           </Box>
-          <Box
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              justifyContent: 'end',
-            }}
-          >
-            <p>
-              <span>{t('poweredBy')}</span>
-            </p>
-            <img src={AlgebraLogo} alt='poweredby' style={{ width: '72px' }} />
-          </Box>
+          {['v3', 'v4'].includes(version) && (
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                justifyContent: 'end',
+              }}
+            >
+              <p>
+                <span>{t('poweredBy')}</span>
+              </p>
+              <img
+                src={AlgebraLogo}
+                alt='poweredby'
+                style={{ width: '72px' }}
+              />
+            </Box>
+          )}
           {showVersion && (
             <Box my={2}>
               <VersionToggle />
@@ -122,18 +128,24 @@ const PoolsPage: React.FC = () => {
               </Box>
             )}
           </Box>
-          <Box
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            <p>
-              <span>{t('poweredBy')}</span>
-            </p>
-            <img src={AlgebraLogo} alt='poweredby' style={{ width: '72px' }} />
-          </Box>
+          {['v3', 'v4'].includes(version) && (
+            <Box
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <p>
+                <span>{t('poweredBy')}</span>
+              </p>
+              <img
+                src={AlgebraLogo}
+                alt='poweredby'
+                style={{ width: '72px' }}
+              />
+            </Box>
+          )}
         </Box>
       )}
       {/* <Box margin='24px auto'>
