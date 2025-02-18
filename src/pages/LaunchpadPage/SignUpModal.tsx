@@ -4,6 +4,7 @@ import { isValidEmail } from 'pages/LaunchpadPage/Util';
 import { X, AlertCircle } from 'react-feather';
 import { Button, Box, Typography } from '@material-ui/core';
 import { TelegramIcon } from './SocialIcon';
+import ConfirmEmailImg from 'assets/images/launchpad/confirm-email.png';
 
 const SignUpModal: React.FC<{
   openModal?: boolean;
@@ -63,40 +64,55 @@ const SignUpModal: React.FC<{
   return openModal ? (
     <div className='signupModal'>
       {confirm ? (
-        <div className='max-w-[480px] bg-[#1B1E29] shadow-sm shadow-slate-800 p-6 rounded-2xl'>
-          <div className='flex justify-end mb-4'>
-            {/* <XMarkIcon
-                className="w-[18px] h-[18px] text-[#919EAB] cursor-pointer"
-                onClick={() => handleModal(true)}
-              /> */}
+        <div className='signup-container shadow-sm shadow-slate-800 rounded-2xl'>
+          <div
+            className='flex items-center justify-end'
+            style={{ marginBottom: '1rem' }}
+          >
+            <X
+              className='cursor-pointer'
+              style={{ width: '18px', height: '18px', color: '#919EAB' }}
+              onClick={() => handleModal(true)}
+            />
           </div>
-          <div className='pb-4'>
-            {/* <Image
-                src="/assets/images/confirm-email.png"
-                alt="comfirm email"
-                width={242}
-                height={242}
-                className="mx-auto"
-              /> */}
-            <h2 className='text-lg text-center font-bold leading-7 text-[#EBECF2] mb-6'>
+          <div style={{ paddingBottom: '1rem' }}>
+            <img
+              className='confirm-email'
+              src={ConfirmEmailImg}
+              alt='confirm-email'
+            />
+            <h2 className='text-center'>
               Thank you for your interest in QuickLaunch
             </h2>
-            <p className='text-sm text-[#C7CAD9] mb-6 text-center'>
+            <p
+              className='text-center'
+              style={{
+                marginBottom: '1.5rem',
+                color: '#C7CAD9',
+                fontSize: '0.875rem',
+              }}
+            >
               We&apos;ve received your request and will be in touch shortly at{' '}
               <span className='font-semibold'>{email}</span>.
             </p>
-            {/* <Button
-                variant="primary"
-                size="large"
-                className="w-full !text-[15px] font-bold capitalize leading-6 hover:text-[#696C8080] hover:!bg-[#919EAB33]"
-                onClick={() => handleModal()}
-              >
-                Back to site
-              </Button> */}
+            <Button
+              fullWidth
+              className='bg-blue1 p'
+              style={{
+                borderRadius: '12px',
+                height: '100%',
+                padding: '12px',
+              }}
+              onClick={() => {
+                handleModal();
+              }}
+            >
+              Back to site
+            </Button>
           </div>
         </div>
       ) : (
-        <div className='signup-container shadow-sm shadow-slate-800 p-6 rounded-2xl'>
+        <div className='signup-container shadow-sm shadow-slate-800 rounded-2xl'>
           <div
             className='flex items-center justify-between'
             style={{ marginBottom: '1rem' }}
