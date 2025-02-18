@@ -425,3 +425,130 @@
     }
   }
 }
+
+.signupModal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 50;
+  width: 100%;
+  height: 100%;
+  background: #1b1e298c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .signup-container {
+    max-width: 480px;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background-color: #1B1E29;
+  }
+
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.75rem;
+  }
+
+  input {
+    border: none;
+    outline: none;
+  }
+
+  .message-border {
+    border-color: #FF5C5C7A;
+  }
+
+  .error-message {
+    color: #FF5C5C;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .join-tel-container {
+    position: relative;
+    text-align: center;
+    margin: 12px 0; /* my-3 */
+    padding: 16px 0; /* py-4 */
+  }
+  
+  .join-tel-container::before,
+  .join-tel-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #FFFFFF99;
+    transform: translateY(-50%);
+  }
+  
+  .join-tel-container::before {
+    left: 0;
+  }
+  
+  .join-tel-container::after {
+    right: 0;
+  }
+
+  h3 {
+    color: #EBECF2;
+    line-height: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .telegram-btn {
+    font-weight: 700;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-size: 15px;
+    height: 44px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: rgba(68, 138, 255, 0.08);
+    color: #448aff;
+    width: 100%;
+    text-transform: capitalize;
+    line-height: 1.5rem;
+  }
+  
+  .telegram-btn:hover {
+    background-color: rgba(68, 138, 255, 0.08);
+  }
+
+  .telegram-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+  }
+
+  .terms-container {
+    color: #696C80;
+    text-align: center;
+
+    p {
+      font-size: 0.75rem;
+      line-height: 1.25rem;  
+    }
+
+    a {
+      font-size: 0.75rem;
+      line-height: 1.25rem;  
+      color: #448AFF;
+      text-decoration-line: underline;
+      cursor: pointer;
+    }
+  }
+}
+

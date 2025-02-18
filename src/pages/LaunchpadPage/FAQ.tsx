@@ -5,7 +5,7 @@ import StartIcon from 'assets/images/launchpad/faq/start-icon.svg';
 import FeesIcon from 'assets/images/launchpad/faq/fees-eligibility-icon.svg';
 import SecurityIcon from 'assets/images/launchpad/faq/security-icon.svg';
 import TroubleIcon from 'assets/images/launchpad/faq/troubleshooting-icon.svg';
-import { ChevronDown, ChevronUp } from 'react-feather';
+import { ChevronDown } from 'react-feather';
 
 interface FAQItem {
   question: string;

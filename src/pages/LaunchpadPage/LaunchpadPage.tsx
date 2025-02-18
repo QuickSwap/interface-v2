@@ -9,7 +9,7 @@ import SignUpModal from 'pages/LaunchpadPage/SignUpModal';
 import 'pages/styles/launchpad.scss';
 
 const LaunchpadPage: React.FC = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
   return (
     <div className='container mx-auto'>
       <HeroSection

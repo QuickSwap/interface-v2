@@ -56,7 +56,7 @@ const HeroSection: React.FC<{
             paddingRight: '16px',
           }}
           onClick={() => {
-            handleClick;
+            handleClick();
           }}
         >
           {caseLaunch !== 0 ? 'Get started' : 'Join The QuickLaunch Waitlist'}

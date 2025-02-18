@@ -182,7 +182,7 @@ const StepsToJoin: React.FC<{
         <Button
           className='bg-blue1 p get_started_btn'
           onClick={() => {
-            handleClick;
+            handleClick();
           }}
         >
           {caseLaunch !== 0

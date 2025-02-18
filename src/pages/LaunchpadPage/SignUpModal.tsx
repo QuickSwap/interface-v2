@@ -1,16 +1,18 @@
-'use client';
+// import { XMarkIcon } from '@heroicons/react/20/solid';
+import React, { useState, useEffect } from 'react';
+import { isValidEmail } from 'pages/LaunchpadPage/Util';
+import { X, AlertCircle } from 'react-feather';
+import { Button, Box, Typography } from '@material-ui/core';
+import { TelegramIcon } from './SocialIcon';
 
-import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
-
-const SignUpModal: React.FC<{ openModal: boolean; setOpenModal: any }> = ({
-  openModal,
-  setOpenModal,
-}) => {
+const SignUpModal: React.FC<{
+  openModal?: boolean;
+  setOpenModal?: any;
+}> = ({ openModal, setOpenModal }) => {
   const [email, setEmail] = useState('');
   const [confirm, setConfirm] = useState(false);
-  const [status, setStatus] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [status, setStatus] = useState<number | null>(null);
 
   const handleModal = (isClose = false) => {
     if (!isClose) {
@@ -20,7 +22,193 @@ const SignUpModal: React.FC<{ openModal: boolean; setOpenModal: any }> = ({
     setEmail('');
   };
 
-  return openModal && <Box>Sign Up modal</Box>;
+  const handleOnChange = (e: any) => {
+    setEmail(e.target.value);
+    setMessage(null);
+  };
+
+  const handleSubmit = async () => {
+    if (!email) {
+      setMessage('Please fill out all the required fields.');
+    } else if (isValidEmail(email)) {
+      setMessage(null);
+      try {
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+        const result = await response.json();
+        console.log('result', result);
+        if (result.error) {
+          setStatus(response.status);
+          setMessage(result.error);
+          return;
+        }
+        setStatus(201);
+        setMessage(null);
+        setConfirm(true);
+      } catch (error) {
+        console.log(error);
+        setStatus(500);
+        setMessage('Error joining the waitlist.');
+      }
+    } else {
+      setMessage('Email invalid.');
+    }
+  };
+
+  return openModal ? (
+    <div className='signupModal'>
+      {confirm ? (
+        <div className='max-w-[480px] bg-[#1B1E29] shadow-sm shadow-slate-800 p-6 rounded-2xl'>
+          <div className='flex justify-end mb-4'>
+            {/* <XMarkIcon
+                className="w-[18px] h-[18px] text-[#919EAB] cursor-pointer"
+                onClick={() => handleModal(true)}
+              /> */}
+          </div>
+          <div className='pb-4'>
+            {/* <Image
+                src="/assets/images/confirm-email.png"
+                alt="comfirm email"
+                width={242}
+                height={242}
+                className="mx-auto"
+              /> */}
+            <h2 className='text-lg text-center font-bold leading-7 text-[#EBECF2] mb-6'>
+              Thank you for your interest in QuickLaunch
+            </h2>
+            <p className='text-sm text-[#C7CAD9] mb-6 text-center'>
+              We&apos;ve received your request and will be in touch shortly at{' '}
+              <span className='font-semibold'>{email}</span>.
+            </p>
+            {/* <Button
+                variant="primary"
+                size="large"
+                className="w-full !text-[15px] font-bold capitalize leading-6 hover:text-[#696C8080] hover:!bg-[#919EAB33]"
+                onClick={() => handleModal()}
+              >
+                Back to site
+              </Button> */}
+          </div>
+        </div>
+      ) : (
+        <div className='signup-container shadow-sm shadow-slate-800 p-6 rounded-2xl'>
+          <div
+            className='flex items-center justify-between'
+            style={{ marginBottom: '1rem' }}
+          >
+            <h2 className='font-bold leading-7' style={{ color: '#EBECF2' }}>
+              Sign up for updates
+            </h2>
+            <X
+              className='cursor-pointer'
+              style={{ width: '18px', height: '18px', color: '#919EAB' }}
+              onClick={() => handleModal(true)}
+            />
+          </div>
+          <div style={{ paddingBottom: '1rem' }}>
+            <p
+              className='text-sm mb-6 text-justify'
+              style={{ color: '#C7CAD9', marginBottom: '1.5rem' }}
+            >
+              Drop your email here, and we&apos;ll keep you in the loop with all
+              the exciting updates about QuickSwap Launches!
+            </p>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div
+                className={`w-full flex items-center border border-solid text-white ${message &&
+                  'message-border'}`}
+                style={{
+                  height: '54px',
+                  background: '#1B1E29',
+                  borderColor: '#919EAB33',
+                  padding: '0.5rem 0.75rem',
+                  gap: '0.5rem',
+                  borderRadius: '0.5rem',
+                }}
+              >
+                {message && (
+                  <AlertCircle
+                    className='w-6 h-6'
+                    style={{ color: '#FF5C5C' }}
+                  />
+                )}
+                <input
+                  type='email'
+                  value={email}
+                  onChange={(e) => handleOnChange(e)}
+                  placeholder='Enter email'
+                  className='w-full h-auto bg-transparent text-white'
+                />
+              </div>
+              {message && <p className='error-message'>{message}</p>}
+            </div>
+            <Button
+              fullWidth
+              className='bg-blue1 p'
+              style={{
+                borderRadius: '12px',
+                height: '100%',
+                padding: '16px',
+              }}
+              onClick={() => {
+                handleSubmit();
+              }}
+            >
+              Get in touch
+            </Button>
+            <div className='join-tel-container'>
+              <p style={{ color: '#C7CAD9', fontSize: '0.875rem' }}>and</p>
+            </div>
+            <h3 className='text-[#EBECF2] leading-6 font-semibold text-center mb-4'>
+              Join us on Telegram
+            </h3>
+            <p
+              style={{
+                color: '#C7CAD9',
+                fontSize: '0.875rem',
+                textAlign: 'center',
+                marginBottom: '1rem',
+              }}
+            >
+              Join our Telegram channel for exclusive updates on upcoming crypto
+              launches, industry insights, and real-time discussions
+            </p>
+            <Button
+              fullWidth
+              className='telegram-btn'
+              onClick={(event) => {
+                event.preventDefault();
+                window.open('https://t.me/QuickLaunchOfficial');
+              }}
+            >
+              <TelegramIcon className='telegram-icon'></TelegramIcon>
+              Join us on Telegram
+            </Button>
+          </div>
+          <div style={{ padding: '0.5rem 1rem 1rem 0' }}>
+            <div className='terms-container'>
+              <p>By sending this form, you agree to the</p>{' '}
+              <a
+                href='https://quickswap.exchange/#/tos'
+                target='_blank'
+                className='text-xs font-normal leading-5 text-[#448AFF] underline'
+                rel='noreferrer'
+              >
+                Terms and Conditions
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  ) : (
+    <></>
+  );
 };
 
 export default SignUpModal;
