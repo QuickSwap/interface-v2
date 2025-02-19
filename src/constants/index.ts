@@ -2799,6 +2799,12 @@ export const GlobalData = {
       DAI[ChainId.ETHEREUM],
       WBTC[ChainId.ETHEREUM],
     ],
+    [ChainId.MINATO]: [USDC[ChainId.MINATO]],
+    [ChainId.SONEIUM]: [
+      WETH[ChainId.SONEIUM],
+      USDC[ChainId.SONEIUM],
+      USDT[ChainId.SONEIUM],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
