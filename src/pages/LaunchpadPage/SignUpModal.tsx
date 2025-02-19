@@ -5,6 +5,7 @@ import { X, AlertCircle } from 'react-feather';
 import { Button, Box, Typography } from '@material-ui/core';
 import { TelegramIcon } from './SocialIcon';
 import ConfirmEmailImg from 'assets/images/launchpad/confirm-email.png';
+import { useSubscribeNewsletter } from 'hooks/useNewsletterSignup';
 
 const SignUpModal: React.FC<{
   openModal?: boolean;
@@ -14,6 +15,7 @@ const SignUpModal: React.FC<{
   const [confirm, setConfirm] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [status, setStatus] = useState<number | null>(null);
+  const { mutate, isLoading, data } = useSubscribeNewsletter();
 
   const handleModal = (isClose = false) => {
     if (!isClose) {
@@ -34,23 +36,7 @@ const SignUpModal: React.FC<{
     } else if (isValidEmail(email)) {
       setMessage(null);
       try {
-        const response = await fetch('/api/subscribe', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email }),
-        });
-        const result = await response.json();
-        console.log('result', result);
-        if (result.error) {
-          setStatus(response.status);
-          setMessage(result.error);
-          return;
-        }
-        setStatus(201);
-        setMessage(null);
-        setConfirm(true);
+        await mutate(email);
       } catch (error) {
         console.log(error);
         setStatus(500);
@@ -60,6 +46,26 @@ const SignUpModal: React.FC<{
       setMessage('Email invalid.');
     }
   };
+
+  useEffect(() => {
+    console.log('isLoading', isLoading);
+    console.log('data', data);
+    if (isLoading || !data) {
+      return;
+    }
+    if (data.error) {
+      setStatus(500);
+      setMessage(
+        data.error === 'Error'
+          ? 'Error! failed to subscribe to the newsletter.'
+          : data.error,
+      );
+      return;
+    }
+    setStatus(201);
+    setMessage(null);
+    setConfirm(true);
+  }, [isLoading, data]);
 
   return openModal ? (
     <div className='signupModal'>
