@@ -25,58 +25,6 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const currentTime = dayjs().unix();
 
-  const rewards = (farm.distributions ?? [])
-    .filter(
-      (item: any) =>
-        item.isLive &&
-        !item.isMock &&
-        (item?.endTimestamp ?? 0) >= currentTime &&
-        (item?.startTimestamp ?? 0) <= currentTime,
-    )
-    .map((item: any) => {
-      const rewardDuration =
-        Number(item?.endTimestamp ?? 0) - Number(item?.startTimestamp ?? 0);
-      const dailyAmount =
-        rewardDuration > 0
-          ? (Number(
-              formatUnits(
-                item?.amount ?? '0',
-                Number(farm.decimalsRewardToken),
-              ),
-            ) /
-              rewardDuration) *
-            3600 *
-            24
-          : 0;
-      return {
-        ...item,
-        dailyAmount,
-        symbolRewardToken: farm.symbolRewardToken,
-      };
-    })
-    .reduce((memo: any[], item: any) => {
-      const existingItemIndex = memo.findIndex(
-        (rewardItem) =>
-          rewardItem.rewardToken.toLowerCase() ===
-          item.rewardToken.toLowerCase(),
-      );
-      if (existingItemIndex > -1) {
-        const existingItem = memo[existingItemIndex];
-        memo = [
-          ...memo.slice(0, existingItemIndex),
-          {
-            ...existingItem,
-            dailyAmount:
-              (existingItem?.dailyAmount ?? 0) + (item?.dailyAmount ?? 0),
-          },
-          ...memo.slice(existingItemIndex + 1),
-        ];
-      } else {
-        memo.push(item);
-      }
-      return memo;
-    }, []);
-
   const redirectWithPool = (pool: string) => {
     const currentPath = history.location.pathname + history.location.search;
     let redirectPath;
@@ -160,21 +108,19 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
           </Box>
           <Box
             width={isMobile ? '100%' : '30%'}
-            my={rewards.length > 0 ? 2 : 0}
+            my={2}
             className={isMobile ? 'flex items-center justify-between' : ''}
           >
-            {isMobile && rewards.length > 0 && <p>{t('rewards')}</p>}
+            {isMobile && <p>{t('rewards')}</p>}
             <Box className={isMobile ? 'flex flex-col items-end' : ''}>
-              {rewards.map((reward: any) => (
-                <p key={(farm?.pool ?? '') + (reward?.rewardToken ?? '')}>
-                  {formatNumber(reward.dailyAmount)} {reward.symbolRewardToken}{' '}
-                  <small className='text-secondary'>{t('daily')}</small>
-                </p>
-              ))}
+              <p>
+                {formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
+                <small className='text-secondary'>{t('daily')}</small>
+              </p>
             </Box>
           </Box>
         </Box>
-        <Box width={isMobile ? '100%' : '10%'} mt={rewards.length > 0 ? 0 : 2}>
+        <Box width={isMobile ? '100%' : '10%'} mt={0}>
           <Button
             className='farmCardButton'
             disabled={!farm.pool}

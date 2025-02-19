@@ -20,31 +20,41 @@ export const useClaimMerklRewards = () => {
   const claimReward = async () => {
     if (!merklDistributorContract || !account) return;
     setClaiming(true);
-    let data: any;
+    let resRewards: any;
     try {
       const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
       const res = await fetch(
-        `${merklAPIURL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
+        `${merklAPIURL}/v4/users/${account}/rewards?chainId=${chainId}`,
       );
-      data = await res.json();
+      resRewards = await res.json();
     } catch {
       setClaiming(false);
       throw 'Angle API not responding';
     }
+    if ((resRewards as any[]).length < 1) {
+      return;
+    }
+    const rewards = resRewards[0];
     // Distributor address is the same across different chains
-    const tokens = Object.keys(data).filter((k) => data[k].proof !== undefined);
-    const claims = tokens.map((t) => data[t].accumulated);
-    const proofs = tokens.map((t) => data[t].proof);
+    const tokens = rewards.rewards.map(
+      (reward: { token: { address: string } }) => reward.token.address,
+    );
+    const claims = rewards.rewards.map(
+      (reward: { amount: string }) => reward.amount,
+    );
+    const proofs = rewards.rewards.map(
+      (reward: { proofs: any }) => reward.proofs,
+    );
 
     try {
       const estimatedGas = await merklDistributorContract.estimateGas.claim(
-        tokens.map((t) => account),
+        tokens.map(() => account),
         tokens,
         claims,
         proofs as string[][],
       );
       const response: TransactionResponse = await merklDistributorContract.claim(
-        tokens.map((t) => account),
+        tokens.map(() => account),
         tokens,
         claims,
         proofs as string[][],
