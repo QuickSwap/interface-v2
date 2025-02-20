@@ -114,7 +114,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
             {isMobile && <p>{t('rewards')}</p>}
             <Box className={isMobile ? 'flex flex-col items-end' : ''}>
               <p>
-                {formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
+                ${formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
                 <small className='text-secondary'>{t('daily')}</small>
               </p>
             </Box>
