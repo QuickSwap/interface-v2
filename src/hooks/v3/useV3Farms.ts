@@ -6,7 +6,7 @@ import {
   GlobalData,
   IchiVaults,
   blackListMerklFarms,
-  merklAMMs,
+  // merklAMMs,
 } from 'constants/index';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import {
@@ -375,7 +375,7 @@ export const useGetMerklFarms = () => {
         // forwarders: distributions[0]['forwarders'],
         tvl: farmData.tvl,
         meanAPR: farmData.apr,
-        ammName: farmData.protocol.name,
+        ammName: farmData.name, //farmData.protocol.name,
         symbolRewardToken: farmData.rewardsRecord.breakdowns[0].token.symbol,
         decimalsRewardToken:
           farmData.rewardsRecord.breakdowns[0].token.decimals,
