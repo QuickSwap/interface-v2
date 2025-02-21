@@ -187,8 +187,7 @@ const AllMerklFarms: React.FC<Props> = ({
       //       : 0)
       //   );
       // }, 0);
-      const dailyRewardUSD = item.dailyAmount;
-      return { ...item, apr, title, dailyRewardUSD };
+      return { ...item, apr, title };
     })
     .filter((farm) => {
       const searchCondition = (farm?.title ?? '')
