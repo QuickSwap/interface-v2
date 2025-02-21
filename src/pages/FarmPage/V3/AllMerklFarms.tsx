@@ -187,7 +187,8 @@ const AllMerklFarms: React.FC<Props> = ({
       //       : 0)
       //   );
       // }, 0);
-      return { ...item, apr, title };
+      const dailyRewardUSD = item.dailyAmount;
+      return { ...item, apr, title, dailyRewardUSD };
     })
     .filter((farm) => {
       const searchCondition = (farm?.title ?? '')
@@ -257,11 +258,11 @@ const AllMerklFarms: React.FC<Props> = ({
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
-      // if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-      //   return farm1.dailyRewardUSD > farm2.dailyRewardUSD
-      //     ? sortMultiplier
-      //     : -1 * sortMultiplier;
-      // }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
       return 1;
     });
 

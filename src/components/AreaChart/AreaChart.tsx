@@ -39,7 +39,6 @@ const AreaChart: React.FC<AreaChartProps> = ({
   const yMin = yAxisValues
     ? Math.min(...yAxisValues.map((val) => Number(val)))
     : 0;
-
   const options = {
     chart: {
       sparkline: {

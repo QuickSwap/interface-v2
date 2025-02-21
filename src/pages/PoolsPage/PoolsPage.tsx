@@ -78,7 +78,7 @@ const PoolsPage: React.FC = () => {
   }, [showPools]);
 
   return (
-    <Box mb={3} p={3}>
+    <Box mb={3} p={3} width='100%'>
       {isMobile ? (
         <>
           <Box mt={2} className='pageHeading'>
