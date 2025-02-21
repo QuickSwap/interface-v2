@@ -9,8 +9,8 @@ import { useHistory } from 'react-router-dom';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
-import dayjs from 'dayjs';
-import { formatUnits } from 'ethers/lib/utils';
+// import dayjs from 'dayjs';
+// import { formatUnits } from 'ethers/lib/utils';
 
 interface Props {
   farm: any;
@@ -23,7 +23,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   const parsedQuery = useParsedQueryString();
   const { breakpoints } = useTheme();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
-  const currentTime = dayjs().unix();
+  // const currentTime = dayjs().unix();
 
   const redirectWithPool = (pool: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -114,7 +114,7 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
             {isMobile && <p>{t('rewards')}</p>}
             <Box className={isMobile ? 'flex flex-col items-end' : ''}>
               <p>
-                ${formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
+                {formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
                 <small className='text-secondary'>{t('daily')}</small>
               </p>
             </Box>

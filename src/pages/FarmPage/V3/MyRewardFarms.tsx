@@ -118,23 +118,23 @@ const MyRewardFarms: React.FC<Props> = ({
   }, [sortValue]);
 
   const { loading, farms } = useMerklFarms();
-  const rewardAddresses = farms.reduce((memo: string[], item: any) => {
-    const distributionData: any[] = (item?.distributionData ?? []).filter(
-      (reward: any) => reward.isLive && !reward.isMock,
-    );
-    for (const rewardItem of distributionData) {
-      if (
-        rewardItem.rewardToken &&
-        !memo.includes(rewardItem.rewardToken.toLowerCase())
-      ) {
-        memo.push(rewardItem.rewardToken.toLowerCase());
-      }
-    }
-    return memo;
-  }, []);
-  const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
-    rewardAddresses,
-  );
+  // const rewardAddresses = farms.reduce((memo: string[], item: any) => {
+  //   const distributionData: any[] = (item?.distributionData ?? []).filter(
+  //     (reward: any) => reward.isLive && !reward.isMock,
+  //   );
+  //   for (const rewardItem of distributionData) {
+  //     if (
+  //       rewardItem.rewardToken &&
+  //       !memo.includes(rewardItem.rewardToken.toLowerCase())
+  //     ) {
+  //       memo.push(rewardItem.rewardToken.toLowerCase());
+  //     }
+  //   }
+  //   return memo;
+  // }, []);
+  // const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
+  //   rewardAddresses,
+  // );
 
   const v3Farms = farms
     .map((item: any) => {
@@ -144,9 +144,9 @@ const MyRewardFarms: React.FC<Props> = ({
         0,
       );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
-      const rewardItems: any[] = (item?.distributionData ?? []).filter(
-        (reward: any) => reward.isLive && !reward.isMock,
-      );
+      // const rewardItems: any[] = (item?.distributionData ?? []).filter(
+      //   (reward: any) => reward.isLive && !reward.isMock,
+      // );
       // const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
       //   const usdPrice =
       //     rewardUSDPrices?.find(

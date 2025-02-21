@@ -464,7 +464,7 @@ export function PresetRanges({
     }).toLowerCase();
 
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
-  }, [aprs, baseCurrency, quoteCurrency, mintInfo, chainId]);
+  }, [aprs, baseCurrency, quoteCurrency, mintInfo, chainId, isV4]);
 
   const gammaValuesLoaded =
     mintInfo.price && gammaValues.filter((value) => !value).length === 0;
