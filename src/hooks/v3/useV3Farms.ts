@@ -387,7 +387,11 @@ export const useGetMerklFarms = () => {
         symbolRewardToken: farmData.rewardsRecord.breakdowns[0].token.symbol,
         decimalsRewardToken:
           farmData.rewardsRecord.breakdowns[0].token.decimals,
-        dailyAmount: farmData.dailyRewards,
+        dailyRewardUSD: farmData.dailyRewards,
+        dailyAmount: formatUnits(
+          BigInt(farmData.rewardsRecord.breakdowns[0].amount),
+          farmData.rewardsRecord.breakdowns[0].token.decimals,
+        ),
       };
 
       farmList.push(farm);
@@ -515,6 +519,7 @@ export const useMerklFarms = () => {
             label: farm?.ammName,
           },
         ])
+        .filter((alm: any) => alm.almTVL > 0)
         .map((alm: any) => {
           let poolAPR = 0;
           let title = '';
