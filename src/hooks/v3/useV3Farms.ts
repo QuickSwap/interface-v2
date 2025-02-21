@@ -316,10 +316,18 @@ export const useGetMerklFarms = () => {
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
     // const amms = merklAMMs[chainId] ?? ['quickswapuni'];
     // const res = await fetch(`${merklAPIURL}/v3/merkl?chainIds=${chainId}`);
-    const res = await fetch(
-      `${merklAPIURL}/v4/opportunities?name=quickswap&chainId=${chainId}`,
-    );
-    const resFarmData = await res.json();
+    const resFarmData = [] as any[];
+    let pageNum = 0;
+    while (true) {
+      const res = await fetch(
+        `${merklAPIURL}/v4/opportunities?name=quickswap&status=LIVE&chainId=${chainId}&page=${pageNum++}`,
+      );
+      const farmData = await res.json();
+      if (farmData.length < 1) {
+        break;
+      }
+      resFarmData.push(...farmData);
+    }
     if (!resFarmData) return [];
     const farmList: any[] = [];
     resFarmData.forEach((farmData: any) => {
