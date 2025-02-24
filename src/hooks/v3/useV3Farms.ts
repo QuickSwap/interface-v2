@@ -516,7 +516,7 @@ export const useMerklFarms = () => {
                 0,
               ),
             almAPR: farm?.meanAPR ?? 0,
-            label: farm?.ammName,
+            label: 'QuickswapAlgebra',
           },
         ])
         .filter((alm: any) => alm.almTVL > 0)
@@ -650,7 +650,11 @@ export const useGetMerklRewards = (
             reasons = {
               ...reasons,
               [breakdown.reason]: {
-                unclaimed: BigInt(breakdown.amount) - BigInt(breakdown.claimed),
+                unclaimed: ((reasons as any)[breakdown.reason] as any)
+                ? ((reasons as any)[breakdown.reason] as any).unclaimed +
+                  BigInt(breakdown.amount) -
+                  BigInt(breakdown.claimed)
+                : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
               },
             };
           },
