@@ -36,7 +36,7 @@ import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
 import { useSteerVaults } from './useSteerData';
 import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
-import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
+// import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
 import {
   useEternalFarmAprs,
   useEternalFarmPoolAPRs,
@@ -471,10 +471,10 @@ export const useMerklFarms = () => {
       )
       .map((e) => e.id);
   }, [chainId, merklFarms]);
-  const {
-    isLoading: loadingDefiEdgeAPRs,
-    data: defiedgeAprs,
-  } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
+  // const {
+  //   isLoading: loadingDefiEdgeAPRs,
+  //   data: defiedgeAprs,
+  // } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
   const {
     data: eternalFarmPoolAprs,
     isLoading: eternalFarmPoolAprsLoading,
@@ -562,12 +562,12 @@ export const useMerklFarms = () => {
             );
             allowToken0 = ichiVault?.allowToken0;
           } else if (alm.label.includes('DefiEdge')) {
-            poolAPR =
-              defiedgeAprs?.find(
-                (e: any) =>
-                  e.strategy.address.toLowerCase() ===
-                  alm.almAddress.toLowerCase(),
-              )?.strategy?.fees_apr ?? 0;
+            poolAPR = 0;
+            // defiedgeAprs?.find(
+            //   (e: any) =>
+            //     e.strategy.address.toLowerCase() ===
+            //     alm.almAddress.toLowerCase(),
+            // )?.strategy?.fees_apr ?? 0;
           } else if (
             alm.label.toLowerCase().includes('quickswap') &&
             eternalFarmPoolAprs
@@ -587,7 +587,7 @@ export const useMerklFarms = () => {
     });
   }, [
     chainId,
-    defiedgeAprs,
+    // defiedgeAprs,
     eternalFarmPoolAprs,
     gammaData,
     ichiAPRs,
@@ -598,7 +598,7 @@ export const useMerklFarms = () => {
   return {
     loading: loadingMerkl,
     loadingPoolAPRs:
-      loadingDefiEdgeAPRs ||
+      // loadingDefiEdgeAPRs ||
       loadingICHIAPRs ||
       loadingUSDPrices ||
       eternalFarmPoolAprsLoading ||
@@ -651,10 +651,10 @@ export const useGetMerklRewards = (
               ...reasons,
               [breakdown.reason]: {
                 unclaimed: ((reasons as any)[breakdown.reason] as any)
-                ? ((reasons as any)[breakdown.reason] as any).unclaimed +
-                  BigInt(breakdown.amount) -
-                  BigInt(breakdown.claimed)
-                : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
+                  ? ((reasons as any)[breakdown.reason] as any).unclaimed +
+                    BigInt(breakdown.amount) -
+                    BigInt(breakdown.claimed)
+                  : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
               },
             };
           },
