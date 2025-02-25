@@ -14,6 +14,7 @@ import {
   useMasterChefContract,
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 import { useEffect, useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -1047,9 +1048,14 @@ export function useV3PositionsFromPool(
 ) {
   const { account } = useActiveWeb3React();
   const algebraPositionManager = useV3NFTPositionManagerContract();
+  const algebraPositionV4Manager = useV4NFTPositionManagerContract();
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
-  const positionManager = fee ? uniPositionManager : algebraPositionManager;
-
+  const isV4 = !algebraPositionManager;
+  const positionManager = fee
+    ? uniPositionManager
+    : isV4
+    ? algebraPositionV4Manager
+    : algebraPositionManager;
   const {
     loading: balanceLoading,
     result: balanceResult,
@@ -1092,6 +1098,7 @@ export function useV3PositionsFromPool(
   const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
     tokenIds,
     !!fee,
+    isV4,
   );
 
   const filteredPositions = useMemo(() => {
