@@ -651,10 +651,10 @@ export const useGetMerklRewards = (
               ...reasons,
               [breakdown.reason]: {
                 unclaimed: ((reasons as any)[breakdown.reason] as any)
-                ? ((reasons as any)[breakdown.reason] as any).unclaimed +
-                  BigInt(breakdown.amount) -
-                  BigInt(breakdown.claimed)
-                : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
+                  ? ((reasons as any)[breakdown.reason] as any).unclaimed +
+                    BigInt(breakdown.amount) -
+                    BigInt(breakdown.claimed)
+                  : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
               },
             };
           },

@@ -49,92 +49,100 @@ export const MerklFarmCard: React.FC<Props> = ({ farm }) => {
   const token1 = getTokenFromAddress(farm.token1, chainId, tokenMap, []);
 
   return (
-    <Box width='100%' borderRadius={16} className='bg-secondary1'>
-      <Box padding={2} className='flex items-center flex-wrap'>
-        <Box
-          width={isMobile ? '100%' : '90%'}
-          className='flex items-center flex-wrap'
-        >
-          <Box
-            width={isMobile ? '80%' : '30%'}
-            className='flex items-center'
-            gridGap={12}
-          >
-            <DoubleCurrencyLogo
-              currency0={token0}
-              currency1={token1}
-              size={24}
-            />
-            <Box className='flex items-center' gridGap={4}>
-              <p>
-                {token0?.symbol}/{token1?.symbol}
-              </p>
-              {(farm?.ammName ?? '').toLowerCase() === 'quickswapuni' &&
-                !!farm?.poolFee && (
-                  <Box className='farmAPRTitleWrapper bg-textSecondary'>
-                    <span className='text-gray32'>{farm.poolFee}%</span>
-                  </Box>
-                )}
-            </Box>
-          </Box>
-          <Box
-            my={2}
-            width={isMobile ? '100%' : '20%'}
-            className='flex items-center justify-between'
-          >
-            {isMobile && <p>{t('tvl')}</p>}
-            <p>${formatNumber(farm.tvl)}</p>
-          </Box>
-          <Box
-            width={isMobile ? '100%' : '20%'}
-            className='flex items-center justify-between'
-          >
-            {isMobile && <p>{t('apr')}</p>}
-            <Box className={isMobile ? 'flex flex-col items-end' : ''}>
-              <small>{t('upTo')}</small>
-              <Box className='flex'>
-                <MerklFarmAPRTooltip
-                  farms={farm.alm}
-                  token0={farm.token0}
-                  token1={farm.token1}
+    <>
+      {token0 && token1 && (
+        <Box pb={2}>
+          <Box width='100%' borderRadius={16} className='bg-secondary1'>
+            <Box padding={2} className='flex items-center flex-wrap'>
+              <Box
+                width={isMobile ? '100%' : '90%'}
+                className='flex items-center flex-wrap'
+              >
+                <Box
+                  width={isMobile ? '80%' : '30%'}
+                  className='flex items-center'
+                  gridGap={12}
                 >
-                  <Box className='farmCardAPR' gridGap={4}>
-                    <p>{formatNumber(farm.apr)}%</p>
-                    <img src={APRHover} width={16} />
+                  <DoubleCurrencyLogo
+                    currency0={token0}
+                    currency1={token1}
+                    size={24}
+                  />
+                  <Box className='flex items-center' gridGap={4}>
+                    <p>
+                      {token0?.symbol}/{token1?.symbol}
+                    </p>
+                    {(farm?.ammName ?? '').toLowerCase() === 'quickswapuni' &&
+                      !!farm?.poolFee && (
+                        <Box className='farmAPRTitleWrapper bg-textSecondary'>
+                          <span className='text-gray32'>{farm.poolFee}%</span>
+                        </Box>
+                      )}
                   </Box>
-                </MerklFarmAPRTooltip>
+                </Box>
+                <Box
+                  my={2}
+                  width={isMobile ? '100%' : '20%'}
+                  className='flex items-center justify-between'
+                >
+                  {isMobile && <p>{t('tvl')}</p>}
+                  <p>${formatNumber(farm.tvl)}</p>
+                </Box>
+                <Box
+                  width={isMobile ? '100%' : '20%'}
+                  className='flex items-center justify-between'
+                >
+                  {isMobile && <p>{t('apr')}</p>}
+                  <Box className={isMobile ? 'flex flex-col items-end' : ''}>
+                    <small>{t('upTo')}</small>
+                    <Box className='flex'>
+                      <MerklFarmAPRTooltip
+                        farms={farm.alm}
+                        token0={farm.token0}
+                        token1={farm.token1}
+                      >
+                        <Box className='farmCardAPR' gridGap={4}>
+                          <p>{formatNumber(farm.apr)}%</p>
+                          <img src={APRHover} width={16} />
+                        </Box>
+                      </MerklFarmAPRTooltip>
+                    </Box>
+                  </Box>
+                </Box>
+                <Box
+                  width={isMobile ? '100%' : '30%'}
+                  my={2}
+                  className={
+                    isMobile ? 'flex items-center justify-between' : ''
+                  }
+                >
+                  {isMobile && <p>{t('rewards')}</p>}
+                  <Box className={isMobile ? 'flex flex-col items-end' : ''}>
+                    <p>
+                      {formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
+                      <small className='text-secondary'>{t('daily')}</small>
+                    </p>
+                  </Box>
+                </Box>
+              </Box>
+              <Box width={isMobile ? '100%' : '10%'} mt={0}>
+                <Button
+                  className='farmCardButton'
+                  disabled={!farm.pool}
+                  onClick={() => {
+                    if (farm.pool) {
+                      redirectWithPool(farm.pool);
+                    }
+                  }}
+                >
+                  {t('view')}
+                </Button>
               </Box>
             </Box>
           </Box>
-          <Box
-            width={isMobile ? '100%' : '30%'}
-            my={2}
-            className={isMobile ? 'flex items-center justify-between' : ''}
-          >
-            {isMobile && <p>{t('rewards')}</p>}
-            <Box className={isMobile ? 'flex flex-col items-end' : ''}>
-              <p>
-                {formatNumber(farm.dailyAmount)} {farm.symbolRewardToken}{' '}
-                <small className='text-secondary'>{t('daily')}</small>
-              </p>
-            </Box>
-          </Box>
         </Box>
-        <Box width={isMobile ? '100%' : '10%'} mt={0}>
-          <Button
-            className='farmCardButton'
-            disabled={!farm.pool}
-            onClick={() => {
-              if (farm.pool) {
-                redirectWithPool(farm.pool);
-              }
-            }}
-          >
-            {t('view')}
-          </Button>
-        </Box>
-      </Box>
-    </Box>
+      )}
+    </>
   );
 };
 

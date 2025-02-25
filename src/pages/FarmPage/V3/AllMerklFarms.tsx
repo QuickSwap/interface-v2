@@ -482,9 +482,7 @@ const AllMerklFarms: React.FC<Props> = ({
               )
             ) : v3Farms.length > 0 ? (
               v3Farms.map((farm, ind) => (
-                <Box key={ind} pb={2}>
-                  <MerklFarmCard farm={farm} />
-                </Box>
+                <MerklFarmCard key={ind} farm={farm} />
               ))
             ) : (
               <Box
