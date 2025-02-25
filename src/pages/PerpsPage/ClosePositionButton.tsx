@@ -23,6 +23,7 @@ export const ClosePositionButton: React.FC<{
   };
   const [loading, setLoading] = useState(false);
   const { onSubmit, helper } = useOrderEntry(order, { watchOrderbook: true });
+  const [error, setError] = useState('');
 
   const { data: orderValidation } = useQuery({
     queryKey: ['orderly-order-validation', order],
@@ -143,6 +144,11 @@ export const ClosePositionButton: React.FC<{
                 </Box>
               </Box>
             )}
+            {error && (
+              <Box mt={2}>
+                <p className='text-error'>{error}</p>
+              </Box>
+            )}
             <Box mt={2} className='flex' gridGap={12}>
               <Button
                 className='perpsConfirmButton'
@@ -150,13 +156,15 @@ export const ClosePositionButton: React.FC<{
                 onClick={async () => {
                   try {
                     setLoading(true);
+                    setError('');
                     await onSubmit(order);
                     setLoading(false);
                     handleClose();
                     if (afterClose) {
                       afterClose();
                     }
-                  } catch {
+                  } catch (e) {
+                    setError(JSON.stringify(e));
                     setLoading(false);
                   }
                 }}
