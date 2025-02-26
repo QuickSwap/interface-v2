@@ -397,7 +397,9 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 </Box>
                 <RangeBadge removed={false} inRange={!outOfRange} />
                 <a
-                  href={`/#/pool/${selectedQSNFTId}`}
+                  href={`/#/pool/${selectedQSNFTId}${
+                    selectedQSPosition?.isV4 ? '?isV4=true' : ''
+                  }`}
                   target='_blank'
                   rel='noreferrer'
                   className='no-decoration text-primary'
