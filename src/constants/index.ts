@@ -964,7 +964,6 @@ export const GammaPairs: {
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
         ableToFarm: true,
         pid: 55,
-        withdrawOnly: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
