@@ -502,6 +502,7 @@
   "fee": "Fee",
   "minPrice": "Min Price",
   "per": "per",
+  "depositAmounts": "Deposit Amounts",
   "positionComposedAtThisPrice": "Your position will be 100% Composed of {{ symbol }} at this price",
   "currentPrice": "Current Price",
   "addMoreLiquidity": "Add more liquidity",
