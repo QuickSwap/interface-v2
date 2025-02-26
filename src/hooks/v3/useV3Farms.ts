@@ -14,6 +14,7 @@ import {
   useMasterChefContract,
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 import { useEffect, useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
@@ -36,7 +37,7 @@ import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
 import { useSteerVaults } from './useSteerData';
 import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
-import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
+// import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
 import {
   useEternalFarmAprs,
   useEternalFarmPoolAPRs,
@@ -471,10 +472,10 @@ export const useMerklFarms = () => {
       )
       .map((e) => e.id);
   }, [chainId, merklFarms]);
-  const {
-    isLoading: loadingDefiEdgeAPRs,
-    data: defiedgeAprs,
-  } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
+  // const {
+  //   isLoading: loadingDefiEdgeAPRs,
+  //   data: defiedgeAprs,
+  // } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
   const {
     data: eternalFarmPoolAprs,
     isLoading: eternalFarmPoolAprsLoading,
@@ -562,12 +563,12 @@ export const useMerklFarms = () => {
             );
             allowToken0 = ichiVault?.allowToken0;
           } else if (alm.label.includes('DefiEdge')) {
-            poolAPR =
-              defiedgeAprs?.find(
-                (e: any) =>
-                  e.strategy.address.toLowerCase() ===
-                  alm.almAddress.toLowerCase(),
-              )?.strategy?.fees_apr ?? 0;
+            poolAPR = 0;
+            // defiedgeAprs?.find(
+            //   (e: any) =>
+            //     e.strategy.address.toLowerCase() ===
+            //     alm.almAddress.toLowerCase(),
+            // )?.strategy?.fees_apr ?? 0;
           } else if (
             alm.label.toLowerCase().includes('quickswap') &&
             eternalFarmPoolAprs
@@ -587,7 +588,7 @@ export const useMerklFarms = () => {
     });
   }, [
     chainId,
-    defiedgeAprs,
+    // defiedgeAprs,
     eternalFarmPoolAprs,
     gammaData,
     ichiAPRs,
@@ -598,7 +599,7 @@ export const useMerklFarms = () => {
   return {
     loading: loadingMerkl,
     loadingPoolAPRs:
-      loadingDefiEdgeAPRs ||
+      // loadingDefiEdgeAPRs ||
       loadingICHIAPRs ||
       loadingUSDPrices ||
       eternalFarmPoolAprsLoading ||
@@ -1047,9 +1048,14 @@ export function useV3PositionsFromPool(
 ) {
   const { account } = useActiveWeb3React();
   const algebraPositionManager = useV3NFTPositionManagerContract();
+  const algebraPositionV4Manager = useV4NFTPositionManagerContract();
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
-  const positionManager = fee ? uniPositionManager : algebraPositionManager;
-
+  const isV4 = !algebraPositionManager;
+  const positionManager = fee
+    ? uniPositionManager
+    : isV4
+    ? algebraPositionV4Manager
+    : algebraPositionManager;
   const {
     loading: balanceLoading,
     result: balanceResult,
@@ -1092,6 +1098,7 @@ export function useV3PositionsFromPool(
   const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
     tokenIds,
     !!fee,
+    isV4,
   );
 
   const filteredPositions = useMemo(() => {

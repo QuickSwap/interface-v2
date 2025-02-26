@@ -16,7 +16,6 @@ import { useV3NFTPositionManagerContract } from 'hooks/useContract';
 import { FARMING_CENTER } from 'constants/v3/addresses';
 import { useTranslation } from 'react-i18next';
 import useParsedQueryString from 'hooks/useParsedQueryString';
-import { useIsV4 } from 'state/application/hooks';
 
 export default function PositionPage() {
   const { t } = useTranslation();
@@ -24,15 +23,16 @@ export default function PositionPage() {
   const params: any = useParams();
   const tokenIdFromUrl = params?.tokenId;
   const { account, chainId } = useActiveWeb3React();
-  const { isV4 } = useIsV4();
 
   const parsedTokenId = tokenIdFromUrl
     ? BigNumber.from(tokenIdFromUrl)
     : undefined;
   const isUni = parsedQuery?.isUni === 'true';
+  const isV4 = parsedQuery?.isV4 === 'true';
   const { loading, position: _positionDetails } = useV3PositionFromTokenId(
     parsedTokenId,
     isUni,
+    isV4,
   );
 
   const { loading: positionLoading, positions } = useV3Positions(
@@ -91,7 +91,7 @@ export default function PositionPage() {
             <NavLink
               className='text-primary p'
               style={{ textDecoration: 'none' }}
-              to='/pools/v3'
+              to={`/pools/${isV4 ? 'v4' : 'v3'}`}
             >
               ← {t('backPoolOverview')}
             </NavLink>
