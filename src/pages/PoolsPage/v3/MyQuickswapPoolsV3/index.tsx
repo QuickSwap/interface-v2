@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useV3Positions } from 'hooks/v3/useV3Positions';
 import { useActiveWeb3React } from 'hooks';
@@ -10,16 +10,17 @@ import { useWeb3Modal } from '@web3modal/ethers5/react';
 import { useIsV4 } from 'state/application/hooks';
 
 const MyQuickswapPoolsV3: React.FC<{
-  hideFarmingPositions: boolean;
   userHideClosedPositions: boolean;
-}> = ({ hideFarmingPositions, userHideClosedPositions }) => {
+  isForAll?: boolean;
+  setIsLoading?: (loading: boolean) => void;
+}> = ({ userHideClosedPositions, isForAll, setIsLoading }) => {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
   const { isV4 } = useIsV4();
   const { positions, loading: positionsLoading } = useV3Positions(
     account,
-    userHideClosedPositions,
-    hideFarmingPositions,
+    !isForAll && userHideClosedPositions,
+    false,
     isV4,
   );
 
@@ -44,16 +45,16 @@ const MyQuickswapPoolsV3: React.FC<{
 
   const filteredPositions = useMemo(
     () => [
-      ...(hideFarmingPositions || !farmingPositions ? [] : farmingPositions),
+      ...(!farmingPositions ? [] : farmingPositions),
       ...inRangeWithOutFarmingPositions,
-      ...(userHideClosedPositions ? [] : closedPositions),
+      ...(!isForAll && userHideClosedPositions ? [] : closedPositions),
     ],
     [
-      hideFarmingPositions,
       farmingPositions,
       inRangeWithOutFarmingPositions,
       userHideClosedPositions,
       closedPositions,
+      isForAll,
     ],
   );
 
@@ -63,35 +64,37 @@ const MyQuickswapPoolsV3: React.FC<{
 
   const showConnectAWallet = Boolean(!account);
 
+  useEffect(() => {
+    !!setIsLoading && setIsLoading(positionsLoading);
+  }, [setIsLoading, positionsLoading]);
+
   const { open } = useWeb3Modal();
 
   return (
-    <Box>
-      <Box mt={2}>
-        {positionsLoading ? (
-          <Box className='flex justify-center'>
-            <Loader stroke='white' size={'2rem'} />
-          </Box>
-        ) : filteredPositions && filteredPositions.length > 0 ? (
-          <PositionList
-            positions={filteredPositions.sort((posA, posB) =>
-              Number(+posA.tokenId < +posB.tokenId),
-            )}
-            newestPosition={newestPosition}
-          />
-        ) : (
-          <Box textAlign='center'>
-            <p>{t('noLiquidityPositions')}.</p>
-            {showConnectAWallet && (
-              <Box maxWidth={250} margin='20px auto 0'>
-                <Button fullWidth onClick={() => open()}>
-                  {t('connectWallet')}
-                </Button>
-              </Box>
-            )}
-          </Box>
-        )}
-      </Box>
+    <Box mt={2}>
+      {!!account && !isForAll && positionsLoading ? (
+        <Box className='flex justify-center'>
+          <Loader stroke='white' size={'2rem'} />
+        </Box>
+      ) : filteredPositions && filteredPositions.length > 0 ? (
+        <PositionList
+          positions={filteredPositions.sort((posA, posB) =>
+            Number(+posA.tokenId < +posB.tokenId),
+          )}
+          newestPosition={newestPosition}
+        />
+      ) : (
+        <Box textAlign='center'>
+          {!isForAll && <p>{t('noLiquidityPositions')}.</p>}
+          {showConnectAWallet && (
+            <Box maxWidth={250} margin='20px auto 0'>
+              <Button fullWidth onClick={() => open()}>
+                {t('connectWallet')}
+              </Button>
+            </Box>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

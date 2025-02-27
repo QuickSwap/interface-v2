@@ -129,7 +129,6 @@ export default function MyLiquidityPoolsV4() {
               </Box>
             )}
             <MyQuickswapPoolsV3
-              hideFarmingPositions={hideQuickFarmingPositions}
               userHideClosedPositions={userHideQuickClosedPositions}
             />
           </>
