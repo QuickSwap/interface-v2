@@ -16,7 +16,7 @@ import {
 } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import useENS from './useENS';
-import { OptimalRate, SwapSide } from '@paraswap/core';
+import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
@@ -202,10 +202,9 @@ export function useParaswapCallback(
             summary,
             type: TransactionType.SWAPPED,
           });
-          const destUSD: any = priceRoute.destUSD;
           liquidityHubSDK.analytics.onTradeSuccess(
             priceRoute.destAmount,
-            destUSD,
+            priceRoute.destUSD,
             'dex',
             'paraswap',
           );
