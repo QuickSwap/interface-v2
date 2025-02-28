@@ -521,15 +521,15 @@ export function SelectRange({
         )
       : 0;
 
+  const steerVaultByPresetRange = steerVaultsForPair.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.address.toLowerCase() === presetRange.address.toLowerCase(),
+  );
   const steerVault =
-    steerVaultsForPair.find(
-      (item) =>
-        presetRange &&
-        presetRange.address &&
-        item.address.toLowerCase() === presetRange.address.toLowerCase(),
-    ) ?? steerVaultsForPair
-      ? steerVaultsForPair[0]
-      : undefined;
+    steerVaultByPresetRange ??
+    (steerVaultsForPair.length > 0 ? steerVaultsForPair[0] : undefined);
 
   const { data: unipilotFarmData } = useUnipilotFarmData(
     unipilotVaultsForPair.map((pair) => pair.id),

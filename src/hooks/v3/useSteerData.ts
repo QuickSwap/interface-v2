@@ -192,154 +192,158 @@ export const useSteerVaults = (chainId: ChainId) => {
     vaultAddresses.map((address) => [address]),
   );
 
-  const vaultDetails: SteerVault[] = vaultDetailCalls.map((call, index) => {
-    const vaultAddress = vaultAddresses[index];
-    const vaultRegistryDetailCall = vaultRegistryDetailCalls[index];
-    const vaultRegistryData =
-      !vaultRegistryDetailCall.loading &&
-      vaultRegistryDetailCall.result &&
-      vaultRegistryDetailCall.result.length > 0
-        ? vaultRegistryDetailCall.result[0]
-        : undefined;
-    const vaultData =
-      !call.loading && call.result && call.result.length > 0
-        ? call.result[0]
-        : undefined;
-    const vaultType =
-      vaultData && vaultData.length > 0 ? vaultData[0] : undefined;
-    const token0Address =
-      vaultData && vaultData.length > 1 ? vaultData[1] : undefined;
-    const token1Address =
-      vaultData && vaultData.length > 2 ? vaultData[2] : undefined;
-    const vaultName =
-      vaultData && vaultData.length > 3 ? vaultData[3] : undefined;
-    const vaultSymbol =
-      vaultData && vaultData.length > 4 ? vaultData[4] : undefined;
-    const vaultDecimals =
-      vaultData && vaultData.length > 5 && vaultData[5]
-        ? Number(vaultData[5])
-        : 18;
-    const token0Name =
-      vaultData && vaultData.length > 6 ? vaultData[6] : undefined;
-    const token1Name =
-      vaultData && vaultData.length > 7 ? vaultData[7] : undefined;
-    const token0Symbol =
-      vaultData && vaultData.length > 8 ? vaultData[8] : undefined;
-    const token1Symbol =
-      vaultData && vaultData.length > 9 ? vaultData[9] : undefined;
-    const token0Decimals =
-      vaultData && vaultData.length > 10 && vaultData[10]
-        ? Number(vaultData[10])
-        : undefined;
-    const token1Decimals =
-      vaultData && vaultData.length > 11 && vaultData[11]
-        ? Number(vaultData[11])
-        : undefined;
-    const token0V2 =
-      token0Address && token0Decimals
-        ? getTokenFromAddress(token0Address, chainId, tokenMap, [
-            new TokenV2(
-              chainId,
-              token0Address,
-              token0Decimals,
-              token0Symbol,
-              token0Name,
-            ),
-          ])
-        : undefined;
-    const token1V2 =
-      token1Address && token1Decimals
-        ? getTokenFromAddress(token1Address, chainId, tokenMap, [
-            new TokenV2(
-              chainId,
-              token1Address,
-              token1Decimals,
-              token1Symbol,
-              token1Name,
-            ),
-          ])
-        : undefined;
-    const token0 = token0V2 ? toV3Token(token0V2) : undefined;
-    const token1 = token1V2 ? toV3Token(token1V2) : undefined;
-    const feeTier =
-      chainId === ChainId.MATIC || chainId === ChainId.LAYERX
-        ? undefined
-        : vaultData && vaultData.length > 12
-        ? vaultData[12]
-        : undefined;
-    const totalLPIndex = chainId === ChainId.MANTA ? 13 : 12;
-    const totalLPTokensIssued =
-      vaultData && vaultData.length > totalLPIndex
-        ? vaultData[totalLPIndex]
-        : undefined;
-    const token0BalanceIndex = chainId === ChainId.MANTA ? 14 : 13;
-    const token0Balance =
-      vaultData && vaultData.length > token0BalanceIndex
-        ? vaultData[token0BalanceIndex]
-        : undefined;
-    const token1BalanceIndex = chainId === ChainId.MANTA ? 15 : 14;
-    const token1Balance =
-      vaultData && vaultData.length > token1BalanceIndex
-        ? vaultData[token1BalanceIndex]
-        : undefined;
-    const vaultCreatorIndex = chainId === ChainId.MANTA ? 16 : 15;
-    const vaultCreator =
-      vaultData && vaultData.length > vaultCreatorIndex
-        ? vaultData[vaultCreatorIndex]
-        : undefined;
+  const vaultDetails: SteerVault[] = vaultDetailCalls
+    .map((call, index) => {
+      const vaultAddress = vaultAddresses[index];
+      const vaultRegistryDetailCall = vaultRegistryDetailCalls[index];
+      const vaultRegistryData =
+        !vaultRegistryDetailCall.loading &&
+        vaultRegistryDetailCall.result &&
+        vaultRegistryDetailCall.result.length > 0
+          ? vaultRegistryDetailCall.result[0]
+          : undefined;
+      const vaultData =
+        !call.loading && call.result && call.result.length > 0
+          ? call.result[0]
+          : undefined;
+      const vaultType =
+        vaultData && vaultData.length > 0 ? vaultData[0] : undefined;
+      const token0Address =
+        vaultData && vaultData.length > 1 ? vaultData[1] : undefined;
+      const token1Address =
+        vaultData && vaultData.length > 2 ? vaultData[2] : undefined;
+      const vaultName =
+        vaultData && vaultData.length > 3 ? vaultData[3] : undefined;
+      const vaultSymbol =
+        vaultData && vaultData.length > 4 ? vaultData[4] : undefined;
+      const vaultDecimals =
+        vaultData && vaultData.length > 5 && vaultData[5]
+          ? Number(vaultData[5])
+          : 18;
+      const token0Name =
+        vaultData && vaultData.length > 6 ? vaultData[6] : undefined;
+      const token1Name =
+        vaultData && vaultData.length > 7 ? vaultData[7] : undefined;
+      const token0Symbol =
+        vaultData && vaultData.length > 8 ? vaultData[8] : undefined;
+      const token1Symbol =
+        vaultData && vaultData.length > 9 ? vaultData[9] : undefined;
+      const token0Decimals =
+        vaultData && vaultData.length > 10 && vaultData[10]
+          ? Number(vaultData[10])
+          : undefined;
+      const token1Decimals =
+        vaultData && vaultData.length > 11 && vaultData[11]
+          ? Number(vaultData[11])
+          : undefined;
+      const token0V2 =
+        token0Address && token0Decimals
+          ? getTokenFromAddress(token0Address, chainId, tokenMap, [
+              new TokenV2(
+                chainId,
+                token0Address,
+                token0Decimals,
+                token0Symbol,
+                token0Name,
+              ),
+            ])
+          : undefined;
+      const token1V2 =
+        token1Address && token1Decimals
+          ? getTokenFromAddress(token1Address, chainId, tokenMap, [
+              new TokenV2(
+                chainId,
+                token1Address,
+                token1Decimals,
+                token1Symbol,
+                token1Name,
+              ),
+            ])
+          : undefined;
+      const token0 = token0V2 ? toV3Token(token0V2) : undefined;
+      const token1 = token1V2 ? toV3Token(token1V2) : undefined;
+      const feeTier =
+        chainId === ChainId.MATIC || chainId === ChainId.LAYERX
+          ? undefined
+          : vaultData && vaultData.length > 12
+          ? vaultData[12]
+          : undefined;
+      const totalLPIndex = chainId === ChainId.MANTA ? 13 : 12;
+      const totalLPTokensIssued =
+        vaultData && vaultData.length > totalLPIndex
+          ? vaultData[totalLPIndex]
+          : undefined;
+      const token0BalanceIndex = chainId === ChainId.MANTA ? 14 : 13;
+      const token0Balance =
+        vaultData && vaultData.length > token0BalanceIndex
+          ? vaultData[token0BalanceIndex]
+          : undefined;
+      const token1BalanceIndex = chainId === ChainId.MANTA ? 15 : 14;
+      const token1Balance =
+        vaultData && vaultData.length > token1BalanceIndex
+          ? vaultData[token1BalanceIndex]
+          : undefined;
+      const vaultCreatorIndex = chainId === ChainId.MANTA ? 16 : 15;
+      const vaultCreator =
+        vaultData && vaultData.length > vaultCreatorIndex
+          ? vaultData[vaultCreatorIndex]
+          : undefined;
 
-    const vaultItem = vaults?.find((item) => item.address === vaultAddress);
-    const slot0 = slot0Items.find(
-      (item) => vaultItem && item.poolAddress === vaultItem.poolAddress,
+      const vaultItem = vaults?.find((item) => item.address === vaultAddress);
+      const slot0 = slot0Items.find(
+        (item) => vaultItem && item.poolAddress === vaultItem.poolAddress,
+      );
+
+      const vaultPosition = vaultPositions[index];
+
+      return {
+        ...slot0,
+        address: vaultAddress,
+        state:
+          vaultRegistryData && vaultRegistryData.length > 0
+            ? Number(vaultRegistryData[0])
+            : undefined,
+        strategyName: vaultItem?.strategyName,
+        apr: vaultItem?.apr,
+        vaultType,
+        token0,
+        token1,
+        vaultName,
+        vaultSymbol,
+        vaultDecimals,
+        token0Name,
+        token0Symbol,
+        token0Decimals,
+        token1Name,
+        token1Symbol,
+        token1Decimals,
+        feeTier,
+        totalLPTokensIssued,
+        token0Balance,
+        token1Balance,
+        vaultCreator,
+        lowerTick:
+          vaultPosition &&
+          vaultPosition.lowerTicks &&
+          vaultPosition.lowerTicks.length > 0
+            ? Math.min(
+                ...vaultPosition.lowerTicks.map((tick: any) => Number(tick)),
+              )
+            : undefined,
+        upperTick:
+          vaultPosition &&
+          vaultPosition.upperTicks &&
+          vaultPosition.upperTicks.length > 0
+            ? Math.max(
+                ...vaultPosition.upperTicks.map((tick: any) => Number(tick)),
+              )
+            : undefined,
+      };
+    })
+    .filter(
+      (vaults) =>
+        vaults.lowerTick !== undefined && vaults.upperTick !== undefined,
     );
-
-    const vaultPosition = vaultPositions[index];
-
-    return {
-      ...slot0,
-      address: vaultAddress,
-      state:
-        vaultRegistryData && vaultRegistryData.length > 0
-          ? Number(vaultRegistryData[0])
-          : undefined,
-      strategyName: vaultItem?.strategyName,
-      apr: vaultItem?.apr,
-      vaultType,
-      token0,
-      token1,
-      vaultName,
-      vaultSymbol,
-      vaultDecimals,
-      token0Name,
-      token0Symbol,
-      token0Decimals,
-      token1Name,
-      token1Symbol,
-      token1Decimals,
-      feeTier,
-      totalLPTokensIssued,
-      token0Balance,
-      token1Balance,
-      vaultCreator,
-      lowerTick:
-        vaultPosition &&
-        vaultPosition.lowerTicks &&
-        vaultPosition.lowerTicks.length > 0
-          ? Math.min(
-              ...vaultPosition.lowerTicks.map((tick: any) => Number(tick)),
-            )
-          : undefined,
-      upperTick:
-        vaultPosition &&
-        vaultPosition.upperTicks &&
-        vaultPosition.upperTicks.length > 0
-          ? Math.max(
-              ...vaultPosition.upperTicks.map((tick: any) => Number(tick)),
-            )
-          : undefined,
-    };
-  });
-
   return { loading: isLoading, data: vaultDetails };
 };
 
