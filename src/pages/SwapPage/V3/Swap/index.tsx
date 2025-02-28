@@ -251,6 +251,7 @@ const SwapV3Page: React.FC = () => {
   );
 
   const routeNotFound = !trade?.route;
+  console.log('v3TradeState', v3TradeState);
   const isLoadingRoute =
     toggledVersion === Version.v3 && V3TradeState.LOADING === v3TradeState;
 

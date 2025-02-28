@@ -22,6 +22,9 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/hooks';
+
+import { useDerivedSwapInfo as useV3DerivedSwapInfo } from 'state/swap/v3/hooks';
+
 import {
   useExpertModeManager,
   useUserSlippageTolerance,
@@ -100,7 +103,10 @@ import {
   useLiquidityHubQuote,
   useGetBetterPrice,
 } from './orbs/LiquidityHub/hooks';
+import { NoLiquiditySwapConfirmation } from './orbs/LiquidityHub/NoLiquiditySwapConfirmation';
 import { LiquidityHubSwapConfirmation } from './orbs/LiquidityHub/LiquidityHubSwapConfirmation';
+import { V3TradeState } from 'hooks/v3/useBestV3Trade';
+
 import { PoweredByOrbs } from '@orbs-network/swap-ui';
 import {
   LiquidityHubSwapDetails,
@@ -119,6 +125,7 @@ const SwapBestTrade: React.FC<{
   const [liquidityHubDisabled, setLiquidityHubDisabled] = useState(false);
   const [swappingLiquidityHub, setSwappingLiquidityHub] = useState(false);
   const [showLiquidityHubConfirm, setShowLiquidityHubConfirm] = useState(false);
+  const [showNoLiquidityConfirm, setShowNoLiquidityConfirm] = useState(false);
 
   // token warning stuff
   // const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -169,6 +176,11 @@ const SwapBestTrade: React.FC<{
     inputError: swapInputError,
     autoSlippage,
   } = useDerivedSwapInfo();
+
+  const {
+    v3TradeState: { state: v3TradeState },
+  } = useV3DerivedSwapInfo();
+
   const finalizedTransaction = useTransactionFinalizer();
   const [isExpertMode] = useExpertModeManager();
   const {
@@ -622,6 +634,12 @@ const SwapBestTrade: React.FC<{
       setNativeApprovalSubmitted(true);
     }
   }, [nativeConvertApproval]);
+
+  useEffect(() => {
+    if (optimalRateError) {
+      setShowNoLiquidityConfirm(true);
+    }
+  }, [optimalRateError]);
 
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
@@ -1289,6 +1307,15 @@ const SwapBestTrade: React.FC<{
         onConfirm={handleConfirmTokenWarning}
         onDismiss={handleDismissTokenWarning}
       />
+      {/* optimalRateError */}
+
+      <NoLiquiditySwapConfirmation
+        isOpen={showNoLiquidityConfirm}
+        onClose={() => setShowNoLiquidityConfirm(false)}
+        inputAddress={parsedCurrency0Id}
+        outputAddress={parsedCurrency1Id}
+      />
+
       <LiquidityHubSwapConfirmation
         inAmount={parsedAmount?.raw.toString()}
         inCurrency={inputCurrency}

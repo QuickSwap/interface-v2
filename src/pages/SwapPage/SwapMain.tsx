@@ -216,6 +216,7 @@ const SwapMain: React.FC = () => {
         updateIsV2(true);
         updateIsV4(false);
       }
+      setSelectedIndex(Number(swapType));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swapType]);
