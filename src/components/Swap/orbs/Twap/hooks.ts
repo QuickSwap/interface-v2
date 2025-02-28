@@ -296,17 +296,11 @@ export const useOptimalRate = () => {
           amount: srcAmount,
           side: SwapSide.SELL,
           options: {
-            includeDEXS: [
-              'quickswap',
-              'quickswapv3',
-              'quickswapv3.1',
-              'quickperps',
-            ],
+            includeDEXS: 'quickswap,quickswapv3,quickswapv3.1,quickperps',
             maxImpact: maxImpactAllowed,
             partner: 'quickswapv3',
             //@ts-ignore
             srcTokenTransferFee: paraswapTaxSell[srcToken.toLowerCase()],
-            //@ts-ignore
             destTokenTransferFee: paraswapTaxBuy[destToken.toLowerCase()],
           },
         });

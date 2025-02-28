@@ -19,11 +19,10 @@ export function useParaswap() {
   const { chainId } = useActiveWeb3React();
   return useMemo(() => {
     const paraswapSDK = constructSimpleSDK({
-      chainId: <number>chainId,
+      network: <number>chainId,
       fetch: window.fetch,
-      version: '6.2',
     });
 
-    return paraswapSDK.swap;
+    return paraswapSDK;
   }, [chainId]);
 }
