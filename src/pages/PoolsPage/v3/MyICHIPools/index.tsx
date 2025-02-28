@@ -6,7 +6,7 @@ import ICHILPItem from './ICHILPItem';
 import { useICHIPositions } from 'hooks/v3/useV3Positions';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
 
-export default function MyICHIPools() {
+export default function MyICHIPools({ isForAll }: { isForAll?: boolean }) {
   const { t } = useTranslation();
   const { account } = useActiveWeb3React();
 
@@ -17,7 +17,7 @@ export default function MyICHIPools() {
   const { positions } = useICHIPositions();
 
   return (
-    <Box>
+    <>
       {positions && positions.length > 0 ? (
         <>
           {positions.map((position, index) => (
@@ -25,17 +25,19 @@ export default function MyICHIPools() {
           ))}
         </>
       ) : (
-        <Box mt={2} textAlign='center'>
-          <p>{t('noLiquidityPositions')}.</p>
-          {showConnectAWallet && (
-            <Box maxWidth={250} margin='20px auto 0'>
-              <Button fullWidth onClick={() => open()}>
-                {t('connectWallet')}
-              </Button>
-            </Box>
-          )}
-        </Box>
+        !isForAll && (
+          <Box mt={2} textAlign='center'>
+            <p>{t('noLiquidityPositions')}.</p>
+            {showConnectAWallet && (
+              <Box maxWidth={250} margin='20px auto 0'>
+                <Button fullWidth onClick={() => open()}>
+                  {t('connectWallet')}
+                </Button>
+              </Box>
+            )}
+          </Box>
+        )
       )}
-    </Box>
+    </>
   );
 }

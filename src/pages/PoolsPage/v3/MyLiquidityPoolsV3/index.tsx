@@ -24,12 +24,10 @@ import MyUnipilotPoolsV3 from '../MyUnipilotPoolsV3';
 import MyDefiedgePoolsV3 from '../MyDefiedgePoolsV3';
 import MySteerPoolsV3 from '../MySteerPoolsV3';
 import MyICHIPools from '../MyICHIPools';
-import { useIsV4 } from 'state/application/hooks';
 
 export default function MyLiquidityPoolsV3() {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
-  const { isV4 } = useIsV4();
   const history = useHistory();
 
   const { pairs: allV2PairsWithLiquidity } = useV2LiquidityPools(
@@ -43,9 +41,11 @@ export default function MyLiquidityPoolsV3() {
     userHideQuickClosedPositions,
     setUserHideQuickClosedPositions,
   ] = useState(true);
-  const [hideQuickFarmingPositions, setHideQuickFarmingPositions] = useState(
-    false,
-  );
+
+  const [quickswapPoolsLoading, setQuickswapPoolsLoading] = useState(false);
+  const [unipilogPoolsLoading, setUnipilogPoolsLoading] = useState(false);
+  const [gammaPoolsLoading, setGammaPoolsLoading] = useState(false);
+  const [defiedgePoolsLoading, setDefiedgePoolsLoading] = useState(false);
 
   const filters = [
     {
@@ -53,54 +53,82 @@ export default function MyLiquidityPoolsV3() {
       method: setUserHideQuickClosedPositions,
       checkValue: userHideQuickClosedPositions,
     },
-    {
-      title: t('farming'),
-      method: setHideQuickFarmingPositions,
-      checkValue: hideQuickFarmingPositions,
-    },
   ];
 
-  const { count: quickPoolsCount } = useV3Positions(
-    account,
-    userHideQuickClosedPositions,
-    hideQuickFarmingPositions,
-    isV4,
-  );
   const {
-    loading: gammaPoolsLoading,
+    count: quickPoolsCount,
+    includeCloseCount: quickPoolsTotalCount,
+    loading: quickswapCountLoading,
+  } = useV3Positions(account, userHideQuickClosedPositions);
+  const {
+    loading: gammaPoolsCountLoading,
     count: gammaPoolsCount,
   } = useGammaPositionsCount(account, chainId);
 
   const {
-    loading: uniPilotPositionsLoading,
+    loading: uniPilotPositionsCountLoading,
     count: unipilotPositionsCount,
   } = useUnipilotPositionsCount(account, chainId);
 
   const {
-    loading: defiedgeStrategiesLoading,
+    loading: defiedgeStrategiesCountLoading,
     count: defiedgeStrategiesCount,
   } = useDefiedgePositions(account, chainId);
 
   const {
-    loading: steerPoolsLoading,
+    loading: steerPoolsCountLoading,
     count: steerPoolsCount,
   } = useV3SteerPositionsCount();
 
-  const { loading: ichiLoading, count: ichiCount } = useICHIPositionsCount();
+  const {
+    loading: ichiCountLoading,
+    count: ichiCount,
+  } = useICHIPositionsCount();
 
-  const loading =
-    gammaPoolsLoading &&
-    uniPilotPositionsLoading &&
-    steerPoolsLoading &&
-    ichiLoading &&
-    defiedgeStrategiesLoading;
+  const counterLoading =
+    quickswapCountLoading ||
+    gammaPoolsCountLoading ||
+    uniPilotPositionsCountLoading ||
+    steerPoolsCountLoading ||
+    ichiCountLoading ||
+    defiedgeStrategiesCountLoading;
+
+  const poolLoading =
+    quickswapPoolsLoading ||
+    unipilogPoolsLoading ||
+    gammaPoolsLoading ||
+    defiedgePoolsLoading;
 
   const [poolFilter, setPoolFilter] = useState(
-    GlobalConst.utils.poolsFilter.quickswap,
+    GlobalConst.utils.poolsFilter.all,
   );
 
   const myPoolsFilter = useMemo(() => {
     const filters: any[] = [];
+    // all tab
+    filters.push({
+      id: GlobalConst.utils.poolsFilter.all,
+      text: (
+        <Box className='flex items-center'>
+          <small>All</small>
+          <Box
+            ml='6px'
+            className={`myV3PoolCountWrapper ${
+              poolFilter === GlobalConst.utils.poolsFilter.all
+                ? 'activeMyV3PoolCountWrapper'
+                : ''
+            }`}
+          >
+            {(quickPoolsTotalCount ?? 0) +
+              unipilotPositionsCount +
+              gammaPoolsCount +
+              defiedgeStrategiesCount +
+              steerPoolsCount +
+              ichiCount}
+          </Box>
+        </Box>
+      ),
+    });
     filters.push({
       id: GlobalConst.utils.poolsFilter.quickswap,
       text: (
@@ -228,6 +256,7 @@ export default function MyLiquidityPoolsV3() {
     defiedgeStrategiesCount,
     steerPoolsCount,
     ichiCount,
+    quickPoolsTotalCount,
   ]);
 
   return (
@@ -257,7 +286,7 @@ export default function MyLiquidityPoolsV3() {
           </Box>
         )}
       </Box>
-      {loading ? (
+      {!!account && counterLoading ? (
         <Box py={5} className='flex items-center justify-center'>
           <Loader size='40px' />
         </Box>
@@ -272,39 +301,78 @@ export default function MyLiquidityPoolsV3() {
             />
           </Box>
           <Box>
-            {poolFilter === GlobalConst.utils.poolsFilter.quickswap && (
+            {((!!account && counterLoading) || (account && poolLoading)) && (
+              <Box py={5} className='flex items-center justify-center'>
+                <Loader size='40px' />
+              </Box>
+            )}
+            {!counterLoading && (
               <>
-                {account && (
-                  <Box mt={2} className='flex justify-between items-center'>
-                    <Box className='flex'>
-                      {filters.map((item, key) => (
-                        <Box mr={1} key={key}>
-                          <FilterPanelItem item={item} />
-                        </Box>
-                      ))}
-                    </Box>
-                  </Box>
+                {poolFilter === GlobalConst.utils.poolsFilter.all && (
+                  <>
+                    {(quickPoolsCount ?? 0) > 0 && (
+                      <MyQuickswapPoolsV3
+                        userHideClosedPositions={userHideQuickClosedPositions}
+                        isForAll={true}
+                        setIsLoading={setQuickswapPoolsLoading}
+                      />
+                    )}
+                    {unipilotPositionsCount > 0 && (
+                      <MyUnipilotPoolsV3
+                        isForAll={true}
+                        setIsLoading={setUnipilogPoolsLoading}
+                      />
+                    )}
+                    {gammaPoolsCount > 0 && (
+                      <MyGammaPoolsV3
+                        isForAll={true}
+                        setIsLoading={setGammaPoolsLoading}
+                      />
+                    )}
+                    {defiedgeStrategiesCount > 0 && (
+                      <MyDefiedgePoolsV3
+                        isForAll={true}
+                        setIsLoading={setDefiedgePoolsLoading}
+                      />
+                    )}
+                    {steerPoolsCount > 0 && <MySteerPoolsV3 isForAll={true} />}
+                    {ichiCount > 0 && <MyICHIPools isForAll={true} />}
+                  </>
                 )}
-                <MyQuickswapPoolsV3
-                  hideFarmingPositions={hideQuickFarmingPositions}
-                  userHideClosedPositions={userHideQuickClosedPositions}
-                />
+                {poolFilter === GlobalConst.utils.poolsFilter.quickswap && (
+                  <>
+                    {account && (
+                      <Box mt={2} className='flex justify-between items-center'>
+                        <Box className='flex'>
+                          {filters.map((item, key) => (
+                            <Box mr={1} key={key}>
+                              <FilterPanelItem item={item} />
+                            </Box>
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
+                    <MyQuickswapPoolsV3
+                      userHideClosedPositions={userHideQuickClosedPositions}
+                    />
+                  </>
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.unipilot && (
+                  <MyUnipilotPoolsV3 />
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
+                  <MyGammaPoolsV3 />
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.defiedge && (
+                  <MyDefiedgePoolsV3 />
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.steer && (
+                  <MySteerPoolsV3 />
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.ichi && (
+                  <MyICHIPools />
+                )}
               </>
-            )}
-            {poolFilter === GlobalConst.utils.poolsFilter.unipilot && (
-              <MyUnipilotPoolsV3 />
-            )}
-            {poolFilter === GlobalConst.utils.poolsFilter.gamma && (
-              <MyGammaPoolsV3 />
-            )}
-            {poolFilter === GlobalConst.utils.poolsFilter.defiedge && (
-              <MyDefiedgePoolsV3 />
-            )}
-            {poolFilter === GlobalConst.utils.poolsFilter.steer && (
-              <MySteerPoolsV3 />
-            )}
-            {poolFilter === GlobalConst.utils.poolsFilter.ichi && (
-              <MyICHIPools />
             )}
           </Box>
         </>
