@@ -4,7 +4,6 @@ import { DoubleCurrencyLogo } from 'components';
 import { formatNumber, getTokenFromAddress } from 'utils';
 import APRHover from 'assets/images/aprHover.png';
 import QuickSwapLogo from 'assets/images/quickLogo.png';
-import DefiedgeLogo from 'assets/images/defiedge.png';
 import GammaLogo from 'assets/images/gammaLogo.png';
 import IchiLogo from 'assets/images/ichi_logo.png';
 import SteerLogo from 'assets/images/SteerLogo.png';
@@ -28,15 +27,6 @@ export const MerklPairFarmCard: React.FC<Props> = ({ farm }) => {
     case 'Gamma':
       poolIcon = (
         <img src={GammaLogo} alt='Gamma Logo' style={{ height: 10 }} />
-      );
-      break;
-    case 'DefiEdge':
-      poolIcon = (
-        <img
-          src={DefiedgeLogo}
-          alt='Defiedge Logo'
-          style={{ height: 36, marginLeft: '-10px' }}
-        />
       );
       break;
     case 'Ichi':
