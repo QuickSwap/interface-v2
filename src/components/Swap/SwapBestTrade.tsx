@@ -126,6 +126,8 @@ const SwapBestTrade: React.FC<{
   const [swappingLiquidityHub, setSwappingLiquidityHub] = useState(false);
   const [showLiquidityHubConfirm, setShowLiquidityHubConfirm] = useState(false);
   const [showNoLiquidityConfirm, setShowNoLiquidityConfirm] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [outputValue, setOutputValue] = useState('');
 
   // token warning stuff
   // const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -866,6 +868,7 @@ const SwapBestTrade: React.FC<{
 
   const handleTypeInput = useCallback(
     (value: string) => {
+      setInputValue(value);
       onUserInput(Field.INPUT, value);
       setSwapType(SwapSide.SELL);
     },
@@ -873,6 +876,7 @@ const SwapBestTrade: React.FC<{
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
+      setOutputValue(value);
       onUserInput(Field.OUTPUT, value);
       setSwapType(SwapSide.BUY);
     },
@@ -1308,13 +1312,15 @@ const SwapBestTrade: React.FC<{
         onDismiss={handleDismissTokenWarning}
       />
       {/* optimalRateError */}
-
-      <NoLiquiditySwapConfirmation
-        isOpen={showNoLiquidityConfirm}
-        onClose={() => setShowNoLiquidityConfirm(false)}
-        inputAddress={parsedCurrency0Id}
-        outputAddress={parsedCurrency1Id}
-      />
+      {showNoLiquidityConfirm && (
+        <NoLiquiditySwapConfirmation
+          isOpen={showNoLiquidityConfirm}
+          onClose={() => setShowNoLiquidityConfirm(false)}
+          parsedAmount={parsedAmounts}
+          inputValue={inputValue}
+          outputValue={outputValue}
+        />
+      )}
 
       <LiquidityHubSwapConfirmation
         inAmount={parsedAmount?.raw.toString()}
