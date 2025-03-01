@@ -10,7 +10,6 @@ import CustomSelector from 'components/v3/CustomSelector';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
@@ -44,7 +43,6 @@ export interface V3Farm {
 export default function Farms() {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
-  const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainId);
   const merklAvailable = config['farm']['merkl'];
 
@@ -95,11 +93,6 @@ export default function Farms() {
             text: t('myrewards'),
             id: 0,
             link: 'my-rewards',
-          },
-          {
-            text: t('myFarms'),
-            id: 2,
-            link: 'my-farms',
           },
         ]
       : [
@@ -295,9 +288,6 @@ export default function Farms() {
           ) : (
             <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
           ))}
-        {selectedFarmCategory.id === 2 && (
-          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
-        )}
       </Box>
     </>
   );
