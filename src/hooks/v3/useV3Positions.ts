@@ -47,6 +47,7 @@ interface UseV3PositionsResults {
   loading: boolean;
   positions: PositionPool[] | undefined;
   count?: number;
+  includeCloseCount?: number;
 }
 
 export function useV3PositionsFromTokenIds(
@@ -253,6 +254,9 @@ export function useV3Positions(
     (hideFarmingPosition
       ? 0
       : transferredTokenIds.length + oldTransferredTokenIds.length);
+  const totalCount =
+    (algebraPositions ?? []).concat(isV4 ? [] : uniV3Positions ?? []).length +
+    (transferredTokenIds.length + oldTransferredTokenIds.length);
 
   return {
     loading:
@@ -263,6 +267,7 @@ export function useV3Positions(
       _positionsOnFarmerLoading,
     positions: combinedPositions,
     count,
+    includeCloseCount: totalCount,
   };
 }
 

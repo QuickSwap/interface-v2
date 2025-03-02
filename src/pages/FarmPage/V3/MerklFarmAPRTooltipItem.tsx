@@ -1,6 +1,5 @@
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
-import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatNumber, getAllGammaPairs } from 'utils';
@@ -13,12 +12,6 @@ export const MerklFarmAPRTooltipItem: React.FC<{
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
   const farmType = farm.label ? farm.label.split(' ')[0] : '';
-  const defiEdgeFarmTitleData = useDefiEdgeRangeTitles(
-    farmType === 'DefiEdge' ? [farm.almAddress] : [],
-  );
-  const defiEdgeFarmTitle = defiEdgeFarmTitleData[0]
-    ? defiEdgeFarmTitleData[0].title
-    : undefined;
 
   const farmTitle = useMemo(() => {
     if (farm.label) {
@@ -29,15 +22,13 @@ export const MerklFarmAPRTooltipItem: React.FC<{
               item.address.toLowerCase() === farm.almAddress.toLowerCase(),
           )?.title ?? ''
         );
-      } else if (farm.label.includes('DefiEdge')) {
-        return defiEdgeFarmTitle ?? '';
       } else if (farm.label.includes('Steer')) {
         return farm.title;
       }
       return '';
     }
     return '';
-  }, [chainId, defiEdgeFarmTitle, farm]);
+  }, [chainId, farm]);
 
   return (
     <Box>
