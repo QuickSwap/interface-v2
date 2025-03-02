@@ -10,6 +10,7 @@ import CustomSelector from 'components/v3/CustomSelector';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import { FarmingMyFarms } from 'components/StakerMyStakes';
 import { useActiveWeb3React } from 'hooks';
 import { ChainId, Token } from '@uniswap/sdk';
 import { SelectorItem } from 'components/v3/CustomSelector/CustomSelector';
@@ -43,6 +44,7 @@ export interface V3Farm {
 export default function Farms() {
   const { t } = useTranslation();
   const { chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ?? ChainId.MATIC;
   const config = getConfig(chainId);
   const merklAvailable = config['farm']['merkl'];
 
@@ -60,7 +62,7 @@ export default function Farms() {
   const [selectedSort, setSelectedSort] = useState(
     GlobalConst.utils.v3FarmSortBy.pool,
   );
-  const [isOld, setIsOld] = useState(true);
+  const [isMyFarmsToogle, setIsMyFarmsToogle] = useState(false);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -82,7 +84,7 @@ export default function Farms() {
     parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'farms';
 
   const v3FarmCategories = useMemo(() => {
-    return isOld
+    return isMyFarmsToogle
       ? [
           {
             text: t('allFarms'),
@@ -93,6 +95,11 @@ export default function Farms() {
             text: t('myrewards'),
             id: 0,
             link: 'my-rewards',
+          },
+          {
+            text: t('myFarms'),
+            id: 2,
+            link: 'my-farms',
           },
         ]
       : [
@@ -107,7 +114,7 @@ export default function Farms() {
             link: 'my-rewards',
           },
         ];
-  }, [t, isOld]);
+  }, [t, isMyFarmsToogle]);
 
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
@@ -205,15 +212,6 @@ export default function Farms() {
               selectedItem={selectedFarmCategory}
               handleChange={onChangeFarmCategory}
             />
-            {isMobile && !poolId && (
-              <Box className='flex items-center' gridGap={6}>
-                <small className='text-secondary'>{t('oldFarms')}</small>
-                <ToggleSwitch
-                  toggled={isOld}
-                  onToggle={() => setIsOld(!isOld)}
-                />
-              </Box>
-            )}
             <Box
               className={
                 isMobile
@@ -251,10 +249,10 @@ export default function Farms() {
               )}
               {!isMobile && (
                 <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <small className='text-secondary'>My Farms</small>
                   <ToggleSwitch
-                    toggled={isOld}
-                    onToggle={() => setIsOld(!isOld)}
+                    toggled={isMyFarmsToogle}
+                    onToggle={() => setIsMyFarmsToogle(!isMyFarmsToogle)}
                   />
                 </Box>
               )}
@@ -288,6 +286,9 @@ export default function Farms() {
           ) : (
             <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
           ))}
+        {selectedFarmCategory.id === 2 && (
+          <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
+        )}
       </Box>
     </>
   );
