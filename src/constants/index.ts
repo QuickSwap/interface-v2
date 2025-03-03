@@ -301,12 +301,13 @@ export const GlobalConst = {
       otherLP: '4',
     },
     poolsFilter: {
-      quickswap: '0',
-      unipilot: '1',
-      gamma: '2',
-      steer: '3',
-      defiedge: '4',
-      ichi: '5',
+      all: '0',
+      quickswap: '1',
+      unipilot: '2',
+      gamma: '3',
+      steer: '4',
+      defiedge: '5',
+      ichi: '6',
     },
   },
   analyticChart: {
@@ -964,7 +965,6 @@ export const GammaPairs: {
         token1Address: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
         ableToFarm: true,
         pid: 55,
-        withdrawOnly: true,
       },
     ],
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174-0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7': [
@@ -2798,6 +2798,12 @@ export const GlobalData = {
       USDT[ChainId.ETHEREUM],
       DAI[ChainId.ETHEREUM],
       WBTC[ChainId.ETHEREUM],
+    ],
+    [ChainId.MINATO]: [USDC[ChainId.MINATO]],
+    [ChainId.SONEIUM]: [
+      WETH[ChainId.SONEIUM],
+      USDC[ChainId.SONEIUM],
+      USDT[ChainId.SONEIUM],
     ],
   },
   stablePairs: {

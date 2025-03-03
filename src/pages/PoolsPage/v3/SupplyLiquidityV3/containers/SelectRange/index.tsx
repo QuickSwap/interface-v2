@@ -11,7 +11,6 @@ import {
   useV3MintState,
   useInitialUSDPrices,
   useGetUnipilotVaults,
-  useGetDefiedgeStrategies,
 } from 'state/mint/v3/hooks';
 import { useUSDCValue } from 'hooks/v3/useUSDCPrice';
 import { useAppDispatch } from 'state/hooks';
@@ -374,20 +373,6 @@ export function SelectRange({
     );
   });
 
-  const { defiedgeStrategies } = useGetDefiedgeStrategies();
-  const defiedgeStrategiesForPair = defiedgeStrategies.filter((item) => {
-    return (
-      (item.token0 &&
-        item.token1 &&
-        item.token0.toLowerCase() === currencyAAddress.toLowerCase() &&
-        item.token1.toLowerCase() === currencyBAddress.toLowerCase()) ||
-      (item.token0 &&
-        item.token1 &&
-        item.token0.toLowerCase() === currencyBAddress.toLowerCase() &&
-        item.token1.toLowerCase() === currencyAAddress.toLowerCase())
-    );
-  });
-
   const { loading: loadingSteerVaults, data: steerVaults } = useSteerVaults(
     chainId,
   );
@@ -411,24 +396,17 @@ export function SelectRange({
 
   const gammaPairExists = !!gammaPair;
   const unipilotVaultExists = unipilotVaultsForPair.length > 0;
-  const defiedgeStrategyExists = defiedgeStrategiesForPair.length > 0;
   const steerVaultExists = steerVaultsForPair.length > 0;
 
   const [isAutomatic, setIsAutoMatic] = useState(false);
 
   const selectVaultEnabled =
     (gammaPairExists && unipilotVaultExists) ||
-    (gammaPairExists && defiedgeStrategyExists) ||
     (gammaPairExists && steerVaultExists) ||
-    (unipilotVaultExists && steerVaultExists) ||
-    (unipilotVaultExists && defiedgeStrategyExists) ||
-    (defiedgeStrategyExists && steerVaultExists);
+    (unipilotVaultExists && steerVaultExists);
 
   const automaticEnabled =
-    gammaPairExists ||
-    unipilotVaultExists ||
-    defiedgeStrategyExists ||
-    steerVaultExists;
+    gammaPairExists || unipilotVaultExists || steerVaultExists;
 
   const enabledVaults = useMemo(() => {
     const vaults: string[] = [];
@@ -438,19 +416,11 @@ export function SelectRange({
     if (unipilotVaultExists) {
       vaults.push('Unipilot');
     }
-    if (defiedgeStrategyExists) {
-      vaults.push('DefiEdge');
-    }
     if (steerVaultExists) {
       vaults.push('Steer');
     }
     return vaults;
-  }, [
-    defiedgeStrategyExists,
-    gammaPairExists,
-    steerVaultExists,
-    unipilotVaultExists,
-  ]);
+  }, [gammaPairExists, steerVaultExists, unipilotVaultExists]);
 
   useEffect(() => {
     if (!loadingSteerVaults) {
@@ -475,10 +445,6 @@ export function SelectRange({
           onChangeLiquidityRangeType(
             GlobalConst.v3LiquidityRangeType.STEER_RANGE,
           );
-        } else if (defiedgeStrategyExists) {
-          onChangeLiquidityRangeType(
-            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE,
-          );
         } else {
           onChangeLiquidityRangeType(
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
@@ -489,7 +455,6 @@ export function SelectRange({
       onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
     }
   }, [
-    defiedgeStrategyExists,
     gammaPairExists,
     isAutomatic,
     onChangeLiquidityRangeType,
@@ -521,15 +486,15 @@ export function SelectRange({
         )
       : 0;
 
+  const steerVaultByPresetRange = steerVaultsForPair.find(
+    (item) =>
+      presetRange &&
+      presetRange.address &&
+      item.address.toLowerCase() === presetRange.address.toLowerCase(),
+  );
   const steerVault =
-    steerVaultsForPair.find(
-      (item) =>
-        presetRange &&
-        presetRange.address &&
-        item.address.toLowerCase() === presetRange.address.toLowerCase(),
-    ) ?? steerVaultsForPair
-      ? steerVaultsForPair[0]
-      : undefined;
+    steerVaultByPresetRange ??
+    (steerVaultsForPair.length > 0 ? steerVaultsForPair[0] : undefined);
 
   const { data: unipilotFarmData } = useUnipilotFarmData(
     unipilotVaultsForPair.map((pair) => pair.id),
@@ -637,13 +602,8 @@ export function SelectRange({
               liquidityRangeType ===
               GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE
             }
-            isDefiedge={
-              liquidityRangeType ===
-              GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
-            }
             gammaPair={gammaPair}
             unipilotPairs={unipilotVaultsForPair}
-            defiedgeStrategies={defiedgeStrategiesForPair}
             isSteer={
               liquidityRangeType ===
               GlobalConst.v3LiquidityRangeType.STEER_RANGE

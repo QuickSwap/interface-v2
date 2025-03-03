@@ -6,12 +6,10 @@ import { useMerklFarms } from 'hooks/v3/useV3Farms';
 import Loader from 'components/Loader';
 import CustomSelector from 'components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
-import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
+import { getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
-import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
-import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
+
 import {
-  useDefiedgePositions,
   useICHIPositions,
   useUnipilotPositions,
   useV3Positions,
@@ -36,15 +34,10 @@ const MyRewardFarms: React.FC<Props> = ({
 
   const myPositionIds: any = [];
   const { positions } = useV3Positions(account, true);
-  const { positions: defiedgePositions } = useDefiedgePositions(
-    account,
-    chainId,
-  );
   const { unipilotPositions } = useUnipilotPositions(account, chainId);
   const { positions: ichiPositions } = useICHIPositions();
   const steerPositions = useV3SteerPositions();
   const gammaPositions = useGammaPositions();
-  defiedgePositions.map((item) => myPositionIds.push(item?.id));
   unipilotPositions.map((item) => myPositionIds.push(item?.id));
   ichiPositions.map((item) => myPositionIds.push(item?.address));
   steerPositions.map((item) => myPositionIds.push(item?.address));
@@ -118,23 +111,23 @@ const MyRewardFarms: React.FC<Props> = ({
   }, [sortValue]);
 
   const { loading, farms } = useMerklFarms();
-  const rewardAddresses = farms.reduce((memo: string[], item: any) => {
-    const distributionData: any[] = (item?.distributionData ?? []).filter(
-      (reward: any) => reward.isLive && !reward.isMock,
-    );
-    for (const rewardItem of distributionData) {
-      if (
-        rewardItem.rewardToken &&
-        !memo.includes(rewardItem.rewardToken.toLowerCase())
-      ) {
-        memo.push(rewardItem.rewardToken.toLowerCase());
-      }
-    }
-    return memo;
-  }, []);
-  const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
-    rewardAddresses,
-  );
+  // const rewardAddresses = farms.reduce((memo: string[], item: any) => {
+  //   const distributionData: any[] = (item?.distributionData ?? []).filter(
+  //     (reward: any) => reward.isLive && !reward.isMock,
+  //   );
+  //   for (const rewardItem of distributionData) {
+  //     if (
+  //       rewardItem.rewardToken &&
+  //       !memo.includes(rewardItem.rewardToken.toLowerCase())
+  //     ) {
+  //       memo.push(rewardItem.rewardToken.toLowerCase());
+  //     }
+  //   }
+  //   return memo;
+  // }, []);
+  // const { prices: rewardUSDPrices } = useUSDCPricesFromAddresses(
+  //   rewardAddresses,
+  // );
 
   const v3Farms = farms
     .map((item: any) => {
@@ -144,9 +137,9 @@ const MyRewardFarms: React.FC<Props> = ({
         0,
       );
       const title = (item.symbolToken0 ?? '') + (item.symbolToken1 ?? '');
-      const rewardItems: any[] = (item?.distributionData ?? []).filter(
-        (reward: any) => reward.isLive && !reward.isMock,
-      );
+      // const rewardItems: any[] = (item?.distributionData ?? []).filter(
+      //   (reward: any) => reward.isLive && !reward.isMock,
+      // );
       // const dailyRewardUSD = rewardItems.reduce((total: number, item: any) => {
       //   const usdPrice =
       //     rewardUSDPrices?.find(
@@ -264,17 +257,6 @@ const MyRewardFarms: React.FC<Props> = ({
     }
   });
 
-  const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
-    .filter((item) => {
-      // Check if any pool in selectedPool contains the almAddress
-      return (selectedPool ?? []).some((pool: any) =>
-        (pool.alm ?? []).some(
-          (alm: any) => alm.almAddress.toLowerCase() === item.id.toLowerCase(),
-        ),
-      );
-    })
-    .map((item) => item.id);
-  const defiEdgeTitles = useDefiEdgeRangeTitles(selectedDefiEdgeIds);
   const selectedFarmsPre: any[] = useMemo(() => {
     return selectedPool.map((pool: any) => {
       const almFarms: any[] = pool?.alm ?? [];
@@ -283,12 +265,6 @@ const MyRewardFarms: React.FC<Props> = ({
         if (alm.label.includes('Gamma')) {
           title =
             getAllGammaPairs(chainId).find(
-              (item) =>
-                item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-            )?.title ?? '';
-        } else if (alm.label.includes('DefiEdge')) {
-          title =
-            defiEdgeTitles.find(
               (item) =>
                 item.address.toLowerCase() === alm.almAddress.toLowerCase(),
             )?.title ?? '';
@@ -306,7 +282,7 @@ const MyRewardFarms: React.FC<Props> = ({
         };
       });
     });
-  }, [chainId, defiEdgeTitles, selectedPool]);
+  }, [chainId, selectedPool]);
   const combinedArray = [].concat(...selectedFarmsPre);
 
   const selectedFarms = combinedArray.filter((item: any) => {

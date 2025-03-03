@@ -6,7 +6,7 @@ import {
   GlobalData,
   IchiVaults,
   blackListMerklFarms,
-  merklAMMs,
+  // merklAMMs,
 } from 'constants/index';
 import { GAMMA_MASTERCHEF_ADDRESSES } from 'constants/v3/addresses';
 import {
@@ -14,12 +14,12 @@ import {
   useMasterChefContract,
   useUNIV3NFTPositionManagerContract,
   useV3NFTPositionManagerContract,
+  useV4NFTPositionManagerContract,
 } from 'hooks/useContract';
 import { useEffect, useMemo } from 'react';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import {
   calculatePositionWidth,
-  getAllDefiedgeStrategies,
   getAllGammaPairs,
   getTokenFromAddress,
   percentageToMultiplier,
@@ -36,7 +36,7 @@ import { useGammaData, useGammaRewards } from './useGammaData';
 import { useActiveWeb3React } from 'hooks';
 import { useSteerVaults } from './useSteerData';
 import { useICHIVaultAPRs, useICHIVaults } from 'hooks/useICHIData';
-import { useDefiEdgeStrategiesAPR } from 'state/mint/v3/hooks';
+
 import {
   useEternalFarmAprs,
   useEternalFarmPoolAPRs,
@@ -314,62 +314,86 @@ export const useGetMerklFarms = () => {
   const fetchMerklFarms = async () => {
     const merklAPIURL = process.env.REACT_APP_MERKL_API_URL;
     if (!merklAPIURL || !chainId || !merklAvailable) return [];
-    const amms = merklAMMs[chainId] ?? ['quickswapuni'];
+    // const amms = merklAMMs[chainId] ?? ['quickswapuni'];
     // const res = await fetch(`${merklAPIURL}/v3/merkl?chainIds=${chainId}`);
-    const res = await fetch(
-      `${merklAPIURL}/v3/campaigns?chainIds=${chainId}&live=true`,
-    );
-    const data = await res.json();
-    const farmData =
-      data && data[chainId.toString()] ? data[chainId.toString()] : undefined;
-    if (!farmData) return [];
-    const currentTime = dayjs().unix();
+    const resFarmData = [] as any[];
+    let pageNum = 0;
+    while (true) {
+      const res = await fetch(
+        `${merklAPIURL}/v4/opportunities?name=quickswap&status=LIVE&chainId=${chainId}&page=${pageNum++}`,
+      );
+      const farmData = await res.json();
+      if (farmData.length < 1) {
+        break;
+      }
+      resFarmData.push(...farmData);
+    }
+    if (!resFarmData) return [];
     const farmList: any[] = [];
-    Object.values(farmData).map((mainParameter: any) => {
-      const distributions = Object.values(mainParameter)
-        .filter(
-          (item: any) =>
-            item.isLive &&
-            !item.isMock &&
-            (item?.endTimestamp ?? 0) >= currentTime &&
-            (item?.startTimestamp ?? 0) <= currentTime,
+    resFarmData.forEach((farmData: any) => {
+      if (farmData.chainId !== chainId || farmData.status !== 'LIVE') return;
+      if (
+        (blackListMerklFarms[chainId] ?? []).find(
+          (address) =>
+            address.toLowerCase() === farmData.identifier.toLowerCase(),
         )
-        .filter(
-          (item: any) =>
-            !(blackListMerklFarms[chainId] ?? []).find(
-              (address) =>
-                item?.mainParameter &&
-                item.mainParameter.toLowerCase() ===
-                  address.toLocaleLowerCase(),
-            ) && amms.includes(item.ammName.toLocaleLowerCase()),
-        ) as any[];
-      if (distributions.length < 1) {
+      ) {
         return;
       }
+      const forwarders = [] as any;
+      (farmData.aprRecord.breakdowns as any[]).forEach((aprBreakDown) => {
+        const identifier = aprBreakDown.identifier;
+
+        const tvlBreakdown = (farmData.tvlRecord.breakdowns as any).find(
+          (tvlRecord: { identifier: string }) =>
+            tvlRecord.identifier === identifier,
+        );
+        if (!tvlBreakdown) return;
+        forwarders.push({
+          label: identifier,
+          almAddress: identifier.substring(identifier.length - 42),
+          almTVL: tvlBreakdown.value,
+          almAPR: aprBreakDown.value,
+        });
+      });
 
       const farm = {
-        pool: distributions[0]['mainParameter'],
-        token0: distributions[0]['campaignParameters']['token0'],
-        token1: distributions[0]['campaignParameters']['token1'],
-        poolFee:
-          (distributions?.[0]?.ammName ?? '').toLowerCase() === 'quickswapuni'
-            ? distributions[0]['campaignParameters']['poolFee']
-            : undefined,
-        symbolToken0: distributions[0]['symbolToken0'],
-        symbolToken1: distributions[0]['symbolToken1'],
-        distributions,
-        forwarders: distributions[0]['forwarders'],
-        tvl: distributions[0].tvl,
-        meanAPR: distributions.reduce(
-          (value, distribution) => Math.max(value, distribution.apr),
-          0,
-        ),
-        ammName: distributions[0].ammName,
-        symbolRewardToken:
-          distributions[0]['campaignParameters']['symbolRewardToken'],
+        pool: farmData.identifier,
+        token0:
+          farmData.tokens[0].address < farmData.tokens[1].address
+            ? farmData.tokens[0].address
+            : farmData.tokens[1].address,
+        token1:
+          farmData.tokens[0].address < farmData.tokens[1].address
+            ? farmData.tokens[1].address
+            : farmData.tokens[0].address,
+        // poolFee:
+        //   (distributions?.[0]?.ammName ?? '').toLowerCase() === 'quickswapuni'
+        //     ? distributions[0]['campaignParameters']['poolFee']
+        //     : undefined,
+        symbolToken0:
+          farmData.tokens[0].address < farmData.tokens[1].address
+            ? farmData.tokens[0].symbol
+            : farmData.tokens[1].symbol,
+        symbolToken1:
+          farmData.tokens[0].address < farmData.tokens[1].address
+            ? farmData.tokens[1].symbol
+            : farmData.tokens[0].symbol,
+        forwarders,
+        // forwarders: distributions[0]['forwarders'],
+        tvl: farmData.tvl,
+        meanAPR: farmData.apr,
+        ammName: farmData.name, //farmData.protocol.name,
+        symbolRewardToken: farmData.rewardsRecord.breakdowns[0].token.symbol,
         decimalsRewardToken:
-          distributions[0]['campaignParameters']['decimalsRewardToken'],
+          farmData.rewardsRecord.breakdowns[0].token.decimals,
+        dailyRewardUSD: farmData.dailyRewards,
+        dailyAmount: formatUnits(
+          BigInt(farmData.rewardsRecord.breakdowns[0].amount),
+          farmData.rewardsRecord.breakdowns[0].token.decimals,
+        ),
       };
+
       farmList.push(farm);
     });
     return farmList;
@@ -430,27 +454,6 @@ export const useMerklFarms = () => {
     usdPrices,
   );
 
-  const defiEdgeIdsFiltered = useMemo(() => {
-    if (!merklFarms) return [];
-
-    return getAllDefiedgeStrategies(chainId)
-      .filter(
-        (vault) =>
-          !!merklFarms.find(
-            (item) =>
-              !!item.forwarders.find(
-                (alm: any) =>
-                  alm.label.includes('DefiEdge') &&
-                  vault.id.toLowerCase() === alm.almAddress.toLowerCase(),
-              ),
-          ),
-      )
-      .map((e) => e.id);
-  }, [chainId, merklFarms]);
-  const {
-    isLoading: loadingDefiEdgeAPRs,
-    data: defiedgeAprs,
-  } = useDefiEdgeStrategiesAPR(defiEdgeIdsFiltered);
   const {
     data: eternalFarmPoolAprs,
     isLoading: eternalFarmPoolAprsLoading,
@@ -458,8 +461,8 @@ export const useMerklFarms = () => {
 
   const farms = useMemo(() => {
     if (!merklFarms) return [];
-    return merklFarms.map((item: any) => {
-      const filteredALMs = Object.values(item.forwarders).filter((alm: any) => {
+    return merklFarms.map((farm: any) => {
+      const filteredALMs = farm.forwarders.filter((alm: any) => {
         if (alm.label.includes('Gamma')) {
           return getAllGammaPairs(chainId).find(
             (item) =>
@@ -474,27 +477,24 @@ export const useMerklFarms = () => {
           return IchiVaults[chainId]?.find(
             (address) => address.toLowerCase() === alm.almAddress.toLowerCase(),
           );
-        } else if (alm.label.includes('DefiEdge')) {
-          return getAllDefiedgeStrategies(chainId).find(
-            (item) => item.id.toLowerCase() === alm.almAddress.toLowerCase(),
-          );
         }
         return false;
       });
       const alms = filteredALMs
         .concat([
           {
-            almAddress: item.pool,
+            almAddress: farm.pool,
             almTVL:
-              (item.tvl ?? 0) -
+              (farm.tvl ?? 0) -
               filteredALMs.reduce(
                 (total: number, alm: any) => total + alm.almTVL,
                 0,
               ),
-            almAPR: item?.meanAPR ?? 0,
-            label: item?.ammName,
+            almAPR: farm?.meanAPR ?? 0,
+            label: 'QuickswapAlgebra',
           },
         ])
+        .filter((alm: any) => alm.almTVL > 0)
         .map((alm: any) => {
           let poolAPR = 0;
           let title = '';
@@ -536,13 +536,6 @@ export const useMerklFarms = () => {
                 item.address.toLowerCase() === alm.almAddress.toLowerCase(),
             );
             allowToken0 = ichiVault?.allowToken0;
-          } else if (alm.label.includes('DefiEdge')) {
-            poolAPR =
-              defiedgeAprs?.find(
-                (e: any) =>
-                  e.strategy.address.toLowerCase() ===
-                  alm.almAddress.toLowerCase(),
-              )?.strategy?.fees_apr ?? 0;
           } else if (
             alm.label.toLowerCase().includes('quickswap') &&
             eternalFarmPoolAprs
@@ -558,11 +551,10 @@ export const useMerklFarms = () => {
             almTVL: alm?.almTVL ?? 0,
           };
         });
-      return { ...item, alm: alms };
+      return { ...farm, alm: alms };
     });
   }, [
     chainId,
-    defiedgeAprs,
     eternalFarmPoolAprs,
     gammaData,
     ichiAPRs,
@@ -573,7 +565,6 @@ export const useMerklFarms = () => {
   return {
     loading: loadingMerkl,
     loadingPoolAPRs:
-      loadingDefiEdgeAPRs ||
       loadingICHIAPRs ||
       loadingUSDPrices ||
       eternalFarmPoolAprsLoading ||
@@ -594,23 +585,64 @@ export const useGetMerklRewards = (
       return [];
     }
     const res = await fetch(
-      `${process.env.REACT_APP_MERKL_API_URL}/v3/userRewards?chainId=${chainId}&user=${account}&proof=true`,
+      `${process.env.REACT_APP_MERKL_API_URL}/v4/users/${account}/rewards?chainId=${chainId}`,
     );
     const retData = await res.json();
-    const data: any[] = [];
-    for (const [key, value] of Object.entries<any>(retData)) {
-      const token = getTokenFromAddress(key, chainId, tokenMap, []);
-      data.push({
-        address: key,
-        reasons: value.reasons,
-        decimals: value.decimals,
-        unclaimed: Number(formatUnits(value.unclaimed, value.decimals)),
-        symbol: value.symbol,
-        token,
-      });
+    if ((retData as any[]).length < 1) {
+      return [];
     }
+    const data: any[] = [];
+    const rewards = retData[0].rewards;
+    rewards.forEach(
+      (reward: {
+        token: { address: string | undefined; decimals: number; symbol: any };
+        breakdowns: any[];
+        amount: string | number | bigint | boolean;
+        claimed: string | number | bigint | boolean;
+      }) => {
+        const token = getTokenFromAddress(
+          reward.token.address,
+          chainId,
+          tokenMap,
+          [],
+        );
+        let reasons = {};
+        reward.breakdowns.map(
+          (breakdown: {
+            reason: any;
+            amount: string | number | bigint | boolean;
+            claimed: string | number | bigint | boolean;
+          }) => {
+            reasons = {
+              ...reasons,
+              [breakdown.reason]: {
+                unclaimed: ((reasons as any)[breakdown.reason] as any)
+                  ? ((reasons as any)[breakdown.reason] as any).unclaimed +
+                    BigInt(breakdown.amount) -
+                    BigInt(breakdown.claimed)
+                  : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
+              },
+            };
+          },
+        );
+        data.push({
+          address: reward.token.address,
+          decimals: reward.token.decimals,
+          unclaimed: Number(
+            formatUnits(
+              BigInt(reward.amount) - BigInt(reward.claimed),
+              reward.token.decimals,
+            ),
+          ),
+          symbol: reward.token.symbol,
+          token,
+          reasons,
+        });
+      },
+    );
     return data;
   };
+
   return useQuery({
     queryKey: ['fetchUserRewardsMerklFarms', chainId, account],
     queryFn: fetchUserRewardsMerklFarms,
@@ -981,9 +1013,14 @@ export function useV3PositionsFromPool(
 ) {
   const { account } = useActiveWeb3React();
   const algebraPositionManager = useV3NFTPositionManagerContract();
+  const algebraPositionV4Manager = useV4NFTPositionManagerContract();
   const uniPositionManager = useUNIV3NFTPositionManagerContract();
-  const positionManager = fee ? uniPositionManager : algebraPositionManager;
-
+  const isV4 = !algebraPositionManager;
+  const positionManager = fee
+    ? uniPositionManager
+    : isV4
+    ? algebraPositionV4Manager
+    : algebraPositionManager;
   const {
     loading: balanceLoading,
     result: balanceResult,
@@ -1026,6 +1063,7 @@ export function useV3PositionsFromPool(
   const { positions, loading: positionsLoading } = useV3PositionsFromTokenIds(
     tokenIds,
     !!fee,
+    isV4,
   );
 
   const filteredPositions = useMemo(() => {

@@ -51,15 +51,6 @@ interface IPresetRanges {
   isGamma?: boolean;
   unipilotPairs?: any[];
   isUnipilot?: boolean;
-  defiedgeStrategies?: {
-    id: string;
-    token0: string;
-    token1: string;
-    pool: string;
-    tickLower: any;
-    tickUpper: any;
-  }[];
-  isDefiedge?: boolean;
   isSteer?: boolean;
   steerPairs?: SteerVault[];
 }
@@ -85,8 +76,6 @@ export function PresetRanges({
   gammaPair,
   isUnipilot = false,
   unipilotPairs,
-  isDefiedge = false,
-  defiedgeStrategies,
   isSteer = false,
   steerPairs,
 }: IPresetRanges) {
@@ -129,12 +118,6 @@ export function PresetRanges({
     'globalState',
   );
 
-  const defiedgeCurrentTickData = useMultipleContractSingleData(
-    defiedgeStrategies?.map((strategy) => strategy.pool) ?? [],
-    new Interface(PoolABI),
-    'globalState',
-  );
-
   const gammaBaseLowers = gammaBaseLowerData.map((callData) => {
     if (!callData.loading && callData.result && callData.result.length > 0) {
       return Number(callData.result[0]);
@@ -157,13 +140,6 @@ export function PresetRanges({
   });
 
   const uniPilotCurrentTicks = uniPilotCurrentTickData.map((callData) => {
-    if (!callData.loading && callData.result && callData.result.length > 1) {
-      return Number(callData.result[1]);
-    }
-    return;
-  });
-
-  const defiedgeCurrentTicks = defiedgeCurrentTickData.map((callData) => {
     if (!callData.loading && callData.result && callData.result.length > 1) {
       return Number(callData.result[1]);
     }
@@ -234,37 +210,6 @@ export function PresetRanges({
               min: minPrice,
               max: maxPrice,
               risk: PresetProfits.VERY_LOW,
-              profit: PresetProfits.HIGH,
-            };
-          })
-        : [];
-    }
-
-    if (isDefiedge) {
-      return defiedgeStrategies
-        ? defiedgeStrategies.map((strategy, index) => {
-            const currentTick = defiedgeCurrentTicks[index];
-            const isTicksAtLimit =
-              strategy.tickLower === TickMath.MIN_TICK &&
-              strategy.tickUpper === TickMath.MAX_TICK;
-
-            const minPrice =
-              currentTick !== undefined
-                ? Math.pow(1.0001, strategy.tickLower - currentTick)
-                : 0;
-            const maxPrice =
-              currentTick !== undefined
-                ? Math.pow(1.0001, strategy.tickUpper - currentTick)
-                : 0;
-
-            return {
-              title: isTicksAtLimit ? 'Full' : 'Narrow',
-              type: isTicksAtLimit ? Presets.FULL : Presets.SAFE,
-              address: strategy.id,
-              min: isTicksAtLimit ? 0 : minPrice,
-              max: isTicksAtLimit ? Infinity : maxPrice,
-              tokenStr: strategy.token0 + '-' + strategy.token1,
-              risk: PresetProfits.LOW,
               profit: PresetProfits.HIGH,
             };
           })
@@ -377,7 +322,6 @@ export function PresetRanges({
   }, [
     isGamma,
     isUnipilot,
-    isDefiedge,
     isSteer,
     isStablecoinPair,
     t,
@@ -385,8 +329,6 @@ export function PresetRanges({
     gammaValues,
     unipilotPairs,
     uniPilotCurrentTicks,
-    defiedgeStrategies,
-    defiedgeCurrentTicks,
     steerPairs,
   ]);
 
@@ -464,7 +406,7 @@ export function PresetRanges({
     }).toLowerCase();
 
     return aprs[poolAddress] ? aprs[poolAddress].toFixed(2) : undefined;
-  }, [aprs, baseCurrency, quoteCurrency, mintInfo, chainId]);
+  }, [aprs, baseCurrency, quoteCurrency, mintInfo, chainId, isV4]);
 
   const gammaValuesLoaded =
     mintInfo.price && gammaValues.filter((value) => !value).length === 0;
@@ -496,22 +438,6 @@ export function PresetRanges({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uniPilotValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
-
-  const defiedgeValuesLoaded =
-    defiedgeStrategies &&
-    defiedgeStrategies.length > 0 &&
-    defiedgeCurrentTicks.filter((tick) => !tick).length === 0;
-
-  useEffect(() => {
-    if (
-      defiedgeValuesLoaded &&
-      liquidityRangeType === GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE
-    ) {
-      handlePresetRangeSelection(ranges[0]);
-      onChangePresetRange(ranges[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defiedgeValuesLoaded, liquidityRangeType, baseCurrency, quoteCurrency]);
 
   const steerLoaded = steerPairs && steerPairs.length > 0;
   useEffect(() => {
@@ -561,7 +487,7 @@ export function PresetRanges({
           </>
         )}
       </Box>
-      {!isGamma && !isUnipilot && !isDefiedge && !isSteer && (
+      {!isGamma && !isUnipilot && !isSteer && (
         <>
           <Box className='flex justify-between'>
             {_risk && !mintInfo.invalidRange && !isStablecoinPair && (

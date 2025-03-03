@@ -218,9 +218,18 @@ const FooterOrdersTable: React.FC<{
             id: 'action',
             label: '',
             html: (item: Order) =>
-              item.status === OrderStatus.FILLED ||
-              item.status === OrderStatus.REJECTED ||
-              item.status === OrderStatus.CANCELLED ? (
+              (item.status &&
+                [
+                  OrderStatus.FILLED,
+                  OrderStatus.REJECTED,
+                  OrderStatus.CANCELLED,
+                ].includes(item.status)) ||
+              (item.algo_status &&
+                [
+                  OrderStatus.FILLED,
+                  OrderStatus.REJECTED,
+                  OrderStatus.CANCELLED,
+                ].includes(item.algo_status)) ? (
                 <></>
               ) : (
                 <CancelOrderButton

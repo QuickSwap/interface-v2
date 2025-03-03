@@ -4,7 +4,6 @@ import { CurrencyLogo, CustomMenu } from 'components';
 import RangeBadge from 'components/v3/Badge/RangeBadge';
 import { useActiveWeb3React } from 'hooks';
 import { useICHIPosition } from 'hooks/useICHIData';
-import { useDefiEdgePosition } from 'hooks/v3/useDefiedgeStrategyData';
 import { useGammaPosition } from 'hooks/v3/useGammaData';
 import { usePool } from 'hooks/v3/usePools';
 import { useSteerPosition } from 'hooks/v3/useSteerData';
@@ -12,8 +11,6 @@ import {
   useGetMerklRewards,
   useV3PositionsFromPool,
 } from 'hooks/v3/useV3Farms';
-import IncreaseDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/IncreaseDefiedgeLiquidityModal';
-import WithdrawDefiedgeLiquidityModal from 'pages/PoolsPage/v3/MyDefiedgePoolsV3/WithdrawDefiedgeLiquidityModal';
 import IncreaseGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/IncreaseGammaLiquidityModal';
 import WithdrawGammaLiquidityModal from 'pages/PoolsPage/v3/MyGammaPoolsV3/WithdrawGammaLiquidityModal';
 import IncreaseICHILiquidityModal from 'pages/PoolsPage/v3/MyICHIPools/IncreaseICHILiquidityModal';
@@ -50,7 +47,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   const farmType = farm.label.split(' ')[0];
   const isICHI = !!farm.label.includes('Ichi');
   const isGamma = !!farm.label.includes('Gamma');
-  const isDefiEdge = !!farm.label.includes('DefiEdge');
   const isQuickswap = farm.label.toLowerCase().includes('quickswap');
   const isSteer = !!farm.label.includes('Steer');
 
@@ -61,14 +57,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   );
   const { loading: loadingGamma, data: gammaPosition } = useGammaPosition(
     isGamma ? farm.almAddress : undefined,
-    farm?.token0,
-    farm?.token1,
-  );
-  const {
-    loading: loadingDefiEdge,
-    data: defiEdgePosition,
-  } = useDefiEdgePosition(
-    isDefiEdge ? farm.almAddress : undefined,
     farm?.token0,
     farm?.token1,
   );
@@ -136,8 +124,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     ? loadingICHI
     : isGamma
     ? loadingGamma
-    : isDefiEdge
-    ? loadingDefiEdge
     : isQuickswap
     ? loadingQS
     : isSteer
@@ -150,9 +136,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     if (isGamma) {
       return gammaPosition?.balance0 ?? 0;
     }
-    if (isDefiEdge) {
-      return defiEdgePosition?.balance0 ?? 0;
-    }
     if (isQuickswap) {
       return Number(qsPosition?.amount0.toExact() ?? 0);
     }
@@ -163,12 +146,10 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   }, [
     isICHI,
     isGamma,
-    isDefiEdge,
     isQuickswap,
     isSteer,
     ichiPosition?.token0Balance,
     gammaPosition?.balance0,
-    defiEdgePosition?.balance0,
     qsPosition?.amount0,
     steerPosition?.token0BalanceWallet,
   ]);
@@ -180,9 +161,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
     if (isGamma) {
       return gammaPosition?.balance1 ?? 0;
     }
-    if (isDefiEdge) {
-      return defiEdgePosition?.balance1 ?? 0;
-    }
     if (isQuickswap) {
       return Number(qsPosition?.amount1.toExact() ?? 0);
     }
@@ -193,12 +171,10 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
   }, [
     isICHI,
     isGamma,
-    isDefiEdge,
     isQuickswap,
     isSteer,
     ichiPosition?.token1Balance,
     gammaPosition?.balance1,
-    defiEdgePosition?.balance1,
     qsPosition?.amount1,
     steerPosition?.token1BalanceWallet,
   ]);
@@ -303,20 +279,6 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
           position={gammaPosition}
         />
       )}
-      {defiEdgePosition && openAdd && (
-        <IncreaseDefiedgeLiquidityModal
-          open={openAdd}
-          onClose={() => setOpenAdd(false)}
-          position={defiEdgePosition}
-        />
-      )}
-      {defiEdgePosition && openWithdraw && (
-        <WithdrawDefiedgeLiquidityModal
-          open={openWithdraw}
-          onClose={() => setOpenWithdraw(false)}
-          position={defiEdgePosition}
-        />
-      )}
       {steerPosition && openAdd && (
         <IncreaseSteerLiquidityModal
           open={openAdd}
@@ -397,7 +359,9 @@ export const MerklPairFarmCardDetails: React.FC<Props> = ({ farm }) => {
                 </Box>
                 <RangeBadge removed={false} inRange={!outOfRange} />
                 <a
-                  href={`/#/pool/${selectedQSNFTId}`}
+                  href={`/#/pool/${selectedQSNFTId}${
+                    selectedQSPosition?.isV4 ? '?isV4=true' : ''
+                  }`}
                   target='_blank'
                   rel='noreferrer'
                   className='no-decoration text-primary'

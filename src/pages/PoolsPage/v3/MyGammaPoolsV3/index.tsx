@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
@@ -15,7 +15,13 @@ import { formatUnits, Interface } from 'ethers/lib/utils';
 import { useGammaData } from 'hooks/v3/useGammaData';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
 
-export default function MyGammaPoolsV3() {
+export default function MyGammaPoolsV3({
+  isForAll,
+  setIsLoading,
+}: {
+  isForAll?: boolean;
+  setIsLoading?: (loading: boolean) => void;
+}) {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
 
@@ -109,6 +115,10 @@ export default function MyGammaPoolsV3() {
     lpTotalSupplyLoading ||
     dataLoading;
 
+  useEffect(() => {
+    !!setIsLoading && setIsLoading(loading);
+  }, [setIsLoading, loading]);
+
   const gammaPositions = lpsWithStakedAmount
     .map((lp, ind) => {
       const totalAmountsCalldata = lpTotalAmounts[ind];
@@ -165,25 +175,27 @@ export default function MyGammaPoolsV3() {
     .filter((item) => item.lpAmount > 0);
 
   return (
-    <Box>
-      {loading ? (
+    <>
+      {!!account && !isForAll && loading ? (
         <Box mt={2} className='flex justify-center'>
           <Loader stroke='white' size={'2rem'} />
         </Box>
       ) : gammaPositions.length > 0 ? (
         <GammaLPList gammaPositions={gammaPositions} />
       ) : (
-        <Box mt={2} textAlign='center'>
-          <p>{t('noLiquidityPositions')}.</p>
-          {showConnectAWallet && (
-            <Box maxWidth={250} margin='20px auto 0'>
-              <Button fullWidth onClick={() => open()}>
-                {t('connectWallet')}
-              </Button>
-            </Box>
-          )}
-        </Box>
+        !isForAll && (
+          <Box mt={2} textAlign='center'>
+            <p>{t('noLiquidityPositions')}.</p>
+            {showConnectAWallet && (
+              <Box maxWidth={250} margin='20px auto 0'>
+                <Button fullWidth onClick={() => open()}>
+                  {t('connectWallet')}
+                </Button>
+              </Box>
+            )}
+          </Box>
+        )
       )}
-    </Box>
+    </>
   );
 }

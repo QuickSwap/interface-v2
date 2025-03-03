@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
@@ -10,7 +10,13 @@ import {
 } from 'hooks/v3/useV3Positions';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
 
-export default function MyUnipilotPoolsV3() {
+export default function MyUnipilotPoolsV3({
+  isForAll,
+  setIsLoading,
+}: {
+  isForAll?: boolean;
+  setIsLoading?: (loading: boolean) => void;
+}) {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
 
@@ -23,9 +29,13 @@ export default function MyUnipilotPoolsV3() {
     unipilotPositions,
   } = useUnipilotPositions(account, chainId);
 
+  useEffect(() => {
+    !!setIsLoading && setIsLoading(uniPilotPositionsLoading);
+  }, [setIsLoading, uniPilotPositionsLoading]);
+
   return (
-    <Box>
-      {uniPilotPositionsLoading ? (
+    <>
+      {!!account && !isForAll && uniPilotPositionsLoading ? (
         <Box mt={2} className='flex justify-center'>
           <Loader stroke='white' size={'2rem'} />
         </Box>
@@ -38,17 +48,19 @@ export default function MyUnipilotPoolsV3() {
           )}
         </Box>
       ) : (
-        <Box mt={2} textAlign='center'>
-          <p>{t('noLiquidityPositions')}.</p>
-          {showConnectAWallet && (
-            <Box maxWidth={250} margin='20px auto 0'>
-              <Button fullWidth onClick={() => open()}>
-                {t('connectWallet')}
-              </Button>
-            </Box>
-          )}
-        </Box>
+        !isForAll && (
+          <Box mt={2} textAlign='center'>
+            <p>{t('noLiquidityPositions')}.</p>
+            {showConnectAWallet && (
+              <Box maxWidth={250} margin='20px auto 0'>
+                <Button fullWidth onClick={() => open()}>
+                  {t('connectWallet')}
+                </Button>
+              </Box>
+            )}
+          </Box>
+        )
       )}
-    </Box>
+    </>
   );
 }

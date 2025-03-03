@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button } from '@material-ui/core';
 import { useActiveWeb3React } from 'hooks';
 import Loader from 'components/Loader';
@@ -7,7 +7,13 @@ import DefiedgeLPList from './DefiedgeLPList';
 import { useDefiedgePositions } from 'hooks/v3/useV3Positions';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
 
-export default function MyDefiedgePoolsV3() {
+export default function MyDefiedgePoolsV3({
+  isForAll,
+  setIsLoading,
+}: {
+  isForAll?: boolean;
+  setIsLoading?: (loading: boolean) => void;
+}) {
   const { t } = useTranslation();
   const { chainId, account } = useActiveWeb3React();
 
@@ -17,9 +23,13 @@ export default function MyDefiedgePoolsV3() {
 
   const { positions, loading } = useDefiedgePositions(account, chainId);
 
+  useEffect(() => {
+    !!setIsLoading && setIsLoading(loading);
+  }, [setIsLoading, loading]);
+
   return (
     <Box>
-      {loading ? (
+      {!!account && isForAll && loading ? (
         <Box mt={2} className='flex justify-center'>
           <Loader stroke='white' size={'2rem'} />
         </Box>

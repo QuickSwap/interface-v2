@@ -16,12 +16,11 @@ import MerklFarmCard from './MerklFarmCard';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import CustomSelector from 'components/v3/CustomSelector';
 import MerklPairFarmCard from './MerklPairFarmCard';
-import { getAllDefiedgeStrategies, getAllGammaPairs } from 'utils';
+import { getAllGammaPairs } from 'utils';
 import { useActiveWeb3React } from 'hooks';
 import { useHistory } from 'react-router-dom';
 import { useCurrency } from 'hooks/v3/Tokens';
 import { KeyboardArrowLeft } from '@material-ui/icons';
-import { useDefiEdgeRangeTitles } from 'hooks/v3/useDefiedgeStrategyData';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 
 interface Props {
@@ -257,11 +256,11 @@ const AllMerklFarms: React.FC<Props> = ({
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
-      // if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-      //   return farm1.dailyRewardUSD > farm2.dailyRewardUSD
-      //     ? sortMultiplier
-      //     : -1 * sortMultiplier;
-      // }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
       return 1;
     });
 
@@ -274,15 +273,6 @@ const AllMerklFarms: React.FC<Props> = ({
   const currency0 = useCurrency(selectedPool?.token0);
   const currency1 = useCurrency(selectedPool?.token1);
 
-  const selectedDefiEdgeIds = getAllDefiedgeStrategies(chainId)
-    .filter(
-      (item) =>
-        !!(selectedPool?.alm ?? []).find(
-          (alm: any) => alm.almAddress.toLowerCase() === item.id.toLowerCase(),
-        ),
-    )
-    .map((item) => item.id);
-  const defiEdgeTitles = useDefiEdgeRangeTitles(selectedDefiEdgeIds);
   const selectedFarms: any[] = useMemo(() => {
     const almFarms: any[] = selectedPool?.alm ?? [];
     return almFarms.map((alm) => {
@@ -290,12 +280,6 @@ const AllMerklFarms: React.FC<Props> = ({
       if (alm.label.includes('Gamma')) {
         title =
           getAllGammaPairs(chainId).find(
-            (item) =>
-              item.address.toLowerCase() === alm.almAddress.toLowerCase(),
-          )?.title ?? '';
-      } else if (alm.label.includes('DefiEdge')) {
-        title =
-          defiEdgeTitles.find(
             (item) =>
               item.address.toLowerCase() === alm.almAddress.toLowerCase(),
           )?.title ?? '';
@@ -311,7 +295,7 @@ const AllMerklFarms: React.FC<Props> = ({
             : undefined,
       };
     });
-  }, [chainId, defiEdgeTitles, selectedPool]);
+  }, [chainId, selectedPool]);
 
   const farmTypes = useMemo(() => {
     const mTypes = selectedFarms.reduce((memo: string[], item) => {
@@ -482,9 +466,7 @@ const AllMerklFarms: React.FC<Props> = ({
               )
             ) : v3Farms.length > 0 ? (
               v3Farms.map((farm, ind) => (
-                <Box key={ind} pb={2}>
-                  <MerklFarmCard farm={farm} />
-                </Box>
+                <MerklFarmCard key={ind} farm={farm} />
               ))
             ) : (
               <Box
