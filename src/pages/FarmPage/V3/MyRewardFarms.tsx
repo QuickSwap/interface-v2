@@ -29,7 +29,6 @@ const MyRewardFarms: React.FC<Props> = ({
   sortValue,
 }) => {
   const { t } = useTranslation();
-  const { breakpoints } = useTheme();
   const { account, chainId } = useActiveWeb3React();
 
   const myPositionIds: any = [];
