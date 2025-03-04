@@ -62,7 +62,7 @@ export default function Farms() {
   const [selectedSort, setSelectedSort] = useState(
     GlobalConst.utils.v3FarmSortBy.pool,
   );
-  const [isOld, setIsOld] = useState(true);
+  const [isMyFarmsToogle, setIsMyFarmsToogle] = useState(false);
 
   const redirectWithFarmStatus = (status: string) => {
     const currentPath = history.location.pathname + history.location.search;
@@ -84,7 +84,7 @@ export default function Farms() {
     parsedQuery && parsedQuery.tab ? (parsedQuery.tab as string) : 'farms';
 
   const v3FarmCategories = useMemo(() => {
-    return isOld
+    return isMyFarmsToogle
       ? [
           {
             text: t('allFarms'),
@@ -114,7 +114,7 @@ export default function Farms() {
             link: 'my-rewards',
           },
         ];
-  }, [t, isOld]);
+  }, [t, isMyFarmsToogle]);
 
   const onChangeFarmCategory = useCallback(
     (selected: SelectorItem) => {
@@ -212,15 +212,6 @@ export default function Farms() {
               selectedItem={selectedFarmCategory}
               handleChange={onChangeFarmCategory}
             />
-            {isMobile && !poolId && (
-              <Box className='flex items-center' gridGap={6}>
-                <small className='text-secondary'>{t('oldFarms')}</small>
-                <ToggleSwitch
-                  toggled={isOld}
-                  onToggle={() => setIsOld(!isOld)}
-                />
-              </Box>
-            )}
             <Box
               className={
                 isMobile
@@ -258,10 +249,10 @@ export default function Farms() {
               )}
               {!isMobile && (
                 <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>{t('oldFarms')}</small>
+                  <small className='text-secondary'>My Farms</small>
                   <ToggleSwitch
-                    toggled={isOld}
-                    onToggle={() => setIsOld(!isOld)}
+                    toggled={isMyFarmsToogle}
+                    onToggle={() => setIsMyFarmsToogle(!isMyFarmsToogle)}
                   />
                 </Box>
               )}

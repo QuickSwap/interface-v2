@@ -36,7 +36,7 @@ const AllMerklFarms: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
-  const { chainId, account } = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
   const isMobile = useMediaQuery(breakpoints.down('sm'));
   const history = useHistory();
 
@@ -72,7 +72,7 @@ const AllMerklFarms: React.FC<Props> = ({
   );
   const [sortBy, setSortBy] = useState(GlobalConst.utils.v3FarmSortBy.pool);
   const [sortDesc, setSortDesc] = useState(false);
-  const [isOld, setIsOld] = useState(true);
+
   const sortMultiplier = sortDesc ? 1 : -1;
 
   const sortColumns = [
@@ -380,13 +380,6 @@ const AllMerklFarms: React.FC<Props> = ({
                     ))}
                   </Select>
                 </Box>
-                <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>{t('oldFarms')}</small>
-                  <ToggleSwitch
-                    toggled={isOld}
-                    onToggle={() => setIsOld(!isOld)}
-                  />
-                </Box>
               </Box>
             )}
           </Box>
@@ -406,17 +399,6 @@ const AllMerklFarms: React.FC<Props> = ({
                 />
               )}
             </Box>
-            {isMobile && (
-              <Box className='flex items-center' gridGap={16}>
-                <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>{t('oldFarms')}</small>
-                  <ToggleSwitch
-                    toggled={isOld}
-                    onToggle={() => setIsOld(!isOld)}
-                  />
-                </Box>
-              </Box>
-            )}
           </Box>
         ) : (
           <>
