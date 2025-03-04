@@ -402,15 +402,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         </Box>
         <Divider />
         <LiquidityHubSettings />
-        <Box mt={2.5} className='flex items-center justify-between'>
-          <p>{t('language')}</p>
-          <Box className='flex items-center'>
-            <p>
-              {t('english')} ({t('default')})
-            </p>
-            <KeyboardArrowDown />
-          </Box>
-        </Box>
       </Box>
     </CustomModal>
   );
