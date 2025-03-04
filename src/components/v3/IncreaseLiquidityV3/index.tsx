@@ -483,7 +483,7 @@ export default function IncreaseLiquidityV3({
             className='v3-increase-liquidity-price-wrapper'
             width={priceLower ? '49%' : '100%'}
           >
-            <p>{t('minPrice')}</p>
+            <p>{t('maxPrice')}</p>
             <h6>{formatTickPrice(priceUpper, ticksAtLimit, Bound.UPPER)}</h6>
             <p>
               {currencyQuote?.symbol} {t('per')} {currencyBase?.symbol}
