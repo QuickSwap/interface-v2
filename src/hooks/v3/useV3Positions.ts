@@ -134,29 +134,53 @@ export function useV3Positions(
 ): UseV3PositionsResults {
   const positionV2Manager = useV3NFTPositionManagerContract();
   const positionV4Manager = useV4NFTPositionManagerContract();
-  const positionManager = isV4 ? positionV4Manager : positionV2Manager;
   const uniV3PositionManager = useUNIV3NFTPositionManagerContract();
 
-  const algebraBalanceResult = useSingleCallResult(
-    positionManager,
+  const algebraV2BalanceResult = useSingleCallResult(
+    positionV2Manager,
     'balanceOf',
     [account ?? undefined],
   );
 
-  const algebraBalance = Number(algebraBalanceResult.result ?? '0');
+  const algebraV4BalanceResult = useSingleCallResult(
+    positionV4Manager,
+    'balanceOf',
+    [account ?? undefined],
+  );
 
-  const algebraTokenResults = useSingleContractMultipleData(
-    positionManager,
+  const algebraV2Balance = Number(algebraV2BalanceResult.result ?? '0');
+  const algebraV4Balance = Number(algebraV4BalanceResult.result ?? '0');
+
+  const algebraV2TokenResults = useSingleContractMultipleData(
+    positionV2Manager,
     'tokenOfOwnerByIndex',
-    Array.from({ length: algebraBalance }, (_, i) => i).map((v) => [
+    Array.from({ length: algebraV2Balance }, (_, i) => i).map((v) => [
       account ?? undefined,
       v,
     ]),
   );
 
-  const algebraIDsLoading = algebraTokenResults.some((call) => call.loading);
+  const algebraV4TokenResults = useSingleContractMultipleData(
+    positionV4Manager,
+    'tokenOfOwnerByIndex',
+    Array.from({ length: algebraV4Balance }, (_, i) => i).map((v) => [
+      account ?? undefined,
+      v,
+    ]),
+  );
 
-  const algebraTokenIds = algebraTokenResults
+  const algebraV2IDsLoading = algebraV2TokenResults.some(
+    (call) => call.loading,
+  );
+  const algebraV4IDsLoading = algebraV4TokenResults.some(
+    (call) => call.loading,
+  );
+
+  const algebraV2TokenIds = algebraV2TokenResults
+    .filter((call) => !!call.result)
+    .map((call) => BigNumber.from(call.result?.toString() ?? '0'));
+
+  const algebraV4TokenIds = algebraV4TokenResults
     .filter((call) => !!call.result)
     .map((call) => BigNumber.from(call.result?.toString() ?? '0'));
 
@@ -184,12 +208,21 @@ export function useV3Positions(
     .map((call) => BigNumber.from(call.result?.toString() ?? '0'));
 
   const {
-    positions: algebraPositions,
-    loading: algebraPositionsLoading,
+    positions: algebraV2Positions,
+    loading: algebraV2PositionsLoading,
   } = useV3PositionsFromTokenIds(
-    algebraIDsLoading ? [] : algebraTokenIds,
+    algebraV2IDsLoading ? [] : algebraV2TokenIds,
     false,
-    isV4,
+    false,
+  );
+
+  const {
+    positions: algebraV4Positions,
+    loading: algebraV4PositionsLoading,
+  } = useV3PositionsFromTokenIds(
+    algebraV4IDsLoading ? [] : algebraV4TokenIds,
+    false,
+    true,
   );
 
   const {
@@ -229,6 +262,12 @@ export function useV3Positions(
     oldTransferredTokenIds.map((id) => BigNumber.from(id)),
   );
 
+  const algebraPositions = isV4
+    ? algebraV4Positions
+    : isV4 === undefined
+    ? (algebraV2Positions ?? []).concat(algebraV4Positions ?? [])
+    : algebraV2Positions;
+
   const combinedPositions = [
     ...(algebraPositions ?? [])
       .concat(isV4 ? [] : uniV3Positions ?? [])
@@ -260,9 +299,11 @@ export function useV3Positions(
 
   return {
     loading:
-      algebraPositionsLoading ||
+      algebraV2PositionsLoading ||
+      algebraV4PositionsLoading ||
       uniV3PositionsLoading ||
-      algebraIDsLoading ||
+      algebraV2IDsLoading ||
+      algebraV4IDsLoading ||
       univ3IDsLoading ||
       _positionsOnFarmerLoading,
     positions: combinedPositions,

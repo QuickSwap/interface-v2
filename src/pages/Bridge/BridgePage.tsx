@@ -198,7 +198,7 @@ const BridgePage: React.FC = ({}) => {
     },
     {
       value: 'eth',
-      label: 'Etherium',
+      label: 'Ethereum',
     },
     {
       value: 'zkevm',
