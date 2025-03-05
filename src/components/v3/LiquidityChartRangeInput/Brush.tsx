@@ -242,7 +242,7 @@ export const Brush = ({
                   0,
                   xScale(localBrushExtent[0]),
                 ) + 7}, ${innerHeight - 9}), scale(${
-                  flipWestHandle ? '-1' : '1'
+                  flipWestHandle ? '-1' : '-1'
                 }, 1)`}
               >
                 <g style={{ userSelect: 'none', pointerEvents: 'none' }}>
@@ -265,7 +265,7 @@ export const Brush = ({
                   <rect
                     className='liquidityTooltipBackground'
                     y='0'
-                    x='12'
+                    x={`${flipWestHandle ? '12' : '0'}`}
                     height='15'
                     width='30'
                     rx='4'
@@ -273,8 +273,8 @@ export const Brush = ({
                   <text
                     className='liquidityTooltip'
                     y='8'
-                    x='-27'
-                    transform={`scale(-1, 1)`}
+                    x={`${flipWestHandle ? '-27' : '15'}`}
+                    transform={`scale(${flipWestHandle ? '-1' : '1'}, 1)`}
                     dominantBaseline='middle'
                   >
                     {brushLabelValue('e', localBrushExtent[0])}
@@ -289,7 +289,7 @@ export const Brush = ({
                 cursor={'default'}
                 transform={`translate(${xScale(localBrushExtent[1]) -
                   7}, ${innerHeight - 9}), scale(${
-                  flipEastHandle ? '-1' : '1'
+                  flipEastHandle ? '1' : '1'
                 }, 1)`}
               >
                 <g style={{ userSelect: 'none', pointerEvents: 'none' }}>
@@ -312,7 +312,7 @@ export const Brush = ({
                   <rect
                     className='liquidityTooltipBackground'
                     y='0'
-                    x='12'
+                    x={`${flipEastHandle ? '0' : '12'}`}
                     height='15'
                     width='30'
                     rx='4'
@@ -320,7 +320,8 @@ export const Brush = ({
                   <text
                     className='liquidityTooltip'
                     y='8'
-                    x='27'
+                    x={`${flipEastHandle ? '-15' : '27'}`}
+                    transform={`scale(${flipEastHandle ? '-1' : '1'}, 1)`}
                     dominantBaseline='middle'
                   >
                     {brushLabelValue('e', localBrushExtent[1])}
