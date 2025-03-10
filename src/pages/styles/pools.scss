@@ -54,3 +54,31 @@
 .activeMyV3PoolCountWrapper {
   background-color: $textPrimary;
 }
+
+.gridCardContainer {
+  padding: 22px 24px 24px;
+  @include media('screen', '<phone') {
+    padding: 22px 8px 8px;
+  }
+}
+
+.pageContainer {
+  padding: 24px;
+  @include media('screen', '<phone') {
+    padding: 12px;
+  }
+}
+
+.selectDepositContainer {
+  gap: 16px;
+  @include media('screen', '<phone') {
+    gap: 8px;
+  }
+}
+
+.mobileSmallText {
+  font-size: 16px;
+  @include media('screen', '<phone') {
+    font-size: 14px;
+  }
+}

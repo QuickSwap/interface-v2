@@ -44,7 +44,7 @@ const V3CurrencySelect: React.FC<CurrencySelectProps> = ({
             <p className='token-symbol-container'>{currency?.symbol}</p>
           </Box>
         ) : (
-          <p>{t('selectToken')}</p>
+          <p className='mobileSmallText'>{t('selectToken')}</p>
         )}
         {children}
       </Box>
