@@ -275,6 +275,7 @@ export abstract class SwapRouter extends SelfPermit {
             route,
             trade.tradeType === TradeType.EXACT_OUTPUT,
             options.isUni,
+            options.isV4,
           );
 
           if (trade.tradeType === TradeType.EXACT_INPUT) {
