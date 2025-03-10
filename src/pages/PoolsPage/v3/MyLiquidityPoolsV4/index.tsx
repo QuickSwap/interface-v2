@@ -28,9 +28,6 @@ export default function MyLiquidityPoolsV4() {
     userHideQuickClosedPositions,
     setUserHideQuickClosedPositions,
   ] = useState(true);
-  const [hideQuickFarmingPositions, setHideQuickFarmingPositions] = useState(
-    false,
-  );
 
   const filters = [
     {
@@ -38,17 +35,17 @@ export default function MyLiquidityPoolsV4() {
       method: setUserHideQuickClosedPositions,
       checkValue: userHideQuickClosedPositions,
     },
-    {
-      title: t('farming'),
-      method: setHideQuickFarmingPositions,
-      checkValue: hideQuickFarmingPositions,
-    },
+    // {
+    //   title: t('farming'),
+    //   method: setHideQuickFarmingPositions,
+    //   checkValue: hideQuickFarmingPositions,
+    // },
   ];
 
   const { count: quickPoolsCount } = useV3Positions(
     account,
     userHideQuickClosedPositions,
-    hideQuickFarmingPositions,
+    false,
     true,
   );
 
