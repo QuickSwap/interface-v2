@@ -177,7 +177,7 @@ const PoolsPage: React.FC = () => {
             )}
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={7}>
+        <Grid item xs={12} sm={12} md={7} className='mypoolsContainer'>
           <Box className='wrapper'>
             {isLpLock ? (
               <MyLiquidityLocks />

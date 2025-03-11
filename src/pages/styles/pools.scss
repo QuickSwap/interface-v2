@@ -76,6 +76,13 @@
   }
 }
 
+.mypoolsContainer {
+  padding: 16px;
+  @include media('screen', '<phone') {
+    padding: 0;
+  }
+}
+
 .mobileSmallText {
   font-size: 16px;
   @include media('screen', '<phone') {
