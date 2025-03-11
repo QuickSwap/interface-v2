@@ -106,5 +106,8 @@
   "lpLock": {
     "available": false
   },
+  "maxHops": 3,
+  "maxChunks": 400,
+  "blocksPerFetch": 30,
   "poolInitCodeHash": "0xb3fc09be5eb433d99b1ec89fd8435aaf5ffea75c1879e19028aa2414a14b3c85"
 }

@@ -78,20 +78,22 @@ const PoolsPage: React.FC = () => {
   }, [showPools]);
 
   return (
-    <Box mb={3} p={3} width='100%'>
+    <Box mb={3} className='pageContainer' width='100%'>
       {isMobile ? (
         <>
-          <Box mt={2} className='pageHeading'>
+          <Box mt={2} mb={2} className='pageHeading items-center'>
             <Typography variant='h6'>{t('pool')}</Typography>
-            {helpURL && (
-              <Box
-                className='helpWrapper'
-                onClick={() => window.open(helpURL, '_blank')}
-              >
-                <small>{t('help')}</small>
-                <HelpIcon />
-              </Box>
-            )}
+            <Box>
+              {helpURL && (
+                <Box
+                  className='helpWrapper'
+                  onClick={() => window.open(helpURL, '_blank')}
+                >
+                  <small>{t('help')}</small>
+                  <HelpIcon />
+                </Box>
+              )}
+            </Box>
           </Box>
           {['v3', 'v4'].includes(version) && (
             <Box
@@ -113,7 +115,7 @@ const PoolsPage: React.FC = () => {
             </Box>
           )}
           {showVersion && (
-            <Box my={2}>
+            <Box my={2} style={{ width: 'max-content' }}>
               <VersionToggle />
             </Box>
           )}
@@ -151,13 +153,13 @@ const PoolsPage: React.FC = () => {
       {/* <Box margin='24px auto'>
         <HypeLabAds />
       </Box> */}
-      <Grid container spacing={4}>
+      <Grid container>
         <Grid
           style={{
             backgroundColor: '#1b1e29',
             borderRadius: '20px',
-            padding: '22px 24px 24px',
           }}
+          className='gridCardContainer'
           item
           xs={12}
           sm={12}
@@ -175,7 +177,7 @@ const PoolsPage: React.FC = () => {
             )}
           </Box>
         </Grid>
-        <Grid item xs={12} sm={12} md={7}>
+        <Grid item xs={12} sm={12} md={7} className='mypoolsContainer'>
           <Box className='wrapper'>
             {isLpLock ? (
               <MyLiquidityLocks />
