@@ -249,7 +249,7 @@ export default function Farms() {
               )}
               {!isMobile && (
                 <Box className='flex items-center' gridGap={6}>
-                  <small className='text-secondary'>My Farms</small>
+                  <small className='text-secondary'>{t('oldFarms')}</small>
                   <ToggleSwitch
                     toggled={isMyFarmsToogle}
                     onToggle={() => setIsMyFarmsToogle(!isMyFarmsToogle)}
