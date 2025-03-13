@@ -39,7 +39,7 @@ const SingleTokenPoolCard: React.FC<{
       }`}
       onClick={onClick}
     >
-      <Box width='80%' className='flex items-center'>
+      <Box className='flex items-center'>
         <Box className='singleTokenPoolCardCheck'>{selected && <Check />}</Box>
         <DoubleCurrencyLogo
           currency0={vault.token0}
@@ -53,7 +53,7 @@ const SingleTokenPoolCard: React.FC<{
           {formatNumber(vault.fee)}% {t('fee')}
         </Box>
       </Box>
-      <Box width='20%'>
+      <Box>
         {isLoading || loadingUSDPrices ? (
           <Loader />
         ) : (
