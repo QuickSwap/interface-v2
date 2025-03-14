@@ -24,6 +24,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { getAddress } from 'ethers/lib/utils';
 import { getConfig } from 'config/index';
 import { useAnalyticsTokenDetails } from 'hooks/useFetchAnalyticsData';
+import { useLocalStorage } from '@orderly.network/hooks';
 
 const AnalyticsTokenDetails: React.FC = () => {
   const { t } = useTranslation();
@@ -33,11 +34,16 @@ const AnalyticsTokenDetails: React.FC = () => {
   const { chainId } = useActiveWeb3React();
   const tokenMap = useSelectedTokenList();
 
-  const {
-    bookmarkTokens,
-    addBookmarkToken,
-    removeBookmarkToken,
-  } = useBookmarkTokens();
+  const [favoriteTokens, setFavoriteTokens] = useLocalStorage<number[]>(
+    'favoriteAnalyticsTokens',
+    [],
+  );
+
+  // const {
+  //   bookmarkTokens,
+  //   addBookmarkToken,
+  //   removeBookmarkToken,
+  // } = useBookmarkTokens();
   const config = getConfig(chainId);
   const v3 = config['v3'];
   const v2 = config['v2'];
@@ -299,13 +305,21 @@ const AnalyticsTokenDetails: React.FC = () => {
                     <p className='heading1'>{data.token.name} </p>
                     <p className='heading2'>({data.token.symbol})</p>
                   </Box>
-                  {bookmarkTokens.includes(data.token.id) ? (
+                  {favoriteTokens.includes(data.token.id) ? (
                     <StarChecked
-                      onClick={() => removeBookmarkToken(data.token.id)}
+                      onClick={() =>
+                        setFavoriteTokens(
+                          favoriteTokens.filter(
+                            (item: number) => item !== data.token.id,
+                          ),
+                        )
+                      }
                     />
                   ) : (
                     <StarUnchecked
-                      onClick={() => addBookmarkToken(data.token.id)}
+                      onClick={() =>
+                        setFavoriteTokens([...favoriteTokens, data.token.id])
+                      }
                     />
                   )}
                 </Box>

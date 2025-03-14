@@ -1,36 +1,39 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Box } from '@material-ui/core';
 import { TopMovers, TokensTable } from 'components';
-import { useBookmarkTokens } from 'state/application/hooks';
 import { Skeleton } from '@material-ui/lab';
 import { useTranslation } from 'react-i18next';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { useAnalyticsTopTokens } from 'hooks/useFetchAnalyticsData';
 import { GlobalData } from 'constants/index';
+import { useLocalStorage } from '@orderly.network/hooks';
 
 const AnalyticsTokens: React.FC = () => {
   const { t } = useTranslation();
   const [tokensFilter, setTokensFilter] = useState(0);
-
-  const { bookmarkTokens } = useBookmarkTokens();
   const { chainId } = useActiveWeb3React();
   const version = useAnalyticsVersion();
-  const excludedInTrending = [
-    'ETH',
-    'WBTC',
-    'POL',
-    'USDT',
-    'USDC',
-    'USDC.E',
-    'MATIC',
-    'WETH',
-  ];
   const {
     isLoading: topTokensLoading,
     data: topTokens,
   } = useAnalyticsTopTokens(version, chainId);
 
-  const checkIfStable = (token) => {
+  const [favoriteTokens] = useLocalStorage<number[]>(
+    'favoriteAnalyticsTokens',
+    [],
+  );
+
+  const checkIfStable = useCallback((token: { symbol: string }) => {
+    const excludedInTrending = [
+      'ETH',
+      'WBTC',
+      'POL',
+      'USDT',
+      'USDC',
+      'USDC.E',
+      'MATIC',
+      'WETH',
+    ];
     let result = true;
     Object.entries(GlobalData.stableCoins).forEach(([key, values]) => {
       values.forEach((value) => {
@@ -42,16 +45,17 @@ const AnalyticsTokens: React.FC = () => {
       });
     });
     return result;
-  };
-  const favoriteTokens = useMemo(() => {
+  }, []);
+
+  const favoriteTokensData = useMemo(() => {
     if (topTokens) {
       return topTokens.filter(
-        (token: any) => bookmarkTokens.indexOf(token.id) > -1,
+        (token: any) => favoriteTokens.indexOf(token.id) > -1,
       );
     } else {
       return [];
     }
-  }, [topTokens, bookmarkTokens]);
+  }, [topTokens, favoriteTokens]);
 
   const trendingTokens = useMemo(() => {
     if (topTokens) {
@@ -64,7 +68,7 @@ const AnalyticsTokens: React.FC = () => {
         })
         .slice(0, 10);
     }
-  }, [topTokens]);
+  }, [checkIfStable, topTokens]);
 
   return (
     <Box width='100%' mb={3}>
@@ -104,7 +108,7 @@ const AnalyticsTokens: React.FC = () => {
               tokensFilter === 0
                 ? topTokens
                 : tokensFilter === 1
-                ? favoriteTokens
+                ? favoriteTokensData
                 : trendingTokens
             }
           />
