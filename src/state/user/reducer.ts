@@ -90,7 +90,7 @@ export const initialState: UserState = {
   URLWarningVisible: true,
   userSingleHopOnly: false,
   userZapSlippage: INITIAL_ZAP_SLIPPAGE,
-  isInfiniteApproval: true,
+  isInfiniteApproval: false,
   amlScore: 0,
 };
 
