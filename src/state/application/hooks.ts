@@ -126,42 +126,6 @@ export function useTokenDetails(): {
   return { tokenDetails, updateTokenDetails: _updateTokenDetails };
 }
 
-export function useBookmarkTokens(): {
-  bookmarkTokens: string[];
-  addBookmarkToken: (data: string) => void;
-  removeBookmarkToken: (data: string) => void;
-  updateBookmarkTokens: (data: string[]) => void;
-} {
-  const bookmarkedTokens = useSelector(
-    (state: AppState) => state.application.bookmarkedTokens,
-  );
-  const dispatch = useDispatch();
-  const _addBookmarkToken = useCallback(
-    (token: string) => {
-      dispatch(addBookMarkToken(token));
-    },
-    [dispatch],
-  );
-  const _removeBookmarkToken = useCallback(
-    (token: string) => {
-      dispatch(removeBookmarkToken(token));
-    },
-    [dispatch],
-  );
-  const _updateBookmarkTokens = useCallback(
-    (tokens: string[]) => {
-      dispatch(updateBookmarkTokens(tokens));
-    },
-    [dispatch],
-  );
-  return {
-    bookmarkTokens: bookmarkedTokens,
-    addBookmarkToken: _addBookmarkToken,
-    removeBookmarkToken: _removeBookmarkToken,
-    updateBookmarkTokens: _updateBookmarkTokens,
-  };
-}
-
 export function useBookmarkPairs(): {
   bookmarkPairs: string[];
   addBookmarkPair: (data: string) => void;

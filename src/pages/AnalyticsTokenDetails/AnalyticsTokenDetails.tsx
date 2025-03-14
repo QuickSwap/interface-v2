@@ -13,7 +13,7 @@ import {
 } from 'utils';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import { CurrencyLogo, PairTable, TransactionsTable } from 'components';
-import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { GlobalConst, TxnType } from 'constants/index';
@@ -39,11 +39,6 @@ const AnalyticsTokenDetails: React.FC = () => {
     [],
   );
 
-  // const {
-  //   bookmarkTokens,
-  //   addBookmarkToken,
-  //   removeBookmarkToken,
-  // } = useBookmarkTokens();
   const config = getConfig(chainId);
   const v3 = config['v3'];
   const v2 = config['v2'];
