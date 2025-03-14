@@ -5,7 +5,6 @@ import { ChainId, Token } from '@uniswap/sdk';
 import { getAddress } from '@ethersproject/address';
 import { DoubleCurrencyLogo, CustomTable } from 'components';
 import { GlobalConst } from 'constants/index';
-import { useBookmarkPairs } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,7 @@ import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React, useAnalyticsVersion } from 'hooks';
 import 'components/styles/AnalyticsTable.scss';
 import FarmingAPRTooltip from 'components/FarmingAPRTooltip';
+import { useLocalStorage } from '@orderly.network/hooks';
 
 interface PairsTableProps {
   data: any[];
@@ -113,11 +113,11 @@ const PairTable: React.FC<PairsTableProps> = ({
     ])
     .concat(version === 'v2' ? v2SpecificCells : v3SpecificCells);
 
-  const {
-    bookmarkPairs,
-    addBookmarkPair,
-    removeBookmarkPair,
-  } = useBookmarkPairs();
+  const [bookmarkPairs, setBookmarkPairs] = useLocalStorage<number[]>(
+    'bookmarkPairs',
+    [],
+  );
+
   const tokenMap = useSelectedTokenList();
   const mobileHTML = (pair: any, index: number) => {
     const token0 = getTokenFromAddress(pair.token0.id, chainIdToUse, tokenMap, [
@@ -165,9 +165,11 @@ const PairTable: React.FC<PairsTableProps> = ({
               onClick={() => {
                 const pairIndex = bookmarkPairs.indexOf(pair.id);
                 if (pairIndex === -1) {
-                  addBookmarkPair(pair.id);
+                  setBookmarkPairs([...bookmarkPairs, pair.id]);
                 } else {
-                  removeBookmarkPair(pair.id);
+                  setBookmarkPairs(
+                    bookmarkPairs.filter((item: number) => item !== pair.id),
+                  );
                 }
               }}
             >
@@ -375,9 +377,11 @@ const PairTable: React.FC<PairsTableProps> = ({
                 onClick={() => {
                   const pairIndex = bookmarkPairs.indexOf(pair.id);
                   if (pairIndex === -1) {
-                    addBookmarkPair(pair.id);
+                    setBookmarkPairs([...bookmarkPairs, pair.id]);
                   } else {
-                    removeBookmarkPair(pair.id);
+                    setBookmarkPairs(
+                      bookmarkPairs.filter((item: number) => item !== pair.id),
+                    );
                   }
                 }}
               >
