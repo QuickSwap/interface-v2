@@ -101,9 +101,10 @@ export function useApproveCallback(
       return;
     }
 
-    const approveAmount = isInfiniteApproval
-      ? MaxUint256.toString()
-      : amountToApprove.quotient.toString();
+    const approveAmount =
+      isInfiniteApproval || chainId === 1868
+        ? MaxUint256.toString()
+        : amountToApprove.quotient.toString();
 
     let useExact = false;
     const estimatedGas = await tokenContract.estimateGas

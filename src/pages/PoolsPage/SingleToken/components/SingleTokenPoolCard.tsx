@@ -39,31 +39,37 @@ const SingleTokenPoolCard: React.FC<{
       }`}
       onClick={onClick}
     >
-      <Box width='80%' className='flex items-center'>
+      <Box className='flex items-center singleTokenPoolCardContainer'>
         <Box className='singleTokenPoolCardCheck'>{selected && <Check />}</Box>
-        <DoubleCurrencyLogo
-          currency0={vault.token0}
-          currency1={vault.token1}
-          size={18}
-        />
-        <small>
-          {vault.token0?.symbol}/{vault.token1?.symbol}
-        </small>
-        <Box className='singleTokenPoolFee'>
-          {formatNumber(vault.fee)}% {t('fee')}
-        </Box>
-      </Box>
-      <Box width='20%'>
-        {isLoading || loadingUSDPrices ? (
-          <Loader />
-        ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center', gridGap: '4px' }}>
-            <Typography style={{ color: '#0fc679' }}>
-              {formatNumber(apr)}%
-            </Typography>
-            <img src='/icons/pools/star.webp' alt='star' width={20} />
+        <Box className='singleTokenPoolCardNameWrapper'>
+          <Box className='flex' style={{ marginRight: '-8px' }}>
+            <DoubleCurrencyLogo
+              currency0={vault.token0}
+              currency1={vault.token1}
+              size={18}
+            />
+            <small>
+              {vault.token0?.symbol}/{vault.token1?.symbol}
+            </small>
           </Box>
-        )}
+          <Box className='singleTokenPoolCardAprWrapper'>
+            <Box className='singleTokenPoolFee'>
+              {formatNumber(vault.fee)}% {t('fee')}
+            </Box>
+            {isLoading || loadingUSDPrices ? (
+              <Loader />
+            ) : (
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gridGap: '4px' }}
+              >
+                <Typography style={{ color: '#0fc679' }}>
+                  {formatNumber(apr)}%
+                </Typography>
+                <img src='/icons/pools/star.webp' alt='star' width={20} />
+              </Box>
+            )}
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

@@ -81,14 +81,14 @@ const ContestTable: React.FC<ContestTableProps> = ({
     return [
       {
         html: (
-          <Box>
+          <Box ml={2}>
             <p>{token.rank}</p>
           </Box>
         ),
       },
       {
         html: (
-          <Box className={`priceChangeWrapper`} mr={2}>
+          <Box>
             <AddressCell
               address={token.origin}
               displayShortened={false}
@@ -106,7 +106,7 @@ const ContestTable: React.FC<ContestTableProps> = ({
       },
       {
         html: (
-          <Box className={`priceChangeWrapper text-success`} mr={2}>
+          <Box className={`text-success`} mr={2}>
             <small>{formatNumber(token.amountUSD)}</small>
           </Box>
         ),

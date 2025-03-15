@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Table,
@@ -72,6 +72,10 @@ const DataTable: React.FC<DataTableProps<any>> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(rowPerPage);
   const count = size || data.length;
+
+  useEffect(() => {
+    setPage(0);
+  }, [data]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,

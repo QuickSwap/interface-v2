@@ -11,13 +11,14 @@ import {
   getPriceClass,
   getTokenFromAddress,
 } from 'utils';
-import { useBookmarkTokens, useIsV2 } from 'state/application/hooks';
+import { useIsV2 } from 'state/application/hooks';
 import { ReactComponent as StarChecked } from 'assets/images/StarChecked.svg';
 import { ReactComponent as StarUnchecked } from 'assets/images/StarUnchecked.svg';
 import 'components/styles/AnalyticsTable.scss';
 import { useTranslation } from 'react-i18next';
 import { useSelectedTokenList } from 'state/lists/hooks';
 import { useActiveWeb3React } from 'hooks';
+import { useLocalStorage } from '@orderly.network/hooks';
 
 interface TokensTableProps {
   data: any[];
@@ -36,6 +37,11 @@ const TokensTable: React.FC<TokensTableProps> = ({
   const tokenMap = useSelectedTokenList();
   const { isV2 } = useIsV2();
   const version = useMemo(() => `${isV2 ? `v2` : 'v3'}`, [isV2]);
+
+  const [favoriteTokens, setFavoriteTokens] = useLocalStorage<number[]>(
+    'favoriteAnalyticsTokens',
+    [],
+  );
 
   const tokenHeadCells = [
     {
@@ -70,11 +76,6 @@ const TokensTable: React.FC<TokensTableProps> = ({
       sortKey: (item: any) => item.totalLiquidityUSD,
     },
   ];
-  const {
-    bookmarkTokens,
-    addBookmarkToken,
-    removeBookmarkToken,
-  } = useBookmarkTokens();
   const mobileHTML = (token: any, index: number) => {
     const tokenCurrency = getTokenFromAddress(
       token.id,
@@ -98,15 +99,17 @@ const TokensTable: React.FC<TokensTableProps> = ({
             display='flex'
             mr={1}
             onClick={() => {
-              const tokenIndex = bookmarkTokens.indexOf(token.id);
+              const tokenIndex = favoriteTokens.indexOf(token.id);
               if (tokenIndex === -1) {
-                addBookmarkToken(token.id);
+                setFavoriteTokens([...favoriteTokens, token.id]);
               } else {
-                removeBookmarkToken(token.id);
+                setFavoriteTokens(
+                  favoriteTokens.filter((item: number) => item !== token.id),
+                );
               }
             }}
           >
-            {bookmarkTokens.indexOf(token.id) > -1 ? (
+            {favoriteTokens.indexOf(token.id) > -1 ? (
               <StarChecked />
             ) : (
               <StarUnchecked />
@@ -175,15 +178,17 @@ const TokensTable: React.FC<TokensTableProps> = ({
               display='flex'
               mr={1}
               onClick={() => {
-                const tokenIndex = bookmarkTokens.indexOf(token.id);
+                const tokenIndex = favoriteTokens.indexOf(token.id);
                 if (tokenIndex === -1) {
-                  addBookmarkToken(token.id);
+                  setFavoriteTokens([...favoriteTokens, token.id]);
                 } else {
-                  removeBookmarkToken(token.id);
+                  setFavoriteTokens(
+                    favoriteTokens.filter((item: number) => item !== token.id),
+                  );
                 }
               }}
             >
-              {bookmarkTokens.indexOf(token.id) > -1 ? (
+              {favoriteTokens.indexOf(token.id) > -1 ? (
                 <StarChecked />
               ) : (
                 <StarUnchecked />
