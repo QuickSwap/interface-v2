@@ -64,23 +64,17 @@ export function SingleTokenSupplyLiquidity() {
           </Box>
         </Box>
       </Box> */}
-      <Box mt={2}>
-        {account && isSupportedNetwork ? (
-          <Box>
-            {/* <small className='weight-600'>1. {t('selectToken')}</small> */}
-            <Box mt={1.5}>
-              <V3CurrencySelect
-                currency={currency ?? undefined}
-                handleCurrencySelect={handleCurrencySelect}
-              />
-            </Box>
+      {account && isSupportedNetwork && (
+        <Box mt={2}>
+          {/* <small className='weight-600'>1. {t('selectToken')}</small> */}
+          <Box mt={1.5}>
+            <V3CurrencySelect
+              currency={currency ?? undefined}
+              handleCurrencySelect={handleCurrencySelect}
+            />
           </Box>
-        ) : (
-          <Button className='singleTokenDepositButton' onClick={connectWallet}>
-            {account ? t('switchNetwork') : t('connectWallet')}
-          </Button>
-        )}
-      </Box>
+        </Box>
+      )}
       <Box mt={3} position='relative'>
         {(!currency || !account || !isSupportedNetwork) && (
           <Box className='singleTokenSupplyLiquidityOverlay' />

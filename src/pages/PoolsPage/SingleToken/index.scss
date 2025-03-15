@@ -13,6 +13,23 @@
   border-radius: 20px;
 }
 
+.singleTokenPoolCardContainer {
+  width: 100%;
+}
+
+.singleTokenPoolCardNameWrapper {
+  display: flex;
+  flex:1;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.singleTokenPoolCardAprWrapper {
+  display: flex;
+  flex:1;
+  justify-content: space-between;
+}
+
 .singleTokenSelectPoolWarning {
   width: 100%;
   height: 120px;
@@ -30,6 +47,9 @@
   display: flex;
   align-items: center;
   border-radius: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
   cursor: pointer;
   & small {
     margin: 0 8px;
@@ -64,6 +84,7 @@
   padding: 2px 6px;
   border-radius: 6px;
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .singleTokenDepositButton {
