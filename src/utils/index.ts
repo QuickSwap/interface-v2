@@ -1420,6 +1420,7 @@ export const getSteerRatio = (tokenType: number, steerVault: SteerVault) => {
 export const getSteerDexName = (chainId?: ChainId) => {
   if (chainId === ChainId.MATIC) return 'quickswap';
   if (chainId === ChainId.LAYERX) return 'quickswapalgebra';
+  if (chainId === ChainId.SONEIUM) return 'QuickSwapIntegral';
   return 'quickswapv3';
 };
 

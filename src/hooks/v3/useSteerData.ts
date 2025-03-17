@@ -27,6 +27,7 @@ import { GlobalConst, GlobalData } from 'constants/index';
 import { useUSDCPricesFromAddresses } from 'utils/useUSDCPrice';
 import STEER_STAKING_ABI from 'constants/abis/steer-staking.json';
 import PoolABI from 'constants/abis/v3/pool.json';
+import PoolV4ABI from 'constants/abis/v4/pool.json';
 import UniV3PoolABI from 'constants/abis/v3/univ3Pool.json';
 import { ERC20_ABI } from 'constants/abis/erc20';
 import SteerVaultABI from 'constants/abis/steer-vault.json';
@@ -130,13 +131,18 @@ export const useSteerVaults = (chainId: ChainId) => {
       .filter((item, ind, self) => self.indexOf(item) === ind);
   }, [vaults]);
   const poolInterface = new Interface(PoolABI);
+  const poolV4Interface = new Interface(PoolV4ABI);
   const uniV3PoolInterface = new Interface(UniV3PoolABI);
   const slot0Calls = useMultipleContractSingleData(
     poolAddresses,
     chainId === ChainId.MATIC || chainId === ChainId.LAYERX
       ? poolInterface
+      : chainId === ChainId.SONEIUM
+      ? poolV4Interface
       : uniV3PoolInterface,
-    chainId === ChainId.MATIC || chainId === ChainId.LAYERX
+    chainId === ChainId.MATIC ||
+      chainId === ChainId.LAYERX ||
+      chainId === ChainId.SONEIUM
       ? 'globalState'
       : 'slot0',
     [],
