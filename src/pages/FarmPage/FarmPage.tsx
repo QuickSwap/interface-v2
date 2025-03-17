@@ -34,7 +34,7 @@ const FarmPage: React.FC = () => {
   }, [farmAvailable]);
 
   return (
-    <Box width='100%' mb={3} id='farmPage'>
+    <Box className='pageContainer' width='100%' mb={3} id='farmPage'>
       <Box margin='0 auto 24px'>
         <HypeLabAds />
       </Box>

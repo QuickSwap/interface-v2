@@ -106,6 +106,7 @@ const BondsList: React.FC<BondsListProps> = ({ search }) => {
 
   const filteredUserBonds = useMemo(() => {
     if (!userBonds) return [];
+    console.log('11111111', userBonds);
     return userBonds
       .filter((userBond) => {
         const { bond } = userBond;
