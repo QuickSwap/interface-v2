@@ -18,7 +18,7 @@ const AnalyticsPairs: React.FC = () => {
   );
 
   return (
-    <Box className='pageContainer' width='100%' mb={3}>
+    <Box width='100%' mb={3}>
       <p>{t('allPairs')}</p>
       <Box mt={4} className='panel'>
         {topPairsLoading ? (

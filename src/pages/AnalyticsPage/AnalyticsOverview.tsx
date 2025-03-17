@@ -53,11 +53,11 @@ const AnalyticsOverview: React.FC = () => {
   };
 
   return isLiquidityHub ? (
-    <Box className='pageContainer' width='100%' mb={3}>
+    <Box width='100%' mb={3}>
       <LiquidityHubAnalytics />
     </Box>
   ) : (
-    <Box className='pageContainer' width='100%' mb={3}>
+    <Box width='100%' mb={3}>
       {(chainId === ChainId.DOGECHAIN || chainId === ChainId.MATIC) && (
         <AnalyticsExtraInfo data={globalData} chainId={chainId} />
       )}

@@ -71,7 +71,7 @@ const AnalyticsTokens: React.FC = () => {
   }, [checkIfStable, topTokens]);
 
   return (
-    <Box className='pageContainer' width='100%' mb={3}>
+    <Box width='100%' mb={3}>
       <TopMovers hideArrow={true} />
       <Box my={4} px={2} className='flex flex-wrap items-center'>
         <Box

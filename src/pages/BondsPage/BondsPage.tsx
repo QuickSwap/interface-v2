@@ -117,7 +117,7 @@ const BondsPage: React.FC = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <Box className='pageContainer' width='100%' id='bondsPage'>
+    <Box width='100%' id='bondsPage'>
       <Box className='pageHeading'>
         <h1 className='h4'>{t('bonds')}</h1>
 
