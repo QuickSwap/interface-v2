@@ -89,15 +89,15 @@ const DefiedgeLPItemDetails: React.FC<{ defiedgePosition: any }> = ({
           <small>{balance1 ? formatNumber(balance1) : 0}</small>
         </Box>
       </Box>
-      <Box mt={2} className='gamma-liquidity-item-buttons'>
+      <Box mt={2} className='defiedge-liquidity-item-buttons'>
         <Button
-          className='gamma-liquidity-item-button'
+          className='defiedge-liquidity-item-button'
           onClick={() => setShowAddLPModal(true)}
         >
           <small>{t('addLiquidity')}</small>
         </Button>
         <Button
-          className='gamma-liquidity-item-button'
+          className='defiedge-liquidity-item-button'
           onClick={() => setShowWithdrawModal(true)}
           disabled={defiedgePosition.lpAmount <= 0}
         >

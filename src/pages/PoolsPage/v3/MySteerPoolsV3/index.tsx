@@ -19,7 +19,7 @@ export default function MySteerPoolsV3({ isForAll }: { isForAll?: boolean }) {
   return (
     <>
       {steerPositions && steerPositions.length > 0 ? (
-        <Box style={{ marginTop: '32px' }}>
+        <Box>
           {steerPositions.map((position, index) => (
             <SteerLPItem key={index} position={position} />
           ))}
