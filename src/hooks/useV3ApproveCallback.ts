@@ -25,6 +25,7 @@ import { calculateGasMargin } from 'utils';
 import { MergedZap } from 'state/zap/actions';
 import { useIsInfiniteApproval } from 'state/user/hooks';
 import { TransactionType } from 'models/enums';
+import { ChainId } from '@uniswap/sdk';
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -102,7 +103,7 @@ export function useApproveCallback(
     }
 
     const approveAmount =
-      isInfiniteApproval || chainId === 1868
+      isInfiniteApproval || chainId === ChainId.SONEIUM
         ? MaxUint256.toString()
         : amountToApprove.quotient.toString();
 
@@ -121,7 +122,7 @@ export function useApproveCallback(
     return tokenContract
       .approve(
         spender,
-        useExact || !isInfiniteApproval
+        useExact || (!isInfiniteApproval && chainId !== ChainId.SONEIUM)
           ? amountToApprove.quotient.toString()
           : approveAmount,
         {
