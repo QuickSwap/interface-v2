@@ -213,7 +213,7 @@ wcm-modal {
   align-items: center;
   flex-direction: column;
   margin: 0 auto;
-  padding: 152px 0;
+  padding: 152px 24px 0;
   @include media('screen', '<tablet') {
     padding: 190px 12px 0;
   }

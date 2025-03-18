@@ -62,13 +62,6 @@
   }
 }
 
-.pageContainer {
-  padding: 24px;
-  @include media('screen', '<phone') {
-    padding: 12px;
-  }
-}
-
 .selectDepositContainer {
   gap: 16px;
   @include media('screen', '<phone') {

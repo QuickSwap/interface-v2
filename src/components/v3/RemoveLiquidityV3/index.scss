@@ -40,5 +40,11 @@
     height: 24px;
     border-radius: 10px;
     margin-left: 8px;
+    min-width: 0;
+
+    @include media('screen', '<phone') {
+      padding: 5px;
+      font-size: 12px;
+    }
   }
 }
