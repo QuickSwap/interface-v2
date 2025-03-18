@@ -42,7 +42,7 @@ export default function PositionList({
   }, [positions]);
 
   return (
-    <Box mb={-2}>
+    <Box>
       {_positionsOnOldFarming.map((p) => {
         return (
           <Box mb={2} key={p.tokenId.toString()}>

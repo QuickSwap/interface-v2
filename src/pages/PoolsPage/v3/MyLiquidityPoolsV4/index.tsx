@@ -7,9 +7,13 @@ import { getConfig } from 'config/index';
 import { GlobalConst, DRAGON_EGGS_SHOW } from 'constants/index';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import { Eggs } from 'components';
-
-import { useV3Positions } from 'hooks/v3/useV3Positions';
+import Loader from 'components/Loader';
+import {
+  useV3SteerPositionsCount,
+  useV3Positions,
+} from 'hooks/v3/useV3Positions';
 import MyQuickswapPoolsV3 from '../MyQuickswapPoolsV3';
+import MySteerPoolsV3 from '../MySteerPoolsV3';
 import FilterPanelItem from '../FilterPanelItem';
 
 export default function MyLiquidityPoolsV4() {
@@ -28,6 +32,7 @@ export default function MyLiquidityPoolsV4() {
     userHideQuickClosedPositions,
     setUserHideQuickClosedPositions,
   ] = useState(true);
+  const [quickswapPoolsLoading, setQuickswapPoolsLoading] = useState(false);
 
   const filters = [
     {
@@ -35,26 +40,48 @@ export default function MyLiquidityPoolsV4() {
       method: setUserHideQuickClosedPositions,
       checkValue: userHideQuickClosedPositions,
     },
-    // {
-    //   title: t('farming'),
-    //   method: setHideQuickFarmingPositions,
-    //   checkValue: hideQuickFarmingPositions,
-    // },
   ];
 
-  const { count: quickPoolsCount } = useV3Positions(
-    account,
-    userHideQuickClosedPositions,
-    false,
-    true,
-  );
+  const {
+    count: quickPoolsCount,
+    includeCloseCount: quickPoolsTotalCount,
+    loading: quickswapCountLoading,
+  } = useV3Positions(account, userHideQuickClosedPositions, false, true);
+
+  const {
+    count: steerPoolsCount,
+    loading: steerPoolsCountLoading,
+  } = useV3SteerPositionsCount();
+
+  const counterLoading = quickswapCountLoading || steerPoolsCountLoading;
+  const poolLoading = quickswapPoolsLoading;
 
   const [poolFilter, setPoolFilter] = useState(
-    GlobalConst.utils.poolsFilter.quickswap,
+    GlobalConst.utils.poolsFilter.all,
   );
 
   const myPoolsFilter = useMemo(() => {
     const filters: any[] = [];
+    // all tab
+    filters.push({
+      id: GlobalConst.utils.poolsFilter.all,
+      text: (
+        <Box className='flex items-center'>
+          <small>All</small>
+          <Box
+            ml='6px'
+            className={`myV3PoolCountWrapper ${
+              poolFilter === GlobalConst.utils.poolsFilter.all
+                ? 'activeMyV3PoolCountWrapper'
+                : ''
+            }`}
+          >
+            {(quickPoolsTotalCount ?? 0) + steerPoolsCount}
+          </Box>
+        </Box>
+      ),
+    });
+
     filters.push({
       id: GlobalConst.utils.poolsFilter.quickswap,
       text: (
@@ -73,8 +100,28 @@ export default function MyLiquidityPoolsV4() {
         </Box>
       ),
     });
+    if (steerPoolsCount > 0) {
+      filters.push({
+        id: GlobalConst.utils.poolsFilter.steer,
+        text: (
+          <Box className='flex items-center'>
+            <small>Steer</small>
+            <Box
+              ml='6px'
+              className={`myV3PoolCountWrapper ${
+                poolFilter === GlobalConst.utils.poolsFilter.steer
+                  ? 'activeMyV3PoolCountWrapper'
+                  : ''
+              }`}
+            >
+              {steerPoolsCount}
+            </Box>
+          </Box>
+        ),
+      });
+    }
     return filters;
-  }, [poolFilter, quickPoolsCount]);
+  }, [poolFilter, quickPoolsTotalCount, steerPoolsCount, quickPoolsCount]);
 
   return (
     <Box>
@@ -103,34 +150,66 @@ export default function MyLiquidityPoolsV4() {
           </Box>
         )}
       </Box>
-      <Box className='myV3PoolsFilterWrapper'>
-        <CustomTabSwitch
-          items={myPoolsFilter}
-          value={poolFilter}
-          handleTabChange={setPoolFilter}
-          height={50}
-        />
-      </Box>
-      <Box>
-        {poolFilter === GlobalConst.utils.poolsFilter.quickswap && (
-          <>
-            {account && (
-              <Box mt={2} className='flex justify-between items-center'>
-                <Box className='flex'>
-                  {filters.map((item, key) => (
-                    <Box mr={1} key={key}>
-                      <FilterPanelItem item={item} />
-                    </Box>
-                  ))}
-                </Box>
+      {!!account && counterLoading ? (
+        <Box py={5} className='flex items-center justify-center'>
+          <Loader stroke='white' size={'2rem'} />
+        </Box>
+      ) : (
+        <>
+          <Box className='myV3PoolsFilterWrapper'>
+            <CustomTabSwitch
+              items={myPoolsFilter}
+              value={poolFilter}
+              handleTabChange={setPoolFilter}
+              height={50}
+            />
+          </Box>
+          <Box>
+            {((!!account && counterLoading) || (account && poolLoading)) && (
+              <Box py={5} className='flex items-center justify-center'>
+                <Loader size='40px' />
               </Box>
             )}
-            <MyQuickswapPoolsV3
-              userHideClosedPositions={userHideQuickClosedPositions}
-            />
-          </>
-        )}
-      </Box>
+            {!counterLoading && (
+              <>
+                {poolFilter === GlobalConst.utils.poolsFilter.all && (
+                  <>
+                    {(quickPoolsCount ?? 0) > 0 && (
+                      <MyQuickswapPoolsV3
+                        userHideClosedPositions={userHideQuickClosedPositions}
+                        isForAll={true}
+                        setIsLoading={setQuickswapPoolsLoading}
+                      />
+                    )}
+                    {steerPoolsCount > 0 && <MySteerPoolsV3 isForAll={true} />}
+                  </>
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.quickswap && (
+                  <>
+                    {account && (
+                      <Box mt={2} className='flex justify-between items-center'>
+                        <Box className='flex'>
+                          {filters.map((item, key) => (
+                            <Box mr={1} key={key}>
+                              <FilterPanelItem item={item} />
+                            </Box>
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
+                    <MyQuickswapPoolsV3
+                      userHideClosedPositions={userHideQuickClosedPositions}
+                    />
+                  </>
+                )}
+                {poolFilter === GlobalConst.utils.poolsFilter.steer && (
+                  <MySteerPoolsV3 />
+                )}
+              </>
+            )}
+          </Box>
+        </>
+      )}
     </Box>
   );
 }

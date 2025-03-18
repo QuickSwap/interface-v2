@@ -78,7 +78,7 @@ const PoolsPage: React.FC = () => {
   }, [showPools]);
 
   return (
-    <Box mb={3} className='pageContainer' width='100%'>
+    <Box mb={3} width='100%'>
       {isMobile ? (
         <>
           <Box mt={2} mb={2} className='pageHeading items-center'>
