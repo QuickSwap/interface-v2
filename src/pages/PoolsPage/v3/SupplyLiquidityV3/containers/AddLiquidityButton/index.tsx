@@ -416,8 +416,7 @@ export function AddLiquidityButton({
             : t('errorInTx'),
         );
       }
-    }
-    if (
+    } else if (
       mintInfo.liquidityRangeType ===
       GlobalConst.v3LiquidityRangeType.STEER_RANGE
     ) {
