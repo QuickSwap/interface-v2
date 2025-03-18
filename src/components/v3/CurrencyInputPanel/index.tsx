@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { Pair } from '@uniswap/sdk';
+import { ETHER, Pair } from '@uniswap/sdk';
 import { Ether } from '@uniswap/sdk-core';
 import { Currency, CurrencyAmount, Percent, Token } from '@uniswap/sdk-core';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import { LockOutlined } from '@material-ui/icons';
 import { useActiveWeb3React } from 'hooks';
 import CurrencyLogo from 'components/CurrencyLogo';
-import { useCurrencyBalance } from 'state/wallet/v3/hooks';
+import { useCurrencyBalance } from 'state/wallet/hooks';
 import CurrencySearchModal from 'components/CurrencySearchModal';
 import { Box, Typography } from '@material-ui/core';
 import NumericalInput from 'components/NumericalInput';
@@ -89,7 +89,7 @@ export default function CurrencyInputPanel({
   const [modalOpen, setModalOpen] = useState(false);
   const { chainId, account } = useActiveWeb3React();
   const { t } = useTranslation();
-  const nativeCurrency = chainId ? Ether.onChain(chainId) : undefined;
+  const nativeCurrency = chainId ? ETHER[chainId] : undefined;
   const ethBalance = useCurrencyBalance(account ?? undefined, nativeCurrency);
   const balance = useCurrencyBalance(
     account ?? undefined,
@@ -107,7 +107,7 @@ export default function CurrencyInputPanel({
   const latestBlockNumber = useBlockNumber();
   useEffect(() => {
     if (updatedEthBalance == undefined) {
-      setUpdatedEthBalance(ethBalance);
+      setUpdatedEthBalance(ethBalance as any);
     } else {
       if (!multicallContract || !latestBlockNumber || !account) return;
       getCurrencyBalanceImmediately(
@@ -115,7 +115,7 @@ export default function CurrencyInputPanel({
         chainId,
         latestBlockNumber,
         account,
-        nativeCurrency,
+        nativeCurrency as any,
       ).then((value) => {
         setUpdatedEthBalance(value);
         if (currency?.isNative) {
@@ -124,7 +124,7 @@ export default function CurrencyInputPanel({
       });
     }
     if (updatedBalance == undefined) {
-      setUpdatedBalance(balance);
+      setUpdatedBalance(balance as any);
     } else {
       if (
         currency?.isNative ||
@@ -148,8 +148,8 @@ export default function CurrencyInputPanel({
   const ethBalanceDependency = JSON.stringify(ethBalance);
   const balanceDependency = JSON.stringify(balance);
   useEffect(() => {
-    setUpdatedEthBalance(ethBalance);
-    setUpdatedBalance(balance);
+    setUpdatedEthBalance(ethBalance as any);
+    setUpdatedBalance(balance as any);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ethBalanceDependency, balanceDependency]);
 
