@@ -327,9 +327,13 @@ const DragonsLair = () => {
             });
             setTxPending(false);
             setTxHash(tx.transactionHash);
+            setQUICKAmount('');
+            setQUICKV2Amount('');
           } catch (err) {
             setTxPending(false);
             setTxError(t('errorInTx'));
+            setQUICKAmount('');
+            setQUICKV2Amount('');
           }
         })
         .catch(() => {
@@ -337,6 +341,8 @@ const DragonsLair = () => {
           setTxPending(false);
           setTxHash('');
           setTxError(t('txRejected'));
+          setQUICKAmount('');
+          setQUICKV2Amount('');
         });
     }
   };
