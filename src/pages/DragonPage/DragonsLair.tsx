@@ -665,7 +665,7 @@ const DragonsLair = () => {
                   isInsufficientUnstakeAmount ||
                   Number(unstakeAmount) <= 0)
               }
-              className='unstakeButton'
+              className='convertButton'
               onClick={() => {
                 if (!account) {
                   connectWallet();
