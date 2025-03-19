@@ -54,6 +54,8 @@ import {
 import Web3 from 'web3';
 import { TransactionType } from 'models/enums';
 import { ReportProblemOutlined } from '@material-ui/icons';
+import { useConnectWallet } from 'hooks';
+import { useIsSupportedNetwork } from 'utils';
 
 const DragonsLair = () => {
   const { breakpoints } = useTheme();
@@ -62,6 +64,8 @@ const DragonsLair = () => {
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const isNew = true;
+  const isSupportedNetwork = useIsSupportedNetwork();
+  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const quickToken = DLQUICK[chainIdToUse];
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
@@ -121,6 +125,9 @@ const DragonsLair = () => {
   );
 
   const stakingButtonText = useMemo(() => {
+    if (!account) {
+      return t('connectWallet');
+    }
     if (!stakeAmount || !Number(stakeAmount)) {
       return t('enterAmount');
     } else if (stakingApproval !== ApprovalState.APPROVED) {
@@ -131,10 +138,13 @@ const DragonsLair = () => {
       setApproving(false);
       return t('confirm');
     }
-  }, [isInsufficientStakeAmount, stakeAmount, t, stakingApproval]);
+  }, [isInsufficientStakeAmount, stakeAmount, t, stakingApproval, account]);
 
   // Unstake
   const unstakingButtonText = useMemo(() => {
+    if (!account) {
+      return t('connectWallet');
+    }
     if (!unstakeAmount || !Number(unstakeAmount)) {
       return t('enterAmount');
     } else if (isInsufficientUnstakeAmount) {
@@ -142,7 +152,7 @@ const DragonsLair = () => {
     } else {
       return t('confirm');
     }
-  }, [isInsufficientUnstakeAmount, unstakeAmount, t]);
+  }, [isInsufficientUnstakeAmount, unstakeAmount, t, account]);
 
   // Convert
   const quickConvertContract = useQUICKConversionContract();
@@ -173,6 +183,9 @@ const DragonsLair = () => {
     Number(quickAmount) > Number(oldQuickBalance?.toExact() ?? 0);
 
   const buttonText = useMemo(() => {
+    if (!account) {
+      return t('connectWallet');
+    }
     if (!quickAmount || !Number(quickAmount)) {
       return t('enterAmount');
     } else if (approval !== ApprovalState.APPROVED) {
@@ -182,7 +195,7 @@ const DragonsLair = () => {
     } else {
       return t('convert');
     }
-  }, [isInsufficientQUICK, quickAmount, t, approval]);
+  }, [isInsufficientQUICK, quickAmount, t, approval, account]);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
@@ -646,14 +659,19 @@ const DragonsLair = () => {
           {tabValue === 'unstake' && (
             <Button
               disabled={
-                approving ||
-                attemptUnstaking ||
-                isInsufficientUnstakeAmount ||
-                Number(unstakeAmount) <= 0
+                account &&
+                (approving ||
+                  attemptUnstaking ||
+                  isInsufficientUnstakeAmount ||
+                  Number(unstakeAmount) <= 0)
               }
               className='unstakeButton'
               onClick={() => {
-                onWithdraw();
+                if (!account) {
+                  connectWallet();
+                } else {
+                  onWithdraw();
+                }
               }}
             >
               {unstakingButtonText}
@@ -662,14 +680,19 @@ const DragonsLair = () => {
           {tabValue === 'convert' && (
             <Button
               disabled={
-                approving ||
-                attemptConverting ||
-                isInsufficientQUICK ||
-                !quickAmount ||
-                !Number(quickAmount)
+                account &&
+                (approving ||
+                  attemptConverting ||
+                  isInsufficientQUICK ||
+                  !quickAmount ||
+                  !Number(quickAmount))
               }
               className='convertButton'
               onClick={() => {
+                if (!account) {
+                  connectWallet();
+                  return;
+                }
                 if (approval === ApprovalState.APPROVED) {
                   convertQUICK();
                 } else {
