@@ -34,6 +34,8 @@ const VersionToggle: React.FC = () => {
       ? analyticsVersion
       : 'v3';
 
+  const hideTotal = true; // TODO - remove this flage if v2 is tracked in analytics page
+
   useEffect(() => {
     updateIsV2(version === 'v2');
     updateIsLpLock(version === 'lpLocker');
@@ -143,14 +145,16 @@ const VersionToggle: React.FC = () => {
                 <small>{t('liquidityHub')}</small>
               </Box>
             )}
-          <Box
-            className={version === 'total' ? 'version-toggle-active' : ''}
-            onClick={() => {
-              redirectWithVersion('total');
-            }}
-          >
-            <small>{t('total')}</small>
-          </Box>
+          {!hideTotal && (
+            <Box
+              className={version === 'total' ? 'version-toggle-active' : ''}
+              onClick={() => {
+                redirectWithVersion('total');
+              }}
+            >
+              <small>{t('total')}</small>
+            </Box>
+          )}
         </>
       )}
     </Box>
