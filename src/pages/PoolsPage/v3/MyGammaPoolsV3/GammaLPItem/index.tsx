@@ -9,6 +9,7 @@ import { useActiveWeb3React } from 'hooks';
 import { ArrowRight } from 'react-feather';
 import { useHistory } from 'react-router-dom';
 import { getGammaPairsForTokens } from 'utils';
+import { Presets } from 'state/mint/v3/reducer';
 
 const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
   const { t } = useTranslation();
@@ -50,15 +51,28 @@ const GammaLPItem: React.FC<{ gammaPosition: any }> = ({ gammaPosition }) => {
             </>
           )}
           {gammaPairInfo?.fee && (
-            <Box ml={1.5} mr={-0.5} className='gamma-liquidity-range'>
+            <Box
+              ml={1.5}
+              mr={-0.5}
+              className='gamma-liquidity-range gamma-liquidity-range-fee'
+            >
               <small>{gammaPairInfo.fee / 10000}%</small>
             </Box>
           )}
           {gammaPairInfo && (
-            <Box ml={1.5} className='gamma-liquidity-range'>
-              <small>
-                {gammaPairInfo.title} {t('range').toLowerCase()}
-              </small>
+            <Box
+              ml={1.5}
+              className={`gamma-liquidity-range ${
+                gammaPairInfo.type === Presets.GAMMA_WIDE
+                  ? 'gamma-liquidity-range-wide'
+                  : gammaPairInfo.type === Presets.GAMMA_NARROW
+                  ? 'gamma-liquidity-range-narrow'
+                  : gammaPairInfo.type === Presets.GAMMA_DYNAMIC
+                  ? 'gamma-liquidity-range-dynamic'
+                  : 'gamma-liquidity-range-stable'
+              }`}
+            >
+              <span>{gammaPairInfo.title}</span>
             </Box>
           )}
           {gammaPosition && gammaPosition.farming && (
