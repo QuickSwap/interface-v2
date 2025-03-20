@@ -124,6 +124,14 @@ const Header: React.FC<{ onUpdateNewsletter: (val: boolean) => void }> = ({
     });
   }
 
+  const launchTab: HeaderMenuItem = {
+    text: 'QuickLaunch',
+    id: 'quick-launch',
+    link: '/launch',
+    isNew: true,
+  };
+  menuItems.push(launchTab);
+
   const perpsTab: HeaderMenuItem = {
     text: t('Perps'),
     id: 'earn-tab',
