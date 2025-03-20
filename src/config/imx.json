@@ -5,7 +5,7 @@
   "rpc": "https://rpc.immutable.com",
   "blockExplorer": "https://explorer.immutable.com",
   "bridgeUrl": "https://toolkit.immutable.com/bridge/",
-  "networkName": "Immutable zkEVM Mainnet",
+  "networkName": "Immutable zkEVM",
   "aprAPINetwork": "imx",
   "chainId": 13371,
   "isMainnet": true,

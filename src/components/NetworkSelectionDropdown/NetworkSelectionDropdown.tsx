@@ -9,6 +9,7 @@ import { ChainId } from '@uniswap/sdk';
 import { useIsSupportedNetwork } from 'utils';
 import KavaImage from 'assets/images/KAVA.png';
 import FlareImage from 'assets/images/flare.webp';
+import ChainNewImage from 'assets/images/chainNew.png';
 import { useArcxAnalytics } from '@arcxmoney/analytics';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
 import ActiveDotImage from 'assets/images/chainActiveDot.png';
@@ -80,65 +81,79 @@ const NetworkSelectionDropdown: React.FC<{
           height={40}
         />
       </Box>
-      {supportedChains.map((chain) => {
-        const config = getConfig(chain);
-        return (
-          <Box
-            className='networkItemWrapper'
-            key={chain}
-            onClick={() => {
-              switchNetworkFunction(chain);
-            }}
-          >
-            <Box className='flex items-center'>
-              <img
-                src={config['nativeCurrencyImage']}
-                alt='network Image'
-                className='networkIcon'
-              />
-              <small className='weight-600'>{config['networkName']}</small>
+      <Box className='networkItemContainer'>
+        {supportedChains.map((chain) => {
+          const config = getConfig(chain);
+          return (
+            <Box
+              className='networkItemWrapper'
+              key={chain}
+              onClick={() => {
+                switchNetworkFunction(chain);
+              }}
+            >
+              <Box className='flex items-center'>
+                <img
+                  src={config['nativeCurrencyImage']}
+                  alt='network Image'
+                  className='networkIcon'
+                />
+                <small className='weight-600'>{config['networkName']}</small>
+                {config['isNew'] && (
+                  <img
+                    src={ChainNewImage}
+                    alt='chain new'
+                    width={48}
+                    height={16}
+                    style={{ marginLeft: 8 }}
+                  />
+                )}
+              </Box>
+              {isSupportedNetwork && chainId && chainId === chain && (
+                <img
+                  src={ActiveDotImage}
+                  alt='chain active'
+                  width={12}
+                  height={12}
+                />
+              )}
             </Box>
-            {isSupportedNetwork && chainId && chainId === chain && (
-              <img
-                src={ActiveDotImage}
-                alt='chain active'
-                width={12}
-                height={12}
-              />
-            )}
-          </Box>
-        );
-      })}
+          );
+        })}
+      </Box>
       {networkType === 'mainnet' && (
         <>
-          <Box
-            className='networkItemWrapper'
-            onClick={() => {
-              window.open('https://kinetix.finance/home', '_blank');
-            }}
-          >
-            <Box className='flex items-center'>
-              <img
-                src={KavaImage}
-                alt='network Image'
-                className='networkIcon'
-              />
-              <small className='weight-600'>Kava - Kinetix</small>
+          <p className='mt-1 mb-1'>Partners</p>
+          <Box className='networkItemContainer'>
+            <Box
+              className='networkItemWrapper'
+              onClick={() => {
+                window.open('https://kinetix.finance/home', '_blank');
+              }}
+            >
+              <Box className='flex items-center'>
+                <img
+                  src={KavaImage}
+                  alt='network Image'
+                  className='networkIcon'
+                />
+                <small className='weight-600'>Kava - Kinetix</small>
+              </Box>
             </Box>
-          </Box>
-          <Box
-            className='networkItemWrapper'
-            onClick={() => {
-              window.open('https://sparkdex.ai/apps/swap', '_blank');
-            }}
-          >
-            <Box className='flex items-center'>
-              <img
-                src={FlareImage}
-                alt='network Image'
-                className='networkIcon'
-              />
-              <small className='weight-600'>Flare - SparkDex</small>
+            <Box
+              className='networkItemWrapper'
+              onClick={() => {
+                window.open('https://sparkdex.ai/apps/swap', '_blank');
+              }}
+            >
+              <Box className='flex items-center'>
+                <img
+                  src={FlareImage}
+                  alt='network Image'
+                  className='networkIcon'
+                />
+                <small className='weight-600'>Flare - SparkDex</small>
+              </Box>
             </Box>
           </Box>
         </>

@@ -5,7 +5,7 @@
   "rpc": "https://pacific-rpc.manta.network/http",
   "blockExplorer": "https://pacific-explorer.manta.network",
   "bridgeUrl": "https://pacific-bridge.manta.network/",
-  "networkName": "Manta Pacific L2 Rollup",
+  "networkName": "Manta",
   "aprAPINetwork": "manta",
   "chainId": 169,
   "isMainnet": true,

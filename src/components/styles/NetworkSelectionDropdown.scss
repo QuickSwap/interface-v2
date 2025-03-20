@@ -5,7 +5,7 @@
   position: absolute;
   right: 0;
   top: 50px;
-  width: 320px;
+  width: 360px;
   border: 1px solid $grey38;
   border-radius: 16px;
   padding: 16px;
@@ -33,6 +33,13 @@
       margin: 0 16px !important;
     }
   }
+}
+
+.networkItemContainer {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(5, auto);
+  gap: 10px; /* Spacing between items */
 }
 
 .networkItemWrapper {
