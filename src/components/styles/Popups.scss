@@ -2,8 +2,9 @@
 @use 'styles/breakpoints' as *;
 
 .mobilePopupWrapper {
-  position: relative;
-  max-width: 100%;
+  position: fixed;
+  top: 70px;
+  z-index: 12;
   display: none;
   @include media('screen', '<phone') {
     display: block;
@@ -26,6 +27,7 @@
   max-width: 355px !important;
   width: 100%;
   z-index: 12;
+  display: block;
 
   @include media('screen', '<phone') {
     display: none;
