@@ -26,13 +26,17 @@ const VersionToggle: React.FC = () => {
   const history = useHistory();
   const isAnalyticsPage = history.location.pathname.includes('/analytics');
   const isPoolPage = history.location.pathname.includes('/pools');
-  const analyticsVersion = useAnalyticsVersion();
+  const analyticsVersion = useAnalyticsVersion(); // TODO: change default version in useAnalyticsVersion if it's needed to show total and v2
   const version =
     params && params.version
       ? params.version
       : isAnalyticsPage
       ? analyticsVersion
       : 'v3';
+
+  // Hide v2 and total tab for now
+  const hideV2 = true; // TODO: false to show v2
+  const hideTotal = true; // TODO: false to show total
 
   useEffect(() => {
     updateIsV2(version === 'v2');
@@ -67,7 +71,7 @@ const VersionToggle: React.FC = () => {
 
   return (
     <Box className='version-toggle-container'>
-      {v2Available && (
+      {!hideV2 && v2Available && (
         <Box
           className={version === 'v2' ? 'version-toggle-active' : ''}
           onClick={() => {
@@ -143,14 +147,16 @@ const VersionToggle: React.FC = () => {
                 <small>{t('liquidityHub')}</small>
               </Box>
             )}
-          <Box
-            className={version === 'total' ? 'version-toggle-active' : ''}
-            onClick={() => {
-              redirectWithVersion('total');
-            }}
-          >
-            <small>{t('total')}</small>
-          </Box>
+          {!hideTotal && (
+            <Box
+              className={version === 'total' ? 'version-toggle-active' : ''}
+              onClick={() => {
+                redirectWithVersion('total');
+              }}
+            >
+              <small>{t('total')}</small>
+            </Box>
+          )}
         </>
       )}
     </Box>
