@@ -122,6 +122,7 @@ export const CHAIN_IDS_TO_NAMES = {
   [ChainId.ETHEREUM]: 'ethereum',
   [ChainId.MINATO]: 'minato',
   [ChainId.SONEIUM]: 'soneium',
+  [ChainId.SOMNIA]: 'somnia_testnet',
 };
 
 export enum ZapType {
@@ -222,6 +223,7 @@ export const MIN_NATIVE_CURRENCY_FOR_GAS: {
   [ChainId.LAYERX]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(15)),
   [ChainId.MINATO]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
   [ChainId.SONEIUM]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
+  [ChainId.SOMNIA]: JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(14)),
 };
 
 export const GlobalConst = {
@@ -388,6 +390,7 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOEGCHAIN_TESTNET,
   ChainId.MINATO,
   ChainId.SONEIUM,
+  ChainId.SOMNIA,
 ];
 
 export interface GammaPair {
@@ -2632,6 +2635,7 @@ export const GlobalValue = {
       [ChainId.ETHEREUM]: [],
       [ChainId.MINATO]: [],
       [ChainId.SONEIUM]: [],
+      [ChainId.SOMNIA]: [],
     },
   },
   marketSDK: {
@@ -2727,6 +2731,7 @@ export const GlobalData = {
     [ChainId.ETHEREUM]: [],
     [ChainId.MINATO]: [USDC[ChainId.SONEIUM]],
     [ChainId.SONEIUM]: [USDC[ChainId.SONEIUM], USDT[ChainId.SONEIUM]],
+    [ChainId.SOMNIA]: [USDC[ChainId.SOMNIA], USDT[ChainId.SOMNIA]],
   },
   blueChips: {
     [ChainId.MATIC]: [
@@ -2805,6 +2810,11 @@ export const GlobalData = {
       USDC[ChainId.SONEIUM],
       USDT[ChainId.SONEIUM],
     ],
+    [ChainId.SOMNIA]: [
+      WETH[ChainId.SOMNIA],
+      USDC[ChainId.SOMNIA],
+      USDT[ChainId.SOMNIA],
+    ],
   },
   stablePairs: {
     [ChainId.MATIC]: [
@@ -2843,6 +2853,7 @@ export const GlobalData = {
     [ChainId.ETHEREUM]: [],
     [ChainId.MINATO]: [],
     [ChainId.SONEIUM]: [],
+    [ChainId.SOMNIA]: [],
   },
   quickBurns: {
     CHART_DURATIONS: [
