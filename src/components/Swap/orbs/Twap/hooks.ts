@@ -89,10 +89,7 @@ export const useDurationWarning = () => {
     if (warnings.minDuration) {
       return t('minExpiryWarning', { value: MIN_DURATION_MINUTES });
     }
-    if (warnings.maxDuration) {
-      return t('maxExpiryWarning');
-    }
-  }, [warnings.maxDuration, warnings.minDuration, t]);
+  }, [warnings.minDuration, t]);
 };
 
 export const useTradeSizeWarning = () => {
@@ -156,7 +153,7 @@ export const useTwapApprovalCallback = () => {
   return useApproval(
     twapSDK.config.twapAddress,
     currencies[Field.INPUT],
-    parsedAmount?.raw.toString(),
+    parsedAmount?.toExact().toString(),
   );
 };
 
