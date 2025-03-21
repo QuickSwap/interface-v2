@@ -42,6 +42,11 @@ export default function MyLiquidityPoolsV3() {
     setUserHideQuickClosedPositions,
   ] = useState(true);
 
+  const [
+    userAllHideQuickClosedPositions,
+    setAllUserHideQuickClosedPositions,
+  ] = useState(true);
+
   const [quickswapPoolsLoading, setQuickswapPoolsLoading] = useState(false);
   const [unipilogPoolsLoading, setUnipilogPoolsLoading] = useState(false);
   const [gammaPoolsLoading, setGammaPoolsLoading] = useState(false);
@@ -55,11 +60,24 @@ export default function MyLiquidityPoolsV3() {
     },
   ];
 
+  const allFilters = [
+    {
+      title: t('closed'),
+      method: setAllUserHideQuickClosedPositions,
+      checkValue: userAllHideQuickClosedPositions,
+    },
+  ];
+
   const {
     count: quickPoolsCount,
-    includeCloseCount: quickPoolsTotalCount,
     loading: quickswapCountLoading,
   } = useV3Positions(account, userHideQuickClosedPositions);
+
+  const { count: quickAllPoolsCount } = useV3Positions(
+    account,
+    userAllHideQuickClosedPositions,
+  );
+
   const {
     loading: gammaPoolsCountLoading,
     count: gammaPoolsCount,
@@ -119,7 +137,7 @@ export default function MyLiquidityPoolsV3() {
                 : ''
             }`}
           >
-            {(quickPoolsTotalCount ?? 0) +
+            {(quickAllPoolsCount ?? 0) +
               unipilotPositionsCount +
               gammaPoolsCount +
               defiedgeStrategiesCount +
@@ -256,7 +274,7 @@ export default function MyLiquidityPoolsV3() {
     defiedgeStrategiesCount,
     steerPoolsCount,
     ichiCount,
-    quickPoolsTotalCount,
+    quickAllPoolsCount,
   ]);
 
   return (
@@ -310,10 +328,22 @@ export default function MyLiquidityPoolsV3() {
               <>
                 {poolFilter === GlobalConst.utils.poolsFilter.all && (
                   <>
+                    {account && (
+                      <Box mt={2} className='flex justify-between items-center'>
+                        <Box className='flex'>
+                          {allFilters.map((item, key) => (
+                            <Box mr={1} key={key}>
+                              <FilterPanelItem item={item} />
+                            </Box>
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
                     {(quickPoolsCount ?? 0) > 0 && (
                       <MyQuickswapPoolsV3
-                        userHideClosedPositions={userHideQuickClosedPositions}
-                        isForAll={true}
+                        userHideClosedPositions={
+                          userAllHideQuickClosedPositions
+                        }
                         setIsLoading={setQuickswapPoolsLoading}
                       />
                     )}

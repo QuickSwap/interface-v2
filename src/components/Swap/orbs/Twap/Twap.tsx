@@ -487,18 +487,19 @@ const Content: React.FC<{
   const maxImpactReached = optimalRate?.maxImpactReached;
   const tradeSrcAmount = optimalRate?.srcAmount;
   const swapButtonDisabled = useMemo(() => {
-    if (allowancePending || swapInputError) {
-      return true;
-    }
-    const isSwapError =
-      (maxImpactReached && !isExpertMode) ||
-      (tradeDestAmount &&
-        !parsedAmounts[Field.OUTPUT]?.equalTo(JSBI.BigInt(tradeDestAmount))) ||
-      (swapInputAmountWithSlippage &&
-        swapInputBalance &&
-        swapInputAmountWithSlippage.greaterThan(swapInputBalance));
-
     if (account) {
+      if (allowancePending || swapInputError) {
+        return true;
+      }
+      const isSwapError =
+        (maxImpactReached && !isExpertMode) ||
+        (tradeDestAmount &&
+          !parsedAmounts[Field.OUTPUT]?.equalTo(
+            JSBI.BigInt(tradeDestAmount),
+          )) ||
+        (swapInputAmountWithSlippage &&
+          swapInputBalance &&
+          swapInputAmountWithSlippage.greaterThan(swapInputBalance));
       if (!isSupportedNetwork) return false;
       else if (showNativeConvert) {
         return (
