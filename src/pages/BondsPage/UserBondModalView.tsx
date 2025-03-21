@@ -18,6 +18,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import { formatNumber } from 'utils';
 import { useCurrency, useCurrencyFromSymbol } from 'hooks/Tokens';
 import { CurrencyLogo, DoubleCurrencyLogo } from 'components';
+import { Close } from '@material-ui/icons';
 
 interface BondModalProps {
   onDismiss?: () => void;
@@ -81,6 +82,9 @@ const UserBondModalView: React.FC<BondModalProps> = ({
           chainId={chainId}
         />
       )}
+      <Box mb={1} className='flex justify-end'>
+        <Close className='cursor-pointer' onClick={onDismiss} />
+      </Box>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12} md={6}>
           <Box className='flex'>

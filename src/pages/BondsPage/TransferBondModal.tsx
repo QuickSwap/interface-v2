@@ -45,7 +45,7 @@ const TransferBillModal: React.FC<TransferBillModalProps> = ({
       <Box p='20px'>
         <Box className='flex justify-between border-bottom' pb='16px'>
           <h5>{t('tranferBond')}</h5>
-          <Close />
+          <Close className='cursor-pointer' onClick={onClose} />
         </Box>
         <Box className='flex' mt='20px'>
           <p>{t('transferring')}: </p>
