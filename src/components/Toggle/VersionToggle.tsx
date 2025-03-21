@@ -35,7 +35,7 @@ const VersionToggle: React.FC = () => {
       : 'v3';
 
   // Hide v2 and total tab for now
-  const hideV2 = true; // TODO: false to show v2
+  const hideV2 = isAnalyticsPage; // TODO: false to show v2. Set to false if isAnalyticsPage is true
   const hideTotal = true; // TODO: false to show total
 
   useEffect(() => {
