@@ -58,8 +58,17 @@ const SteerLPItem: React.FC<{ position: SteerVault }> = ({ position }) => {
           <p className='weight-600'>
             {position.token0?.symbol}/{position.token1?.symbol}
           </p>
-          <Box ml={1.5} className='steer-liquidity-range'>
-            <small>{strategy}</small>
+          <Box
+            ml={1.5}
+            className={`steer-liquidity-range ${
+              strategy === 'Wide'
+                ? 'steer-liquidity-range-wide'
+                : strategy === 'Narrow'
+                ? 'steer-liquidity-range-narrow'
+                : 'steer-liquidity-range-stable'
+            }`}
+          >
+            <span>{strategy}</span>
           </Box>
           {farm && farm.stakedAmount > 0 && (
             <Box

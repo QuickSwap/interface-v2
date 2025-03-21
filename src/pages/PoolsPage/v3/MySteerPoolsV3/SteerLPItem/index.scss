@@ -13,12 +13,24 @@
 }
 
 .steer-liquidity-range {
-  background-color: $grey12;
   height: 22px;
   display: flex;
   align-items: center;
   padding: 0 10px;
-  border-radius: 11px;
+  border-radius: 8px;
+  color: $bgColor;
+}
+
+.steer-liquidity-range-wide {
+  background-color: $blue12;
+}
+
+.steer-liquidity-range-narrow {
+  background-color: $purple8;
+}
+
+.steer-liquidity-range-stable {
+  background-color: $green5;
 }
 
 .steer-liquidity-item-expand {
