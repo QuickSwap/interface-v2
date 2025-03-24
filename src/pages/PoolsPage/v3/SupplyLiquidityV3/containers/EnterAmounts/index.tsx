@@ -143,8 +143,7 @@ export function EnterAmounts({
 
   const steerPeripheryContract = useSteerPeripheryContract();
   const [approvalA, approveACallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_A] ||
-      tryParseAmount('1', currencyAApproval),
+    mintInfo.parsedAmounts[Field.CURRENCY_A],
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
@@ -162,8 +161,7 @@ export function EnterAmounts({
       : undefined,
   );
   const [approvalB, approveBCallback] = useApproveCallback(
-    mintInfo.parsedAmounts[Field.CURRENCY_B] ||
-      tryParseAmount('1', currencyBApproval),
+    mintInfo.parsedAmounts[Field.CURRENCY_B],
     chainId
       ? mintInfo.liquidityRangeType ===
         GlobalConst.v3LiquidityRangeType.GAMMA_RANGE
