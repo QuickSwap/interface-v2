@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { TransactionResponse } from '@ethersproject/providers';
 import { Box, Button, CircularProgress } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
-import QUICKIcon from 'assets/images/quickIcon.svg';
-import { ReactComponent as QUICKV2Icon } from 'assets/images/QUICKV2.svg';
+import QUICKIcon from 'assets/images/QUICKV2.svg';
+import QUICKV2Icon from 'assets/images/quickIcon.svg';
 import { ArrowForward, ArrowDownward } from '@material-ui/icons';
 import {
   NumericalInput,
@@ -174,7 +174,7 @@ const ConvertQUICKPage: React.FC<ConvertQUICKPageProps> = ({ isWidget }) => {
             <ArrowForward />
           </Box>
           <Box className='iconWrapper'>
-            <QUICKV2Icon />
+            <img src={QUICKV2Icon} alt='QUICK' />
           </Box>
           <p className='weight-600'>QUICK(NEW)</p>
         </Box>
