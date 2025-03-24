@@ -13,6 +13,7 @@ import astarZkevm from './astarzkevm.json';
 import layerX from './layerx.json';
 import minato from './minato.json';
 import soneium from './soneium.json';
+import somnia from './somnia.json';
 import orderlyFeeTiers from './orderlyFeeTiers.json';
 import { ChainId } from '@uniswap/sdk';
 
@@ -31,6 +32,7 @@ const configs: any = {
   [ChainId.LAYERX]: layerX,
   [ChainId.MINATO]: minato,
   [ChainId.SONEIUM]: soneium,
+  [ChainId.SOMNIA]: somnia,
 };
 
 export const getConfig = (network: ChainId | undefined) => {
