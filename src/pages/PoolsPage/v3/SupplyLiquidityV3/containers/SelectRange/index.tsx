@@ -398,8 +398,6 @@ export function SelectRange({
   const unipilotVaultExists = unipilotVaultsForPair.length > 0;
   const steerVaultExists = steerVaultsForPair.length > 0;
 
-  const [isAutomatic, setIsAutoMatic] = useState(false);
-
   const selectVaultEnabled =
     (gammaPairExists && unipilotVaultExists) ||
     (gammaPairExists && steerVaultExists) ||
@@ -422,49 +420,25 @@ export function SelectRange({
     return vaults;
   }, [gammaPairExists, steerVaultExists, unipilotVaultExists]);
 
-  useEffect(() => {
-    if (!loadingSteerVaults) {
-      if (automaticEnabled) {
-        setIsAutoMatic(true);
-      } else {
-        setIsAutoMatic(false);
-      }
-    }
-  }, [loadingSteerVaults, automaticEnabled]);
-
-  useEffect(() => {
-    if (isAutomatic) {
-      if (selectVaultEnabled) {
-        onChangeLiquidityRangeType('');
-      } else {
-        if (gammaPairExists) {
-          onChangeLiquidityRangeType(
-            GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
-          );
-        } else if (steerVaultExists) {
-          onChangeLiquidityRangeType(
-            GlobalConst.v3LiquidityRangeType.STEER_RANGE,
-          );
-        } else {
-          onChangeLiquidityRangeType(
-            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
-          );
-        }
-      }
+  const handleSelectAutomatic = () => {
+    if (selectVaultEnabled) {
+      onChangeLiquidityRangeType('');
     } else {
-      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+      if (gammaPairExists) {
+        onChangeLiquidityRangeType(
+          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+        );
+      } else if (steerVaultExists) {
+        onChangeLiquidityRangeType(
+          GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+        );
+      } else {
+        onChangeLiquidityRangeType(
+          GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+        );
+      }
     }
-  }, [
-    gammaPairExists,
-    isAutomatic,
-    onChangeLiquidityRangeType,
-    selectVaultEnabled,
-    steerVaultExists,
-    currencyA?.isNative,
-    currencyB?.isNative,
-    currencyAAddress,
-    currencyBAddress,
-  ]);
+  };
 
   const { data: gammaData } = useGammaData();
 
@@ -522,13 +496,21 @@ export function SelectRange({
         <Box className='buttonGroup poolRangeButtonGroup'>
           <ButtonGroup>
             <Button
-              className={isAutomatic ? 'active' : ''}
-              onClick={() => {
-                setIsAutoMatic(true);
-              }}
+              className={
+                liquidityRangeType !==
+                GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                  ? 'active'
+                  : ''
+              }
+              onClick={() => handleSelectAutomatic()}
             >
               <img
-                src={isAutomatic ? AutomaticImageDark : AutomaticImage}
+                src={
+                  liquidityRangeType !==
+                  GlobalConst.v3LiquidityRangeType.MANUAL_RANGE
+                    ? AutomaticImageDark
+                    : AutomaticImage
+                }
                 alt='automatic range'
               />
             </Button>
@@ -540,7 +522,6 @@ export function SelectRange({
                   : ''
               }
               onClick={() => {
-                setIsAutoMatic(false);
                 onChangeLiquidityRangeType(
                   GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
                 );
@@ -552,35 +533,37 @@ export function SelectRange({
         </Box>
       )}
 
-      {isAutomatic && (
-        <Box my={1.5} className='poolRangePowerGamma'>
-          <span className='text-secondary'>{t('poweredBy')}</span>
-          {liquidityRangeType ===
-          GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
-            <img src={GammaLogo} alt='Gamma Logo' />
-          ) : liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
-            <span>
-              <img src={A51finance} alt='A51 Finance Logo' />
-              <span className='text-secondary'>&nbsp;A51 Finance</span>
-            </span>
-          ) : liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
-            <img
-              src={DefiedgeLogo}
-              alt='Defiedge Logo'
-              style={{ height: '28px' }}
-            />
-          ) : liquidityRangeType ===
-            GlobalConst.v3LiquidityRangeType.STEER_RANGE ? (
-            <small className='text-bold'>&nbsp;Steer</small>
-          ) : (
-            <small className='text-bold'>
-              &nbsp;{enabledVaults.join(', ')}
-            </small>
-          )}
-        </Box>
-      )}
+      {automaticEnabled &&
+        liquidityRangeType !==
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+          <Box my={1.5} className='poolRangePowerGamma'>
+            <span className='text-secondary'>{t('poweredBy')}</span>
+            {liquidityRangeType ===
+            GlobalConst.v3LiquidityRangeType.GAMMA_RANGE ? (
+              <img src={GammaLogo} alt='Gamma Logo' />
+            ) : liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE ? (
+              <span>
+                <img src={A51finance} alt='A51 Finance Logo' />
+                <span className='text-secondary'>&nbsp;A51 Finance</span>
+              </span>
+            ) : liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.DEFIEDGE_RANGE ? (
+              <img
+                src={DefiedgeLogo}
+                alt='Defiedge Logo'
+                style={{ height: '28px' }}
+              />
+            ) : liquidityRangeType ===
+              GlobalConst.v3LiquidityRangeType.STEER_RANGE ? (
+              <small className='text-bold'>&nbsp;Steer</small>
+            ) : (
+              <small className='text-bold'>
+                &nbsp;{enabledVaults.join(', ')}
+              </small>
+            )}
+          </Box>
+        )}
 
       {!!liquidityRangeType && (
         <Box my={1}>
@@ -642,7 +625,9 @@ export function SelectRange({
             </small>
           </Box>
         )}
-      {liquidityRangeType === GlobalConst.v3LiquidityRangeType.MANUAL_RANGE && (
+      {(!automaticEnabled ||
+        liquidityRangeType ===
+          GlobalConst.v3LiquidityRangeType.MANUAL_RANGE) && (
         <>
           {mintInfo.price && (
             <Box textAlign='center'>
