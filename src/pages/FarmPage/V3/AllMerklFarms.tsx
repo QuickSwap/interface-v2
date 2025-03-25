@@ -333,6 +333,30 @@ const AllMerklFarms: React.FC<Props> = ({
     );
   }, [farmType.link, selectedFarms, staked]);
 
+  const sortedSelectedFarms = useMemo(() => {
+    return filteredSelectedFarms.sort((farm1, farm2) => {
+      if (selectedSort === GlobalConst.utils.v3FarmSortBy.pool) {
+        return farm1.title > farm2.title ? sortMultiplier : -1 * sortMultiplier;
+      }
+      if (selectedSort === GlobalConst.utils.v3FarmSortBy.tvl) {
+        return farm1.almTVL > farm2.almTVL
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
+      if (selectedSort === GlobalConst.utils.v3FarmSortBy.apr) {
+        return farm1.almAPR + farm1.poolAPR > farm2.almAPR + farm2.poolAPR
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
+      if (selectedSort === GlobalConst.utils.v3FarmSortBy.rewards) {
+        return farm1.rewards > farm2.rewards
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
+      return 1;
+    });
+  }, [filteredSelectedFarms, selectedSort, sortMultiplier]);
+
   return (
     <>
       {poolId && (
@@ -431,8 +455,8 @@ const AllMerklFarms: React.FC<Props> = ({
         ) : (
           <Box px={2}>
             {poolId ? (
-              filteredSelectedFarms.length > 0 ? (
-                filteredSelectedFarms.map((farm, ind) => (
+              sortedSelectedFarms.length > 0 ? (
+                sortedSelectedFarms.map((farm, ind) => (
                   <Box key={ind} pb={2}>
                     <MerklPairFarmCard farm={farm} />
                   </Box>
