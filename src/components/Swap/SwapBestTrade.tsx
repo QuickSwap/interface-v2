@@ -22,6 +22,9 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from 'state/swap/hooks';
+
+import { useDerivedSwapInfo as useV3DerivedSwapInfo } from 'state/swap/v3/hooks';
+
 import {
   useExpertModeManager,
   useUserSlippageTolerance,
@@ -100,7 +103,10 @@ import {
   useLiquidityHubQuote,
   useGetBetterPrice,
 } from './orbs/LiquidityHub/hooks';
+import { NoLiquiditySwapConfirmation } from './orbs/LiquidityHub/NoLiquiditySwapConfirmation';
 import { LiquidityHubSwapConfirmation } from './orbs/LiquidityHub/LiquidityHubSwapConfirmation';
+import { V3TradeState } from 'hooks/v3/useBestV3Trade';
+
 import { PoweredByOrbs } from '@orbs-network/swap-ui';
 import {
   LiquidityHubSwapDetails,
@@ -119,6 +125,9 @@ const SwapBestTrade: React.FC<{
   const [liquidityHubDisabled, setLiquidityHubDisabled] = useState(false);
   const [swappingLiquidityHub, setSwappingLiquidityHub] = useState(false);
   const [showLiquidityHubConfirm, setShowLiquidityHubConfirm] = useState(false);
+  const [showNoLiquidityConfirm, setShowNoLiquidityConfirm] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [outputValue, setOutputValue] = useState('');
 
   // token warning stuff
   // const [loadedInputCurrency, loadedOutputCurrency] = [
@@ -169,6 +178,11 @@ const SwapBestTrade: React.FC<{
     inputError: swapInputError,
     autoSlippage,
   } = useDerivedSwapInfo();
+
+  const {
+    v3TradeState: { state: v3TradeState },
+  } = useV3DerivedSwapInfo();
+
   const finalizedTransaction = useTransactionFinalizer();
   const [isExpertMode] = useExpertModeManager();
   const {
@@ -623,6 +637,12 @@ const SwapBestTrade: React.FC<{
     }
   }, [nativeConvertApproval]);
 
+  useEffect(() => {
+    if (optimalRateError) {
+      setShowNoLiquidityConfirm(true);
+    }
+  }, [optimalRateError]);
+
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] &&
       currencies[Field.OUTPUT] &&
@@ -848,6 +868,7 @@ const SwapBestTrade: React.FC<{
 
   const handleTypeInput = useCallback(
     (value: string) => {
+      setInputValue(value);
       onUserInput(Field.INPUT, value);
       setSwapType(SwapSide.SELL);
     },
@@ -855,6 +876,7 @@ const SwapBestTrade: React.FC<{
   );
   const handleTypeOutput = useCallback(
     (value: string) => {
+      setOutputValue(value);
       onUserInput(Field.OUTPUT, value);
       setSwapType(SwapSide.BUY);
     },
@@ -1289,6 +1311,17 @@ const SwapBestTrade: React.FC<{
         onConfirm={handleConfirmTokenWarning}
         onDismiss={handleDismissTokenWarning}
       />
+      {/* optimalRateError */}
+      {showNoLiquidityConfirm && (
+        <NoLiquiditySwapConfirmation
+          isOpen={showNoLiquidityConfirm}
+          onClose={() => setShowNoLiquidityConfirm(false)}
+          parsedAmount={parsedAmounts}
+          inputValue={inputValue}
+          outputValue={outputValue}
+        />
+      )}
+
       <LiquidityHubSwapConfirmation
         inAmount={parsedAmount?.raw.toString()}
         inCurrency={inputCurrency}
