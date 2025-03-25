@@ -56,28 +56,41 @@ const CurrencySearch: React.FC<CurrencySearchProps> = ({
   onDismiss,
   isOpen,
 }) => {
-  const userAddedTokens = useUserAddedTokens();
+  const { account, chainId } = useActiveWeb3React();
+  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+  const [favoriteCurrenciesRaw, setFavoriteCurrencies] = useLocalStorage<{
+    [chainId: number]: Currency[];
+  }>('favoriteCurrencies', {});
 
-  const [favoriteCurrencies, setFavoriteCurrencies] = useLocalStorage<
-    Currency[]
-  >('favoriteCurrencies', []);
+  const favoriteCurrencies = useMemo(() => {
+    return favoriteCurrenciesRaw[chainIdToUse] || [];
+  }, [favoriteCurrenciesRaw, chainIdToUse]);
 
-  // const [favoriteCurrencies, setFavoriteCurrencies] = useState<Currency[]>([]);
   const handleChangeFavorite = (currency: Currency, checked: boolean) => {
+    const newChainIdFavoriteCurrenciesRaw =
+      favoriteCurrenciesRaw[chainId] ?? [];
     if (checked) {
-      setFavoriteCurrencies([...favoriteCurrencies, currency]);
+      const newFavoriteCurrenciesRaw = {
+        ...favoriteCurrenciesRaw,
+        [chainId]: [...newChainIdFavoriteCurrenciesRaw, currency],
+      };
+      setFavoriteCurrencies(newFavoriteCurrenciesRaw);
     } else {
-      setFavoriteCurrencies(
-        favoriteCurrencies.filter(
-          (item: Currency) => item.symbol !== currency.symbol,
-        ),
-      );
+      const newFavoriteCurrenciesRaw = {
+        ...favoriteCurrenciesRaw,
+        [chainId]: [
+          ...newChainIdFavoriteCurrenciesRaw.filter(
+            (item: Currency) => item.symbol !== currency.symbol,
+          ),
+        ],
+      };
+      setFavoriteCurrencies(newFavoriteCurrenciesRaw);
     }
   };
   const { t } = useTranslation();
-  const { account, chainId } = useActiveWeb3React();
+
   const dispatch = useDispatch<AppDispatch>();
-  const chainIdToUse = chainId ? chainId : ChainId.MATIC;
+
   const nativeCurrency = ETHER[chainIdToUse];
 
   const handleInput = useCallback((input: string) => {
