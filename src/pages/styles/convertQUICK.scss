@@ -75,6 +75,16 @@
   cursor: pointer;
 }
 
+.convertButton {
+  max-width: 224px;
+  height: 40px;
+  width: 100%;
+  border-radius: 20px;
+  &.Mui-disabled {
+    background: $grey2;
+  }
+}
+
 .errorInput {
   border-color: $errorMain
 }

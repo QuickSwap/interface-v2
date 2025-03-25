@@ -54,8 +54,6 @@ import {
 import Web3 from 'web3';
 import { TransactionType } from 'models/enums';
 import { ReportProblemOutlined } from '@material-ui/icons';
-import { useConnectWallet } from 'hooks';
-import { useIsSupportedNetwork } from 'utils';
 
 const DragonsLair = () => {
   const { breakpoints } = useTheme();
@@ -64,8 +62,6 @@ const DragonsLair = () => {
   const { account, chainId, library } = useActiveWeb3React();
   const chainIdToUse = chainId ? chainId : ChainId.MATIC;
   const isNew = true;
-  const isSupportedNetwork = useIsSupportedNetwork();
-  const { connectWallet } = useConnectWallet(isSupportedNetwork);
 
   const quickToken = DLQUICK[chainIdToUse];
   const quickBalance = useTokenBalance(account ?? undefined, quickToken);
@@ -125,9 +121,6 @@ const DragonsLair = () => {
   );
 
   const stakingButtonText = useMemo(() => {
-    if (!account) {
-      return t('connectWallet');
-    }
     if (!stakeAmount || !Number(stakeAmount)) {
       return t('enterAmount');
     } else if (stakingApproval !== ApprovalState.APPROVED) {
@@ -138,13 +131,10 @@ const DragonsLair = () => {
       setApproving(false);
       return t('confirm');
     }
-  }, [isInsufficientStakeAmount, stakeAmount, t, stakingApproval, account]);
+  }, [isInsufficientStakeAmount, stakeAmount, t, stakingApproval]);
 
   // Unstake
   const unstakingButtonText = useMemo(() => {
-    if (!account) {
-      return t('connectWallet');
-    }
     if (!unstakeAmount || !Number(unstakeAmount)) {
       return t('enterAmount');
     } else if (isInsufficientUnstakeAmount) {
@@ -152,7 +142,7 @@ const DragonsLair = () => {
     } else {
       return t('confirm');
     }
-  }, [isInsufficientUnstakeAmount, unstakeAmount, t, account]);
+  }, [isInsufficientUnstakeAmount, unstakeAmount, t]);
 
   // Convert
   const quickConvertContract = useQUICKConversionContract();
@@ -183,9 +173,6 @@ const DragonsLair = () => {
     Number(quickAmount) > Number(oldQuickBalance?.toExact() ?? 0);
 
   const buttonText = useMemo(() => {
-    if (!account) {
-      return t('connectWallet');
-    }
     if (!quickAmount || !Number(quickAmount)) {
       return t('enterAmount');
     } else if (approval !== ApprovalState.APPROVED) {
@@ -195,7 +182,7 @@ const DragonsLair = () => {
     } else {
       return t('convert');
     }
-  }, [isInsufficientQUICK, quickAmount, t, approval, account]);
+  }, [isInsufficientQUICK, quickAmount, t, approval]);
   const addTransaction = useTransactionAdder();
   const finalizedTransaction = useTransactionFinalizer();
 
@@ -327,13 +314,9 @@ const DragonsLair = () => {
             });
             setTxPending(false);
             setTxHash(tx.transactionHash);
-            setQUICKAmount('');
-            setQUICKV2Amount('');
           } catch (err) {
             setTxPending(false);
             setTxError(t('errorInTx'));
-            setQUICKAmount('');
-            setQUICKV2Amount('');
           }
         })
         .catch(() => {
@@ -341,8 +324,6 @@ const DragonsLair = () => {
           setTxPending(false);
           setTxHash('');
           setTxError(t('txRejected'));
-          setQUICKAmount('');
-          setQUICKV2Amount('');
         });
     }
   };
@@ -665,19 +646,14 @@ const DragonsLair = () => {
           {tabValue === 'unstake' && (
             <Button
               disabled={
-                account &&
-                (approving ||
-                  attemptUnstaking ||
-                  isInsufficientUnstakeAmount ||
-                  Number(unstakeAmount) <= 0)
+                approving ||
+                attemptUnstaking ||
+                isInsufficientUnstakeAmount ||
+                Number(unstakeAmount) <= 0
               }
-              className='convertButton'
+              className='unstakeButton'
               onClick={() => {
-                if (!account) {
-                  connectWallet();
-                } else {
-                  onWithdraw();
-                }
+                onWithdraw();
               }}
             >
               {unstakingButtonText}
@@ -686,19 +662,14 @@ const DragonsLair = () => {
           {tabValue === 'convert' && (
             <Button
               disabled={
-                account &&
-                (approving ||
-                  attemptConverting ||
-                  isInsufficientQUICK ||
-                  !quickAmount ||
-                  !Number(quickAmount))
+                approving ||
+                attemptConverting ||
+                isInsufficientQUICK ||
+                !quickAmount ||
+                !Number(quickAmount)
               }
               className='convertButton'
               onClick={() => {
-                if (!account) {
-                  connectWallet();
-                  return;
-                }
                 if (approval === ApprovalState.APPROVED) {
                   convertQUICK();
                 } else {
