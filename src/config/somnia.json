@@ -15,7 +15,7 @@
     "decimals": 18
   },
   "bridge": {
-    "available": true
+    "available": false
   },
   "swap": {
     "available": true,
@@ -48,7 +48,7 @@
   },
   "analytics": {
     "liquidityHub": false,
-    "available": true
+    "available": false
   },
   "lending": {
     "available": false

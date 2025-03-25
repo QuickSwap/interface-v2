@@ -612,8 +612,8 @@ export const USDC: { [chainId: number]: Token } = {
   ),
   [ChainId.SOMNIA]: new Token(
     ChainId.SOMNIA,
-    '0xe21f846620a79422bfdb12f98d895ddae3420d1e',
-    18,
+    '0xE9CC37904875B459Fa5D0FE37680d36F1ED55e38',
+    6,
     'USDC',
     'USDC',
   ),
@@ -1657,7 +1657,6 @@ export const V3_BASES_TO_CHECK_TRADES_AGAINST: {
   [ChainId.SOMNIA]: [
     WMATIC_EXTENDED[ChainId.SOMNIA],
     toV3Token(USDC[ChainId.SOMNIA]),
-    toV3Token(USDT[ChainId.SOMNIA]),
   ],
 };
 
@@ -1737,11 +1736,7 @@ export const SUGGESTED_BASES: {
     ASTR[ChainId.SONEIUM],
     WBTC[ChainId.SONEIUM],
   ],
-  [ChainId.SOMNIA]: [
-    WETH[ChainId.SOMNIA],
-    USDC[ChainId.SOMNIA],
-    USDT[ChainId.SOMNIA],
-  ],
+  [ChainId.SOMNIA]: [WETH[ChainId.SOMNIA], USDC[ChainId.SOMNIA]],
 };
 
 export const V2_BASES_TO_TRACK_LIQUIDITY_FOR: {
@@ -1851,7 +1846,6 @@ export const V3_BASES_TO_TRACK_LIQUIDITY_FOR: {
   [ChainId.SOMNIA]: [
     WMATIC_EXTENDED[ChainId.SOMNIA],
     toV3Token(USDC[ChainId.SOMNIA]),
-    toV3Token(USDT[ChainId.SOMNIA]),
   ],
 };
 
