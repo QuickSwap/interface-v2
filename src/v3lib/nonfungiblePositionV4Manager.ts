@@ -435,7 +435,7 @@ export abstract class NonfungiblePositionV4Manager extends SelfPermit {
         pool.token1.address,
         ADDRESS_ZERO,
         toHex(pool.sqrtRatioX96),
-        0x0,
+        '0x00',
       ],
     );
   }
