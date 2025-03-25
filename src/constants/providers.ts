@@ -24,7 +24,6 @@ export const rpcMap = {
   [ChainId.ETHEREUM]: 'https://eth.llamarpc.com',
   [ChainId.MINATO]: 'https://rpc.minato.soneium.org',
   [ChainId.SONEIUM]: 'https://rpc.soneium.org/',
-  [ChainId.SOMNIA]: 'https://dream-rpc.somnia.network/',
 };
 
 class AppJsonRpcProvider extends StaticJsonRpcProvider {
@@ -95,5 +94,4 @@ export const RPC_PROVIDERS: {
   [ChainId.LAYERX]: new AppJsonRpcProvider(ChainId.LAYERX),
   [ChainId.MINATO]: new AppJsonRpcProvider(ChainId.MINATO),
   [ChainId.SONEIUM]: new AppJsonRpcProvider(ChainId.SONEIUM),
-  [ChainId.SOMNIA]: new AppJsonRpcProvider(ChainId.SOMNIA),
 };

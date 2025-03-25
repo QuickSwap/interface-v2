@@ -61,9 +61,7 @@ const CommonBases: React.FC<CommonBasesProps> = ({
         </Box>
 
         {(chainId ? SUGGESTED_BASES[chainId] ?? [] : [])
-          .filter(
-            (item) => item && !currencies.some((c) => c.symbol === item.symbol),
-          )
+          .filter((item) => !currencies.some((c) => c.symbol === item.symbol))
           .map((token: Token) => {
             const selected = Boolean(
               selectedCurrency && currencyEquals(selectedCurrency, token),
