@@ -155,4 +155,13 @@ export const CHAIN_INFO: ChainInfo = {
     nativeCurrencyName: 'Ether',
     nativeCurrencyDecimals: 18,
   },
+  [ChainId.SOMNIA]: {
+    docs: 'https://algebra.finance/',
+    explorer: 'https://somnia-testnet.socialscan.io',
+    infoLink: 'https://algebra.finance',
+    label: 'somnia',
+    nativeCurrencySymbol: 'STT',
+    nativeCurrencyName: 'Somnia Token',
+    nativeCurrencyDecimals: 18,
+  },
 };

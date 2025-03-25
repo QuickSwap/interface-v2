@@ -339,6 +339,8 @@ export function useV3DerivedMintInfo(
       ChainId.DOGECHAIN,
       ChainId.ZKEVM,
       ChainId.LAYERX,
+      ChainId.SONEIUM,
+      ChainId.SOMNIA,
     ];
     if (existingPosition && existingPosition.pool.isUni)
       return existingPosition.pool.fee;
