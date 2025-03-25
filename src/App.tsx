@@ -49,6 +49,7 @@ const MigrateV2DetailsPage = lazy(() =>
   import('./pages/PoolsPage/v3/MigrateV2DetailsPage'),
 );
 const PositionPage = lazy(() => import('./pages/PoolsPage/v3/PositionPage'));
+const LaunchpadPage = lazy(() => import('./pages/LaunchpadPage'));
 
 import { PageLayout } from 'layouts';
 import { Popups, TermsWrapper } from 'components';
@@ -191,6 +192,12 @@ const App: React.FC = () => {
                         <SwapPage />
                       </PageLayout>
                     </Route>
+                    <Route exact strict path='/launch'>
+                      <PageLayout>
+                        <LaunchpadPage />
+                      </PageLayout>
+                    </Route>
+
                     <Route exact path='/bridge'>
                       <PageLayout>
                         <BridgePage />
