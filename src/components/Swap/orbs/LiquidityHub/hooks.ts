@@ -14,6 +14,7 @@ import { promiseWithTimeout, subtractSlippage } from '../utils';
 import { _TypedDataEncoder } from 'ethers/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import BN from 'bignumber.js';
+import { useLiquidityHubManager } from 'state/user/hooks';
 
 export const useIsLhPureAggregationMode = () => {
   const { chainId } = useActiveWeb3React();
@@ -127,6 +128,7 @@ export const useGetBetterPrice = (
   fetchLiquidityHubQuote: () => Promise<Quote | undefined>,
 ) => {
   const [seekingBetterPrice, setSeekingBestPrice] = useState(false);
+  const [liquidityHubDisabled] = useLiquidityHubManager();
 
   const getBetterPrice = useCallback(
     async ({
@@ -139,7 +141,7 @@ export const useGetBetterPrice = (
       dexOutAmount?: string;
     }) => {
       try {
-        if (skip) return false;
+        if (skip || liquidityHubDisabled) return false;
         setSeekingBestPrice(true);
         const quote = await promiseWithTimeout(fetchLiquidityHubQuote(), 8_000);
         const dexMinAmountOut =
@@ -153,7 +155,7 @@ export const useGetBetterPrice = (
         }, 50);
       }
     },
-    [fetchLiquidityHubQuote],
+    [fetchLiquidityHubQuote, liquidityHubDisabled],
   );
 
   return {
