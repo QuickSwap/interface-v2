@@ -159,24 +159,6 @@ export enum SmartRouter {
   QUICKSWAP = 'QUICKSWAP',
 }
 
-export const WALLCHAIN_PARAMS: {
-  [chainId in ChainId]?: {
-    [SmartRouter.PARASWAP]: { apiURL: string; apiKey: string };
-    [SmartRouter.QUICKSWAP]: { apiURL: string; apiKey: string };
-  };
-} = {
-  [ChainId.MATIC]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
-      apiKey: '91b92acd-e8fd-49c3-80fd-db2bc58bb8cf',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
-      apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735',
-    },
-  },
-};
-
 export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MUMBAI]: 0,
   [ChainId.MATIC]: 0,
