@@ -20,7 +20,7 @@ export default function RangeBadge({
       {removed ? (
         <Badge
           tooltip={withTooltip ? t('v3PositionNoLiquidity') : ''}
-          variant={BadgeVariant.WARNING}
+          variant={BadgeVariant.NEGATIVE}
           icon={<Error width={14} height={14} />}
           text={t('closed')}
         />
