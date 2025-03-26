@@ -226,11 +226,11 @@ const MyRewardFarms: React.FC<Props> = ({
       if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
         return farm1.apr > farm2.apr ? sortMultiplier : -1 * sortMultiplier;
       }
-      // if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
-      //   return farm1.dailyRewardUSD > farm2.dailyRewardUSD
-      //     ? sortMultiplier
-      //     : -1 * sortMultiplier;
-      // }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+        return farm1.dailyRewardUSD > farm2.dailyRewardUSD
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
       return 1;
     });
 
@@ -333,6 +333,26 @@ const MyRewardFarms: React.FC<Props> = ({
     );
   }, [farmType.link, selectedFarms]);
 
+  const sortedSelectedFarms = useMemo(() => {
+    return [...filteredSelectedFarms].sort((a: any, b: any) => {
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.pool) {
+        return a.title > b.title ? sortMultiplier : -1 * sortMultiplier;
+      }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.tvl) {
+        return a.almTVL > b.almTVL ? sortMultiplier : -1 * sortMultiplier;
+      }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.apr) {
+        return a.almAPR + a.poolAPR > b.almAPR + b.poolAPR
+          ? sortMultiplier
+          : -1 * sortMultiplier;
+      }
+      if (sortBy === GlobalConst.utils.v3FarmSortBy.rewards) {
+        return a.rewards > b.rewards ? sortMultiplier : -1 * sortMultiplier;
+      }
+      return 1;
+    });
+  }, [filteredSelectedFarms]);
+
   return (
     <>
       <Box pt={2}>
@@ -355,8 +375,8 @@ const MyRewardFarms: React.FC<Props> = ({
           </Box>
         ) : (
           <Box px={2}>
-            {filteredSelectedFarms.length > 0 ? (
-              filteredSelectedFarms.map((farm, ind) => (
+            {sortedSelectedFarms.length > 0 ? (
+              sortedSelectedFarms.map((farm, ind) => (
                 <Box key={ind} pb={2}>
                   <MerklPairFarmCard farm={farm} />
                 </Box>
