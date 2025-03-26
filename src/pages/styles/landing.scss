@@ -452,8 +452,18 @@
         fill: white;
       }
       & img {
-        width: 64px;
-        height: 64px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 8px;
+        filter: grayscale(1);
+        @media screen and (max-width: '900px') {
+          width: 48px;
+          height: 48px;
+        }
+      }
+      & svg {
+        width: 48px;
+        height: 48px;
         margin-bottom: 8px;
         filter: grayscale(1);
         @media screen and (max-width: '900px') {
@@ -463,6 +473,14 @@
       }
       &.svgFill svg path {
         fill: $textPrimary;
+      }
+      &.svgFill,
+      & svg {
+        opacity: 0.8;
+      }
+      &.svgFill,
+      & a:hover svg {
+        opacity: 1;
       }
       &.noFill svg,
       & img {

@@ -275,6 +275,7 @@ const BridgePage: React.FC = ({}) => {
                   alt='image'
                   style={{
                     width: config?.bridge?.isBigCoverImg ? '50%' : 'auto',
+                    height: config?.bridge?.isBigCoverImg ? 'auto' : '40px',
                   }}
                 />
                 {/* <Typography style={{ fontSize: '24px', color: '#fff' }}>
@@ -306,25 +307,27 @@ const BridgePage: React.FC = ({}) => {
                   },
                 )}
               </Box>
-              <ButtonBase
-                style={{
-                  position: 'absolute',
-                  bottom: '16px',
-                  right: '16px',
-                  color: '#448aff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '2px',
-                }}
-                onClick={() => {
-                  if (!config?.bridgeUrl) return;
-                  window.open(config?.bridgeUrl, '_blank');
-                }}
-              >
-                Bridge now
-                <ArrowForwardIcon style={{ fontSize: '14px' }} />
-              </ButtonBase>
+              {config?.bridgeUrl && (
+                <ButtonBase
+                  style={{
+                    position: 'absolute',
+                    bottom: '16px',
+                    right: '16px',
+                    color: '#448aff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '2px',
+                  }}
+                  onClick={() => {
+                    if (!config?.bridgeUrl) return;
+                    window.open(config?.bridgeUrl, '_blank');
+                  }}
+                >
+                  Bridge now
+                  <ArrowForwardIcon style={{ fontSize: '14px' }} />
+                </ButtonBase>
+              )}
             </Box>
           </Box>
           <Box>

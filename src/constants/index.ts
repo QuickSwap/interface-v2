@@ -61,7 +61,7 @@ import {
 import { FeeAmount } from 'v3lib/utils';
 import { BondToken } from 'types/bond';
 
-export const bondAPIV2BaseURL = 'https://api-v2.apeswap.finance';
+export const bondAPIV2BaseURL = 'https://api.ape.bond';
 export const CEX_BILL_ADDRESS = '0x6D7637683eaD28F775F56506602191fdE417fF60';
 
 export const AVERAGE_L1_BLOCK_TIME = 12000;
@@ -158,24 +158,6 @@ export enum SmartRouter {
   PARASWAP = 'PARASWAP',
   QUICKSWAP = 'QUICKSWAP',
 }
-
-export const WALLCHAIN_PARAMS: {
-  [chainId in ChainId]?: {
-    [SmartRouter.PARASWAP]: { apiURL: string; apiKey: string };
-    [SmartRouter.QUICKSWAP]: { apiURL: string; apiKey: string };
-  };
-} = {
-  [ChainId.MATIC]: {
-    [SmartRouter.PARASWAP]: {
-      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
-      apiKey: '91b92acd-e8fd-49c3-80fd-db2bc58bb8cf',
-    },
-    [SmartRouter.QUICKSWAP]: {
-      apiURL: 'https://matic.wallchains.com/upgrade_txn/',
-      apiKey: '50eaf751-196d-4fe0-9506-b983f7c83735',
-    },
-  },
-};
 
 export const BONUS_CUTOFF_AMOUNT: { [chainId in ChainId]?: number } = {
   [ChainId.MUMBAI]: 0,

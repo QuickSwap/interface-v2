@@ -4,7 +4,9 @@
 .preset-buttons {
   display: flex;
   button {
-    width: calc(25% - 3px);
+    min-width: calc(25% - 3px);
+    padding-left: 5px;
+    padding-right: 5px;
     margin-left: 4px;
     height: 28px;
     background-color: $secondary1;

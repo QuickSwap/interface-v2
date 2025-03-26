@@ -49,11 +49,11 @@ const CommunityBlock: React.FC = ({}) => {
       icon: <Announcement />,
       title: 'Announcements',
     },
-    // {
-    //   link: 'https://t.me/+OQ-H4hjc-BU5ZmRl',
-    //   icon: <DiscordIcon />,
-    //   title: 'Discord',
-    // },
+    {
+      link: 'https://discord.gg/cSbHcjBSWM',
+      icon: <DiscordIcon />,
+      title: 'Discord',
+    },
     {
       link: 'https://blog.quickswap.exchange/',
       icon: <BlogIcon />,
@@ -217,7 +217,9 @@ const CommunityBlock: React.FC = ({}) => {
                 }
               >
                 <a href={val.link} target='_blank' rel='noopener noreferrer'>
-                  {val.icon}
+                  <Box height={64} style={{ alignContent: 'center' }}>
+                    {val.icon}
+                  </Box>
                   <Typography style={{ color: '#fff' }}>{val.title}</Typography>
                 </a>
               </Box>

@@ -9,7 +9,6 @@ import {
   useBonusRouterManager,
   useUserSlippageTolerance,
 } from 'state/user/hooks';
-import callWallchainAPI from 'utils/wallchainService';
 import { useCurrency } from './Tokens';
 import { useTradeExactIn, useTradeExactOut } from './Trades';
 import { useActiveWeb3React } from 'hooks';
@@ -82,30 +81,7 @@ const useFindBestRoute = () => {
     onSetSwapDelay(SwapDelay.SWAP_REFRESH);
     return { v2Trade, bestTradeExactIn, bestTradeExactOut };
   }
-  if (
-    account &&
-    chainId &&
-    swapCalls[0] &&
-    parsedQuery &&
-    parsedQuery.swapIndex === '1'
-  ) {
-    const {
-      contract,
-      parameters: { methodName, args, value },
-    } = swapCalls[0];
-    callWallchainAPI(
-      methodName,
-      args,
-      value,
-      chainId,
-      account,
-      contract,
-      currentSmartRouter,
-      currentRouterType,
-      onBestRoute,
-      onSetSwapDelay,
-    );
-  }
+
   return { v2Trade, bestTradeExactIn, bestTradeExactOut };
 };
 

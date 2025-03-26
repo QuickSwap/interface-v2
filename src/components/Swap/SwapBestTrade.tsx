@@ -81,7 +81,6 @@ import { useAllTokens, useCurrency } from 'hooks/Tokens';
 import TokenWarningModal from 'components/v3/TokenWarningModal';
 import useParsedQueryString from 'hooks/useParsedQueryString';
 import useSwapRedirects from 'hooks/useSwapRedirect';
-import callWallchainAPI from 'utils/wallchainService';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { ONE } from 'v3lib/utils';
 import { NATIVE_CONVERTER, SWAP_ROUTER_ADDRESS } from 'constants/v3/addresses';
@@ -1187,31 +1186,7 @@ const SwapBestTrade: React.FC<{
             userAddress: account,
             partner: 'quickswapv3',
           });
-
-          if (txParams.data) {
-            const paraswapContract = getContract(
-              optimalRate.contractAddress,
-              ParaswapABI,
-              library,
-              account,
-            );
-            const response = await callWallchainAPI(
-              optimalRate.contractMethod,
-              txParams.data,
-              txParams.value,
-              chainId,
-              account,
-              paraswapContract,
-              SmartRouter.PARASWAP,
-              RouterTypes.SMART,
-              onBestRoute,
-              onSetSwapDelay,
-              50,
-            );
-            setBonusRouteFound(response ? response.pathFound : false);
-          } else {
-            setBonusRouteFound(false);
-          }
+          setBonusRouteFound(false);
           setBonusRouteLoading(false);
         } catch (e) {
           setBonusRouteFound(false);
