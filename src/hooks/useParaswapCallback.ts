@@ -20,7 +20,6 @@ import { OptimalRate, SwapSide } from 'paraswap-core';
 import { useParaswap } from './useParaswap';
 import ParaswapABI from 'constants/abis/ParaSwap_ABI.json';
 import { useContract } from './useContract';
-import callWallchainAPI from 'utils/wallchainService';
 import { useSwapActionHandlers } from 'state/swap/hooks';
 import { BigNumber } from 'ethers';
 import { TransactionType } from 'models/enums';
@@ -159,36 +158,7 @@ export function useParaswapCallback(
           );
         }
 
-        let isBonusRoute = false;
-        if (txParams && txParams.data && paraswapContract) {
-          const response = await callWallchainAPI(
-            priceRoute.contractMethod,
-            txParams.data,
-            txParams.value,
-            chainId,
-            account,
-            paraswapContract,
-            SmartRouter.PARASWAP,
-            RouterTypes.SMART,
-            onBestRoute,
-            onSetSwapDelay,
-            100,
-          );
-
-          const swapRouterAddress = chainId
-            ? SWAP_ROUTER_ADDRESS[chainId]
-            : undefined;
-          if (
-            response &&
-            response.pathFound &&
-            response.transactionArgs.data &&
-            swapRouterAddress
-          ) {
-            txParams.to = swapRouterAddress;
-            txParams.data = response.transactionArgs.data;
-            isBonusRoute = true;
-          }
-        }
+        const isBonusRoute = false;
 
         const signer = getSigner(library, account);
         const ethersTxParams = convertToEthersTransaction(
