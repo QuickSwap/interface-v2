@@ -152,17 +152,14 @@ export function PresetRanges({
       gammaBaseUppers.length >= index &&
       gammaCurrentTicks.length >= index
     ) {
-      const gammaBaseLower = gammaBaseLowers[index];
-      const gammaCurrentTick = gammaCurrentTicks[index];
-      const gammaBaseUpper = gammaBaseUppers[index];
+      const gammaBaseLower = gammaBaseLowers[index] ?? 0;
+      const gammaCurrentTick = gammaCurrentTicks[index] ?? 0;
+      const gammaBaseUpper = gammaBaseUppers[index] ?? 0;
 
-      if (gammaBaseLower && gammaCurrentTick && gammaBaseUpper) {
-        const lowerValue = Math.pow(1.0001, gammaBaseLower - gammaCurrentTick);
-        const upperValue = Math.pow(1.0001, gammaBaseUpper - gammaCurrentTick);
+      const lowerValue = Math.pow(1.0001, gammaBaseLower - gammaCurrentTick);
+      const upperValue = Math.pow(1.0001, gammaBaseUpper - gammaCurrentTick);
 
-        return { min: lowerValue, max: upperValue };
-      }
-      return;
+      return { min: lowerValue, max: upperValue };
     }
     return;
   });
