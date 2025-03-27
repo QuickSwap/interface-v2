@@ -133,8 +133,7 @@ export const useAnalyticsVersion = () => {
   const config = getConfig(chainIdToUse);
   const v2 = config['v2'];
   const v3 = config['v3'];
-  // const defaultVersion = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
-  const defaultVersion = v2 && v3 ? 'v3' : v2 ? 'v2' : 'v3'; // default to v3 for now
+  const defaultVersion = v2 && v3 ? 'total' : v2 ? 'v2' : 'v3';
   const params: any = useParams();
   const version = params && params.version ? params.version : defaultVersion;
   return version;
