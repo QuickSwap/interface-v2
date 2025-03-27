@@ -420,6 +420,44 @@ export function SelectRange({
     return vaults;
   }, [gammaPairExists, steerVaultExists, unipilotVaultExists]);
 
+  useEffect(() => {
+    if (loadingSteerVaults) {
+      return;
+    }
+    if (automaticEnabled) {
+      if (selectVaultEnabled) {
+        onChangeLiquidityRangeType('');
+      } else {
+        if (gammaPairExists) {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+          );
+        } else if (steerVaultExists) {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+          );
+        } else {
+          onChangeLiquidityRangeType(
+            GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+          );
+        }
+      }
+    } else {
+      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+    }
+  }, [
+    gammaPairExists,
+    automaticEnabled,
+    onChangeLiquidityRangeType,
+    selectVaultEnabled,
+    steerVaultExists,
+    currencyA?.isNative,
+    currencyB?.isNative,
+    currencyAAddress,
+    currencyBAddress,
+    loadingSteerVaults,
+  ]);
+
   const handleSelectAutomatic = () => {
     if (selectVaultEnabled) {
       onChangeLiquidityRangeType('');
