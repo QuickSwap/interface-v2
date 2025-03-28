@@ -284,7 +284,11 @@ export default function Farms() {
               sortValue={selectedSort}
             />
           ) : (
-            <AllV3Farms searchValue={searchValue} farmStatus={farmStatus} />
+            <AllV3Farms
+              searchValue={searchValue}
+              farmStatus={farmStatus}
+              sortValue={selectedSort}
+            />
           ))}
         {selectedFarmCategory.id === 2 && (
           <FarmingMyFarms search={searchValue} chainId={chainIdToUse} />
