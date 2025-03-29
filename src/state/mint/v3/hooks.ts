@@ -18,6 +18,7 @@ import {
   typeRightRangeInput,
   typeStartPriceInput,
   updateLiquidityRangeType,
+  updateLiquidityVaultPair,
   updatePresetRange,
   updateFeeTier,
 } from './actions';
@@ -115,7 +116,9 @@ export function useV3MintActionHandlers(
   onLeftRangeInput: (typedValue: string) => void;
   onRightRangeInput: (typedValue: string) => void;
   onStartPriceInput: (typedValue: string) => void;
-  onChangeLiquidityRangeType: (value: string) => void;
+  // onChangeLiquidityRangeType: (value: string, pair: any) => void;
+  onChangeLiquidityRangeType: (value: string, pair: any) => void;
+
   onChangePresetRange: (value: IPresetArgs) => void;
   onChangeFeeTier: (value: IFeeTier) => void;
 } {
@@ -169,8 +172,9 @@ export function useV3MintActionHandlers(
   );
 
   const onChangeLiquidityRangeType = useCallback(
-    (value: string) => {
+    (value: string, pair: any) => {
       dispatch(updateLiquidityRangeType({ liquidityRangeType: value }));
+      dispatch(updateLiquidityVaultPair({ liquidityVaultPair: pair }));
     },
     [dispatch],
   );
@@ -237,6 +241,7 @@ export function useV3DerivedMintInfo(
   lowerPrice: any;
   upperPrice: any;
   liquidityRangeType: string | undefined;
+  liquidityVaultPair: any;
   presetRange: IPresetArgs | undefined;
   feeTier: IFeeTier | undefined;
 } {
@@ -1199,6 +1204,7 @@ export function useV3DerivedMintInfo(
     lowerPrice,
     upperPrice,
     liquidityRangeType,
+    liquidityVaultPair: gammaPair,
     presetRange,
     feeTier,
   };

@@ -59,6 +59,10 @@ export const updateLiquidityRangeType = createAction<{
   liquidityRangeType: string;
 }>('mintV3/setliquidityRangeType');
 
+export const updateLiquidityVaultPair = createAction<{
+  liquidityVaultPair: any;
+}>('mintV3/setliquidityVaultPair');
+
 export const updatePresetRange = createAction<{
   presetRange: IPresetArgs;
 }>('mintV3/setPresetRange');

@@ -17,6 +17,7 @@ import {
   updateDynamicFee,
   updateSelectedPreset,
   updateLiquidityRangeType,
+  updateLiquidityVaultPair,
   updatePresetRange,
   updateFeeTier,
 } from './actions';
@@ -227,6 +228,15 @@ export default createReducer<MintState>(initialState, (builder) =>
         return {
           ...state,
           liquidityRangeType,
+        };
+      },
+    )
+    .addCase(
+      updateLiquidityVaultPair,
+      (state, { payload: { liquidityVaultPair } }) => {
+        return {
+          ...state,
+          liquidityVaultPair,
         };
       },
     )

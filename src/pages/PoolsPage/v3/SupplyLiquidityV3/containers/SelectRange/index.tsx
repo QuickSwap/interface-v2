@@ -435,24 +435,30 @@ export function SelectRange({
   useEffect(() => {
     if (isAutomatic) {
       if (selectVaultEnabled) {
-        onChangeLiquidityRangeType('');
+        onChangeLiquidityRangeType('', '');
       } else {
         if (gammaPairExists) {
           onChangeLiquidityRangeType(
             GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+            gammaPair,
           );
         } else if (steerVaultExists) {
           onChangeLiquidityRangeType(
             GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+            steerVaultsForPair,
           );
         } else {
           onChangeLiquidityRangeType(
             GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+            unipilotVaultsForPair,
           );
         }
       }
     } else {
-      onChangeLiquidityRangeType(GlobalConst.v3LiquidityRangeType.MANUAL_RANGE);
+      onChangeLiquidityRangeType(
+        GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
+        '',
+      );
     }
   }, [
     gammaPairExists,
@@ -460,10 +466,11 @@ export function SelectRange({
     onChangeLiquidityRangeType,
     selectVaultEnabled,
     steerVaultExists,
-    currencyA?.isNative,
-    currencyB?.isNative,
     currencyAAddress,
     currencyBAddress,
+    gammaPair,
+    steerVaultsForPair,
+    unipilotVaultsForPair,
   ]);
 
   const { data: gammaData } = useGammaData();
@@ -543,6 +550,7 @@ export function SelectRange({
                 setIsAutoMatic(false);
                 onChangeLiquidityRangeType(
                   GlobalConst.v3LiquidityRangeType.MANUAL_RANGE,
+                  '',
                 );
               }}
             >
@@ -779,6 +787,7 @@ export function SelectRange({
                   onClick={() => {
                     onChangeLiquidityRangeType(
                       GlobalConst.v3LiquidityRangeType.GAMMA_RANGE,
+                      gammaPair,
                     );
                   }}
                 >
@@ -802,6 +811,7 @@ export function SelectRange({
                   onClick={() => {
                     onChangeLiquidityRangeType(
                       GlobalConst.v3LiquidityRangeType.UNIPILOT_RANGE,
+                      unipilotVaultsForPair,
                     );
                   }}
                 >
@@ -828,6 +838,7 @@ export function SelectRange({
                   onClick={() => {
                     onChangeLiquidityRangeType(
                       GlobalConst.v3LiquidityRangeType.STEER_RANGE,
+                      steerVaultsForPair,
                     );
                   }}
                 >
