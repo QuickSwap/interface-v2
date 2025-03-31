@@ -328,7 +328,9 @@ export const useGetMerklFarms = () => {
       }
       resFarmData.push(...farmData);
     }
+
     if (!resFarmData) return [];
+    console.log('resFarmData', resFarmData);
     const farmList: any[] = [];
     resFarmData.forEach((farmData: any) => {
       if (farmData.chainId !== chainId || farmData.status !== 'LIVE') return;
@@ -396,6 +398,9 @@ export const useGetMerklFarms = () => {
 
       farmList.push(farm);
     });
+
+    console.log('farmList', farmList);
+
     return farmList;
   };
   const lastTx = useLastTransactionHash();
@@ -420,6 +425,7 @@ export const useMerklFarms = () => {
   const { isLoading: loadingGamma, data: gammaData } = useGammaData();
   const { loading: loadingICHI, data: ichiVaults } = useICHIVaults();
   const ichiVaultsFiltered = useMemo(() => {
+    console.log('merklFarms', merklFarms);
     if (!merklFarms) return [];
     return ichiVaults.filter(
       (vault) =>
