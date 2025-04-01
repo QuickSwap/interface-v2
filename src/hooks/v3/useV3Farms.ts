@@ -328,6 +328,7 @@ export const useGetMerklFarms = () => {
       }
       resFarmData.push(...farmData);
     }
+
     if (!resFarmData) return [];
     const farmList: any[] = [];
     resFarmData.forEach((farmData: any) => {
@@ -396,6 +397,7 @@ export const useGetMerklFarms = () => {
 
       farmList.push(farm);
     });
+
     return farmList;
   };
   const lastTx = useLastTransactionHash();

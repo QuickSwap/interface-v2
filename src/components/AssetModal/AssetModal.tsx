@@ -60,15 +60,15 @@ const AssetModal: React.FC<AssetModalProps> = ({
   const currency = useCurrency(token?.address);
   const { account } = useAccount();
   const [depositTx, setDepositTx] = useState<any>(undefined);
-  const { data } = useQuery<API.Token[]>(
+  /**const { data } = useQuery<API.Token[]>(
     `/v1/public/token/?chain_id=${chainId}`,
-  );
+  );*/
 
-  let withdrawalFee = 1;
+  const withdrawalFee = 1;
 
-  if (data) {
+  /**if (data) {
     withdrawalFee = data[0].chain_details[0].withdrawal_fee;
-  }
+  }*/
 
   const [aggregatedData] = usePositionStream();
   const unsettledPnl = Number(aggregatedData?.aggregated?.unsettledPnL ?? 0);
