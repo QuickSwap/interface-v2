@@ -36,7 +36,7 @@ export abstract class SwapMath {
       const amountRemainingLessFee = JSBI.divide(
         JSBI.multiply(
           amountRemaining,
-          JSBI.subtract(MAX_FEE, JSBI.BigInt(feePips)),
+          JSBI.subtract(MAX_FEE, JSBI.BigInt(feePips ?? '0')),
         ),
         MAX_FEE,
       );
@@ -161,7 +161,7 @@ export abstract class SwapMath {
       returnValues.feeAmount = FullMath.mulDivRoundingUp(
         returnValues.amountIn!,
         JSBI.BigInt(feePips),
-        JSBI.subtract(MAX_FEE, JSBI.BigInt(feePips)),
+        JSBI.subtract(MAX_FEE, JSBI.BigInt(feePips ?? '0')),
       );
     }
 

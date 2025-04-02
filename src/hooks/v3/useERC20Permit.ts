@@ -172,7 +172,10 @@ function useERC20Permit(
       signatureData.nonce === nonceNumber &&
       signatureData.spender === spender &&
       ('allowed' in signatureData ||
-        JSBI.equal(JSBI.BigInt(signatureData.amount), currencyAmount.quotient));
+        JSBI.equal(
+          JSBI.BigInt(signatureData?.amount ?? '0'),
+          currencyAmount.quotient,
+        ));
 
     return {
       state: isSignatureDataValid

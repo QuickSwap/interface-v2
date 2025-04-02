@@ -247,7 +247,7 @@ export function useDerivedSwapInfo(): {
   const autoSlippage = useAutoSlippageTolerance(v3Trade.trade);
   const allowedSlippage = userSlippageAuto
     ? autoSlippage
-    : new Percent(JSBI.BigInt(allowedSlippageNum), JSBI.BigInt(10000));
+    : new Percent(JSBI.BigInt(allowedSlippageNum ?? '0'), JSBI.BigInt(10000));
 
   // compare input balance to max input based on version
   const [balanceIn, amountIn] = [

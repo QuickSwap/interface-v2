@@ -59,10 +59,10 @@ const UnipilotLPItemDetails: React.FC<{ position: UnipilotPosition }> = ({
       return JSBI.divide(
         JSBI.multiply(
           JSBI.add(
-            JSBI.BigInt(vaultPositionDetails[0]),
+            JSBI.BigInt(vaultPositionDetails[0] ?? '0'),
             unipilotToken0VaultBalance?.numerator ?? JSBI.BigInt(0),
           ),
-          JSBI.BigInt(position.balance),
+          JSBI.BigInt(position.balance ?? '0'),
         ),
         JSBI.BigInt(vaultTotalSupply),
       );
@@ -87,7 +87,7 @@ const UnipilotLPItemDetails: React.FC<{ position: UnipilotPosition }> = ({
             JSBI.BigInt(vaultPositionDetails[1]),
             unipilotToken1VaultBalance?.numerator ?? JSBI.BigInt(0),
           ),
-          JSBI.BigInt(position.balance),
+          JSBI.BigInt(position.balance ?? '0'),
         ),
         JSBI.BigInt(vaultTotalSupply),
       );

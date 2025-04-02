@@ -137,7 +137,7 @@ export function AddLiquidityButton({
   const { isLoading: isAmlScoreLoading, score: amlScore } = useAmlScore();
 
   const allowedSlippagePercent: Percent = useMemo(() => {
-    return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
+    return new Percent(JSBI.BigInt(allowedSlippage ?? '0'), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
   const addTransaction = useTransactionAdder();

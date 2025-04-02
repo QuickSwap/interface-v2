@@ -6,7 +6,7 @@ import { mostSignificantBit } from './mostSignificantBit';
 
 function mulShift(val: JSBI, mulBy: string): JSBI {
   return JSBI.signedRightShift(
-    JSBI.multiply(val, JSBI.BigInt(mulBy)),
+    JSBI.multiply(val, JSBI.BigInt(mulBy ?? '0')),
     JSBI.BigInt(128),
   );
 }

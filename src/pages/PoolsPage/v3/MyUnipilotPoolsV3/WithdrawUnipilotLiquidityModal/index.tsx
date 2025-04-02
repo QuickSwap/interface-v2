@@ -79,7 +79,7 @@ export default function WithdrawUnipilotLiquidityModal({
     if (!account || !uniPilotVaultContract) return;
     setAttemptingTxn(true);
     const withdrawAmount = JSBI.divide(
-      JSBI.multiply(lpBalance, JSBI.BigInt(percent)),
+      JSBI.multiply(lpBalance, JSBI.BigInt(percent ?? '0')),
       JSBI.BigInt(100),
     );
     try {

@@ -144,7 +144,7 @@ export function usePoolActiveLiquidity(
       tickIdx: activeTick,
       liquidityNet:
         Number(ticks[pivot].tickIdx) === activeTick
-          ? JSBI.BigInt(ticks[pivot].liquidityNet)
+          ? JSBI.BigInt(ticks[pivot]?.liquidityNet ?? '0')
           : JSBI.BigInt(0),
       price0: tickToPrice(token0, token1, activeTick).toFixed(
         PRICE_FIXED_DIGITS,

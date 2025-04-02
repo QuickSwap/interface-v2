@@ -390,7 +390,7 @@ export const useGetMerklFarms = () => {
           farmData.rewardsRecord.breakdowns[0].token.decimals,
         dailyRewardUSD: farmData.dailyRewards,
         dailyAmount: formatUnits(
-          BigInt(farmData.rewardsRecord.breakdowns[0].amount),
+          BigInt(farmData?.rewardsRecord?.breakdowns[0]?.amount ?? '0'),
           farmData.rewardsRecord.breakdowns[0].token.decimals,
         ),
       };
@@ -620,9 +620,10 @@ export const useGetMerklRewards = (
               [breakdown.reason]: {
                 unclaimed: ((reasons as any)[breakdown.reason] as any)
                   ? ((reasons as any)[breakdown.reason] as any).unclaimed +
-                    BigInt(breakdown.amount) -
-                    BigInt(breakdown.claimed)
-                  : BigInt(breakdown.amount) - BigInt(breakdown.claimed),
+                    BigInt(breakdown.amount ?? '0') -
+                    BigInt(breakdown.claimed ?? '0')
+                  : BigInt(breakdown.amount ?? '0') -
+                    BigInt(breakdown.claimed ?? '0'),
               },
             };
           },
@@ -632,7 +633,7 @@ export const useGetMerklRewards = (
           decimals: reward.token.decimals,
           unclaimed: Number(
             formatUnits(
-              BigInt(reward.amount) - BigInt(reward.claimed),
+              BigInt(reward.amount ?? '0') - BigInt(reward.claimed ?? '0'),
               reward.token.decimals,
             ),
           ),

@@ -446,7 +446,7 @@ export function useUnipilotPositionsCount(
             library,
           );
           const stakedAmount = await farmContract.balanceOf(account ?? '');
-          return JSBI.add(JSBI.BigInt(stakedAmount), lpBalance);
+          return JSBI.add(JSBI.BigInt(stakedAmount ?? '0'), lpBalance);
         }
         return lpBalance;
       }),

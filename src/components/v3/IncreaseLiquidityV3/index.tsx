@@ -192,7 +192,7 @@ export default function IncreaseLiquidityV3({
 
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePercent: Percent = useMemo(() => {
-    return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
+    return new Percent(JSBI.BigInt(allowedSlippage ?? '0'), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
   const handleDismissConfirmation = useCallback(() => {
