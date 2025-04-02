@@ -363,7 +363,6 @@ export const SUPPORTED_CHAINIDS = [
   ChainId.DOGECHAIN,
   ChainId.ETHEREUM,
   ChainId.IMX,
-  ChainId.ASTARZKEVM,
   ChainId.ZKATANA,
   ChainId.TIMX,
   ChainId.ZKTESTNET,
