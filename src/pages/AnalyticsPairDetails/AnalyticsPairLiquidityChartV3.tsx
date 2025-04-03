@@ -48,16 +48,16 @@ const AnalyticsPairLiquidityChartV3: React.FC<{
               const mockTicks = [
                 {
                   index: t.tickIdx - 60,
-                  liquidityGross: JSBI.BigInt(t.liquidityGross),
+                  liquidityGross: JSBI.BigInt(t.liquidityGross ?? '0'),
                   liquidityNet: JSBI.multiply(
-                    JSBI.BigInt(t.liquidityNet),
+                    JSBI.BigInt(t.liquidityNet ?? '0'),
                     JSBI.BigInt('-1'),
                   ),
                 },
                 {
                   index: t.tickIdx,
-                  liquidityGross: JSBI.BigInt(t.liquidityGross),
-                  liquidityNet: JSBI.BigInt(t.liquidityNet),
+                  liquidityGross: JSBI.BigInt(t.liquidityGross ?? '0'),
+                  liquidityNet: JSBI.BigInt(t.liquidityNet ?? '0'),
                 },
               ];
               const pool =

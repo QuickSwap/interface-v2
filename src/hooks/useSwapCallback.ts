@@ -92,7 +92,7 @@ export function useSwapCallArguments(
           Router.swapCallParameters(trade, {
             feeOnTransfer: false,
             allowedSlippage: new Percent(
-              JSBI.BigInt(allowedSlippage),
+              JSBI.BigInt(allowedSlippage ?? '0'),
               GlobalConst.utils.BIPS_BASE,
             ),
             recipient,
@@ -107,7 +107,7 @@ export function useSwapCallArguments(
             Router.swapCallParameters(trade, {
               feeOnTransfer: true,
               allowedSlippage: new Percent(
-                JSBI.BigInt(allowedSlippage),
+                JSBI.BigInt(allowedSlippage ?? '0'),
                 GlobalConst.utils.BIPS_BASE,
               ),
               recipient,

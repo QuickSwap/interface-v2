@@ -176,7 +176,10 @@ export function useFilteredSyrupInfo(
             syrupToken,
             totalSupplyState,
           );
-          const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
+          const totalRewardRate = new TokenAmount(
+            token,
+            JSBI.BigInt(rate ?? '0'),
+          );
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
 
@@ -358,7 +361,10 @@ export function useOldSyrupInfo(
             getSyrupLPToken(syrupInfo),
             totalSupplyState,
           );
-          const totalRewardRate = new TokenAmount(token, JSBI.BigInt(rate));
+          const totalRewardRate = new TokenAmount(
+            token,
+            JSBI.BigInt(rate ?? '0'),
+          );
           //const pair = info[index].pair.toLowerCase();
           //const fees = (pairData && pairData[pair] ? pairData[pair].oneDayVolumeUSD * 0.0025: 0);
 

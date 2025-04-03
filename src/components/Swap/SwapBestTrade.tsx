@@ -1114,11 +1114,11 @@ const SwapBestTrade: React.FC<{
           !!paraswapCallbackError ||
           (optimalRate &&
             !parsedAmounts[Field.INPUT]?.equalTo(
-              JSBI.BigInt(optimalRate.srcAmount),
+              JSBI.BigInt(optimalRate.srcAmount ?? '0'),
             )) ||
           (optimalRate &&
             !parsedAmounts[Field.OUTPUT]?.equalTo(
-              JSBI.BigInt(optimalRate.destAmount),
+              JSBI.BigInt(optimalRate.destAmount ?? '0'),
             )) ||
           (swapInputAmountWithSlippage &&
             swapInputBalance &&

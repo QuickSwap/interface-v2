@@ -110,7 +110,7 @@ export default function RemoveLiquidityV3({
   const deadline = useTransactionDeadline(); // custom from users settings
   const [allowedSlippage] = useUserSlippageTolerance();
   const allowedSlippagePercent: Percent = useMemo(() => {
-    return new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000));
+    return new Percent(JSBI.BigInt(allowedSlippage ?? '0'), JSBI.BigInt(10000));
   }, [allowedSlippage]);
 
   const [showConfirm, setShowConfirm] = useState(false);

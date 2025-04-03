@@ -182,7 +182,7 @@ const LockV2Liquidity: React.FC = () => {
     if (
       feeData?.fee &&
       ethBalance?.numerator &&
-      JSBI.greaterThan(JSBI.BigInt(feeData.fee), ethBalance?.numerator)
+      JSBI.greaterThan(JSBI.BigInt(feeData.fee ?? '0'), ethBalance?.numerator)
     )
       return `${formatNumber(
         formatUnits(feeData.fee),

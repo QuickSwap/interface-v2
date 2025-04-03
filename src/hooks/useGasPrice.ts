@@ -14,7 +14,7 @@ export default function useGasPrice(): JSBI | undefined {
     queryFn: async () => {
       const web3 = new Web3(rpc);
       const gasPrice = await web3.eth.getGasPrice();
-      return JSBI.BigInt(gasPrice);
+      return JSBI.BigInt(gasPrice ?? '0');
     },
   });
   return data;

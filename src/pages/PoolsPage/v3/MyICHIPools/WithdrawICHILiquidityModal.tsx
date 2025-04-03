@@ -78,7 +78,7 @@ export default function WithdrawICHILiquidityModal({
     const withdrawAmount = JSBI.divide(
       JSBI.multiply(
         JSBI.BigInt(position.balanceBN ?? '0'),
-        JSBI.BigInt(percent),
+        JSBI.BigInt(percent ?? '0'),
       ),
       JSBI.BigInt(100),
     );
