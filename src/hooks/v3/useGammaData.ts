@@ -16,8 +16,6 @@ const gammaChainName = (chainId?: ChainId) => {
       return 'manta';
     case ChainId.IMX:
       return 'immutable-zkevm';
-    case ChainId.ASTARZKEVM:
-      return 'astar-zkevm';
     default:
       return 'polygon';
   }
