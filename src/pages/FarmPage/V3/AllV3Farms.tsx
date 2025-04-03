@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import CustomTabSwitch from 'components/v3/CustomTabSwitch';
@@ -34,6 +34,7 @@ import { getConfig } from 'config/index';
 interface Props {
   searchValue: string;
   farmStatus: string;
+  sortValue: string;
 }
 
 export interface V3FarmPair {
@@ -46,7 +47,11 @@ export interface V3FarmPair {
   farms: V3Farm[];
 }
 
-const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
+const AllV3Farms: React.FC<Props> = ({
+  searchValue,
+  farmStatus,
+  sortValue,
+}) => {
   const { t } = useTranslation();
   const { breakpoints } = useTheme();
   const { chainId } = useActiveWeb3React();
@@ -126,6 +131,10 @@ const AllV3Farms: React.FC<Props> = ({ searchValue, farmStatus }) => {
       },
     };
   });
+
+  useEffect(() => {
+    setSortBy(sortValue);
+  }, [sortValue]);
 
   const {
     data: allEternalFarms,
