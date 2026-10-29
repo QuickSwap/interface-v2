@@ -75,6 +75,7 @@ import { ChainId } from '@uniswap/sdk';
 import { SUPPORTED_CHAINIDS } from 'constants/index';
 import { getConfig } from 'config/index';
 import 'connectors/passport';
+import { oathWallet } from 'connectors/oathWallet';
 import {
   createSoulZapApiClient,
   SoulZapApiClient,
@@ -121,6 +122,7 @@ createWeb3Modal({
   chains,
   chainImages,
   projectId,
+  customWallets: [oathWallet],
   enableAnalytics: true,
   allowUnsupportedChain: true,
   enableOnramp: true,
